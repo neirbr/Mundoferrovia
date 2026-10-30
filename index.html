@@ -90,6 +90,12 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) { wind
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script><script src="firebase-init.js"></script>
+ <script>
+window.MF_CLOUDINARY = {
+  cloudName: 'dlsdvnvc',
+  uploadPreset: 'mundo_ferroviario'
+};
+</script>
 <script>
 (async()=>{const box=document.getElementById('publishedNews');try{const snap=await MF_DB.collection('articles').where('published','==',true).orderBy('created_at','desc').get();const data=snap.docs.map(d=>({id:d.id,...d.data()}));box.innerHTML=data.length?data.map(a=>`<article class="card"><span class="tag">${esc(a.category||'Notícia')}</span><h3>${esc(a.title||'')}</h3><p>${esc(a.summary||a.body||'').slice(0,260)}</p><small class="muted">${a.created_at?.toDate?a.created_at.toDate().toLocaleDateString('pt-BR'):''}</small></article>`).join(''):'<div class="empty">Ainda não há notícias publicadas.</div>'}catch(e){box.innerHTML='<div class="empty">As notícias serão exibidas após configurar o Firestore e seu índice.</div>'}})();
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
