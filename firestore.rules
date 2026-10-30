@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function admin() { return signedIn() && request.auth.uid == 'QWD9zZ4EQkPKwEQ1xMC2WzfUJuF3'; }
+    match /gallery_photos/{photoId} {
+      allow read: if resource.data.status == 'approved' || admin() || (signedIn() && resource.data.user_id == request.auth.uid);
+      allow create: if signedIn()
+        && request.resource.data.user_id == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.image_url is string
+        && request.resource.data.image_url.matches('https://res.cloudinary.com/.*');
+      allow update, delete: if admin();
+    }
+    match /articles/{id} { allow read: if resource.data.published == true || admin(); allow write: if admin(); }
+    match /locomotives/{id} { allow read: if true; allow write: if admin(); }
+    match /wagons/{id} { allow read: if true; allow write: if admin(); }
+    match /glossary/{id} { allow read: if true; allow write: if admin(); }
+    match /ad_slots/{id} { allow read: if true; allow write: if admin(); }
+  }
+}

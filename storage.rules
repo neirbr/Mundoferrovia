@@ -1,0 +1,2 @@
+// O projeto utiliza Cloudinary para imagens. Firebase Storage não é utilizado.
+// Não é necessário ativar Firebase Storage para esta versão.

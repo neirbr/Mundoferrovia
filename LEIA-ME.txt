@@ -1,0 +1,50 @@
+MUNDO FERROVIÁRIO v2.0 — FIREBASE + CLOUDINARY
+================================================
+
+ARQUITETURA
+- Firebase Authentication: cadastro e login por e-mail/senha.
+- Cloud Firestore: conteúdo do site, metadados e moderação das fotos.
+- Cloudinary: armazenamento das imagens da galeria (não precisa ativar Firebase Storage).
+- Painel administrativo: acesso limitado ao UID configurado em firebase-config.js e nas regras Firestore.
+
+ARQUIVOS PRINCIPAIS
+- index.html: site público e galeria.
+- admin.html: painel administrativo.
+- firebase-config.js: configuração Firebase, Cloudinary e UID administrador.
+- firebase-init.js: inicialização dos serviços Firebase.
+- firestore.rules: regras de segurança do Firestore.
+- firebase.json: configuração básica do Firebase Hosting.
+
+CONFIGURAÇÃO PASSO A PASSO
+1. No Firebase Console, projeto mundo-do-ferroviario:
+   - Authentication > Sign-in method > habilite E-mail/senha.
+   - Firestore Database > crie o banco de dados.
+   - Abra Regras do Firestore, substitua pelo conteúdo de firestore.rules e publique.
+   - Não é necessário ativar Firebase Storage nesta versão.
+2. Em Authentication > Users, confirme que existe o usuário administrador cujo UID é:
+   QWD9zZ4EQkPKwEQ1xMC2WzfUJuF3
+   O e-mail/senha de login são os que você criou no Firebase Authentication.
+3. No Cloudinary, confira se o Upload Preset `mundo_ferroviario` está como Unsigned.
+   O Cloud Name já está configurado como `dlsdvnvc`.
+4. Publique os arquivos da pasta em um host HTTPS (Firebase Hosting ou outro host estático).
+   Mantenha todos os arquivos na mesma pasta.
+5. Abra o site, crie uma conta de usuário e teste o envio de uma foto. A foto ficará pendente.
+6. Entre em /admin.html com o usuário administrador, abra “Moderar galeria” e aprove a foto.
+
+ÍNDICE FIRESTORE
+A consulta da galeria pode solicitar um índice composto (status + created_at). Se o Firebase mostrar um link “Create index”, abra-o no Console e crie o índice sugerido. A consulta de notícias pode solicitar índice de published + created_at; crie-o da mesma forma quando solicitado.
+
+SEGURANÇA E LIMITAÇÕES IMPORTANTES
+- firebase-config.js contém identificadores públicos do projeto. A API key web do Firebase não é senha; a proteção real é feita pelas regras do Firestore.
+- Nunca coloque Cloudinary API Secret no navegador, em HTML ou neste projeto.
+- O preset unsigned é público por natureza. Restrinja no painel Cloudinary os formatos permitidos e limites de upload quando disponíveis, monitore o uso e considere uma função backend com assinatura para produção.
+- A validação de 10 MB no navegador melhora a experiência, mas não substitui limites configurados no serviço de upload.
+- O painel apaga o registro da foto no Firestore, mas não remove o arquivo hospedado no Cloudinary. A exclusão do arquivo exige backend/Cloudinary API Secret, que não deve ser exposto no navegador; remova-o pelo painel Cloudinary ou implemente uma função backend segura.
+- As regras autorizam apenas o UID informado como administrador. Se trocar o usuário administrador, atualize o UID em firebase-config.js E firestore.rules antes de publicar.
+- Não envie fotos de áreas restritas, documentos, telas operacionais, dados pessoais ou informações que possam comprometer a segurança ferroviária.
+
+DADOS / MIGRAÇÃO
+Esta versão substitui a integração Supabase por Firebase + Cloudinary. Ela não importa automaticamente registros que eventualmente estejam no antigo Supabase. Os conteúdos existentes no antigo banco devem ser exportados e importados para as coleções Firestore correspondentes: articles, locomotives, wagons, glossary, ad_slots e gallery_photos.
+
+PLATAFORMA GRATUITA
+O acesso ao site pode ser gratuito para os usuários. Firebase e Cloudinary possuem limites e condições de uso próprios; acompanhe o consumo e os planos vigentes para evitar cobranças inesperadas.
