@@ -90,12 +90,6 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) { wind
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script><script src="firebase-init.js"></script>
- <script>
-window.MF_CLOUDINARY = {
-  cloudName: 'dlsdvnvc',
-  uploadPreset: 'mundo_ferroviario'
-};
-</script>
 <script>
 (async()=>{const box=document.getElementById('publishedNews');try{const snap=await MF_DB.collection('articles').where('published','==',true).orderBy('created_at','desc').get();const data=snap.docs.map(d=>({id:d.id,...d.data()}));box.innerHTML=data.length?data.map(a=>`<article class="card"><span class="tag">${esc(a.category||'Notícia')}</span><h3>${esc(a.title||'')}</h3><p>${esc(a.summary||a.body||'').slice(0,260)}</p><small class="muted">${a.created_at?.toDate?a.created_at.toDate().toLocaleDateString('pt-BR'):''}</small></article>`).join(''):'<div class="empty">Ainda não há notícias publicadas.</div>'}catch(e){box.innerHTML='<div class="empty">As notícias serão exibidas após configurar o Firestore e seu índice.</div>'}})();
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -110,8 +104,7 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&l
  $('galleryLogout').onclick=()=>MF_AUTH.signOut();$('galleryRefresh').onclick=loadGallery;
  $('galleryUpload').onsubmit=async e=>{e.preventDefault();if(!user){uploadMsg('Entre na sua conta antes de enviar.');return}const file=$('photoFile').files[0];if(!file){uploadMsg('Escolha uma imagem.');return}if(!['image/jpeg','image/png','image/webp'].includes(file.type)){uploadMsg('Use JPG, PNG ou WebP.');return}if(file.size>10*1024*1024){uploadMsg('A imagem ultrapassa 10 MB.');return}if(!$('photoRights').checked){uploadMsg('Confirme que possui os direitos de envio.');return}$('photoSubmit').disabled=true;uploadMsg('Enviando imagem...');try{const fd=new FormData();fd.append('file',file);fd.append('upload_preset',MF_CLOUDINARY.uploadPreset);fd.append('folder','mundo_ferroviario');const response=await fetch(`https://api.cloudinary.com/v1_1/${MF_CLOUDINARY.cloudName}/image/upload`,{method:'POST',body:fd});const result=await response.json();if(!response.ok)throw new Error(result.error?.message||'Falha no Cloudinary');await MF_DB.collection('gallery_photos').add({user_id:user.uid,user_email:user.email||'',title:$('photoTitle').value.trim(),category:$('photoCategory').value,description:$('photoDescription').value.trim(),image_url:result.secure_url,cloudinary_public_id:result.public_id,status:'pending',created_at:firebase.firestore.FieldValue.serverTimestamp()});e.target.reset();uploadMsg('Foto recebida! Ela ficará aguardando aprovação da equipe.')}catch(err) {
   console.error('ERRO NO ENVIO:', err);
-  uploadMsg('Erro: ' + (err.message || err.code || 'Falha desconhecida'));
- }finally{$('photoSubmit').disabled=false}}
+  uploadMsg('Erro: ' + (err.message || err.code || 'Falha desconhecida'));}finally{$('photoSubmit').disabled=false}}
 })();
 </script>
 </body></html>
