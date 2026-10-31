@@ -1,5 +1,5 @@
 
-const CACHE = 'mundo-ferroviario-v4';
+const CACHE_NAME = 'mundo-ferroviario-v5';
 
 const FILES = [
   './',
