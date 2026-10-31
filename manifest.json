@@ -4,7 +4,7 @@
   "name": "Mundo Ferroviário",
   "short_name": "Mundo Ferroviário",
   "description": "Portal dedicado ao universo ferroviário.",
-  "start_url": "./index.html",
+  "start_url": "./Index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
@@ -17,7 +17,7 @@
   ],
   "icons": [
     {
-      "src": "icon.svg",
+      "src": "ícone.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
