@@ -1,1 +1,26 @@
-{"name":"Mundo Ferroviário","short_name":"Mundo Ferroviário","start_url":"./index.html","display":"standalone","background_color":"#102b3f","theme_color":"#102b3f","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml"}]}
+
+{
+  "id": "./",
+  "name": "Mundo Ferroviário",
+  "short_name": "Mundo Ferroviário",
+  "description": "Portal dedicado ao universo ferroviário.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#102b3f",
+  "theme_color": "#102b3f",
+  "prefer_related_applications": false,
+  "categories": [
+    "education",
+    "news"
+  ],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
