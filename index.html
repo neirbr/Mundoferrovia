@@ -174,6 +174,65 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) { wind
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script><script src="firebase-init.js"></script>
+  
+<script>
+(function () {
+  async function carregarNoticias() {
+    const area = document.getElementById('publishedNews');
+
+    if (!area || !window.MF_DB) return;
+
+    try {
+      const resultado = await window.MF_DB
+        .collection('articles')
+        .where('status', '==', 'published')
+        .get();
+
+      if (resultado.empty) {
+        area.innerHTML = '<div class="empty">Nenhuma notícia publicada ainda.</div>';
+        return;
+      }
+
+      const noticias = resultado.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      noticias.sort((a, b) => {
+        const dataA = a.createdAt?.toMillis?.() || 0;
+        const dataB = b.createdAt?.toMillis?.() || 0;
+        return dataB - dataA;
+      });
+
+      area.innerHTML = noticias.map(n => `
+        <article class="card">
+          ${n.imageUrl ? `<img src="${n.imageUrl}" alt="" style="width:100%;border-radius:10px;object-fit:cover;max-height:220px">` : ''}
+          <h3>${escapeHTML(n.title || 'Notícia ferroviária')}</h3>
+          <p>${escapeHTML(n.summary || n.description || '')}</p>
+          <p>${escapeHTML(n.content || '')}</p>
+        </article>
+      `).join('');
+
+    } catch (erro) {
+      console.error('Erro ao carregar notícias:', erro);
+      area.innerHTML = '<div class="empty">Não foi possível carregar as notícias.</div>';
+    }
+  }
+
+  function escapeHTML(text) {
+    return String(text).replace(/[&<>"']/g, c => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[c]);
+  }
+
+  window.addEventListener('load', carregarNoticias);
+})();
+</script>
+  
 <script>
 (async()=>{const box=document.getElementById('publishedNews');try{const snap=await MF_DB.collection('articles').where('published','==',true).orderBy('created_at','desc').get();const data=snap.docs.map(d=>({id:d.id,...d.data()}));box.innerHTML=data.length?data.map(a=>`<article class="card"><span class="tag">${esc(a.category||'Notícia')}</span><h3>${esc(a.title||'')}</h3><p>${esc(a.summary||a.body||'').slice(0,260)}</p><small class="muted">${a.created_at?.toDate?a.created_at.toDate().toLocaleDateString('pt-BR'):''}</small></article>`).join(''):'<div class="empty">Ainda não há notícias publicadas.</div>'}catch(e){box.innerHTML='<div class="empty">As notícias serão exibidas após configurar o Firestore e seu índice.</div>'}})();
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
