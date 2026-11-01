@@ -242,9 +242,40 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) { wind
 })();
 </script>
 
-  
-<script>
-(async()=>{const box=document.getElementById('publishedNews');try{const snap=await MF_DB.collection('articles').where('published','==',true).orderBy('created_at','desc').get();const data=snap.docs.map(d=>({id:d.id,...d.data()}));box.innerHTML=data.length?data.map(a=>`<article class="card"><span class="tag">${esc(a.category||'Notícia')}</span><h3>${esc(a.title||'')}</h3><p>${esc(a.summary||a.body||'').slice(0,260)}</p><small class="muted">${a.created_at?.toDate?a.created_at.toDate().toLocaleDateString('pt-BR'):''}</small></article>`).join(''):'<div class="empty">Ainda não há notícias publicadas.</div>'}catch(e){box.innerHTML='<div class="empty">As notícias serão exibidas após configurar o Firestore e seu índice.</div>'}})();
+  <script>
+(async()=>{
+  const box=document.getElementById('publishedNews');
+
+  try {
+    const snap=await MF_DB.collection('articles')
+      .where('published','==',true)
+      .orderBy('created_at','desc')
+      .get();
+
+    const data=snap.docs.map(d=>({id:d.id,...d.data()}));
+
+    box.innerHTML=data.length ? data.map(a=>`
+      <article class="card">
+        ${a.image_url ? `
+          <img src="${esc(a.image_url)}"
+               alt="${esc(a.title||'Notícia ferroviária')}"
+               loading="lazy"
+               style="width:100%;height:220px;object-fit:cover;border-radius:10px">
+        ` : ''}
+        <span class="tag">${esc(a.category||'Notícia')}</span>
+        <h3>${esc(a.title||'')}</h3>
+        <p>${esc(a.summary||a.body||'').slice(0,260)}</p>
+        <small class="muted">
+          ${a.created_at?.toDate ? a.created_at.toDate().toLocaleDateString('pt-BR') : ''}
+        </small>
+      </article>
+    `).join('') : '<div class="empty">Ainda não há notícias publicadas.</div>';
+
+  } catch(e) {
+    console.error('Erro ao carregar notícias:',e);
+    box.innerHTML='<div class="empty">Não foi possível carregar as notícias.</div>';
+  }
+})();
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 (()=>{
  const $=id=>document.getElementById(id);let user=null;
