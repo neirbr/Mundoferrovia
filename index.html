@@ -204,8 +204,10 @@ window.addEventListener('load', async()=>{
     `).join('') : '<div class="empty">Ainda não há notícias publicadas.</div>';
 
   } catch(e) {
-    console.error('Erro ao carregar notícias:',e);
-    box.innerHTML='<div class="empty">Não foi possível carregar as notícias.</div>';
+  console.error('Erro ao carregar notícias:',e);
+  box.innerHTML='<div class="empty">Erro ao carregar: <span id="newsErrorDetail"></span></div>';
+  document.getElementById('newsErrorDetail').textContent =
+    (e.code ? e.code + ' - ' : '') + (e.message || 'Erro desconhecido');
   }
 });
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
