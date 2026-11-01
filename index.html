@@ -94,7 +94,18 @@ nav button[data-page="galeria"],
   <div class="splash-title">MUNDO <span>FERROVIÁRIO</span></div>
   <div class="splash-subtitle">Conhecimento que move trilhos</div>
   <div class="splash-loader"></div>
- </div><header class="top"><div class="brand">🚂 MUNDO <span>FERROVIÁRIO</span></div><nav aria-label="Navegação principal"><button class="active" data-page="home">Início</button><button data-page="locomotivas">Locomotivas</button><button data-page="vagoes">Vagões</button><button data-page="aprender">Aprenda</button><button data-page="glossario">Glossário</button><button data-page="quiz">Quiz</button><button data-page="noticias">Notícias</button><button data-page="galeria">Galeria</button><button data-page="sobre">Sobre</button></nav></header>
+ </div><header class="top"><div class="brand">🚂 MUNDO <span>FERROVIÁRIO</span></div><nav aria-label="Navegação principal">
+<button class="active" data-page="home">Início</button>
+<button data-page="locomotivas">Locomotivas</button>
+<button data-page="vagoes">Vagões</button>
+<button data-page="aprender">Aprenda</button>
+<button data-page="glossario">Glossário</button>
+<button data-page="quiz">Quiz</button>
+<button data-page="noticias">Notícias</button>
+<button data-page="galeria">Galeria</button>
+<button data-page="comunidade">Comunidade</button>
+<button data-page="sobre">Sobre</button>
+</nav></header>
 <div class="top-note">PLATAFORMA GRATUITA • CONHECIMENTO, CULTURA E PAIXÃO FERROVIÁRIA</div><main class="wrap">
 <section id="home" class="page active">
 <div class="hero"><div class="hero-inner"><div class="eyebrow">Conhecimento que move trilhos</div><h1>O universo ferroviário em um só lugar.</h1><p>História, locomotivas, vagões e aprendizado para quem vive ou é apaixonado pelo mundo dos trilhos.</p><div class="hero-actions"><button class="btn" onclick="showPage('aprender')">Começar a explorar →</button><button class="btn outline" onclick="showPage('quiz')">Testar conhecimentos</button></div></div></div>
@@ -174,7 +185,110 @@ nav button[data-page="galeria"],
  <div class="section-head"><div><h2>Publicações da comunidade</h2><p class="muted">Somente imagens aprovadas pela moderação são exibidas aqui.</p></div><button class="btn secondary" id="galleryRefresh" type="button">Atualizar</button></div>
  <div id="galleryGrid" class="grid"><div class="empty">As publicações da comunidade aparecerão aqui. </div></div>
 </section>
+  <!-- COMUNIDADE FERROVIÁRIA -->
+<section id="comunidade" class="page">
 
+  <div class="section-head">
+    <div>
+      <span class="tag">MUNDO FERROVIÁRIO</span>
+      <h2>Comunidade Ferroviária 🚂</h2>
+      <p class="muted">
+        Compartilhe sua paixão pelos trilhos!
+        Publique fotos, curta e converse com outros ferroviários.
+      </p>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="card">
+    <h3>Entre na comunidade</h3>
+
+    <label for="communityEmail">E-mail</label>
+    <input id="communityEmail" type="email"
+      placeholder="Seu e-mail">
+
+    <label for="communityPassword">Senha</label>
+    <input id="communityPassword" type="password"
+      placeholder="Sua senha">
+
+    <div class="hero-actions">
+      <button class="btn" id="communityLogin">
+        Entrar
+      </button>
+
+      <button class="btn outline" id="communitySignup">
+        Criar conta
+      </button>
+
+      <button class="btn outline" id="communityLogout"
+        style="display:none">
+        Sair
+      </button>
+    </div>
+
+    <p id="communityAuthMsg" class="muted"
+      aria-live="polite"></p>
+  </div>
+
+  <!-- NOVA PUBLICAÇÃO -->
+  <div class="card" style="margin-top:18px">
+
+    <h3>Compartilhe sua publicação 📸</h3>
+
+    <form id="communityPostForm">
+
+      <label for="communityText">
+        O que você gostaria de compartilhar?
+      </label>
+
+      <textarea id="communityText"
+        placeholder="Conte uma novidade, experiência ou curiosidade ferroviária..."
+        maxlength="1000" required></textarea>
+
+      <label for="communityPhoto">
+        Adicionar fotografia
+      </label>
+
+      <input id="communityPhoto"
+        type="file"
+        accept="image/jpeg,image/png,image/webp">
+
+      <label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px">
+        <input id="communityRights"
+          type="checkbox" required>
+        Confirmo que sou proprietário da imagem
+        ou tenho autorização para publicá-la.
+      </label>
+
+      <button class="btn" type="submit"
+        id="communityPublish">
+        Publicar
+      </button>
+
+      <p id="communityPostMsg"
+        class="muted" aria-live="polite"></p>
+
+    </form>
+  </div>
+
+  <!-- PUBLICAÇÕES -->
+  <div class="section-head" style="margin-top:28px">
+    <div>
+      <h2>Publicações dos ferroviários</h2>
+      <p class="muted">
+        Veja o que a nossa comunidade está compartilhando.
+      </p>
+    </div>
+  </div>
+
+  <div id="communityFeed" class="grid">
+    <div class="empty">
+      Carregando publicações...
+    </div>
+  </div>
+
+</section>
+<!-- FIM DA COMUNIDADE -->
 <section id="sobre" class="page"><div class="section-head"><div><span class="tag">NOSSA MISSÃO</span><h2>Sobre o Mundo Ferroviário</h2></div></div><div class="card"><h3>Conhecimento que move trilhos.</h3><p>O Mundo Ferroviário nasce para aproximar pessoas do universo das ferrovias, valorizar a cultura ferroviária e facilitar o acesso a conteúdos educativos.</p><p>Queremos reunir curiosidades, materiais de estudo, glossário, histórias, oportunidades e uma comunidade de pessoas que compartilham essa paixão.</p><h3>Nosso compromisso</h3><ul class="content-list"><li>Conteúdo acessível para iniciantes e entusiastas.</li><li>Respeito à diversidade de profissionais e empresas do setor.</li><li>Informações técnicas apresentadas com contexto e responsabilidade.</li><li>Plataforma gratuita, sustentada por publicidade e parcerias.</li></ul><div class="notice"><strong>Transparência:</strong> esta versão é um protótipo demonstrativo. Os espaços publicitários ainda não exibem anúncios reais. A galeria permite envio de fotos por usuários cadastrados, com análise da equipe antes da publicação. A plataforma ainda depende da configuração do Firebase, Cloudinary e da hospedagem.</div></div></section>
 </main><footer class="footer"><strong>MUNDO FERROVIÁRIO</strong><br>Conhecimento que move trilhos. <br><small>Versão 2.1 • 2026 • Plataforma independente</small><br><small><a href="admin.html" style="color:#f0b323">Painel administrativo (protótipo local)</a></small></footer>
 <script>
