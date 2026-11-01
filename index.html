@@ -149,7 +149,7 @@ nav button[data-page="galeria"],
 
 <section id="galeria" class="page">
 
- <div class="section-head"><div><span class="tag">COMUNIDADE FERROVIÁRIA</span><h2>Galeria ferroviária</h2><p class="muted">Compartilhe fotos de locomotivas, trens, estações e paisagens ferroviárias. As imagens passam por moderação antes de aparecer publicamente.</p></div></div>
+ <div class="section-head"><div><span class="tag">COMUNIDADE FERROVIÁRIA</span><h2>Comunidade Ferroviária</h2><p class="muted">Compartilhe fotos de locomotivas, trens, estações e paisagens ferroviárias. As imagens passam por moderação antes de aparecer publicamente.</p></div></div>
  <div class="grid" style="grid-template-columns:1fr 1fr;align-items:start">
   <div class="card">
    <h3>Entre ou crie sua conta</h3><p class="muted">É necessário entrar para enviar uma fotografia.</p>
@@ -159,20 +159,20 @@ nav button[data-page="galeria"],
    <p id="galleryAuthMsg" class="muted" aria-live="polite">Configure o Firebase para ativar a galeria.</p>
   </div>
   <div class="card">
-   <h3>Enviar uma fotografia</h3>
+   <h3>Criar publicação</h3>
    <form id="galleryUpload">
     <label for="photoTitle">Título da foto *</label><input id="photoTitle" maxlength="90" required placeholder="Ex.: Locomotiva em viagem">
     <label for="photoCategory">Categoria *</label><select id="photoCategory" required><option value="Locomotiva">Locomotiva</option><option value="Trem">Trem / composição</option><option value="Vagão">Vagão</option><option value="Estação">Estação</option><option value="Paisagem ferroviária">Paisagem ferroviária</option><option value="Histórica">Foto histórica</option><option value="Outra">Outra</option></select>
     <label for="photoDescription">Descrição (opcional)</label><textarea id="photoDescription" maxlength="500" rows="3" placeholder="Conte um pouco sobre a imagem..."></textarea>
     <label for="photoFile">Escolha a imagem *</label><input id="photoFile" type="file" accept="image/jpeg,image/png,image/webp" required>
     <label style="display:flex;gap:8px;align-items:flex-start;font-weight:500"><input id="photoRights" type="checkbox" required style="width:auto;margin-top:3px"> Confirmo que tenho autorização para enviar esta foto e que ela não expõe informações operacionais, pessoas ou dados privados sem consentimento.</label>
-    <button class="btn" type="submit" id="photoSubmit">Enviar para análise</button><p id="galleryUploadMsg" class="muted" aria-live="polite"></p>
+    <button class="btn" type="submit" id="photoSubmit">Publicar foto</button><p id="galleryUploadMsg" class="muted" aria-live="polite"></p>
    </form>
   </div>
  </div>
  <div class="notice" style="margin-top:18px"><strong>Regras da galeria:</strong> somente imagens JPG, PNG ou WebP de até 10 MB. Não envie imagens de áreas restritas, documentos, telas, placas com dados pessoais ou situações que possam comprometer a segurança. Publique apenas fotos próprias ou autorizadas. O envio não significa publicação imediata.</div>
- <div class="section-head"><div><h2>Fotos da comunidade</h2><p class="muted">Somente imagens aprovadas pela moderação são exibidas aqui.</p></div><button class="btn secondary" id="galleryRefresh" type="button">Atualizar</button></div>
- <div id="galleryGrid" class="grid"><div class="empty">A galeria será carregada quando o Firebase estiver configurado.</div></div>
+ <div class="section-head"><div><h2>Publicações da comunidade</h2><p class="muted">Somente imagens aprovadas pela moderação são exibidas aqui.</p></div><button class="btn secondary" id="galleryRefresh" type="button">Atualizar</button></div>
+ <div id="galleryGrid" class="grid"><div class="empty">As publicações da comunidade aparecerão aqui. </div></div>
 </section>
 
 <section id="sobre" class="page"><div class="section-head"><div><span class="tag">NOSSA MISSÃO</span><h2>Sobre o Mundo Ferroviário</h2></div></div><div class="card"><h3>Conhecimento que move trilhos.</h3><p>O Mundo Ferroviário nasce para aproximar pessoas do universo das ferrovias, valorizar a cultura ferroviária e facilitar o acesso a conteúdos educativos.</p><p>Queremos reunir curiosidades, materiais de estudo, glossário, histórias, oportunidades e uma comunidade de pessoas que compartilham essa paixão.</p><h3>Nosso compromisso</h3><ul class="content-list"><li>Conteúdo acessível para iniciantes e entusiastas.</li><li>Respeito à diversidade de profissionais e empresas do setor.</li><li>Informações técnicas apresentadas com contexto e responsabilidade.</li><li>Plataforma gratuita, sustentada por publicidade e parcerias.</li></ul><div class="notice"><strong>Transparência:</strong> esta versão é um protótipo demonstrativo. Os espaços publicitários ainda não exibem anúncios reais. A galeria permite envio de fotos por usuários cadastrados, com análise da equipe antes da publicação. A plataforma ainda depende da configuração do Firebase, Cloudinary e da hospedagem.</div></div></section>
