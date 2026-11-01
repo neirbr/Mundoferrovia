@@ -205,8 +205,14 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) { wind
         return dataB - dataA;
       });
 
-      area.innerHTML = noticias.map(n => `
+            area.innerHTML = noticias.map(n => `
         <article class="card">
+          ${n.image_url ? `
+            <img src="${escapeHTML(n.image_url)}"
+                 alt="${escapeHTML(n.title || 'Notícia ferroviária')}"
+                 loading="lazy"
+                 style="width:100%;height:220px;object-fit:cover;border-radius:10px">
+          ` : ''}
           <span class="tag">${escapeHTML(n.category || 'Notícia')}</span>
           <h3>${escapeHTML(n.title || 'Notícia ferroviária')}</h3>
           <p>${escapeHTML(n.summary || '')}</p>
