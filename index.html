@@ -175,77 +175,9 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) { wind
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script><script src="firebase-init.js"></script>
   
-
-<script>
-(function () {
-  async function carregarNoticias() {
-    const area = document.getElementById('publishedNews');
-    if (!area || !window.MF_DB) return;
-
-    try {
-      const resultado = await window.MF_DB
-        .collection('articles')
-        .where('published', '==', true)
-        .get();
-
-      if (resultado.empty) {
-        area.innerHTML =
-          '<div class="empty">Nenhuma notícia publicada ainda.</div>';
-        return;
-      }
-
-      const noticias = resultado.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      noticias.sort((a, b) => {
-        const dataA = a.created_at?.toMillis?.() || 0;
-        const dataB = b.created_at?.toMillis?.() || 0;
-        return dataB - dataA;
-      });
-
-            area.innerHTML = noticias.map(n => `
-        <article class="card">
-          ${n.image_url ? `
-            <img src="${escapeHTML(n.image_url)}"
-                 alt="${escapeHTML(n.title || 'Notícia ferroviária')}"
-                 loading="lazy"
-                 style="width:100%;height:220px;object-fit:cover;border-radius:10px">
-          ` : ''}
-          <span class="tag">${escapeHTML(n.category || 'Notícia')}</span>
-          <h3>${escapeHTML(n.title || 'Notícia ferroviária')}</h3>
-          <p>${escapeHTML(n.summary || '')}</p>
-          <p>${escapeHTML(n.body || '')}</p>
-          ${n.source ? `<small>Fonte: ${escapeHTML(n.source)}</small>` : ''}
-        </article>
-      `).join('');
-
-    } catch (erro) {
-      console.error('Erro ao carregar notícias:', erro);
-      area.innerHTML =
-        '<div class="empty">Erro ao carregar notícias.</div>';
-    }
-  }
-
-  function escapeHTML(text) {
-    return String(text).replace(/[&<>"']/g, c => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;'
-    })[c]);
-  }
-
-  window.addEventListener('load', carregarNoticias);
-})();
-</script>
-
-  <script>
-(async()=>{
+ <script>
+window.addEventListener('load', async()=>{
   const box=document.getElementById('publishedNews');
-
   try {
     const snap=await MF_DB.collection('articles')
       .where('published','==',true)
@@ -275,7 +207,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) { wind
     console.error('Erro ao carregar notícias:',e);
     box.innerHTML='<div class="empty">Não foi possível carregar as notícias.</div>';
   }
-})();
+});
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 (()=>{
  const $=id=>document.getElementById(id);let user=null;
