@@ -175,9 +175,11 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) { wind
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script><script src="firebase-init.js"></script>
   
- <script>
+<script>
 window.addEventListener('load', async()=>{
   const box=document.getElementById('publishedNews');
+  if(!box) return;
+
   try {
     const snap=await MF_DB.collection('articles')
       .where('published','==',true)
@@ -187,44 +189,91 @@ window.addEventListener('load', async()=>{
     const data=snap.docs.map(d=>({id:d.id,...d.data()}));
 
     box.innerHTML=data.length ? data.map(a=>`
-      <article class="card">
+      <article class="card news-card">
         ${a.image_url ? `
-          <img src="${esc(a.image_url)}"
-               alt="${esc(a.title||'Notícia ferroviária')}"
-               loading="lazy"
-               style="width:100%;height:220px;object-fit:cover;border-radius:10px">
-        ` : ''}
-        <span class="tag">${esc(a.category||'Notícia')}</span>
-        <h3>${esc(a.title||'')}</h3>
-        <p>${esc(a.summary||a.body||'').slice(0,260)}</p>
-        <small class="muted">
-          ${a.created_at?.toDate ? a.created_at.toDate().toLocaleDateString('pt-BR') : ''}
-        </small>
+          <img class="news-cover"
+            src="${esc(a.image_url)}"
+            alt="${esc(a.title||'Notícia ferroviária')}"
+            loading="lazy">
+        ` : `
+          <div class="news-placeholder">🚂</div>
+        `}
+
+        <div class="news-content">
+          <span class="tag">${esc(a.category||'Notícia ferroviária')}</span>
+
+          <h3>${esc(a.title||'Sem título')}</h3>
+
+          <p>${esc(a.summary||a.body||'').slice(0,260)}</p>
+
+          <small class="muted">
+            ${a.created_at?.toDate
+              ? a.created_at.toDate().toLocaleDateString('pt-BR')
+              : 'Notícia recente'}
+          </small>
+        </div>
       </article>
-    `).join('') : '<div class="empty">Ainda não há notícias publicadas.</div>';
+    `).join('') :
+    '<div class="empty">Ainda não há notícias publicadas.</div>';
 
   } catch(e) {
-  console.error('Erro ao carregar notícias:',e);
-  box.innerHTML='<div class="empty">Erro ao carregar: <span id="newsErrorDetail"></span></div>';
-  document.getElementById('newsErrorDetail').textContent =
-    (e.code ? e.code + ' - ' : '') + (e.message || 'Erro desconhecido');
+    console.error('Erro ao carregar notícias:',e);
+    box.innerHTML='<div class="empty">Erro ao carregar notícias. Confira a conexão com o Firebase.</div>';
   }
 });
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-(()=>{
- const $=id=>document.getElementById(id);let user=null;
- const authMsg=t=>$('galleryAuthMsg').textContent=t,uploadMsg=t=>$('galleryUploadMsg').textContent=t;
- function setAuth(u){user=u;$('galleryLogout').style.display=u?'inline-block':'none';$('galleryUpload').querySelectorAll('input,select,textarea,button').forEach(x=>x.disabled=!u);authMsg(u?'Conectado. Você já pode enviar sua fotografia.':'Entre ou crie uma conta para participar da galeria.')}
- async function loadGallery(){try{const snap=await MF_DB.collection('gallery_photos').where('status','==','approved').orderBy('created_at','desc').limit(60).get();const data=snap.docs.map(d=>({id:d.id,...d.data()}));$('galleryGrid').innerHTML=data.length?data.map(p=>`<article class="card" style="padding:10px;overflow:hidden"><img src="${esc(p.image_url)}" alt="${esc(p.title)}" loading="lazy" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px"><div style="padding:8px"><span class="tag">${esc(p.category)}</span><h3>${esc(p.title)}</h3><p class="muted">${esc(p.description||'')}</p><small class="muted">${p.created_at?.toDate?p.created_at.toDate().toLocaleDateString('pt-BR'):''}</small></div></article>`).join(''):'<div class="empty">Ainda não há fotos aprovadas. Seja o primeiro a compartilhar!</div>'}catch(e){$('galleryGrid').innerHTML='<div class="empty">Não foi possível carregar as fotos. Confira as regras e o índice do Firestore.</div>'}}
- MF_AUTH.onAuthStateChanged(setAuth);loadGallery();
- $('galleryLogin').onclick=async()=>{try{await MF_AUTH.signInWithEmailAndPassword($('galleryEmail').value.trim(),$('galleryPassword').value);authMsg('Login realizado.')}catch(e){authMsg('Não foi possível entrar. Confira e-mail e senha.')}};
- $('gallerySignup').onclick=async()=>{const email=$('galleryEmail').value.trim(),password=$('galleryPassword').value;if(password.length<8){authMsg('Use uma senha com pelo menos 8 caracteres.');return}try{await MF_AUTH.createUserWithEmailAndPassword(email,password);authMsg('Conta criada e conectada.')}catch(e){authMsg('Não foi possível criar a conta. Confira o e-mail e tente novamente.')}};
- $('galleryLogout').onclick=()=>MF_AUTH.signOut();$('galleryRefresh').onclick=loadGallery;
- $('galleryUpload').onsubmit=async e=>{e.preventDefault();if(!user){uploadMsg('Entre na sua conta antes de enviar.');return}const file=$('photoFile').files[0];if(!file){uploadMsg('Escolha uma imagem.');return}if(!['image/jpeg','image/png','image/webp'].includes(file.type)){uploadMsg('Use JPG, PNG ou WebP.');return}if(file.size>10*1024*1024){uploadMsg('A imagem ultrapassa 10 MB.');return}if(!$('photoRights').checked){uploadMsg('Confirme que possui os direitos de envio.');return}$('photoSubmit').disabled=true;uploadMsg('Enviando imagem...');try{const fd=new FormData();fd.append('file',file);fd.append('upload_preset',MF_CLOUDINARY.uploadPreset);fd.append('folder','mundo_ferroviario');const response=await fetch(`https://api.cloudinary.com/v1_1/${MF_CLOUDINARY.cloudName}/image/upload`,{method:'POST',body:fd});const result=await response.json();if(!response.ok)throw new Error(result.error?.message||'Falha no Cloudinary');await MF_DB.collection('gallery_photos').add({user_id:user.uid,user_email:user.email||'',title:$('photoTitle').value.trim(),category:$('photoCategory').value,description:$('photoDescription').value.trim(),image_url:result.secure_url,cloudinary_public_id:result.public_id,status:'pending',created_at:firebase.firestore.FieldValue.serverTimestamp()});e.target.reset();uploadMsg('Foto recebida! Ela ficará aguardando aprovação da equipe.')}catch(err) {
-  console.error('ERRO NO ENVIO:', err);
-  uploadMsg('Erro: ' + (err.message || err.code || 'Falha desconhecida'));}finally{$('photoSubmit').disabled=false}}
-})();
-</script><script>
+
+function esc(s){
+  return String(s??'').replace(/[&<>"']/g,c=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;',
+    '"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+</script>
+
+<style>
+.news-card {
+  padding:0;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+.news-cover {
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  display:block;
+}
+
+.news-placeholder {
+  height:180px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:55px;
+  background:linear-gradient(135deg,#102b3f,#174a67);
+}
+
+.news-content {
+  padding:18px;
+}
+
+.news-content h3 {
+  color:#102b3f;
+  margin:12px 0;
+  line-height:1.35;
+}
+
+.news-content p {
+  line-height:1.6;
+  color:#53616b;
+}
+
+.news-content .tag {
+  display:inline-block;
+}
+</style>
+<script>
 window.addEventListener('load', function () {
   const splash = document.getElementById('splash-screen');
 
