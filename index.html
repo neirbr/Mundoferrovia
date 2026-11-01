@@ -282,7 +282,18 @@ window.addEventListener('load', async()=>{
     console.error('Erro ao carregar notícias:',e);
     box.innerHTML='<div class="empty">Erro ao carregar notícias. Confira a conexão com o Firebase.</div>';
   }
-});
+}); 
+
+  function esc(s){
+  return String(s??'').replace(/[&<>"']/g,c=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[c]));
+}
+  
 </script>
 
 <style> .full-news-cover {
