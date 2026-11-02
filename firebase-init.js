@@ -23,3 +23,5 @@ window.MF_CLOUDINARY = {
   cloudName: 'dlsdvnvc',
   uploadPreset: 'mf_comunidade_unsigned'
 };
+
+})();
