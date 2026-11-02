@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'mundo-ferroviario-cache';
+const CACHE_NAME = 'mundo-ferroviario-v7';
 
 const FILES = [
   './',
@@ -11,7 +11,7 @@ const FILES = [
   './icon.svg'
 ];
 
-// INSTALAR E ATUALIZAR ARQUIVOS
+// INSTALAR NOVA VERSÃO
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -20,7 +20,7 @@ self.addEventListener('install', event => {
   );
 });
 
-// ATIVAR NOVA VERSÃO
+// ATIVAR E LIMPAR CACHES ANTIGOS
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -36,8 +36,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-
- // SISTEMA DE CACHE AUTOMÁTICO
+// REDE PRIMEIRO, CACHE COMO ALTERNATIVA
 self.addEventListener('fetch', event => {
   const request = event.request;
 
@@ -49,7 +48,7 @@ self.addEventListener('fetch', event => {
 
   event.respondWith(
     fetch(new Request(request, {
-      cache: 'no-cache'
+      cache: 'no-store'
     }))
       .then(response => {
         if (response.ok) {
@@ -64,7 +63,7 @@ self.addEventListener('fetch', event => {
       })
       .catch(async () => {
         return await caches.match(request) ||
-               await caches.match('./index.html');
+          await caches.match('./index.html');
       })
   );
 });
