@@ -584,8 +584,9 @@
         return;
       }
 
-      button.disabled = true;
-      msg('profileMessage', 'Salvando perfil...');
+      if (button) button.disabled = true;
+
+msg('profileMessage', 'Salvando perfil...');
 
       try {
         // ENVIAR FOTO AO CLOUDINARY
@@ -647,8 +648,8 @@ msg('profileMessage', 'Perfil salvo com sucesso! 🚂');
           'Erro ao salvar perfil: ' + error.message);
 
       } finally {
-        button.disabled = false;
-      }
+  if (button) button.disabled = false;
+}
     });
 
     // ACOMPANHAR LOGIN PARA CARREGAR PERFIL
