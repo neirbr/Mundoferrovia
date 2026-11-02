@@ -450,6 +450,211 @@
         alert('Não foi possível comentar: ' + error.message);
       }
     });
+ 
+    // ==========================================
+    // PERFIL DO FERROVIÁRIO
+    // ==========================================
+
+    let profileImageUrl = null;
+
+    // PRÉ-VISUALIZAR FOTO
+    $('profilePhoto')?.addEventListener('change', event => {
+      const file = event.target.files[0];
+      const preview = $('profilePreview');
+
+      if (!file || !preview) return;
+
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        msg('profileMessage', 'Use uma imagem JPG, PNG ou WebP.');
+        event.target.value = '';
+        return;
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        msg('profileMessage', 'A foto deve ter no máximo 10 MB.');
+        event.target.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        preview.innerHTML = '';
+
+        const img = document.createElement('img');
+        img.src = reader.result;
+        img.alt = 'Pré-visualização da foto de perfil';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        img.style.borderRadius = '50%';
+
+        preview.appendChild(img);
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+    // CARREGAR PERFIL
+    async function carregarPerfil(user) {
+      const preview = $('profilePreview');
+
+      if (!user) {
+        profileImageUrl = null;
+
+        if ($('profileForm')) {
+          $('profileForm').reset();
+        }
+
+        if (preview) preview.textContent = '🚂';
+
+        msg('profileMessage', 'Entre na comunidade para acessar seu perfil.');
+        return;
+      }
+
+      try {
+        const doc = await db.collection('user_profiles')
+          .doc(user.uid)
+          .get();
+
+        const dados = doc.exists ? doc.data() : {};
+
+        $('profileName').value =
+          dados.name || user.displayName || nome(user);
+
+        $('profileBio').value = dados.bio || '';
+        $('profileCity').value = dados.city || '';
+        $('profileState').value = dados.state || '';
+
+        profileImageUrl = dados.photo_url || null;
+
+        if (preview) {
+          if (profileImageUrl) {
+            preview.innerHTML = '';
+
+            const img = document.createElement('img');
+            img.src = profileImageUrl;
+            img.alt = 'Foto de perfil';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '50%';
+
+            preview.appendChild(img);
+          } else {
+            preview.textContent = '🚂';
+          }
+        }
+
+        msg('profileMessage', 'Perfil carregado com sucesso.');
+
+      } catch (error) {
+        console.error('Erro ao carregar perfil:', error);
+
+        msg('profileMessage',
+          'Erro ao carregar perfil. Verifique as regras do Firestore.');
+      }
+    }
+
+    // SALVAR PERFIL
+    $('profileForm')?.addEventListener('submit', async event => {
+      event.preventDefault();
+
+      if (!firebaseOK()) return;
+
+      if (!currentUser) {
+        msg('profileMessage', 'Entre na sua conta para salvar seu perfil.');
+        return;
+      }
+
+      const name = $('profileName').value.trim();
+      const bio = $('profileBio').value.trim();
+      const city = $('profileCity').value.trim();
+      const state = $('profileState').value.trim().toUpperCase();
+      const file = $('profilePhoto').files[0];
+      const button = $('profileSave');
+
+      if (!name || name.length > 60) {
+        msg('profileMessage', 'Informe um nome válido.');
+        return;
+      }
+
+      if (bio.length > 300 || city.length > 60 || state.length > 2) {
+        msg('profileMessage', 'Confira os limites dos campos.');
+        return;
+      }
+
+      button.disabled = true;
+      msg('profileMessage', 'Salvando perfil...');
+
+      try {
+        // ENVIAR FOTO AO CLOUDINARY
+        if (file) {
+          if (!cloud?.cloudName || !cloud?.uploadPreset) {
+            throw new Error('Configuração do Cloudinary não encontrada.');
+          }
+
+          const form = new FormData();
+          form.append('file', file);
+          form.append('upload_preset', cloud.uploadPreset);
+
+          const response = await fetch(
+            `https://api.cloudinary.com/v1_1/${cloud.cloudName}/image/upload`,
+            {
+              method: 'POST',
+              body: form
+            }
+          );
+
+          const uploaded = await response.json();
+
+          if (!response.ok || !uploaded.secure_url) {
+            throw new Error(
+              uploaded.error?.message || 'Erro ao enviar foto.'
+            );
+          }
+
+          profileImageUrl = uploaded.secure_url;
+        }
+
+        // SALVAR DADOS NO FIRESTORE
+        await db.collection('user_profiles')
+          .doc(currentUser.uid)
+          .set({
+            user_id: currentUser.uid,
+            name: name,
+            bio: bio,
+            city: city,
+            state: state,
+            photo_url: profileImageUrl,
+            updated_at: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+
+        // ATUALIZAR NOME DA CONTA
+        await currentUser.updateProfile({
+          displayName: name
+        });
+
+        msg('profileMessage', 'Perfil salvo com sucesso! 🚂');
+
+      } catch (error) {
+        console.error('Erro ao salvar perfil:', error);
+
+        msg('profileMessage',
+          'Erro ao salvar perfil: ' + error.message);
+
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    // ACOMPANHAR LOGIN PARA CARREGAR PERFIL
+    if (auth) {
+      auth.onAuthStateChanged(user => {
+        carregarPerfil(user);
+      });
+    }
+    
 
     window.MF_LOAD_COMMUNITY = carregarPublicacoes;
   }
