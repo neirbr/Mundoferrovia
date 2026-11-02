@@ -6,7 +6,9 @@ window.MF_FIREBASE_CONFIG = {
   storageBucket: "mundo-do-ferroviario.firebasestorage.app",
   messagingSenderId: "168291555941",
   appId: "1:168291555941:web:ca7748c2dd9270d247c48c"
+};window.MF_CLOUDINARY = {
+  cloudName: "dlsdvnvc",
+  uploadPreset: "Mundo do ferroviario"
 };
-window.MF_CLOUDINARY = { cloudName: "dlsdvnvc", uploadPreset: "mundo_ferroviario" };
 // UID autorizado a administrar o painel. A regra Firestore também valida este UID.
 window.MF_ADMIN_UIDS = ["QWD9zZ4EQkPKwEQ1xMC2WzfUJuF3"];
