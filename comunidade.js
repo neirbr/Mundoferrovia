@@ -204,6 +204,7 @@
             );
 
             const uploaded = await response.json();
+            console.log('Resposta Cloudinary:', uploaded);
 
             if (!response.ok || !uploaded.secure_url) {
               throw new Error(
