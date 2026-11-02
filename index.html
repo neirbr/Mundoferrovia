@@ -566,4 +566,51 @@ window.addEventListener('load', function () {
   }
 });
 </script>
+  
+<script>
+(function () {
+  if (!('serviceWorker' in navigator)) return;
+
+  const hadController = !!navigator.serviceWorker.controller;
+
+  navigator.serviceWorker.register('./service-worker.js')
+    .then(registration => {
+
+      console.log('Service Worker registrado 🚂');
+
+      // Verificar atualização ao abrir o site
+      registration.update();
+
+      // Verificar atualizações periodicamente
+      setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          registration.update();
+        }
+      }, 60000);
+
+      // Verificar ao retornar para o site
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          registration.update();
+        }
+      });
+
+    })
+    .catch(error => {
+      console.error('Erro no Service Worker:', error);
+    });
+
+  // Recarregar quando uma nova versão assumir o controle
+  if (hadController) {
+    navigator.serviceWorker.addEventListener(
+      'controllerchange',
+      () => {
+        window.location.reload();
+      },
+      { once: true }
+    );
+  }
+})();
+</script>
+  
 </body></html>
