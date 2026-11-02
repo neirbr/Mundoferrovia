@@ -631,12 +631,15 @@
           }, { merge: true });
 
         // ATUALIZAR NOME DA CONTA
-        await currentUser.updateProfile({
-          displayName: name
-        });
+try {
+  await currentUser.updateProfile({
+    displayName: name
+  });
+} catch (profileError) {
+  console.warn('Não foi possível atualizar o nome da conta:', profileError);
+}
 
-        msg('profileMessage', 'Perfil salvo com sucesso! 🚂');
-
+msg('profileMessage', 'Perfil salvo com sucesso! 🚂');
       } catch (error) {
         console.error('Erro ao salvar perfil:', error);
 
