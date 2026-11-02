@@ -19,9 +19,7 @@
     window.MF_ADMIN_UIDS.includes(uid);
 
   // CONFIGURAÇÃO CLOUDINARY
-  window.MF_CLOUDINARY = {
-    cloudName: 'dlsdvnvc',
-    uploadPreset: 'Mundo do ferroviario'
-  };
-
-})();
+window.MF_CLOUDINARY = {
+  cloudName: 'dlsdvnvc',
+  uploadPreset: 'mf_comunidade_unsigned'
+};
