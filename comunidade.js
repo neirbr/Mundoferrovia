@@ -626,7 +626,7 @@
             bio: bio,
             city: city,
             state: state,
-            photo_url: profileImageUrl,
+            photo_url: profileImageUrl || '',
             updated_at: firebase.firestore.FieldValue.serverTimestamp()
           }, { merge: true });
 
