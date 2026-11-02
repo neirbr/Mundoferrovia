@@ -36,7 +36,8 @@ self.addEventListener('activate', event => {
   );
 });
 
-// SISTEMA DE CACHE
+
+ // SISTEMA DE CACHE AUTOMÁTICO
 self.addEventListener('fetch', event => {
   const request = event.request;
 
@@ -46,47 +47,24 @@ self.addEventListener('fetch', event => {
 
   if (url.origin !== self.location.origin) return;
 
-  // PÁGINAS HTML: PRIORIZAR A VERSÃO ONLINE
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then(response => {
-          if (response.ok) {
-            const copy = response.clone();
-
-            caches.open(CACHE_NAME).then(cache =>
-              cache.put(request, copy)
-            );
-          }
-
-          return response;
-        })
-        .catch(async () => {
-          return await caches.match(request) ||
-                 await caches.match('./index.html');
-        })
-    );
-
-    return;
-  }
-
-  // ARQUIVOS: CACHE E ATUALIZAÇÃO
   event.respondWith(
-    caches.match(request).then(cached => {
-      const networkFetch = fetch(request)
-        .then(response => {
-          if (response.ok) {
-            const copy = response.clone();
+    fetch(new Request(request, {
+      cache: 'no-cache'
+    }))
+      .then(response => {
+        if (response.ok) {
+          const copy = response.clone();
 
-            caches.open(CACHE_NAME).then(cache =>
-              cache.put(request, copy)
-            );
-          }
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(request, copy);
+          });
+        }
 
-          return response;
-        });
-
-      return cached || networkFetch;
-    })
+        return response;
+      })
+      .catch(async () => {
+        return await caches.match(request) ||
+               await caches.match('./index.html');
+      })
   );
 });
