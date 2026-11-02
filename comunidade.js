@@ -74,6 +74,7 @@
 
     // CADASTRO
     $('communitySignup')?.addEventListener('click', async () => {
+        alert('Botão Criar conta está funcionando!');
       if (!firebaseOK()) return;
 
       const email = $('communityEmail').value.trim();
