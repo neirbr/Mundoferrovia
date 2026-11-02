@@ -188,6 +188,73 @@ nav button[data-page="galeria"],
  <div class="section-head"><div><h2>Publicações da comunidade</h2><p class="muted">Somente imagens aprovadas pela moderação são exibidas aqui.</p></div><button class="btn secondary" id="galleryRefresh" type="button">Atualizar</button></div>
  <div id="galleryGrid" class="grid"><div class="empty">As publicações da comunidade aparecerão aqui. </div></div>
 </section>
+  
+<!-- PERFIL DO FERROVIÁRIO -->
+<section id="perfil" class="page">
+
+  <div class="section-head">
+    <div>
+      <span class="tag">MUNDO FERROVIÁRIO</span>
+      <h2>Meu Perfil 🚂</h2>
+      <p class="muted">
+        Personalize seu perfil e compartilhe sua história ferroviária.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="max-width:600px;margin:auto">
+
+    <div style="text-align:center;margin-bottom:20px">
+      <div id="profilePreview"
+        style="width:110px;height:110px;border-radius:50%;
+        background:#102b3f;color:#f0b323;
+        display:flex;align-items:center;justify-content:center;
+        font-size:50px;margin:auto">
+        🚂
+      </div>
+    </div>
+
+    <form id="profileForm">
+
+      <label for="profilePhoto">Foto de perfil</label>
+      <input type="file" id="profilePhoto"
+        accept="image/jpeg,image/png,image/webp">
+
+      <label for="profileName">Nome do ferroviário</label>
+      <input type="text" id="profileName"
+        maxlength="60" required
+        placeholder="Seu nome">
+
+      <label for="profileBio">Biografia</label>
+      <textarea id="profileBio"
+        maxlength="300" rows="4"
+        placeholder="Conte um pouco sobre você e sua paixão pelas ferrovias..."></textarea>
+
+      <label for="profileCity">Cidade</label>
+      <input type="text" id="profileCity"
+        maxlength="60"
+        placeholder="Sua cidade">
+
+      <label for="profileState">Estado</label>
+      <input type="text" id="profileState"
+        maxlength="2"
+        placeholder="Ex.: RJ">
+
+      <button type="submit" class="btn"
+        id="profileSave"
+        style="margin-top:18px">
+        Salvar Perfil
+      </button>
+
+      <p id="profileMessage"
+        class="muted" aria-live="polite"></p>
+
+    </form>
+  </div>
+
+</section>
+<!-- FIM DO PERFIL -->
+  
   <!-- COMUNIDADE FERROVIÁRIA -->
 <section id="comunidade" class="page">
 
