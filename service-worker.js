@@ -1,4 +1,5 @@
-const CACHE_NAME = 'mundo-ferroviario-v7';
+
+const CACHE_NAME = 'mundo-ferroviario-cache';
 
 const FILES = [
   './',
@@ -10,6 +11,7 @@ const FILES = [
   './icon.svg'
 ];
 
+// INSTALAR E ATUALIZAR ARQUIVOS
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -18,18 +20,23 @@ self.addEventListener('install', event => {
   );
 });
 
+// ATIVAR NOVA VERSÃO
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
         keys
-          .filter(key => key !== CACHE_NAME)
+          .filter(key =>
+            key.startsWith('mundo-ferroviario-') &&
+            key !== CACHE_NAME
+          )
           .map(key => caches.delete(key))
       )
     ).then(() => self.clients.claim())
   );
 });
 
+// SISTEMA DE CACHE
 self.addEventListener('fetch', event => {
   const request = event.request;
 
@@ -39,38 +46,47 @@ self.addEventListener('fetch', event => {
 
   if (url.origin !== self.location.origin) return;
 
+  // PÁGINAS HTML: PRIORIZAR A VERSÃO ONLINE
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
         .then(response => {
           if (response.ok) {
             const copy = response.clone();
+
             caches.open(CACHE_NAME).then(cache =>
               cache.put(request, copy)
             );
           }
+
           return response;
         })
         .catch(async () => {
-          return await caches.match('./index.html');
+          return await caches.match(request) ||
+                 await caches.match('./index.html');
         })
     );
+
     return;
   }
 
+  // ARQUIVOS: CACHE E ATUALIZAÇÃO
   event.respondWith(
     caches.match(request).then(cached => {
-      if (cached) return cached;
+      const networkFetch = fetch(request)
+        .then(response => {
+          if (response.ok) {
+            const copy = response.clone();
 
-      return fetch(request).then(response => {
-        if (response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache =>
-            cache.put(request, copy)
-          );
-        }
-        return response;
-      });
+            caches.open(CACHE_NAME).then(cache =>
+              cache.put(request, copy)
+            );
+          }
+
+          return response;
+        });
+
+      return cached || networkFetch;
     })
   );
 });
