@@ -652,14 +652,16 @@ msg('profileMessage', 'Perfil salvo com sucesso! 🚂');
 }
     });
 
-    // ACOMPANHAR LOGIN PARA CARREGAR PERFIL
+    
+    // ACOMPANHAR LOGIN E ATUALIZAR PERFIL E MEMBROS
     if (auth) {
       auth.onAuthStateChanged(user => {
         carregarPerfil(user);
+        carregarMembros();
       });
     }
 
-    
+
     // =====================================
     // MEMBROS DA COMUNIDADE
     // =====================================
