@@ -1,4 +1,3 @@
-
 (function () {
   'use strict';
 
@@ -16,8 +15,11 @@
 
     function esc(value) {
       return String(value ?? '').replace(/[&<>"']/g, c => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;',
-        '"': '&quot;', "'": '&#39;'
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
       }[c]));
     }
 
@@ -27,18 +29,22 @@
     }
 
     function nome(user) {
-      return user.displayName ||
-        (user.email ? user.email.split('@')[0] : 'Ferroviário');
+      return user?.displayName ||
+        (user?.email ? user.email.split('@')[0] : 'Ferroviário');
     }
 
     function dataTexto(value) {
-      return value?.toDate
-        ? value.toDate().toLocaleString('pt-BR')
-        : 'Publicação recente';
+      try {
+        return value?.toDate
+          ? value.toDate().toLocaleString('pt-BR')
+          : 'Publicação recente';
+      } catch (_) {
+        return 'Publicação recente';
+      }
     }
 
     function firebaseOK() {
-      if (!auth || !db || !window.firebase) {
+      if (!auth || !db || !window.firebase || !window.firebase.firestore) {
         msg('communityAuthMsg',
           'Firebase não inicializado. Confira a configuração.');
         return false;
@@ -53,8 +59,8 @@
     $('communityLogin')?.addEventListener('click', async () => {
       if (!firebaseOK()) return;
 
-      const email = $('communityEmail').value.trim();
-      const password = $('communityPassword').value;
+      const email = $('communityEmail')?.value.trim();
+      const password = $('communityPassword')?.value;
 
       if (!email || !password) {
         msg('communityAuthMsg', 'Informe seu e-mail e sua senha.');
@@ -63,13 +69,16 @@
 
       const button = $('communityLogin');
       button.disabled = true;
+
       msg('communityAuthMsg', 'Entrando...');
 
       try {
         await auth.signInWithEmailAndPassword(email, password);
+
         msg('communityAuthMsg', 'Login realizado com sucesso!');
       } catch (error) {
         console.error('Erro no login:', error);
+
         msg('communityAuthMsg',
           'Não foi possível entrar: ' + error.message);
       } finally {
@@ -84,8 +93,8 @@
     $('communitySignup')?.addEventListener('click', async () => {
       if (!firebaseOK()) return;
 
-      const email = $('communityEmail').value.trim();
-      const password = $('communityPassword').value;
+      const email = $('communityEmail')?.value.trim();
+      const password = $('communityPassword')?.value || '';
 
       if (!email || password.length < 8) {
         msg('communityAuthMsg',
@@ -98,10 +107,13 @@
 
       try {
         await auth.createUserWithEmailAndPassword(email, password);
+
         msg('communityAuthMsg', 'Conta criada com sucesso!');
       } catch (error) {
         console.error('Erro no cadastro:', error);
-        msg('communityAuthMsg', 'Erro no cadastro: ' + error.message);
+
+        msg('communityAuthMsg',
+          'Erro no cadastro: ' + error.message);
       } finally {
         button.disabled = false;
       }
@@ -116,6 +128,7 @@
 
       try {
         await auth.signOut();
+
         msg('communityAuthMsg', 'Você saiu da comunidade.');
       } catch (error) {
         msg('communityAuthMsg', error.message);
@@ -123,7 +136,7 @@
     });
 
     // =====================================
-    // PUBLICAR TEXTO E FOTO
+    // PUBLICAÇÃO DE TEXTO E FOTO
     // =====================================
 
     const postForm = $('communityPostForm');
@@ -142,9 +155,9 @@
           return;
         }
 
-        const text = $('communityText').value.trim();
-        const file = $('communityPhoto').files[0];
-        const rights = $('communityRights').checked;
+        const text = $('communityText')?.value.trim() || '';
+        const file = $('communityPhoto')?.files?.[0];
+        const rights = $('communityRights')?.checked;
         const button = $('communityPublish');
 
         if (!text || text.length > 1000) {
@@ -179,7 +192,8 @@
           }
         }
 
-        button.disabled = true;
+        if (button) button.disabled = true;
+
         msg('communityPostMsg', 'Publicando... aguarde.');
 
         try {
@@ -187,12 +201,16 @@
 
           if (file) {
             const form = new FormData();
+
             form.append('file', file);
             form.append('upload_preset', cloud.uploadPreset);
 
             const response = await fetch(
               `https://api.cloudinary.com/v1_1/${cloud.cloudName}/image/upload`,
-              { method: 'POST', body: form }
+              {
+                method: 'POST',
+                body: form
+              }
             );
 
             const uploaded = await response.json();
@@ -216,7 +234,9 @@
               firebase.firestore.FieldValue.serverTimestamp()
           };
 
-          if (imageUrl) post.image_url = imageUrl;
+          if (imageUrl) {
+            post.image_url = imageUrl;
+          }
 
           await db.collection('community_posts').add(post);
 
@@ -229,20 +249,22 @@
 
         } catch (error) {
           console.error('Erro ao publicar:', error);
+
           msg('communityPostMsg',
             'Erro ao publicar: ' + error.message);
         } finally {
-          button.disabled = false;
+          if (button) button.disabled = false;
         }
       });
     }
 
     // =====================================
-    // CARREGAR PUBLICAÇÕES GERAIS
+    // FEED
     // =====================================
 
     async function carregarPublicacoes() {
       const feed = $('communityFeed');
+
       if (!feed || !db) return;
 
       feed.innerHTML =
@@ -258,11 +280,10 @@
           ...doc.data()
         }));
 
-        posts.sort((a, b) => {
-          const da = a.created_at?.toDate?.()?.getTime() || 0;
-          const dbb = b.created_at?.toDate?.()?.getTime() || 0;
-          return dbb - da;
-        });
+        posts.sort((a, b) =>
+          (b.created_at?.toDate?.()?.getTime() || 0) -
+          (a.created_at?.toDate?.()?.getTime() || 0)
+        );
 
         if (!posts.length) {
           feed.innerHTML =
@@ -301,24 +322,24 @@
         ]);
 
         likes = results[0].docs;
+
         comments = results[1].docs.map(doc => doc.data());
 
       } catch (error) {
         console.warn('Erro ao carregar interações:', error);
       }
 
-      const liked = currentUser &&
+      const liked = !!currentUser &&
         likes.some(doc => doc.id === currentUser.uid);
 
-      comments.sort((a, b) => {
-        const da = a.created_at?.toDate?.()?.getTime() || 0;
-        const dbb = b.created_at?.toDate?.()?.getTime() || 0;
-        return da - dbb;
-      });
+      comments.sort((a, b) =>
+        (a.created_at?.toDate?.()?.getTime() || 0) -
+        (b.created_at?.toDate?.()?.getTime() || 0)
+      );
 
       const commentsHTML = comments.map(comment => `
         <div class="community-comment">
-          <strong>Ferroviário</strong>
+          <strong>${esc(comment.author_name || 'Ferroviário')}</strong>
           <p>${esc(comment.text)}</p>
         </div>
       `).join('');
@@ -389,6 +410,7 @@
 
     $('communityFeed')?.addEventListener('click', async event => {
       const button = event.target.closest('[data-like]');
+
       if (!button) return;
 
       if (!currentUser) {
@@ -396,10 +418,8 @@
         return;
       }
 
-      const postId = button.dataset.like;
-
       const ref = db.collection('community_posts')
-        .doc(postId)
+        .doc(button.dataset.like)
         .collection('likes')
         .doc(currentUser.uid);
 
@@ -422,30 +442,32 @@
 
       } catch (error) {
         console.error('Erro na curtida:', error);
+
         alert('Não foi possível registrar a curtida: ' + error.message);
       }
     });
 
     // =====================================
-    // EXCLUIR PRÓPRIA PUBLICAÇÃO
+    // EXCLUIR PUBLICAÇÃO
     // =====================================
 
     $('communityFeed')?.addEventListener('click', async event => {
       const button = event.target.closest('[data-delete]');
-      if (!button) return;
 
-      if (!currentUser) return;
+      if (!button || !currentUser) return;
 
       if (!confirm('Deseja realmente excluir esta publicação?')) return;
 
       try {
         await db.collection('community_posts')
-          .doc(button.dataset.delete).delete();
+          .doc(button.dataset.delete)
+          .delete();
 
         await carregarPublicacoes();
 
       } catch (error) {
         console.error('Erro ao excluir:', error);
+
         alert('Não foi possível excluir: ' + error.message);
       }
     });
@@ -456,6 +478,7 @@
 
     $('communityFeed')?.addEventListener('submit', async event => {
       const form = event.target.closest('[data-comment]');
+
       if (!form) return;
 
       event.preventDefault();
@@ -473,8 +496,10 @@
       try {
         await db.collection('community_posts')
           .doc(form.dataset.comment)
-          .collection('comments').add({
+          .collection('comments')
+          .add({
             user_id: currentUser.uid,
+            author_name: nome(currentUser),
             text: text,
             created_at:
               firebase.firestore.FieldValue.serverTimestamp()
@@ -484,15 +509,15 @@
 
       } catch (error) {
         console.error('Erro no comentário:', error);
+
         alert('Não foi possível comentar: ' + error.message);
       }
     });
 
     // =====================================
-    // PERFIL DO FERROVIÁRIO
+    // PERFIL: PRÉ-VISUALIZAÇÃO DA FOTO
     // =====================================
 
-    // PRÉ-VISUALIZAR FOTO
     $('profilePhoto')?.addEventListener('change', event => {
       const file = event.target.files[0];
       const preview = $('profilePreview');
@@ -501,12 +526,14 @@
 
       if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
         msg('profileMessage', 'Use uma imagem JPG, PNG ou WebP.');
+
         event.target.value = '';
         return;
       }
 
       if (file.size > 10 * 1024 * 1024) {
         msg('profileMessage', 'A foto deve ter no máximo 10 MB.');
+
         event.target.value = '';
         return;
       }
@@ -517,12 +544,12 @@
         preview.innerHTML = '';
 
         const img = document.createElement('img');
+
         img.src = reader.result;
         img.alt = 'Pré-visualização da foto de perfil';
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'cover';
-        img.style.borderRadius = '50%';
+
+        img.style.cssText =
+          'width:100%;height:100%;object-fit:cover;border-radius:50%';
 
         preview.appendChild(img);
       };
@@ -530,36 +557,51 @@
       reader.readAsDataURL(file);
     });
 
+    // =====================================
     // CARREGAR PERFIL
+    // =====================================
+
     async function carregarPerfil(user) {
       const preview = $('profilePreview');
 
       if (!user) {
         profileImageUrl = null;
 
-        if ($('profileForm')) {
-          $('profileForm').reset();
-        }
+        $('profileForm')?.reset();
 
-        if (preview) preview.textContent = '🚂';
+        if (preview) {
+          preview.textContent = '🚂';
+        }
 
         msg('profileMessage',
           'Entre na comunidade para acessar seu perfil.');
+
         return;
       }
 
       try {
         const doc = await db.collection('user_profiles')
-          .doc(user.uid).get();
+          .doc(user.uid)
+          .get();
 
         const dados = doc.exists ? doc.data() : {};
 
-        $('profileName').value =
-          dados.name || user.displayName || nome(user);
+        if ($('profileName')) {
+          $('profileName').value =
+            dados.name || user.displayName || nome(user);
+        }
 
-        $('profileBio').value = dados.bio || '';
-        $('profileCity').value = dados.city || '';
-        $('profileState').value = dados.state || '';
+        if ($('profileBio')) {
+          $('profileBio').value = dados.bio || '';
+        }
+
+        if ($('profileCity')) {
+          $('profileCity').value = dados.city || '';
+        }
+
+        if ($('profileState')) {
+          $('profileState').value = dados.state || '';
+        }
 
         profileImageUrl = dados.photo_url || null;
 
@@ -568,14 +610,15 @@
             preview.innerHTML = '';
 
             const img = document.createElement('img');
+
             img.src = profileImageUrl;
             img.alt = 'Foto de perfil';
-            img.style.width = '100%';
-            img.style.height = '100%';
-            img.style.objectFit = 'cover';
-            img.style.borderRadius = '50%';
+
+            img.style.cssText =
+              'width:100%;height:100%;object-fit:cover;border-radius:50%';
 
             preview.appendChild(img);
+
           } else {
             preview.textContent = '🚂';
           }
@@ -606,11 +649,11 @@
         return;
       }
 
-      const name = $('profileName').value.trim();
-      const bio = $('profileBio').value.trim();
-      const city = $('profileCity').value.trim();
-      const state = $('profileState').value.trim().toUpperCase();
-      const file = $('profilePhoto').files[0];
+      const name = $('profileName')?.value.trim() || '';
+      const bio = $('profileBio')?.value.trim() || '';
+      const city = $('profileCity')?.value.trim() || '';
+      const state = ($('profileState')?.value.trim() || '').toUpperCase();
+      const file = $('profilePhoto')?.files?.[0];
       const button = $('profileSave');
 
       if (!name || name.length > 60) {
@@ -628,7 +671,6 @@
       msg('profileMessage', 'Salvando perfil...');
 
       try {
-        // ENVIAR FOTO AO CLOUDINARY
         if (file) {
           if (!cloud?.cloudName || !cloud?.uploadPreset) {
             throw new Error(
@@ -637,6 +679,7 @@
           }
 
           const form = new FormData();
+
           form.append('file', file);
           form.append('upload_preset', cloud.uploadPreset);
 
@@ -659,7 +702,6 @@
           profileImageUrl = uploaded.secure_url;
         }
 
-        // SALVAR DADOS NO FIRESTORE
         await db.collection('user_profiles')
           .doc(currentUser.uid)
           .set({
@@ -673,21 +715,19 @@
               firebase.firestore.FieldValue.serverTimestamp()
           }, { merge: true });
 
-        // ATUALIZAR NOME DA CONTA
         try {
           await currentUser.updateProfile({
             displayName: name
           });
         } catch (profileError) {
           console.warn(
-            'Não foi possível atualizar o nome da conta:',
+            'Não foi possível atualizar nome da conta:',
             profileError
           );
         }
 
         msg('profileMessage', 'Perfil salvo com sucesso! 🚂');
 
-        // ATUALIZAR LISTA DE MEMBROS
         await carregarMembros();
 
       } catch (error) {
@@ -713,7 +753,7 @@
       container.textContent = 'Carregando membros...';
 
       try {
-        const snapshot = await db.collection('user_profiles').get();
+      const snapshot = await db.collection('user_profiles').get();
 
         container.innerHTML = '';
 
@@ -723,4 +763,120 @@
           return;
         }
 
-     
+        const members = snapshot.docs.map(doc => ({
+          uid: doc.id,
+          ...doc.data()
+        }));
+
+        members.sort((a, b) =>
+          String(a.name || '').localeCompare(
+            String(b.name || ''),
+            'pt-BR'
+          )
+        );
+
+        members.forEach(member => {
+          const card = document.createElement('article');
+
+          card.className = 'card community-member';
+
+          const avatar = member.photo_url
+            ? `<img src="${esc(member.photo_url)}"
+                 alt="Foto de ${esc(member.name || 'Ferroviário')}"
+                 style="width:64px;height:64px;object-fit:cover;border-radius:50%">`
+            : '<div style="width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:#e8eef2;font-size:28px">🚂</div>';
+
+          card.innerHTML = `
+            <div style="display:flex;align-items:center;gap:12px">
+              ${avatar}
+
+              <div>
+                <strong>${esc(member.name || 'Ferroviário')}</strong>
+
+                <p class="muted" style="margin:4px 0">
+                  ${esc(
+                    [member.city, member.state]
+                      .filter(Boolean)
+                      .join(' - ') ||
+                    'Membro da comunidade'
+                  )}
+                </p>
+              </div>
+            </div>
+
+            ${member.bio ? `<p>${esc(member.bio)}</p>` : ''}
+          `;
+
+          container.appendChild(card);
+        });
+
+      } catch (error) {
+        console.error('Erro ao carregar membros:', error);
+
+        container.textContent =
+          'Não foi possível carregar os membros. Verifique as regras do Firestore.';
+      }
+    }
+
+    // =====================================
+    // ESTADO DA AUTENTICAÇÃO
+    // =====================================
+
+    if (auth) {
+      auth.onAuthStateChanged(async user => {
+        currentUser = user || null;
+
+        const logout = $('communityLogout');
+        if (logout) logout.style.display = user ? '' : 'none';
+
+        const login = $('communityLogin');
+        if (login) login.style.display = user ? 'none' : '';
+
+        const signup = $('communitySignup');
+        if (signup) signup.style.display = user ? 'none' : '';
+
+        if (user) {
+          msg('communityAuthMsg',
+            'Você está conectado à comunidade.');
+        }
+
+        await carregarPerfil(user);
+        await carregarMembros();
+        await carregarPublicacoes();
+
+      }, error => {
+        console.error('Erro no estado de autenticação:', error);
+
+        msg('communityAuthMsg',
+          'Falha ao verificar login: ' + error.message);
+      });
+
+    } else {
+      msg('communityAuthMsg',
+        'Firebase Auth não está disponível.');
+    }
+
+    // =====================================
+    // EXPOSIÇÃO PARA OUTRAS PARTES DO SITE
+    // =====================================
+
+    window.MF_LOAD_COMMUNITY = carregarPublicacoes;
+  }
+
+  // =====================================
+  // INICIALIZAÇÃO
+  // =====================================
+
+  if (document.readyState === 'loading') {
+    document.addEventListener(
+      'DOMContentLoaded',
+      iniciarComunidade
+    );
+  } else {
+    iniciarComunidade();
+  }
+
+})();
+      
+    
+      
