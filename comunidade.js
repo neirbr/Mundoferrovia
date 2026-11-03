@@ -3,6 +3,8 @@ alert('O ARQUIVO COMUNIDADE.JS FOI CARREGADO!');
 (function () {
   'use strict';
 
+  alert('ENTROU NA FUNÇÃO PRINCIPAL');
+
   function iniciarComunidade() {
     alert('A FUNÇÃO INICIAR COMUNIDADE FOI CHAMADA!');
     if (window.MF_COMMUNITY_STARTED) return;
