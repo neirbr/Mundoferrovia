@@ -1,5 +1,4 @@
-
-const CACHE_NAME = 'mundo-ferroviario-v7';
+const CACHE_NAME = 'mundo-ferroviario-v8';
 
 const FILES = [
   './',
@@ -7,6 +6,7 @@ const FILES = [
   './admin.html',
   './firebase-config.js',
   './firebase-init.js',
+  './comunidade.js?v=2026110301',
   './manifest.json',
   './icon.svg'
 ];
