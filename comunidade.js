@@ -1,12 +1,9 @@
-alert('O ARQUIVO COMUNIDADE.JS FOI CARREGADO!');
 
 (function () {
   'use strict';
 
-  alert('ENTROU NA FUNÇÃO PRINCIPAL');
-
   function iniciarComunidade() {
-    alert('A FUNÇÃO INICIAR COMUNIDADE FOI CHAMADA!');
+    al
     if (window.MF_COMMUNITY_STARTED) return;
     window.MF_COMMUNITY_STARTED = true;
     console.log('COMUNIDADE.JS INICIADO');
@@ -18,7 +15,6 @@ alert('O ARQUIVO COMUNIDADE.JS FOI CARREGADO!');
 
     let currentUser = null;
     let profileImageUrl = null;
-
     function esc(value) {
       return String(value ?? '').replace(/[&<>"']/g, c => ({
         '&': '&amp;',
@@ -28,8 +24,7 @@ alert('O ARQUIVO COMUNIDADE.JS FOI CARREGADO!');
         "'": '&#39;'
       }[c]));
     }
-
-    alert('PASSOU PELA FUNÇÃO ESC!');
+    
 
     function msg(id, text) {
       const el = $(id);
