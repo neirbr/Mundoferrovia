@@ -636,12 +636,16 @@
       }
     }
 
-    // =====================================
     // SALVAR PERFIL
-    // =====================================
+// =====================================
 
-    $('profileForm')?.addEventListener('submit', async event => {
+$('profileForm')?.addEventListener('submit', async event => {
+
+      console.log('EVENTO DO PERFIL DISPARADO');
+
       event.preventDefault();
+
+      alert('O formulário foi acionado!');
 
       if (!firebaseOK()) return;
 
@@ -650,7 +654,6 @@
           'Entre na sua conta para salvar seu perfil.');
         return;
       }
-
       const name = $('profileName')?.value.trim() || '';
       const bio = $('profileBio')?.value.trim() || '';
       const city = $('profileCity')?.value.trim() || '';
