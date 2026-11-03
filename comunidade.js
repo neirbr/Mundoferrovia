@@ -12,6 +12,7 @@
     const cloud = window.MF_CLOUDINARY;
 
     let currentUser = null;
+    let profileImageUrl = null;
 
     function esc(value) {
       return String(value ?? '').replace(/[&<>"']/g, c => ({
@@ -45,7 +46,10 @@
       return true;
     }
 
+    // =====================================
     // LOGIN
+    // =====================================
+
     $('communityLogin')?.addEventListener('click', async () => {
       if (!firebaseOK()) return;
 
@@ -66,15 +70,18 @@
         msg('communityAuthMsg', 'Login realizado com sucesso!');
       } catch (error) {
         console.error('Erro no login:', error);
-        msg('communityAuthMsg', 'Não foi possível entrar: ' + error.message);
+        msg('communityAuthMsg',
+          'Não foi possível entrar: ' + error.message);
       } finally {
         button.disabled = false;
       }
     });
 
+    // =====================================
     // CADASTRO
+    // =====================================
+
     $('communitySignup')?.addEventListener('click', async () => {
-        alert('Botão Criar conta está funcionando!');
       if (!firebaseOK()) return;
 
       const email = $('communityEmail').value.trim();
@@ -100,7 +107,10 @@
       }
     });
 
+    // =====================================
     // SAIR
+    // =====================================
+
     $('communityLogout')?.addEventListener('click', async () => {
       if (!auth) return;
 
@@ -112,36 +122,13 @@
       }
     });
 
-    // ESTADO DO USUÁRIO
-    if (auth) {
-      auth.onAuthStateChanged(user => {
-        currentUser = user || null;
+    // =====================================
+    // PUBLICAR TEXTO E FOTO
+    // =====================================
 
-        if ($('communityLogin'))
-          $('communityLogin').style.display = user ? 'none' : '';
-
-        if ($('communitySignup'))
-          $('communitySignup').style.display = user ? 'none' : '';
-
-        if ($('communityLogout'))
-          $('communityLogout').style.display = user ? '' : 'none';
-
-        msg('communityAuthMsg', user
-          ? 'Conectado como ' + nome(user)
-          : 'Entre ou crie uma conta para participar.');
-
-        carregarPublicacoes();
-      });
-    } else {
-      msg('communityAuthMsg',
-        'Não foi possível conectar ao Firebase Authentication.');
-    }
-
-    // PUBLICAR TEXTO E FOTO OPCIONAL
     const postForm = $('communityPostForm');
 
     if (postForm) {
-      // A confirmação de direitos só será exigida se houver foto.
       postForm.noValidate = true;
 
       postForm.addEventListener('submit', async event => {
@@ -150,7 +137,8 @@
         if (!firebaseOK()) return;
 
         if (!currentUser) {
-          msg('communityPostMsg', 'Entre na sua conta antes de publicar.');
+          msg('communityPostMsg',
+            'Entre na sua conta antes de publicar.');
           return;
         }
 
@@ -160,7 +148,8 @@
         const button = $('communityPublish');
 
         if (!text || text.length > 1000) {
-          msg('communityPostMsg', 'Escreva uma publicação de até 1000 caracteres.');
+          msg('communityPostMsg',
+            'Escreva uma publicação de até 1000 caracteres.');
           return;
         }
 
@@ -172,17 +161,20 @@
           }
 
           if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-            msg('communityPostMsg', 'Use uma imagem JPG, PNG ou WebP.');
+            msg('communityPostMsg',
+              'Use uma imagem JPG, PNG ou WebP.');
             return;
           }
 
           if (file.size > 10 * 1024 * 1024) {
-            msg('communityPostMsg', 'A imagem deve ter no máximo 10 MB.');
+            msg('communityPostMsg',
+              'A imagem deve ter no máximo 10 MB.');
             return;
           }
 
           if (!cloud?.cloudName || !cloud?.uploadPreset) {
-            msg('communityPostMsg', 'Configuração do Cloudinary não encontrada.');
+            msg('communityPostMsg',
+              'Configuração do Cloudinary não encontrada.');
             return;
           }
         }
@@ -204,11 +196,11 @@
             );
 
             const uploaded = await response.json();
-            console.log('Resposta Cloudinary:', uploaded);
 
             if (!response.ok || !uploaded.secure_url) {
               throw new Error(
-                uploaded.error?.message || 'Falha ao enviar fotografia.'
+                uploaded.error?.message ||
+                'Falha ao enviar fotografia.'
               );
             }
 
@@ -220,7 +212,8 @@
             author_name: nome(currentUser),
             text: text,
             status: 'approved',
-            created_at: firebase.firestore.FieldValue.serverTimestamp()
+            created_at:
+              firebase.firestore.FieldValue.serverTimestamp()
           };
 
           if (imageUrl) post.image_url = imageUrl;
@@ -228,24 +221,32 @@
           await db.collection('community_posts').add(post);
 
           postForm.reset();
-          msg('communityPostMsg', 'Publicação realizada com sucesso!');
+
+          msg('communityPostMsg',
+            'Publicação realizada com sucesso!');
+
           await carregarPublicacoes();
 
         } catch (error) {
           console.error('Erro ao publicar:', error);
-          msg('communityPostMsg', 'Erro ao publicar: ' + error.message);
+          msg('communityPostMsg',
+            'Erro ao publicar: ' + error.message);
         } finally {
           button.disabled = false;
         }
       });
     }
 
-    // CARREGAR PUBLICAÇÕES
+    // =====================================
+    // CARREGAR PUBLICAÇÕES GERAIS
+    // =====================================
+
     async function carregarPublicacoes() {
       const feed = $('communityFeed');
       if (!feed || !db) return;
 
-      feed.innerHTML = '<div class="empty">Carregando publicações...</div>';
+      feed.innerHTML =
+        '<div class="empty">Carregando publicações...</div>';
 
       try {
         const snapshot = await db.collection('community_posts')
@@ -269,17 +270,24 @@
           return;
         }
 
-        const cards = await Promise.all(posts.map(renderizarPublicacao));
+        const cards = await Promise.all(
+          posts.map(renderizarPublicacao)
+        );
+
         feed.innerHTML = cards.join('');
 
       } catch (error) {
         console.error('Erro ao carregar publicações:', error);
+
         feed.innerHTML =
           '<div class="empty">Não foi possível carregar a comunidade. Confira as regras do Firestore.</div>';
       }
     }
 
+    // =====================================
     // MONTAR PUBLICAÇÃO
+    // =====================================
+
     async function renderizarPublicacao(post) {
       let likes = [];
       let comments = [];
@@ -294,6 +302,7 @@
 
         likes = results[0].docs;
         comments = results[1].docs.map(doc => doc.data());
+
       } catch (error) {
         console.warn('Erro ao carregar interações:', error);
       }
@@ -328,10 +337,16 @@
 
       return `
         <article class="card community-post">
-          <strong>${esc(post.author_name || 'Ferroviário')}</strong>
-          <small class="muted">${esc(dataTexto(post.created_at))}</small>
 
-          <p style="white-space:pre-wrap;margin-top:12px">${esc(post.text)}</p>
+          <strong>${esc(post.author_name || 'Ferroviário')}</strong>
+
+          <small class="muted">
+            ${esc(dataTexto(post.created_at))}
+          </small>
+
+          <p style="white-space:pre-wrap;margin-top:12px">
+            ${esc(post.text)}
+          </p>
 
           ${imageHTML}
 
@@ -343,25 +358,35 @@
             </button>
 
             <span>💬 ${comments.length} comentário(s)</span>
+
             ${deleteHTML}
+
           </div>
 
           <div class="community-comments">
-            ${commentsHTML || '<p class="muted">Seja o primeiro a comentar.</p>'}
+            ${commentsHTML ||
+              '<p class="muted">Seja o primeiro a comentar.</p>'}
           </div>
 
-          <form data-comment="${esc(post.id)}" style="margin-top:12px">
+          <form data-comment="${esc(post.id)}"
+                style="margin-top:12px">
+
             <input name="comment" maxlength="500"
               placeholder="Escreva um comentário..." required>
+
             <button type="submit" class="btn secondary">
               Comentar
             </button>
+
           </form>
         </article>
       `;
     }
 
+    // =====================================
     // CURTIDAS
+    // =====================================
+
     $('communityFeed')?.addEventListener('click', async event => {
       const button = event.target.closest('[data-like]');
       if (!button) return;
@@ -372,8 +397,11 @@
       }
 
       const postId = button.dataset.like;
+
       const ref = db.collection('community_posts')
-        .doc(postId).collection('likes').doc(currentUser.uid);
+        .doc(postId)
+        .collection('likes')
+        .doc(currentUser.uid);
 
       button.disabled = true;
 
@@ -385,7 +413,8 @@
         } else {
           await ref.set({
             user_id: currentUser.uid,
-            created_at: firebase.firestore.FieldValue.serverTimestamp()
+            created_at:
+              firebase.firestore.FieldValue.serverTimestamp()
           });
         }
 
@@ -397,7 +426,10 @@
       }
     });
 
+    // =====================================
     // EXCLUIR PRÓPRIA PUBLICAÇÃO
+    // =====================================
+
     $('communityFeed')?.addEventListener('click', async event => {
       const button = event.target.closest('[data-delete]');
       if (!button) return;
@@ -411,13 +443,17 @@
           .doc(button.dataset.delete).delete();
 
         await carregarPublicacoes();
+
       } catch (error) {
         console.error('Erro ao excluir:', error);
         alert('Não foi possível excluir: ' + error.message);
       }
     });
 
+    // =====================================
     // COMENTÁRIOS
+    // =====================================
+
     $('communityFeed')?.addEventListener('submit', async event => {
       const form = event.target.closest('[data-comment]');
       if (!form) return;
@@ -440,7 +476,8 @@
           .collection('comments').add({
             user_id: currentUser.uid,
             text: text,
-            created_at: firebase.firestore.FieldValue.serverTimestamp()
+            created_at:
+              firebase.firestore.FieldValue.serverTimestamp()
           });
 
         await carregarPublicacoes();
@@ -450,12 +487,10 @@
         alert('Não foi possível comentar: ' + error.message);
       }
     });
- 
-    // ==========================================
-    // PERFIL DO FERROVIÁRIO
-    // ==========================================
 
-    let profileImageUrl = null;
+    // =====================================
+    // PERFIL DO FERROVIÁRIO
+    // =====================================
 
     // PRÉ-VISUALIZAR FOTO
     $('profilePhoto')?.addEventListener('change', event => {
@@ -508,14 +543,14 @@
 
         if (preview) preview.textContent = '🚂';
 
-        msg('profileMessage', 'Entre na comunidade para acessar seu perfil.');
+        msg('profileMessage',
+          'Entre na comunidade para acessar seu perfil.');
         return;
       }
 
       try {
         const doc = await db.collection('user_profiles')
-          .doc(user.uid)
-          .get();
+          .doc(user.uid).get();
 
         const dados = doc.exists ? doc.data() : {};
 
@@ -556,14 +591,18 @@
       }
     }
 
+    // =====================================
     // SALVAR PERFIL
+    // =====================================
+
     $('profileForm')?.addEventListener('submit', async event => {
       event.preventDefault();
 
       if (!firebaseOK()) return;
 
       if (!currentUser) {
-        msg('profileMessage', 'Entre na sua conta para salvar seu perfil.');
+        msg('profileMessage',
+          'Entre na sua conta para salvar seu perfil.');
         return;
       }
 
@@ -586,13 +625,15 @@
 
       if (button) button.disabled = true;
 
-msg('profileMessage', 'Salvando perfil...');
+      msg('profileMessage', 'Salvando perfil...');
 
       try {
         // ENVIAR FOTO AO CLOUDINARY
         if (file) {
           if (!cloud?.cloudName || !cloud?.uploadPreset) {
-            throw new Error('Configuração do Cloudinary não encontrada.');
+            throw new Error(
+              'Configuração do Cloudinary não encontrada.'
+            );
           }
 
           const form = new FormData();
@@ -628,19 +669,27 @@ msg('profileMessage', 'Salvando perfil...');
             city: city,
             state: state,
             photo_url: profileImageUrl || '',
-            updated_at: firebase.firestore.FieldValue.serverTimestamp()
+            updated_at:
+              firebase.firestore.FieldValue.serverTimestamp()
           }, { merge: true });
 
         // ATUALIZAR NOME DA CONTA
-try {
-  await currentUser.updateProfile({
-    displayName: name
-  });
-} catch (profileError) {
-  console.warn('Não foi possível atualizar o nome da conta:', profileError);
-}
+        try {
+          await currentUser.updateProfile({
+            displayName: name
+          });
+        } catch (profileError) {
+          console.warn(
+            'Não foi possível atualizar o nome da conta:',
+            profileError
+          );
+        }
 
-msg('profileMessage', 'Perfil salvo com sucesso! 🚂');
+        msg('profileMessage', 'Perfil salvo com sucesso! 🚂');
+
+        // ATUALIZAR LISTA DE MEMBROS
+        await carregarMembros();
+
       } catch (error) {
         console.error('Erro ao salvar perfil:', error);
 
@@ -648,19 +697,9 @@ msg('profileMessage', 'Perfil salvo com sucesso! 🚂');
           'Erro ao salvar perfil: ' + error.message);
 
       } finally {
-  if (button) button.disabled = false;
-}
+        if (button) button.disabled = false;
+      }
     });
-
-    
-    // ACOMPANHAR LOGIN E ATUALIZAR PERFIL E MEMBROS
-    if (auth) {
-      auth.onAuthStateChanged(user => {
-        carregarPerfil(user);
-        carregarMembros();
-      });
-    }
-
 
     // =====================================
     // MEMBROS DA COMUNIDADE
@@ -669,7 +708,7 @@ msg('profileMessage', 'Perfil salvo com sucesso! 🚂');
     async function carregarMembros() {
       const container = $('communityMembers');
 
-      if (!container) return;
+      if (!container || !db) return;
 
       container.textContent = 'Carregando membros...';
 
@@ -679,132 +718,9 @@ msg('profileMessage', 'Perfil salvo com sucesso! 🚂');
         container.innerHTML = '';
 
         if (snapshot.empty) {
-          container.textContent = 'Ainda não há membros cadastrados.';
+          container.textContent =
+            'Ainda não há membros cadastrados.';
           return;
         }
 
-        snapshot.forEach(doc => {
-          const dados = doc.data();
-
-          const card = document.createElement('div');
-          card.className = 'card';
-          card.style.cursor = 'pointer';
-
-          const foto = document.createElement('div');
-          foto.style.cssText =
-            'width:85px;height:85px;border-radius:50%;overflow:hidden;margin:0 auto 12px;background:#102b3f;display:flex;align-items:center;justify-content:center;font-size:35px;color:white;';
-
-          if (dados.photo_url) {
-            const img = document.createElement('img');
-            img.src = dados.photo_url;
-            img.alt = 'Foto de ' + (dados.name || 'membro');
-            img.style.cssText =
-              'width:100%;height:100%;object-fit:cover;';
-            foto.appendChild(img);
-          } else {
-            foto.textContent = '🚂';
-          }
-
-          const nomeMembro = document.createElement('h3');
-          nomeMembro.textContent = dados.name || 'Ferroviário';
-
-          const local = document.createElement('p');
-          local.className = 'muted';
-          local.textContent =
-            [dados.city, dados.state].filter(Boolean).join(' - ') ||
-            'Localização não informada';
-
-          const botao = document.createElement('button');
-          botao.className = 'btn';
-          botao.textContent = 'Ver perfil';
-
-          card.append(foto, nomeMembro, local, botao);
-
-          card.addEventListener('click', () => {
-            abrirPerfilPublico(doc.id, dados);
-          });
-
-          container.appendChild(card);
-        });
-
-      } catch (error) {
-        console.error('Erro ao carregar membros:', error);
-        container.textContent =
-          'Não foi possível carregar os membros. Verifique as regras do Firestore.';
-      }
-    }
-
-    // =====================================
-    // ABRIR PERFIL PÚBLICO
-    // =====================================
-
-    function abrirPerfilPublico(uid, dados) {
-      const area = $('publicProfile');
-      const conteudo = $('publicProfileContent');
-      const membros = $('communityMembers');
-
-      if (!area || !conteudo) return;
-
-      conteudo.innerHTML = '';
-
-      const foto = document.createElement('div');
-      foto.style.cssText =
-        'width:120px;height:120px;border-radius:50%;overflow:hidden;margin:20px auto;background:#102b3f;display:flex;align-items:center;justify-content:center;font-size:50px;color:white;';
-
-      if (dados.photo_url) {
-        const img = document.createElement('img');
-        img.src = dados.photo_url;
-        img.alt = 'Foto do membro';
-        img.style.cssText =
-          'width:100%;height:100%;object-fit:cover;';
-        foto.appendChild(img);
-      } else {
-        foto.textContent = '🚂';
-      }
-
-      const nome = document.createElement('h2');
-      nome.textContent = dados.name || 'Ferroviário';
-      nome.style.textAlign = 'center';
-
-      const local = document.createElement('p');
-      local.className = 'muted';
-      local.style.textAlign = 'center';
-      local.textContent =
-        [dados.city, dados.state].filter(Boolean).join(' - ') ||
-        'Localização não informada';
-
-      const bio = document.createElement('p');
-      bio.textContent = dados.bio || 'Este membro ainda não escreveu sua apresentação.';
-      bio.style.marginTop = '20px';
-
-      conteudo.append(foto, nome, local, bio);
-
-      area.style.display = 'block';
-
-      if (membros) membros.style.display = 'none';
-
-      area.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // =====================================
-    // VOLTAR PARA LISTA DE MEMBROS
-    // =====================================
-
-    $('closePublicProfile')?.addEventListener('click', () => {
-      $('publicProfile').style.display = 'none';
-      $('communityMembers').style.display = '';
-    });
-
-    // CARREGAR MEMBROS
-    carregarMembros();
-    
-
-    window.MF_LOAD_COMMUNITY = carregarPublicacoes;
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', iniciarComunidade, { once: true });
-  } else {
-    iniciarComunidade();
-  }
-})();
+     
