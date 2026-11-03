@@ -363,7 +363,7 @@ alert('O ARQUIVO COMUNIDADE.JS FOI CARREGADO!');
     ? `<button type="button"
          data-delete="${esc(post.id)}"
          class="btn-delete-post">
-🗑️ Excluir publicação</button>
+🗑️ Excluir publicação</button>`
     : '';
 
       return `
