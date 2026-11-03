@@ -428,7 +428,31 @@ function updateStats(){document.getElementById('progressCount').textContent=loca
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
 <script src="firebase-config.js"></script>
+<script src="firebase-init.js?v=2026110301"></script>
+<script src="comunidade.js?v=202611031800"></script>
+
+<script>
+  alert('INDEX CARREGADO');
+
+  alert('Firebase Auth: ' + typeof window.MF_AUTH);
+  alert('Firebase DB: ' + typeof window.MF_DB);
+
+  document.addEventListener('DOMContentLoaded', function () {
+    alert('DOM CARREGADO');
+
+    alert(
+      'Comunidade iniciada: ' +
+      window.MF_COMMUNITY_STARTED
+    );
+  });
+</script>
+
 <script src="firebase-init.js?v=2026110301"></script>
 <script src="comunidade.js?v=202611031800"></script>
 <script>
