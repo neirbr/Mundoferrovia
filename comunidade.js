@@ -4,6 +4,7 @@
   function iniciarComunidade() {
     if (window.MF_COMMUNITY_STARTED) return;
     window.MF_COMMUNITY_STARTED = true;
+    console.log('COMUNIDADE.JS INICIADO');
 
     const $ = id => document.getElementById(id);
     const auth = window.MF_AUTH;
