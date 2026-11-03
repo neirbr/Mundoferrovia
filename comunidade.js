@@ -27,6 +27,8 @@ alert('O ARQUIVO COMUNIDADE.JS FOI CARREGADO!');
       }[c]));
     }
 
+    alert('PASSOU PELA FUNÇÃO ESC!');
+
     function msg(id, text) {
       const el = $(id);
       if (el) el.textContent = text;
