@@ -1,3 +1,5 @@
+alert('O ARQUIVO COMUNIDADE.JS FOI CARREGADO!');
+
 (function () {
   'use strict';
 
@@ -5,7 +7,6 @@
     if (window.MF_COMMUNITY_STARTED) return;
     window.MF_COMMUNITY_STARTED = true;
     console.log('COMUNIDADE.JS INICIADO');
-    alert('COMUNIDADE.JS ESTÁ INICIANDO!');
 
     const $ = id => document.getElementById(id);
     const auth = window.MF_AUTH;
