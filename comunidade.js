@@ -352,9 +352,12 @@
         : '';
 
       const deleteHTML = currentUser?.uid === post.user_id
-        ? `<button type="button" data-delete="${esc(post.id)}"
-             class="btn outline">Excluir publicação</button>`
-        : '';
+    ? `<button type="button"
+         data-delete="${esc(post.id)}"
+         class="btn-delete-post">
+         🗑️ Excluir publicação
+       </button>`
+    : '';
 
       return `
         <article class="card community-post">
