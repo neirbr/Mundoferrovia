@@ -658,6 +658,143 @@ msg('profileMessage', 'Perfil salvo com sucesso! 🚂');
         carregarPerfil(user);
       });
     }
+
+    
+    // =====================================
+    // MEMBROS DA COMUNIDADE
+    // =====================================
+
+    async function carregarMembros() {
+      const container = $('communityMembers');
+
+      if (!container) return;
+
+      container.textContent = 'Carregando membros...';
+
+      try {
+        const snapshot = await db.collection('user_profiles').get();
+
+        container.innerHTML = '';
+
+        if (snapshot.empty) {
+          container.textContent = 'Ainda não há membros cadastrados.';
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const dados = doc.data();
+
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.style.cursor = 'pointer';
+
+          const foto = document.createElement('div');
+          foto.style.cssText =
+            'width:85px;height:85px;border-radius:50%;overflow:hidden;margin:0 auto 12px;background:#102b3f;display:flex;align-items:center;justify-content:center;font-size:35px;color:white;';
+
+          if (dados.photo_url) {
+            const img = document.createElement('img');
+            img.src = dados.photo_url;
+            img.alt = 'Foto de ' + (dados.name || 'membro');
+            img.style.cssText =
+              'width:100%;height:100%;object-fit:cover;';
+            foto.appendChild(img);
+          } else {
+            foto.textContent = '🚂';
+          }
+
+          const nomeMembro = document.createElement('h3');
+          nomeMembro.textContent = dados.name || 'Ferroviário';
+
+          const local = document.createElement('p');
+          local.className = 'muted';
+          local.textContent =
+            [dados.city, dados.state].filter(Boolean).join(' - ') ||
+            'Localização não informada';
+
+          const botao = document.createElement('button');
+          botao.className = 'btn';
+          botao.textContent = 'Ver perfil';
+
+          card.append(foto, nomeMembro, local, botao);
+
+          card.addEventListener('click', () => {
+            abrirPerfilPublico(doc.id, dados);
+          });
+
+          container.appendChild(card);
+        });
+
+      } catch (error) {
+        console.error('Erro ao carregar membros:', error);
+        container.textContent =
+          'Não foi possível carregar os membros. Verifique as regras do Firestore.';
+      }
+    }
+
+    // =====================================
+    // ABRIR PERFIL PÚBLICO
+    // =====================================
+
+    function abrirPerfilPublico(uid, dados) {
+      const area = $('publicProfile');
+      const conteudo = $('publicProfileContent');
+      const membros = $('communityMembers');
+
+      if (!area || !conteudo) return;
+
+      conteudo.innerHTML = '';
+
+      const foto = document.createElement('div');
+      foto.style.cssText =
+        'width:120px;height:120px;border-radius:50%;overflow:hidden;margin:20px auto;background:#102b3f;display:flex;align-items:center;justify-content:center;font-size:50px;color:white;';
+
+      if (dados.photo_url) {
+        const img = document.createElement('img');
+        img.src = dados.photo_url;
+        img.alt = 'Foto do membro';
+        img.style.cssText =
+          'width:100%;height:100%;object-fit:cover;';
+        foto.appendChild(img);
+      } else {
+        foto.textContent = '🚂';
+      }
+
+      const nome = document.createElement('h2');
+      nome.textContent = dados.name || 'Ferroviário';
+      nome.style.textAlign = 'center';
+
+      const local = document.createElement('p');
+      local.className = 'muted';
+      local.style.textAlign = 'center';
+      local.textContent =
+        [dados.city, dados.state].filter(Boolean).join(' - ') ||
+        'Localização não informada';
+
+      const bio = document.createElement('p');
+      bio.textContent = dados.bio || 'Este membro ainda não escreveu sua apresentação.';
+      bio.style.marginTop = '20px';
+
+      conteudo.append(foto, nome, local, bio);
+
+      area.style.display = 'block';
+
+      if (membros) membros.style.display = 'none';
+
+      area.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // =====================================
+    // VOLTAR PARA LISTA DE MEMBROS
+    // =====================================
+
+    $('closePublicProfile')?.addEventListener('click', () => {
+      $('publicProfile').style.display = 'none';
+      $('communityMembers').style.display = '';
+    });
+
+    // CARREGAR MEMBROS
+    carregarMembros();
     
 
     window.MF_LOAD_COMMUNITY = carregarPublicacoes;
