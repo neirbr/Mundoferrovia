@@ -998,6 +998,8 @@ $('profileForm')?.addEventListener('submit', async event => {
     window.MF_LOAD_COMMUNITY = carregarPublicacoes;
   }
 
+alert('O CÓDIGO CHEGOU À INICIALIZAÇÃO!');
+
   // =====================================
   // INICIALIZAÇÃO
   // =====================================
