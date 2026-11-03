@@ -1005,15 +1005,19 @@ alert('O CÓDIGO CHEGOU À INICIALIZAÇÃO!');
   // =====================================
   // INICIALIZAÇÃO
   // =====================================
+console.log('TESTE: CHEGOU À INICIALIZAÇÃO');
 
-  if (document.readyState === 'loading') {
-    document.addEventListener(
-      'DOMContentLoaded',
-      iniciarComunidade
-    );
-  } else {
+alert('TESTE: CHEGOU À INICIALIZAÇÃO');
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function () {
+    alert('TESTE: DOM CHAMOU A COMUNIDADE');
     iniciarComunidade();
-  }
+  });
+} else {
+  alert('TESTE: CHAMANDO A COMUNIDADE AGORA');
+  iniciarComunidade();
+}
 
 })();
       
