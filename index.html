@@ -423,7 +423,7 @@ function startQuiz(){qi=0;score=0;answered=false;document.getElementById('restar
 function answer(i){if(answered)return;answered=true;let ok=i===qs[qi].c;if(ok)score++;document.querySelectorAll('#answers button').forEach((b,j)=>{b.disabled=true;if(j===qs[qi].c)b.style.borderColor='#247a55'});document.getElementById('feedback').textContent=ok?'✓ Resposta correta!':'Não foi dessa vez. Revise o conteúdo e tente novamente.';document.getElementById('nextBtn').style.display='inline-block';document.getElementById('nextBtn').textContent=qi===qs.length-1?'Ver resultado':'Próxima pergunta'}
 function nextQuestion(){if(qi<qs.length-1){qi++;renderQuestion()}else{let pct=Math.round(score/qs.length*100);let old=Number(localStorage.getItem('mf_best')||0);localStorage.setItem('mf_best',Math.max(old,pct));localStorage.setItem('mf_done',Number(localStorage.getItem('mf_done')||0)+1);document.getElementById('question').textContent=`Você acertou ${score} de ${qs.length} perguntas!`;document.getElementById('answers').innerHTML=`<p class="muted">Seu resultado: ${pct}% de aproveitamento.</p>`;document.getElementById('feedback').textContent='Continue aprendendo e volte para testar seus conhecimentos.';document.getElementById('nextBtn').style.display='none';document.getElementById('restartBtn').style.display='inline-block';updateStats()}}
 function updateStats(){document.getElementById('progressCount').textContent=localStorage.getItem('mf_done')||0;document.getElementById('scoreCount').textContent=(localStorage.getItem('mf_best')||0)+'%'}updateStats();startQuiz();
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')) { window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {})); }
+
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -650,16 +650,6 @@ window.addEventListener('load', function () {
       console.error('Erro no Service Worker:', error);
     });
 
-  // Recarregar quando uma nova versão assumir o controle
-  if (hadController) {
-    navigator.serviceWorker.addEventListener(
-      'controllerchange',
-      () => {
-        window.location.reload();
-      },
-      { once: true }
-    );
-  }
 })();
 </script>
   
