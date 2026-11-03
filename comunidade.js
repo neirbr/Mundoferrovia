@@ -741,8 +741,9 @@
       }
     });
 
+
     // =====================================
-    // MEMBROS DA COMUNIDADE
+    // MEMBROS DA COMUNIDADE + PERFIL PÚBLICO
     // =====================================
 
     async function carregarMembros() {
@@ -753,7 +754,7 @@
       container.textContent = 'Carregando membros...';
 
       try {
-      const snapshot = await db.collection('user_profiles').get();
+        const snapshot = await db.collection('user_profiles').get();
 
         container.innerHTML = '';
 
@@ -779,6 +780,13 @@
           const card = document.createElement('article');
 
           card.className = 'card community-member';
+          card.style.cursor = 'pointer';
+          card.setAttribute('tabindex', '0');
+          card.setAttribute('role', 'button');
+          card.setAttribute(
+            'aria-label',
+            'Ver perfil de ' + (member.name || 'Ferroviário')
+          );
 
           const avatar = member.photo_url
             ? `<img src="${esc(member.photo_url)}"
@@ -805,7 +813,22 @@
             </div>
 
             ${member.bio ? `<p>${esc(member.bio)}</p>` : ''}
+
+            <p class="muted" style="margin-top:12px">
+              👤 Toque para ver o perfil
+            </p>
           `;
+
+          card.addEventListener('click', () => {
+            abrirPerfilPublico(member);
+          });
+
+          card.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              abrirPerfilPublico(member);
+            }
+          });
 
           container.appendChild(card);
         });
@@ -817,6 +840,109 @@
           'Não foi possível carregar os membros. Verifique as regras do Firestore.';
       }
     }
+
+    // =====================================
+    // ABRIR PERFIL PÚBLICO
+    // =====================================
+
+    function abrirPerfilPublico(member) {
+      const membersContainer = $('communityMembers');
+      const publicProfile = $('publicProfile');
+      const publicContent = $('publicProfileContent');
+
+      if (!membersContainer || !publicProfile || !publicContent) {
+        console.error('Elementos do perfil público não encontrados.');
+        return;
+      }
+
+      const membersHeader = membersContainer.previousElementSibling;
+
+      if (membersHeader) {
+        membersHeader.style.display = 'none';
+      }
+
+      membersContainer.style.display = 'none';
+
+      publicProfile.style.display = 'block';
+
+      const avatar = member.photo_url
+        ? `<img src="${esc(member.photo_url)}"
+             alt="Foto de perfil"
+             style="width:120px;height:120px;object-fit:cover;border-radius:50%;border:3px solid #f0b323">`
+        : `<div style="width:120px;height:120px;border-radius:50%;display:grid;place-items:center;background:#e8eef2;font-size:55px;border:3px solid #f0b323">
+             🚂
+           </div>`;
+
+      const localizacao = [
+        member.city,
+        member.state
+      ].filter(Boolean).join(' - ');
+
+      publicContent.innerHTML = `
+        <div style="text-align:center;padding:24px 12px">
+
+          <div style="display:flex;justify-content:center;margin-bottom:16px">
+            ${avatar}
+          </div>
+
+          <h2 style="margin:8px 0">
+            ${esc(member.name || 'Ferroviário')}
+          </h2>
+
+          <p class="muted">
+            🚂 Membro da Comunidade Mundo Ferroviário
+          </p>
+
+          ${localizacao ? `
+            <p style="margin:12px 0">
+              📍 ${esc(localizacao)}
+            </p>
+          ` : ''}
+
+          <div style="margin-top:24px;text-align:left">
+
+            <h3>Sobre o ferroviário</h3>
+
+            <p style="white-space:pre-wrap">
+              ${esc(member.bio || 'Este membro ainda não adicionou uma biografia.')}
+            </p>
+
+          </div>
+
+        </div>
+      `;
+    }
+
+    // =====================================
+    // FECHAR PERFIL PÚBLICO
+    // =====================================
+
+    const closePublicProfile = $('closePublicProfile');
+
+    if (closePublicProfile) {
+      closePublicProfile.addEventListener('click', () => {
+        const membersContainer = $('communityMembers');
+        const publicProfile = $('publicProfile');
+        const publicContent = $('publicProfileContent');
+
+        if (!membersContainer || !publicProfile) return;
+
+        const membersHeader = membersContainer.previousElementSibling;
+
+        if (membersHeader) {
+          membersHeader.style.display = '';
+        }
+
+        membersContainer.style.display = '';
+
+        publicProfile.style.display = 'none';
+
+        if (publicContent) {
+          publicContent.innerHTML = '';
+        }
+      });
+    }
+
 
     // =====================================
     // ESTADO DA AUTENTICAÇÃO
