@@ -4,6 +4,7 @@ alert('O ARQUIVO COMUNIDADE.JS FOI CARREGADO!');
   'use strict';
 
   function iniciarComunidade() {
+    alert('A FUNÇÃO INICIAR COMUNIDADE FOI CHAMADA!');
     if (window.MF_COMMUNITY_STARTED) return;
     window.MF_COMMUNITY_STARTED = true;
     console.log('COMUNIDADE.JS INICIADO');
