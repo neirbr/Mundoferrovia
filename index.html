@@ -188,6 +188,73 @@ nav button[data-page="galeria"],
   
 </section>
 
+<section id="enciclopedia" class="page">
+  <div class="section-head">
+    <div>
+      <span class="tag">CONHECIMENTO FERROVIÁRIO</span>
+      <h2>Enciclopédia Ferroviária</h2>
+      <p class="muted">Um espaço para conhecer, pesquisar e compartilhar conhecimentos sobre o universo ferroviário.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Explore a Enciclopédia</h3>
+    <p class="muted">Selecione uma categoria para começar sua pesquisa.</p>
+    <input id="encyclopediaSearch" class="search" type="search" placeholder="Pesquisar artigos, modelos ou fabricantes...">
+  </div>
+
+  <div class="grid" id="encyclopediaCategories">
+    <article class="card">
+      <div class="emoji">🚂</div>
+      <h3>Locomotivas</h3>
+      <p>Modelos, fabricantes, tecnologias e características.</p>
+    </article>
+    <article class="card">
+      <div class="emoji">🚃</div>
+      <h3>Vagões</h3>
+      <p>Tipos, aplicações e características dos vagões.</p>
+    </article>
+    <article class="card">
+      <div class="emoji">⚙️</div>
+      <h3>Componentes ferroviários</h3>
+      <p>Peças, sistemas e equipamentos ferroviários.</p>
+    </article>
+    <article class="card">
+      <div class="emoji">🚦</div>
+      <h3>Sinalização</h3>
+      <p>Sistemas, equipamentos e conceitos de sinalização.</p>
+    </article>
+    <article class="card">
+      <div class="emoji">🛤️</div>
+      <h3>Operações ferroviárias</h3>
+      <p>Operações, procedimentos e conceitos do setor.</p>
+    </article>
+    <article class="card">
+      <div class="emoji">📜</div>
+      <h3>História ferroviária</h3>
+      <p>Ferrovias, acontecimentos e evolução do transporte ferroviário.</p>
+    </article>
+  </div>
+
+  <div class="section-head">
+    <div>
+      <h2>Artigos publicados</h2>
+      <p class="muted">Conteúdos aprovados pela administração.</p>
+    </div>
+  </div>
+
+  <div id="encyclopediaArticles" class="grid">
+    <div class="empty">Os artigos da Enciclopédia aparecerão aqui.</div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h3>Compartilhe seu conhecimento</h3>
+    <p class="muted">Você poderá sugerir artigos para a Enciclopédia. As sugestões serão analisadas pela administração antes da publicação.</p>
+    <button class="btn" type="button" onclick="document.getElementById('encyclopediaSuggestion').scrollIntoView({behavior:'smooth'})">Sugerir um artigo</button>
+    <div id="encyclopediaSuggestion"></div>
+  </div>
+</section>
+
 <section id="galeria" class="page">
 
  <div class="section-head"><div><span class="tag">COMUNIDADE FERROVIÁRIA</span><h2>Comunidade Ferroviária</h2><p class="muted">Compartilhe fotos de locomotivas, trens, estações e paisagens ferroviárias. As imagens passam por moderação antes de aparecer publicamente.</p></div></div>
