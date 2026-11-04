@@ -3,7 +3,7 @@
   'use strict';
 
   function iniciarComunidade() {
-    al
+  
     if (window.MF_COMMUNITY_STARTED) return;
     window.MF_COMMUNITY_STARTED = true;
     console.log('COMUNIDADE.JS INICIADO');
@@ -990,6 +990,7 @@ $('profileForm')?.addEventListener('submit', async event => {
         'Firebase Auth não está disponível.');
     }
 
+    
     // =====================================
     // EXPOSIÇÃO PARA OUTRAS PARTES DO SITE
     // =====================================
@@ -997,26 +998,17 @@ $('profileForm')?.addEventListener('submit', async event => {
     window.MF_LOAD_COMMUNITY = carregarPublicacoes;
   }
 
-alert('O CÓDIGO CHEGOU À INICIALIZAÇÃO!');
-
   // =====================================
   // INICIALIZAÇÃO
   // =====================================
-console.log('TESTE: CHEGOU À INICIALIZAÇÃO');
 
-alert('TESTE: CHEGOU À INICIALIZAÇÃO');
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', function () {
-    alert('TESTE: DOM CHAMOU A COMUNIDADE');
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      iniciarComunidade();
+    });
+  } else {
     iniciarComunidade();
-  });
-} else {
-  alert('TESTE: CHAMANDO A COMUNIDADE AGORA');
-  iniciarComunidade();
-}
+  }
 
 })();
-      
-    
-      
+     
