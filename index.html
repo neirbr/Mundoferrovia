@@ -251,7 +251,73 @@ nav button[data-page="galeria"],
     <h3>Compartilhe seu conhecimento</h3>
     <p class="muted">Você poderá sugerir artigos para a Enciclopédia. As sugestões serão analisadas pela administração antes da publicação.</p>
     <button class="btn" type="button" onclick="document.getElementById('encyclopediaSuggestion').scrollIntoView({behavior:'smooth'})">Sugerir um artigo</button>
-    <div id="encyclopediaSuggestion"></div>
+    
+<div id="encyclopediaSuggestion">
+  <form id="encyclopediaSuggestionForm" style="margin-top:18px">
+
+    <div class="form-group">
+      <label for="encyclopediaTitle">Título do artigo</label>
+      <input
+        id="encyclopediaTitle"
+        type="text"
+        maxlength="120"
+        placeholder="Ex: Locomotiva GE AC44i"
+        required>
+    </div>
+
+    <div class="form-group">
+      <label for="encyclopediaCategory">Categoria</label>
+      <select id="encyclopediaCategory" required>
+        <option value="">Selecione uma categoria</option>
+        <option value="Locomotivas">Locomotivas</option>
+        <option value="Vagões">Vagões</option>
+        <option value="Componentes ferroviários">Componentes ferroviários</option>
+        <option value="Sinalização">Sinalização</option>
+        <option value="Operações ferroviárias">Operações ferroviárias</option>
+        <option value="História ferroviária">História ferroviária</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="encyclopediaSummary">Resumo do artigo</label>
+      <textarea
+        id="encyclopediaSummary"
+        maxlength="500"
+        rows="3"
+        placeholder="Faça um breve resumo do conteúdo..."
+        required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="encyclopediaContent">Conteúdo do artigo</label>
+      <textarea
+        id="encyclopediaContent"
+        maxlength="15000"
+        rows="8"
+        placeholder="Escreva aqui o conteúdo completo do artigo..."
+        required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="encyclopediaSource">Fonte ou referência (opcional)</label>
+      <input
+        id="encyclopediaSource"
+        type="text"
+        maxlength="500"
+        placeholder="Ex: Manual técnico, livro ou site">
+    </div>
+
+    <button class="btn" type="submit">
+      Enviar sugestão para aprovação
+    </button>
+
+    <p class="muted" style="margin-top:10px">
+      Sua sugestão será analisada pela administração antes de ser publicada.
+    </p>
+
+  </form>
+</div>
+
   </div>
 </section>
 
