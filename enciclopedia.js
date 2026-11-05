@@ -110,68 +110,187 @@
   // CARREGAR ARTIGOS PUBLICADOS
   // =====================================
 
-  async function carregarArtigos() {
-    if (!articlesContainer) return;
+  
+async function carregarArtigos() {
+  if (!articlesContainer) return;
 
-    try {
-      const snapshot = await db.collection('encyclopedia_articles')
-        .where('status', '==', 'published')
-        .get();
+  try {
+    const snapshot = await db.collection('encyclopedia_articles')
+      .where('status', '==', 'published')
+      .get();
 
-      if (snapshot.empty) {
-        articlesContainer.innerHTML =
-          '<div class="empty">Ainda não existem artigos publicados na Enciclopédia.</div>';
-        return;
+    if (snapshot.empty) {
+      articlesContainer.innerHTML =
+        '<div class="empty">Ainda não existem artigos publicados na Enciclopédia.</div>';
+      return;
+    }
+
+    const artigos = [];
+
+    snapshot.forEach(function (doc) {
+      artigos.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+
+    artigos.sort(function (a, b) {
+      return timestampValue(b.published_at) - timestampValue(a.published_at);
+    });
+
+    articlesContainer.innerHTML = artigos.map(function (artigo) {
+      return `
+        <div class="card">
+          <span class="tag">${escapeHTML(artigo.category)}</span>
+          <h3>${escapeHTML(artigo.title)}</h3>
+          <p>${escapeHTML(artigo.summary)}</p>
+
+          <details>
+            <summary class="btn">Ler artigo completo</summary>
+
+            <div style="margin-top:15px; white-space:pre-wrap;">
+              ${escapeHTML(artigo.content)}
+            </div>
+
+            ${artigo.source ? `
+              <p class="muted" style="margin-top:15px">
+                Fonte: ${escapeHTML(artigo.source)}
+              </p>
+            ` : ''}
+          </details>
+
+          <p class="muted" style="margin-top:12px">
+            Contribuição: ${escapeHTML(artigo.author_name || 'Comunidade ferroviária')}
+          </p>
+
+          ${auth.currentUser && auth.currentUser.uid === ADMIN_UID ? `
+            <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+              <button type="button"
+                class="btn btn-secondary"
+                data-edit-article="${artigo.id}">
+                ✏️ Editar
+              </button>
+
+              <button type="button"
+                class="btn btn-danger"
+                data-delete-article="${artigo.id}">
+                🗑️ Excluir
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }).join('');
+
+  } catch (error) {
+    console.error('Erro ao carregar artigos:', error);
+
+    articlesContainer.innerHTML =
+      '<div class="empty">Não foi possível carregar os artigos.</div>';
+  }
+}
+
+
+// AÇÕES ADMINISTRATIVAS DOS ARTIGOS
+if (articlesContainer) {
+  articlesContainer.addEventListener('click', async function (event) {
+
+    const user = auth.currentUser;
+
+    if (!user || user.uid !== ADMIN_UID) {
+      alert('Apenas o administrador pode realizar esta ação.');
+      return;
+    }
+
+    // EDITAR ARTIGO
+    const editButton = event.target.closest('[data-edit-article]');
+
+    if (editButton) {
+      const articleId = editButton.getAttribute('data-edit-article');
+
+      try {
+        const articleRef = db.collection('encyclopedia_articles').doc(articleId);
+        const articleDoc = await articleRef.get();
+
+        if (!articleDoc.exists) {
+          alert('Artigo não encontrado.');
+          return;
+        }
+
+        const artigo = articleDoc.data();
+
+        const title = prompt('Título do artigo:', artigo.title || '');
+        if (title === null) return;
+
+        const category = prompt('Categoria:', artigo.category || '');
+        if (category === null) return;
+
+        const summary = prompt('Resumo do artigo:', artigo.summary || '');
+        if (summary === null) return;
+
+        const content = prompt('Conteúdo completo:', artigo.content || '');
+        if (content === null) return;
+
+        const source = prompt('Fonte do artigo (opcional):', artigo.source || '');
+        if (source === null) return;
+
+        if (!title.trim() || !category.trim() ||
+            !summary.trim() || !content.trim()) {
+          alert('Título, categoria, resumo e conteúdo são obrigatórios.');
+          return;
+        }
+
+        await articleRef.update({
+          title: title.trim(),
+          category: category.trim(),
+          summary: summary.trim(),
+          content: content.trim(),
+          source: source.trim(),
+          updated_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert('Artigo atualizado com sucesso!');
+
+        await carregarArtigos();
+
+      } catch (error) {
+        console.error('Erro ao editar artigo:', error);
+        alert('Não foi possível editar o artigo.');
       }
 
-      const artigos = [];
-
-      snapshot.forEach(function (doc) {
-        artigos.push({
-          id: doc.id,
-          ...doc.data()
-        });
-      });
-
-      artigos.sort(function (a, b) {
-        return timestampValue(b.published_at) - timestampValue(a.published_at);
-      });
-
-      articlesContainer.innerHTML = artigos.map(function (artigo) {
-        return `
-          <div class="card">
-            <span class="tag">${escapeHTML(artigo.category)}</span>
-            <h3>${escapeHTML(artigo.title)}</h3>
-            <p>${escapeHTML(artigo.summary)}</p>
-
-            <details>
-              <summary class="btn">Ler artigo completo</summary>
-
-              <div style="margin-top:15px; white-space:pre-wrap;">
-                ${escapeHTML(artigo.content)}
-              </div>
-
-              ${artigo.source ? `
-                <p class="muted" style="margin-top:15px">
-                  Fonte: ${escapeHTML(artigo.source)}
-                </p>
-              ` : ''}
-            </details>
-
-            <p class="muted" style="margin-top:12px">
-              Contribuição: ${escapeHTML(artigo.author_name || 'Comunidade ferroviária')}
-            </p>
-          </div>
-        `;
-      }).join('');
-
-    } catch (error) {
-      console.error('Erro ao carregar artigos:', error);
-
-      articlesContainer.innerHTML =
-        '<div class="empty">Não foi possível carregar os artigos.</div>';
+      return;
     }
-  }
+
+    // EXCLUIR ARTIGO
+    const deleteButton = event.target.closest('[data-delete-article]');
+
+    if (deleteButton) {
+      const articleId = deleteButton.getAttribute('data-delete-article');
+
+      const confirmar = confirm(
+        'Tem certeza que deseja excluir este artigo? Esta ação não poderá ser desfeita.'
+      );
+
+      if (!confirmar) return;
+
+      try {
+        await db.collection('encyclopedia_articles')
+          .doc(articleId)
+          .delete();
+
+        alert('Artigo excluído com sucesso!');
+
+        await carregarArtigos();
+
+      } catch (error) {
+        console.error('Erro ao excluir artigo:', error);
+        alert('Não foi possível excluir o artigo.');
+      }
+    }
+
+  });
+}
+  
 
   // =====================================
   // CARREGAR SUGESTÕES DO ADMINISTRADOR
