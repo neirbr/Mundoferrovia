@@ -195,15 +195,20 @@ async function carregarArtigos() {
 if (articlesContainer) {
   articlesContainer.addEventListener('click', async function (event) {
 
-    const user = auth.currentUser;
 
-    if (!user || user.uid !== ADMIN_UID) {
-      alert('Apenas o administrador pode realizar esta ação.');
-      return;
-    }
+const editButton = event.target.closest('[data-edit-article]');
+const deleteButton = event.target.closest('[data-delete-article]');
 
-    // EDITAR ARTIGO
-    const editButton = event.target.closest('[data-edit-article]');
+if (!editButton && !deleteButton) return;
+
+const user = auth.currentUser;
+
+if (!user || user.uid !== ADMIN_UID) {
+  alert('Apenas o administrador pode realizar esta ação.');
+  return;
+}
+
+// EDITAR ARTIGO
 
     if (editButton) {
       const articleId = editButton.getAttribute('data-edit-article');
@@ -262,7 +267,6 @@ if (articlesContainer) {
     }
 
     // EXCLUIR ARTIGO
-    const deleteButton = event.target.closest('[data-delete-article]');
 
     if (deleteButton) {
       const articleId = deleteButton.getAttribute('data-delete-article');
