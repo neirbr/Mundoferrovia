@@ -168,7 +168,69 @@ nav button[data-page="galeria"],
 <article class="card"><div class="emoji">🛤️</div><h3>Infraestrutura ferroviária</h3><p>A via permanente reúne componentes como trilhos, dormentes, fixações e lastro, que formam a estrutura de circulação ferroviária.</p><span class="tag">Infraestrutura</span></article>
 </div><div class="ad-slot"><strong>ESPAÇO PUBLICITÁRIO</strong>Área reservada para anunciantes e apoiadores do projeto.</div><div class="notice" style="margin-top:18px"><strong>Importante:</strong> este conteúdo é educativo e introdutório. Atividades operacionais, manobras, sinalização e segurança devem sempre seguir os procedimentos oficiais, treinamentos e regras da empresa responsável.</div></section>
 <section id="glossario" class="page"><div class="section-head"><div><span class="tag">CONSULTA RÁPIDA</span><h2>Glossário ferroviário</h2><p class="muted">Pesquise alguns termos básicos do setor.</p></div></div><input class="search" id="glossSearch" placeholder="Buscar um termo..." aria-label="Buscar termo do glossário"><div id="terms"></div><div class="ad-slot"><strong>ESPAÇO PUBLICITÁRIO</strong>Seu anúncio pode aparecer aqui futuramente.</div></section>
-<section id="quiz" class="page"><div class="section-head"><div><span class="tag">TESTE SEUS CONHECIMENTOS</span><h2>Quiz ferroviário</h2><p class="muted">Responda e acompanhe sua evolução.</p></div></div><div class="card quizbox"><div id="quizProgress" class="tag">Pergunta 1 de 3</div><h3 id="question">Qual é a principal função de uma locomotiva?</h3><div id="answers" class="answers"></div><div id="feedback" class="feedback" aria-live="polite"></div><button id="nextBtn" class="btn" style="display:none" onclick="nextQuestion()">Próxima pergunta</button><button id="restartBtn" class="btn secondary" style="display:none" onclick="startQuiz()">Refazer quiz</button></div><div class="ad-slot"><strong>ESPAÇO PUBLICITÁRIO</strong>Publicidade ajuda a manter o conteúdo gratuito.</div></section>
+<section id="quiz" class="page">
+  <div class="section-head">
+    <div>
+      <span class="tag">TESTE SEUS CONHECIMENTOS</span>
+      <h2>Quiz ferroviário</h2>
+      <p class="muted">Escolha seu nível e teste seus conhecimentos sobre o universo ferroviário.</p>
+    </div>
+  </div>
+
+  <div id="quizLevels" class="card">
+    <h3>Escolha seu nível</h3>
+    <p class="muted">Cada nível possui 10 perguntas.</p>
+
+    <div class="grid">
+      <button class="btn" onclick="selectQuizLevel('basico')">
+        🟢 Básico
+      </button>
+
+      <button class="btn" onclick="selectQuizLevel('intermediario')">
+        🟡 Intermediário
+      </button>
+
+      <button class="btn" onclick="selectQuizLevel('avancado')">
+        🔴 Avançado
+      </button>
+    </div>
+  </div>
+
+  <div class="card quizbox" id="quizBox" style="display:none">
+    <div id="quizLevelName" class="tag">Nível Básico</div>
+
+    <div id="quizProgress" class="tag">
+      Pergunta 1 de 10
+    </div>
+
+    <h3 id="question">Prepare-se para começar!</h3>
+
+    <div id="answers" class="answers"></div>
+
+    <div id="feedback" class="feedback" aria-live="polite"></div>
+
+    <button id="nextBtn" class="btn" style="display:none"
+      onclick="nextQuestion()">
+      Próxima pergunta
+    </button>
+
+    <button id="restartBtn" class="btn secondary"
+      style="display:none" onclick="startQuiz()">
+      Refazer nível
+    </button>
+
+    <button id="changeLevelBtn" class="btn secondary"
+      style="display:none" onclick="backToQuizLevels()">
+      Escolher outro nível
+    </button>
+  </div>
+
+  <div class="ad-slot">
+    <strong>ESPAÇO PUBLICITÁRIO</strong>
+    Publicidade ajuda a manter o conteúdo gratuito.
+  </div>
+</section>
+  
 <section id="noticias" class="page"><div class="section-head"><div><span class="tag">ATUALIZAÇÕES</span><h2>Notícias ferroviárias</h2><p class="muted">Artigos publicados pela equipe Mundo Ferroviário.</p></div></div><div id="publishedNews" class="grid"><div class="empty">Carregando notícias...</div></div></section>
 
 </section>
@@ -595,11 +657,187 @@ const terms=[['AMV / aparelho de mudança de via','Conjunto de componentes que p
 function renderTerms(q=''){const list=terms.filter(t=>(t[0]+' '+t[1]).toLowerCase().includes(q.toLowerCase()));document.getElementById('terms').innerHTML=list.length?list.map(t=>`<div class="term"><strong>${t[0]}</strong><span class="muted">${t[1]}</span></div>`).join(''):'<div class="empty">Nenhum termo encontrado.</div>'}
 document.getElementById('glossSearch').addEventListener('input',e=>renderTerms(e.target.value));renderTerms();
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));window.scrollTo({top:0,behavior:'smooth'})}document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
-const qs=[{q:'Qual é a principal função de uma locomotiva?',a:['Transportar passageiros dentro dos vagões','Fornecer tração para movimentar veículos ferroviários','Substituir os trilhos'],c:1},{q:'Qual componente ajuda a manter a distância entre os trilhos?',a:['Dormente','Engate','Roda'],c:0},{q:'O que é um vagão?',a:['Um tipo de trilho','Um veículo ferroviário usado principalmente para cargas','Um equipamento de sinalização'],c:1},{q:'Qual é uma característica comum de um vagão-tanque?',a:['É projetado para transportar líquidos ou gases conforme sua especificação','É usado exclusivamente para passageiros','Não possui estrutura de carga'],c:0},{q:'O que é a via permanente?',a:['Apenas a locomotiva','Conjunto de elementos que formam a via ferroviária','Uma área administrativa'],c:1}];let qi=0,score=0,answered=false;
-function startQuiz(){qi=0;score=0;answered=false;document.getElementById('restartBtn').style.display='none';renderQuestion()}function renderQuestion(){let x=qs[qi];document.getElementById('quizProgress').textContent=`Pergunta ${qi+1} de ${qs.length}`;document.getElementById('question').textContent=x.q;document.getElementById('feedback').textContent='';document.getElementById('nextBtn').style.display='none';document.getElementById('answers').innerHTML=x.a.map((a,i)=>`<button onclick="answer(${i})">${String.fromCharCode(65+i)}. ${a}</button>`).join('');answered=false}
-function answer(i){if(answered)return;answered=true;let ok=i===qs[qi].c;if(ok)score++;document.querySelectorAll('#answers button').forEach((b,j)=>{b.disabled=true;if(j===qs[qi].c)b.style.borderColor='#247a55'});document.getElementById('feedback').textContent=ok?'✓ Resposta correta!':'Não foi dessa vez. Revise o conteúdo e tente novamente.';document.getElementById('nextBtn').style.display='inline-block';document.getElementById('nextBtn').textContent=qi===qs.length-1?'Ver resultado':'Próxima pergunta'}
-function nextQuestion(){if(qi<qs.length-1){qi++;renderQuestion()}else{let pct=Math.round(score/qs.length*100);let old=Number(localStorage.getItem('mf_best')||0);localStorage.setItem('mf_best',Math.max(old,pct));localStorage.setItem('mf_done',Number(localStorage.getItem('mf_done')||0)+1);document.getElementById('question').textContent=`Você acertou ${score} de ${qs.length} perguntas!`;document.getElementById('answers').innerHTML=`<p class="muted">Seu resultado: ${pct}% de aproveitamento.</p>`;document.getElementById('feedback').textContent='Continue aprendendo e volte para testar seus conhecimentos.';document.getElementById('nextBtn').style.display='none';document.getElementById('restartBtn').style.display='inline-block';updateStats()}}
-function updateStats(){document.getElementById('progressCount').textContent=localStorage.getItem('mf_done')||0;document.getElementById('scoreCount').textContent=(localStorage.getItem('mf_best')||0)+'%'}updateStats();startQuiz();</script>
+
+const quizQuestions = {
+  basico: [
+    {q:'Qual é a principal função de uma locomotiva?',a:['Transportar passageiros dentro dos vagões','Fornecer tração para movimentar veículos ferroviários','Substituir os trilhos'],c:1},
+    {q:'O que é um vagão?',a:['Um veículo ferroviário usado principalmente para transportar cargas','Um tipo de sinalização','Uma peça da locomotiva'],c:0},
+    {q:'Qual componente ajuda a manter a distância entre os trilhos?',a:['Engate','Roda','Dormente'],c:2},
+    {q:'O que é a bitola ferroviária?',a:['O comprimento da locomotiva','A distância entre as faces internas dos trilhos','A altura dos vagões'],c:1},
+    {q:'Qual vagão é projetado para transportar líquidos?',a:['Vagão-tanque','Vagão-plataforma','Vagão fechado'],c:0},
+    {q:'Para que serve o lastro da via?',a:['Armazenar combustível','Transportar mercadorias','Apoiar e dar estabilidade à estrutura da via'],c:2},
+    {q:'Qual é a função dos trilhos?',a:['Guiar e oferecer superfície de rolamento às rodas','Armazenar cargas','Produzir energia elétrica'],c:0},
+    {q:'O que é uma composição ferroviária?',a:['Um conjunto de estações','Um conjunto de veículos ferroviários unidos','Uma equipe de manutenção'],c:1},
+    {q:'Qual tecnologia utiliza motores elétricos de tração alimentados por energia de um sistema externo?',a:['Locomotiva a vapor','Locomotiva elétrica','Locomotiva diesel-mecânica'],c:1},
+    {q:'O que é um pátio ferroviário?',a:['Uma oficina exclusivamente rodoviária','Um local destinado somente a passageiros','Uma área com vias para atividades ferroviárias'],c:2}
+  ],
+
+  intermediario: [
+    {q:'Em uma locomotiva diesel-elétrica, qual é a função principal do alternador ou gerador?',a:['Produzir energia elétrica para alimentar os motores de tração','Armazenar os vagões','Controlar a bitola da via'],c:0},
+    {q:'Qual é a finalidade geral de um sistema de freio ferroviário?',a:['Aumentar a capacidade de carga','Reduzir ou controlar a velocidade e imobilizar veículos','Alterar a bitola'],c:1},
+    {q:'O que caracteriza um vagão gôndola?',a:['Possui laterais e é utilizado frequentemente para granéis sólidos','É sempre destinado a passageiros','Transporta exclusivamente líquidos'],c:0},
+    {q:'Qual é a função de um aparelho de mudança de via (AMV)?',a:['Abastecer locomotivas','Medir a velocidade do trem','Permitir a passagem de veículos de uma via para outra'],c:2},
+    {q:'Qual é a função dos rodeiros em um veículo ferroviário?',a:['Apoiar o veículo e permitir seu deslocamento sobre os trilhos','Produzir combustível','Acionar a sinalização das estações'],c:0},
+    {q:'O que é um truque ferroviário?',a:['Um tipo de vagão-tanque','Um conjunto que reúne componentes de apoio e rolamento, como rodeiros e estrutura','Um sistema de comunicação'],c:1},
+    {q:'Qual é a finalidade das fixações ferroviárias?',a:['Armazenar materiais','Aumentar o peso da locomotiva','Prender os trilhos aos dormentes e contribuir para a estabilidade da via'],c:2},
+    {q:'Em termos gerais, o que é sinalização ferroviária?',a:['Um conjunto de sistemas e indicações que contribui para a circulação segura','Uma identificação visual de cargas','Um tipo de manutenção dos vagões'],c:0},
+    {q:'Qual é uma característica comum dos vagões hopper ou tremonha?',a:['Possuem cabine de condução','Possuem compartimentos que podem permitir descarga por gravidade','São utilizados exclusivamente para passageiros'],c:1},
+    {q:'Por que a distribuição da carga em um vagão é importante?',a:['Para alterar a cor do veículo','Para aumentar o comprimento da composição','Para respeitar limites de carga e contribuir para a estabilidade do veículo'],c:2}
+  ],
+
+  avancado: [
+    {q:'Em uma locomotiva diesel-elétrica, qual é a relação entre o motor diesel e os motores de tração?',a:['O motor diesel aciona um gerador ou alternador que fornece energia aos motores de tração','Os motores de tração produzem combustível para o motor diesel','O motor diesel movimenta diretamente os trilhos'],c:0},
+    {q:'Qual é a finalidade geral da suspensão de um veículo ferroviário?',a:['Aumentar a bitola da via','Contribuir para o conforto, a estabilidade e a interação entre veículo e via','Substituir o sistema de freios'],c:1},
+    {q:'O que pode indicar um desgaste irregular em rodas ferroviárias?',a:['Necessariamente uma falha na sinalização','Somente excesso de pintura','Possíveis problemas de contato, condições de operação ou manutenção que exigem avaliação técnica'],c:2},
+    {q:'Por que a inspeção de componentes de um rodeiro é importante?',a:['Para identificar condições que possam comprometer a segurança e a confiabilidade','Para aumentar artificialmente a capacidade de carga','Para dispensar a manutenção preventiva'],c:0},
+    {q:'Qual é a função geral de um sistema de lubrificação em componentes mecânicos?',a:['Aumentar o atrito','Reduzir o atrito e o desgaste entre superfícies em contato','Substituir as inspeções'],c:1},
+    {q:'Em uma via ferroviária, o que significa superelevação em uma curva?',a:['Aumento da potência da locomotiva','Elevação da plataforma de uma estação','Diferença de nível entre os trilhos da curva'],c:2},
+    {q:'Qual é a importância da compatibilidade entre vagão e carga transportada?',a:['Garantir que o veículo, seus equipamentos e limites sejam adequados à carga','Permitir utilizar qualquer vagão sem avaliação','Eliminar a necessidade de acondicionamento'],c:0},
+    {q:'Qual é o objetivo geral do licenciamento ou controle de circulação ferroviária?',a:['Definir o tipo de carga de cada vagão','Organizar e controlar a ocupação dos trechos de via, conforme o sistema e as regras aplicáveis','Substituir a manutenção da infraestrutura'],c:1},
+    {q:'Por que a interação entre roda e trilho é importante?',a:['Porque determina a cor dos veículos','Porque elimina a necessidade de freios','Porque influencia a transmissão de esforços, o desgaste e a dinâmica do veículo'],c:2},
+    {q:'Diante de uma anormalidade identificada em um veículo ferroviário, qual deve ser a conduta geral?',a:['Comunicar e seguir os procedimentos oficiais de segurança e avaliação técnica','Ignorar a anormalidade se o trem estiver em movimento','Realizar qualquer intervenção sem autorização'],c:0}
+  ]
+};
+
+let qs = [];
+let currentQuizLevel = '';
+let qi = 0;
+let score = 0;
+let answered = false;
+
+function selectQuizLevel(level) {
+  if (!quizQuestions[level]) return;
+
+  currentQuizLevel = level;
+  qs = quizQuestions[level];
+
+  const names = {
+    basico: 'Nível Básico',
+    intermediario: 'Nível Intermediário',
+    avancado: 'Nível Avançado'
+  };
+
+  document.getElementById('quizLevelName').textContent = names[level];
+  document.getElementById('quizLevels').style.display = 'none';
+  document.getElementById('quizBox').style.display = 'block';
+
+  startQuiz();
+}
+
+function startQuiz() {
+  qi = 0;
+  score = 0;
+  answered = false;
+
+  document.getElementById('restartBtn').style.display = 'none';
+  document.getElementById('changeLevelBtn').style.display = 'none';
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const x = qs[qi];
+
+  document.getElementById('quizProgress').textContent =
+    `Pergunta ${qi + 1} de ${qs.length}`;
+
+  document.getElementById('question').textContent = x.q;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  document.getElementById('answers').innerHTML = x.a.map((a, i) =>
+    `<button onclick="answer(${i})">${String.fromCharCode(65 + i)}. ${a}</button>`
+  ).join('');
+
+  answered = false;
+}
+
+function answer(i) {
+  if (answered) return;
+
+  answered = true;
+
+  const ok = i === qs[qi].c;
+  if (ok) score++;
+
+  document.querySelectorAll('#answers button').forEach((b, j) => {
+    b.disabled = true;
+
+    if (j === qs[qi].c) {
+      b.style.borderColor = '#247a55';
+    }
+  });
+
+  document.getElementById('feedback').textContent = ok
+    ? '✓ Resposta correta!'
+    : 'Não foi dessa vez. Revise o conteúdo e tente novamente.';
+
+  document.getElementById('nextBtn').style.display = 'inline-block';
+  document.getElementById('nextBtn').textContent =
+    qi === qs.length - 1 ? 'Ver resultado' : 'Próxima pergunta';
+}
+
+function nextQuestion() {
+  if (qi < qs.length - 1) {
+    qi++;
+    renderQuestion();
+  } else {
+    const pct = Math.round(score / qs.length * 100);
+
+    const old = Number(localStorage.getItem('mf_best') || 0);
+
+    localStorage.setItem('mf_best', Math.max(old, pct));
+
+    localStorage.setItem(
+      'mf_done',
+      Number(localStorage.getItem('mf_done') || 0) + 1
+    );
+
+    localStorage.setItem(
+      'mf_best_' + currentQuizLevel,
+      Math.max(
+        Number(localStorage.getItem('mf_best_' + currentQuizLevel) || 0),
+        pct
+      )
+    );
+
+    document.getElementById('quizProgress').textContent = 'Quiz concluído!';
+
+    document.getElementById('question').textContent =
+      `Você acertou ${score} de ${qs.length} perguntas!`;
+
+    document.getElementById('answers').innerHTML =
+      `<p class="muted">Seu resultado: ${pct}% de aproveitamento.</p>
+       <p class="muted">Seu recorde neste nível: ${
+         localStorage.getItem('mf_best_' + currentQuizLevel)
+       }%</p>`;
+
+    document.getElementById('feedback').textContent =
+      'Continue aprendendo e volte para testar seus conhecimentos.';
+
+    document.getElementById('nextBtn').style.display = 'none';
+    document.getElementById('restartBtn').style.display = 'inline-block';
+    document.getElementById('changeLevelBtn').style.display = 'inline-block';
+
+    updateStats();
+  }
+}
+
+function backToQuizLevels() {
+  document.getElementById('quizBox').style.display = 'none';
+  document.getElementById('quizLevels').style.display = 'block';
+}
+
+function updateStats() {
+  document.getElementById('progressCount').textContent =
+    localStorage.getItem('mf_done') || 0;
+
+  document.getElementById('scoreCount').textContent =
+    (localStorage.getItem('mf_best') || 0) + '%';
+}
+
+updateStats();
+</script>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
