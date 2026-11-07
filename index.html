@@ -113,7 +113,144 @@ nav button[data-page="galeria"],
 .btn-delete-post:active {
   transform: scale(0.96);
 }
-  
+
+/* =================================
+   RANKING FERROVIÁRIO
+================================= */
+
+#ranking .card {
+  border-radius: 18px;
+  border: 1px solid #dce5ea;
+  box-shadow: 0 5px 18px rgba(16, 43, 63, 0.07);
+}
+
+#ranking .card > h3 {
+  color: #102b3f;
+  font-weight: 900;
+}
+
+#ranking [data-ranking-level] {
+  min-height: 46px;
+  border-radius: 11px;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+#ranking [data-ranking-level]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(16, 43, 63, .15);
+}
+
+/* PÓDIO */
+
+#ranking #rankingFirst,
+#ranking #rankingSecond,
+#ranking #rankingThird {
+  min-height: 105px;
+  padding: 15px 10px;
+  border-radius: 13px;
+  text-align: center;
+  background: #f3f6f8;
+  border: 1px solid #dce5ea;
+}
+
+#ranking #rankingFirst {
+  background: linear-gradient(145deg, #fff5cf, #fffdf5);
+  border: 2px solid #f0b323;
+}
+
+#ranking #rankingSecond {
+  background: linear-gradient(145deg, #edf1f4, #ffffff);
+  border: 2px solid #aebbc4;
+}
+
+#ranking #rankingThird {
+  background: linear-gradient(145deg, #f8e6d7, #fffaf5);
+  border: 2px solid #bd8054;
+}
+
+#ranking #rankingFirst h3,
+#ranking #rankingSecond h3,
+#ranking #rankingThird h3 {
+  color: #102b3f;
+  overflow-wrap: anywhere;
+}
+
+/* LISTA TOP 10 */
+
+#ranking .ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  margin: 10px 0;
+  border: 1px solid #dce5ea;
+  border-radius: 13px;
+  background: #f8fafb;
+  transition: transform .2s ease;
+}
+
+#ranking .ranking-item:first-child {
+  background: #fff8df;
+  border-color: #f0b323;
+}
+
+#ranking .ranking-item:hover {
+  transform: translateX(3px);
+}
+
+#ranking .ranking-position {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #102b3f;
+  color: #fff;
+  font-weight: 900;
+}
+
+#ranking .ranking-info {
+  flex: 1;
+  min-width: 0;
+}
+
+#ranking .ranking-info strong {
+  display: block;
+  color: #102b3f;
+  overflow-wrap: anywhere;
+}
+
+#ranking .ranking-info small {
+  display: block;
+  margin-top: 4px;
+  color: #617482;
+}
+
+#ranking .ranking-score {
+  color: #174a67;
+  font-size: 17px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+/* AJUSTES PARA CELULAR */
+
+@media (max-width: 600px) {
+  #ranking .card {
+    padding: 15px;
+  }
+
+  #ranking .ranking-item {
+    gap: 9px;
+    padding: 11px;
+  }
+
+  #ranking .ranking-score {
+    font-size: 15px;
+  }
+}
+   
 </style></head>
 <body>
  <div id="splash-screen">
