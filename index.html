@@ -1181,7 +1181,85 @@ window.addEventListener('load', async()=>{
   
 </script>
 
-<style> .full-news-cover {
+<style> 
+/* ==================================
+   CONFIGURAÇÕES - MUNDO FERROVIÁRIO
+================================== */
+
+.settings-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.settings-box {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: #102b3f;
+  color: #ffffff;
+  border: 2px solid #f0b323;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
+}
+
+.settings-box h2 {
+  color: #f0b323;
+  text-align: center;
+  margin: 10px 0 25px;
+}
+
+.settings-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.settings-option {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.settings-option label {
+  font-weight: bold;
+}
+
+.settings-option select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #f0b323;
+  background: #ffffff;
+  color: #102b3f;
+  font-size: 16px;
+}
+
+.settings-save {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  background: #f0b323;
+  color: #102b3f;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}  
+  
+  .full-news-cover {
   width:100%;
   max-height:420px;
   object-fit:cover;
