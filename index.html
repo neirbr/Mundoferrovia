@@ -879,6 +879,7 @@ function answer(i) {
     qi === qs.length - 1 ? 'Ver resultado' : 'Próxima pergunta';
 }
 
+
 function nextQuestion() {
   if (qi < qs.length - 1) {
     qi++;
@@ -903,6 +904,11 @@ function nextQuestion() {
       )
     );
 
+    // SALVAR MELHOR PONTUAÇÃO NO FIREBASE
+    if (typeof window.MF_SAVE_QUIZ_SCORE === 'function') {
+      window.MF_SAVE_QUIZ_SCORE(pct, currentQuizLevel);
+    }
+
     document.getElementById('quizProgress').textContent = 'Quiz concluído!';
 
     document.getElementById('question').textContent =
@@ -925,20 +931,6 @@ function nextQuestion() {
   }
 }
 
-function backToQuizLevels() {
-  document.getElementById('quizBox').style.display = 'none';
-  document.getElementById('quizLevels').style.display = 'block';
-}
-
-function updateStats() {
-  document.getElementById('progressCount').textContent =
-    localStorage.getItem('mf_done') || 0;
-
-  document.getElementById('scoreCount').textContent =
-    (localStorage.getItem('mf_best') || 0) + '%';
-}
-
-updateStats();
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
