@@ -1264,6 +1264,44 @@ window.addEventListener('load', function () {
   }
 });
 </script>
+
+<!-- JANELA DE CONFIGURAÇÕES -->
+<div id="settingsModal" class="settings-modal" style="display:none;">
+
+  <div class="settings-box">
+
+    <button type="button" id="closeSettings" class="settings-close">
+      ✖
+    </button>
+
+    <h2>⚙️ Configurações</h2>
+
+    <div class="settings-option">
+      <label for="themeSelect">🎨 Aparência</label>
+
+      <select id="themeSelect">
+        <option value="light">Modo claro</option>
+        <option value="dark">Modo escuro</option>
+      </select>
+    </div>
+
+    <div class="settings-option">
+      <label for="languageSelect">🌎 Idioma</label>
+
+      <select id="languageSelect">
+        <option value="pt">Português</option>
+        <option value="en">English</option>
+        <option value="es">Español</option>
+      </select>
+    </div>
+
+    <button type="button" id="saveSettings" class="settings-save">
+      Salvar configurações
+    </button>
+
+  </div>
+</div>
+<!-- FIM DAS CONFIGURAÇÕES -->
   
 <script>
 (function () {
