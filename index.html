@@ -410,15 +410,111 @@ body.dark-mode .footer {
 
 </nav></header>
 <div class="top-note">PLATAFORMA GRATUITA • CONHECIMENTO, CULTURA E PAIXÃO FERROVIÁRIA</div><main class="wrap">
+
 <section id="home" class="page active">
-<div class="hero"><div class="hero-inner"><div class="eyebrow">Conhecimento que move trilhos</div><h1>O universo ferroviário em um só lugar.</h1><p>História, locomotivas, vagões e aprendizado para quem vive ou é apaixonado pelo mundo dos trilhos.</p><div class="hero-actions"><button class="btn" onclick="showPage('aprender')">Começar a explorar →</button><button class="btn outline" onclick="showPage('quiz')">Testar conhecimentos</button></div></div></div>
-<div class="section-head"><div><span class="tag">EXPLORE</span><h2>Conheça nossas áreas</h2></div></div>
-<div class="grid">
-<article class="card"><div class="emoji">🚆</div><h3>Locomotivas</h3><p>Conheça os tipos de locomotivas, suas aplicações e a evolução da tração ferroviária.</p><button onclick="showPage('aprender')">Explorar conteúdo →</button></article>
-<article class="card"><div class="emoji">🚃</div><h3>Vagões</h3><p>Descubra categorias de vagões e como diferentes cargas são transportadas.</p><button onclick="showPage('aprender')">Explorar conteúdo →</button></article>
-<article class="card"><div class="emoji">📚</div><h3>Glossário ferroviário</h3><p>Aprenda termos e expressões usados no cotidiano ferroviário.</p><button onclick="showPage('glossario')">Consultar glossário →</button></article>
-</div>
-<div class="ad-slot"><strong>ESPAÇO PUBLICITÁRIO</strong>Este espaço poderá receber anúncios de parceiros e serviços do setor ferroviário.</div><div class="section-head"><h2>Seu aprendizado</h2></div><div class="stats"><div class="stat"><strong id="progressCount">0</strong><small>quizzes concluídos</small></div><div class="stat"><strong id="scoreCount">0%</strong><small>melhor aproveitamento</small></div><div class="stat"><strong>100%</strong><small>paixão pelos trilhos</small></div></div>
+
+  <div class="hero">
+    <div class="hero-inner">
+
+      <div class="eyebrow" data-i18n="heroEyebrow">
+        Conhecimento que move trilhos
+      </div>
+
+      <h1 data-i18n="heroTitle">
+        O universo ferroviário em um só lugar.
+      </h1>
+
+      <p data-i18n="heroDescription">
+        História, locomotivas, vagões e aprendizado para quem vive ou é apaixonado pelo mundo dos trilhos.
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn" onclick="showPage('aprender')" data-i18n="heroExplore">
+          Começar a explorar →
+        </button>
+
+        <button class="btn outline" onclick="showPage('quiz')" data-i18n="heroQuiz">
+          Testar conhecimentos
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-head">
+    <div>
+      <span class="tag" data-i18n="exploreTag">EXPLORE</span>
+      <h2 data-i18n="areasTitle">Conheça nossas áreas</h2>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <article class="card">
+      <div class="emoji">🚆</div>
+      <h3 data-i18n="homeLocomotives">Locomotivas</h3>
+      <p data-i18n="homeLocomotivesDesc">
+        Conheça os tipos de locomotivas, suas aplicações e a evolução da tração ferroviária.
+      </p>
+      <button onclick="showPage('aprender')" data-i18n="exploreContent">
+        Explorar conteúdo →
+      </button>
+    </article>
+
+    <article class="card">
+      <div class="emoji">🚃</div>
+      <h3 data-i18n="homeWagons">Vagões</h3>
+      <p data-i18n="homeWagonsDesc">
+        Descubra categorias de vagões e como diferentes cargas são transportadas.
+      </p>
+      <button onclick="showPage('aprender')" data-i18n="exploreContent">
+        Explorar conteúdo →
+      </button>
+    </article>
+
+    <article class="card">
+      <div class="emoji">📚</div>
+      <h3 data-i18n="homeGlossary">Glossário ferroviário</h3>
+      <p data-i18n="homeGlossaryDesc">
+        Aprenda termos e expressões usados no cotidiano ferroviário.
+      </p>
+      <button onclick="showPage('glossario')" data-i18n="consultGlossary">
+        Consultar glossário →
+      </button>
+    </article>
+
+  </div>
+
+  <div class="ad-slot">
+    <strong data-i18n="advertising">ESPAÇO PUBLICITÁRIO</strong>
+    <span data-i18n="advertisingDesc">
+      Este espaço poderá receber anúncios de parceiros e serviços do setor ferroviário.
+    </span>
+  </div>
+
+  <div class="section-head">
+    <h2 data-i18n="learningTitle">Seu aprendizado</h2>
+  </div>
+
+  <div class="stats">
+
+    <div class="stat">
+      <strong id="progressCount">0</strong>
+      <small data-i18n="quizzesCompleted">quizzes concluídos</small>
+    </div>
+
+    <div class="stat">
+      <strong id="scoreCount">0%</strong>
+      <small data-i18n="bestPerformance">melhor aproveitamento</small>
+    </div>
+
+    <div class="stat">
+      <strong>100%</strong>
+      <small data-i18n="railwayPassion">paixão pelos trilhos</small>
+    </div>
+
+  </div>
+
 </section>
 
 <section id="locomotivas" class="page"><div class="section-head"><div><span class="tag">MATERIAL RODANTE</span><h2>Universo das locomotivas</h2><p class="muted">Conheça conceitos e famílias de locomotivas. Características variam conforme fabricante, modelo e configuração.</p></div></div><div class="grid">
