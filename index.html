@@ -1687,8 +1687,156 @@ window.addEventListener('load', function () {
 
     const lang = translations[language]
       ? language
+
+<script>
+// CONFIGURAÇÕES E IDIOMAS - MUNDO FERROVIÁRIO
+(function () {
+
+  const openBtn = document.getElementById('openSettings');
+  const closeBtn = document.getElementById('closeSettings');
+  const modal = document.getElementById('settingsModal');
+  const themeSelect = document.getElementById('themeSelect');
+  const languageSelect = document.getElementById('languageSelect');
+  const saveBtn = document.getElementById('saveSettings');
+
+  if (!openBtn || !closeBtn || !modal ||
+      !themeSelect || !languageSelect || !saveBtn) {
+    return;
+  }
+
+  // TRADUÇÕES DO SITE
+  const translations = {
+
+    pt: {
+      home: 'Início',
+      locomotivas: 'Locomotivas',
+      vagoes: 'Vagões',
+      aprender: 'Aprenda',
+      glossario: 'Glossário',
+      quiz: 'Quiz',
+      ranking: '🏆 Ranking',
+      noticias: 'Notícias',
+      enciclopedia: 'Enciclopédia',
+      galeria: 'Galeria',
+      comunidade: 'Comunidade',
+      perfil: 'Meu Perfil',
+      sobre: 'Sobre',
+      settings: '⚙️ Configurações',
+      saved: 'Configurações salvas com sucesso!',
+
+      heroEyebrow: 'Conhecimento que move trilhos',
+      heroTitle: 'O universo ferroviário em um só lugar.',
+      heroDescription: 'História, locomotivas, vagões e aprendizado para quem vive ou é apaixonado pelo mundo dos trilhos.',
+      heroExplore: 'Começar a explorar →',
+      heroQuiz: 'Testar conhecimentos',
+      exploreTag: 'EXPLORE',
+      areasTitle: 'Conheça nossas áreas',
+      homeLocomotives: 'Locomotivas',
+      homeLocomotivesDesc: 'Conheça os tipos de locomotivas, suas aplicações e a evolução da tração ferroviária.',
+      homeWagons: 'Vagões',
+      homeWagonsDesc: 'Descubra categorias de vagões e como diferentes cargas são transportadas.',
+      homeGlossary: 'Glossário ferroviário',
+      homeGlossaryDesc: 'Aprenda termos e expressões usados no cotidiano ferroviário.',
+      exploreContent: 'Explorar conteúdo →',
+      consultGlossary: 'Consultar glossário →',
+      advertising: 'ESPAÇO PUBLICITÁRIO',
+      advertisingDesc: 'Este espaço poderá receber anúncios de parceiros e serviços do setor ferroviário.',
+      learningTitle: 'Seu aprendizado',
+      quizzesCompleted: 'quizzes concluídos',
+      bestPerformance: 'melhor aproveitamento',
+      railwayPassion: 'paixão pelos trilhos'
+    },
+
+    en: {
+      home: 'Home',
+      locomotivas: 'Locomotives',
+      vagoes: 'Railway Cars',
+      aprender: 'Learn',
+      glossario: 'Glossary',
+      quiz: 'Quiz',
+      ranking: '🏆 Ranking',
+      noticias: 'News',
+      enciclopedia: 'Encyclopedia',
+      galeria: 'Gallery',
+      comunidade: 'Community',
+      perfil: 'My Profile',
+      sobre: 'About',
+      settings: '⚙️ Settings',
+      saved: 'Settings saved successfully!',
+
+      heroEyebrow: 'Knowledge that moves the rails',
+      heroTitle: 'The railway universe in one place.',
+      heroDescription: 'History, locomotives, railway cars and learning for those who work in or love the world of railways.',
+      heroExplore: 'Start exploring →',
+      heroQuiz: 'Test your knowledge',
+      exploreTag: 'EXPLORE',
+      areasTitle: 'Discover our sections',
+      homeLocomotives: 'Locomotives',
+      homeLocomotivesDesc: 'Discover locomotive types, their applications and the evolution of railway traction.',
+      homeWagons: 'Railway Cars',
+      homeWagonsDesc: 'Discover railway car categories and how different types of cargo are transported.',
+      homeGlossary: 'Railway Glossary',
+      homeGlossaryDesc: 'Learn terms and expressions used in everyday railway operations.',
+      exploreContent: 'Explore content →',
+      consultGlossary: 'View glossary →',
+      advertising: 'ADVERTISING SPACE',
+      advertisingDesc: 'This space may feature advertisements from railway industry partners and service providers.',
+      learningTitle: 'Your Learning',
+      quizzesCompleted: 'quizzes completed',
+      bestPerformance: 'best score',
+      railwayPassion: 'passion for railways'
+    },
+
+    es: {
+      home: 'Inicio',
+      locomotivas: 'Locomotoras',
+      vagoes: 'Vagones',
+      aprender: 'Aprender',
+      glossario: 'Glosario',
+      quiz: 'Cuestionario',
+      ranking: '🏆 Clasificación',
+      noticias: 'Noticias',
+      enciclopedia: 'Enciclopedia',
+      galeria: 'Galería',
+      comunidade: 'Comunidad',
+      perfil: 'Mi Perfil',
+      sobre: 'Acerca de',
+      settings: '⚙️ Configuración',
+      saved: '¡Configuración guardada correctamente!',
+
+      heroEyebrow: 'Conocimiento que mueve los rieles',
+      heroTitle: 'El universo ferroviario en un solo lugar.',
+      heroDescription: 'Historia, locomotoras, vagones y aprendizaje para quienes trabajan o sienten pasión por el mundo ferroviario.',
+      heroExplore: 'Comenzar a explorar →',
+      heroQuiz: 'Poner a prueba tus conocimientos',
+      exploreTag: 'EXPLORA',
+      areasTitle: 'Conoce nuestras secciones',
+      homeLocomotives: 'Locomotoras',
+      homeLocomotivesDesc: 'Conoce los tipos de locomotoras, sus aplicaciones y la evolución de la tracción ferroviaria.',
+      homeWagons: 'Vagones',
+      homeWagonsDesc: 'Descubre las categorías de vagones y cómo se transportan diferentes cargas.',
+      homeGlossary: 'Glosario ferroviario',
+      homeGlossaryDesc: 'Aprende términos y expresiones utilizados en el día a día ferroviario.',
+      exploreContent: 'Explorar contenido →',
+      consultGlossary: 'Consultar glosario →',
+      advertising: 'ESPACIO PUBLICITARIO',
+      advertisingDesc: 'Este espacio podrá recibir anuncios de socios y servicios del sector ferroviario.',
+      learningTitle: 'Tu aprendizaje',
+      quizzesCompleted: 'cuestionarios completados',
+      bestPerformance: 'mejor rendimiento',
+      railwayPassion: 'pasión por los rieles'
+    }
+
+  };
+
+  // APLICAR IDIOMA
+  function applyLanguage(language) {
+
+    const lang = translations[language]
+      ? language
       : 'pt';
 
+    // TRADUZIR MENU
     document.querySelectorAll('nav button[data-page]')
       .forEach(function (button) {
 
@@ -1700,10 +1848,25 @@ window.addEventListener('load', function () {
 
       });
 
+    // TRADUZIR BOTÃO DE CONFIGURAÇÕES
     openBtn.textContent = translations[lang].settings;
 
+    // TRADUZIR ELEMENTOS DA PÁGINA
+    document.querySelectorAll('[data-i18n]')
+      .forEach(function (element) {
+
+        const key = element.getAttribute('data-i18n');
+
+        if (translations[lang][key] !== undefined) {
+          element.textContent = translations[lang][key];
+        }
+
+      });
+
+    // DEFINIR IDIOMA DO DOCUMENTO
     document.documentElement.lang = lang;
 
+    // SALVAR IDIOMA
     localStorage.setItem('mf_language', lang);
   }
 
@@ -1717,6 +1880,7 @@ window.addEventListener('load', function () {
   themeSelect.value = savedTheme;
   languageSelect.value = savedLanguage;
 
+  // APLICAR TEMA SALVO
   document.body.classList.toggle(
     'dark-mode',
     savedTheme === 'dark'
@@ -1765,6 +1929,7 @@ window.addEventListener('load', function () {
 
 })();
 </script>
+
   
 <script>
 (function () {
