@@ -517,11 +517,48 @@ body.dark-mode .footer {
 
 </section>
 
-<section id="locomotivas" class="page"><div class="section-head"><div><span class="tag">MATERIAL RODANTE</span><h2>Universo das locomotivas</h2><p class="muted">Conheça conceitos e famílias de locomotivas. Características variam conforme fabricante, modelo e configuração.</p></div></div><div class="grid">
-<article class="card item-card"><div class="emoji">🚂</div><h3>Diesel-elétrica</h3><p>Utiliza um motor diesel para acionar um gerador ou alternador, que fornece energia aos motores elétricos de tração.</p><span class="tag">Tração diesel-elétrica</span></article>
-<article class="card item-card"><div class="emoji">⚡</div><h3>Elétrica</h3><p>Recebe energia de uma fonte externa, como rede aérea ou terceiro trilho, e utiliza motores elétricos para produzir tração.</p><span class="tag">Tração elétrica</span></article>
-<article class="card item-card"><div class="emoji">🔥</div><h3>Vapor</h3><p>Modelo histórico que utiliza vapor sob pressão para movimentar mecanismos ligados às rodas motrizes.</p><span class="tag">História ferroviária</span></article>
-</div><div class="ad-slot"><strong>ESPAÇO PUBLICITÁRIO</strong>Publicidade relevante para leitores e profissionais do setor.</div><div class="notice"><strong>Nota:</strong> informações técnicas detalhadas de cada modelo deverão ser conferidas em manuais do fabricante e documentos oficiais.</div></section>
+<section id="locomotivas" class="page">
+  <div class="section-head">
+    <div>
+      <span class="tag" data-i18n="locoTag">MATERIAL RODANTE</span>
+      <h2 data-i18n="locoTitle">Universo das locomotivas</h2>
+      <p class="muted" data-i18n="locoDescription">Conheça conceitos e famílias de locomotivas. Características variam conforme fabricante, modelo e configuração.</p>
+    </div>
+  </div>
+
+  <div class="grid">
+    <article class="card item-card">
+      <div class="emoji">🚂</div>
+      <h3 data-i18n="locoDieselTitle">Diesel-elétrica</h3>
+      <p data-i18n="locoDieselDescription">Utiliza um motor diesel para acionar um gerador ou alternador, que fornece energia aos motores elétricos de tração.</p>
+      <span class="tag" data-i18n="locoDieselTag">Tração diesel-elétrica</span>
+    </article>
+
+    <article class="card item-card">
+      <div class="emoji">⚡</div>
+      <h3 data-i18n="locoElectricTitle">Elétrica</h3>
+      <p data-i18n="locoElectricDescription">Recebe energia de uma fonte externa, como rede aérea ou terceiro trilho, e utiliza motores elétricos para produzir tração.</p>
+      <span class="tag" data-i18n="locoElectricTag">Tração elétrica</span>
+    </article>
+
+    <article class="card item-card">
+      <div class="emoji">🔥</div>
+      <h3 data-i18n="locoSteamTitle">Vapor</h3>
+      <p data-i18n="locoSteamDescription">Modelo histórico que utiliza vapor sob pressão para movimentar mecanismos ligados às rodas motrizes.</p>
+      <span class="tag" data-i18n="locoSteamTag">História ferroviária</span>
+    </article>
+  </div>
+
+  <div class="ad-slot">
+    <strong data-i18n="locoAdvertising">ESPAÇO PUBLICITÁRIO</strong>
+    <span data-i18n="locoAdvertisingDescription">Publicidade relevante para leitores e profissionais do setor.</span>
+  </div>
+
+  <div class="notice">
+    <strong data-i18n="locoNoteTitle">Nota:</strong>
+    <span data-i18n="locoNoteDescription"> informações técnicas detalhadas de cada modelo deverão ser conferidas em manuais do fabricante e documentos oficiais.</span>
+  </div>
+</section>
 <section id="vagoes" class="page"><div class="section-head"><div><span class="tag">TRANSPORTE FERROVIÁRIO</span><h2>Conheça os vagões</h2><p class="muted">Exemplos de categorias de vagões e suas aplicações gerais.</p></div></div><div class="grid">
 <article class="card item-card"><div class="emoji">🪨</div><h3>Gôndola</h3><p>Vagão de laterais fixas, utilizado em diferentes configurações para cargas como minério, carvão e outros granéis sólidos.</p><span class="tag">Granéis sólidos</span></article>
 <article class="card item-card"><div class="emoji">🌾</div><h3>Hopper / tremonha</h3><p>Possui compartimentos e sistemas de descarga, frequentemente empregado no transporte de granéis.</p><span class="tag">Descarga por gravidade</span></article>
@@ -1662,7 +1699,24 @@ window.addEventListener('load', function () {
       learningTitle: 'Seu aprendizado',
       quizzesCompleted: 'quizzes concluídos',
       bestPerformance: 'melhor aproveitamento',
-      railwayPassion: 'paixão pelos trilhos'
+      railwayPassion: 'paixão pelos trilhos',
+
+      locoTag: 'MATERIAL RODANTE',
+      locoTitle: 'Universo das locomotivas',
+      locoDescription: 'Conheça conceitos e famílias de locomotivas. Características variam conforme fabricante, modelo e configuração.',
+      locoDieselTitle: 'Diesel-elétrica',
+      locoDieselDescription: 'Utiliza um motor diesel para acionar um gerador ou alternador, que fornece energia aos motores elétricos de tração.',
+      locoDieselTag: 'Tração diesel-elétrica',
+      locoElectricTitle: 'Elétrica',
+      locoElectricDescription: 'Recebe energia de uma fonte externa, como rede aérea ou terceiro trilho, e utiliza motores elétricos para produzir tração.',
+      locoElectricTag: 'Tração elétrica',
+      locoSteamTitle: 'Vapor',
+      locoSteamDescription: 'Modelo histórico que utiliza vapor sob pressão para movimentar mecanismos ligados às rodas motrizes.',
+      locoSteamTag: 'História ferroviária',
+      locoAdvertising: 'ESPAÇO PUBLICITÁRIO',
+      locoAdvertisingDescription: 'Publicidade relevante para leitores e profissionais do setor.',
+      locoNoteTitle: 'Nota:',
+      locoNoteDescription: ' informações técnicas detalhadas de cada modelo deverão ser conferidas em manuais do fabricante e documentos oficiais.'
     },
 
     en: {
@@ -1702,7 +1756,24 @@ window.addEventListener('load', function () {
       learningTitle: 'Your Learning',
       quizzesCompleted: 'quizzes completed',
       bestPerformance: 'best score',
-      railwayPassion: 'passion for railways'
+      railwayPassion: 'passion for railways',
+
+      locoTag: 'ROLLING STOCK',
+      locoTitle: 'The World of Locomotives',
+      locoDescription: 'Discover locomotive concepts and families. Characteristics vary according to manufacturer, model and configuration.',
+      locoDieselTitle: 'Diesel-Electric',
+      locoDieselDescription: 'Uses a diesel engine to drive a generator or alternator, which supplies power to the electric traction motors.',
+      locoDieselTag: 'Diesel-Electric Traction',
+      locoElectricTitle: 'Electric',
+      locoElectricDescription: 'Receives power from an external source, such as an overhead line or third rail, and uses electric motors to produce traction.',
+      locoElectricTag: 'Electric Traction',
+      locoSteamTitle: 'Steam',
+      locoSteamDescription: 'A historical locomotive that uses pressurized steam to move mechanisms connected to the driving wheels.',
+      locoSteamTag: 'Railway History',
+      locoAdvertising: 'ADVERTISING SPACE',
+      locoAdvertisingDescription: 'Relevant advertising for railway readers and industry professionals.',
+      locoNoteTitle: 'Note:',
+      locoNoteDescription: ' detailed technical information for each model should be verified in manufacturer manuals and official documents.'
     },
 
     es: {
@@ -1742,7 +1813,24 @@ window.addEventListener('load', function () {
       learningTitle: 'Tu aprendizaje',
       quizzesCompleted: 'cuestionarios completados',
       bestPerformance: 'mejor rendimiento',
-      railwayPassion: 'pasión por los rieles'
+      railwayPassion: 'pasión por los rieles',
+
+      locoTag: 'MATERIAL RODANTE',
+      locoTitle: 'Universo de las locomotoras',
+      locoDescription: 'Conoce conceptos y familias de locomotoras. Las características varían según el fabricante, modelo y configuración.',
+      locoDieselTitle: 'Diésel-eléctrica',
+      locoDieselDescription: 'Utiliza un motor diésel para accionar un generador o alternador, que suministra energía a los motores eléctricos de tracción.',
+      locoDieselTag: 'Tracción diésel-eléctrica',
+      locoElectricTitle: 'Eléctrica',
+      locoElectricDescription: 'Recibe energía de una fuente externa, como una línea aérea o un tercer riel, y utiliza motores eléctricos para producir tracción.',
+      locoElectricTag: 'Tracción eléctrica',
+      locoSteamTitle: 'Vapor',
+      locoSteamDescription: 'Modelo histórico que utiliza vapor a presión para mover mecanismos conectados a las ruedas motrices.',
+      locoSteamTag: 'Historia ferroviaria',
+      locoAdvertising: 'ESPACIO PUBLICITARIO',
+      locoAdvertisingDescription: 'Publicidad relevante para lectores y profesionales del sector.',
+      locoNoteTitle: 'Nota:',
+      locoNoteDescription: ' la información técnica detallada de cada modelo debe verificarse en los manuales del fabricante y documentos oficiales.'
     }
 
   };
