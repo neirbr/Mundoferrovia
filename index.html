@@ -1510,8 +1510,9 @@ window.addEventListener('load', function () {
 </div>
 <!-- FIM DAS CONFIGURAÇÕES -->
 
+
 <script>
-// CONFIGURAÇÕES DO MUNDO FERROVIÁRIO
+// CONFIGURAÇÕES E IDIOMAS - MUNDO FERROVIÁRIO
 (function () {
 
   const openBtn = document.getElementById('openSettings');
@@ -1526,9 +1527,96 @@ window.addEventListener('load', function () {
     return;
   }
 
-  // Recuperar preferências salvas
-  const savedTheme = localStorage.getItem('mf_theme') || 'light';
-  const savedLanguage = localStorage.getItem('mf_language') || 'pt';
+  // TRADUÇÕES DO MENU
+  const translations = {
+
+    pt: {
+      home: 'Início',
+      locomotivas: 'Locomotivas',
+      vagoes: 'Vagões',
+      aprender: 'Aprenda',
+      glossario: 'Glossário',
+      quiz: 'Quiz',
+      ranking: '🏆 Ranking',
+      noticias: 'Notícias',
+      enciclopedia: 'Enciclopédia',
+      galeria: 'Galeria',
+      comunidade: 'Comunidade',
+      perfil: 'Meu Perfil',
+      sobre: 'Sobre',
+      settings: '⚙️ Configurações',
+      saved: 'Configurações salvas com sucesso!'
+    },
+
+    en: {
+      home: 'Home',
+      locomotivas: 'Locomotives',
+      vagoes: 'Railway Cars',
+      aprender: 'Learn',
+      glossario: 'Glossary',
+      quiz: 'Quiz',
+      ranking: '🏆 Ranking',
+      noticias: 'News',
+      enciclopedia: 'Encyclopedia',
+      galeria: 'Gallery',
+      comunidade: 'Community',
+      perfil: 'My Profile',
+      sobre: 'About',
+      settings: '⚙️ Settings',
+      saved: 'Settings saved successfully!'
+    },
+
+    es: {
+      home: 'Inicio',
+      locomotivas: 'Locomotoras',
+      vagoes: 'Vagones',
+      aprender: 'Aprender',
+      glossario: 'Glosario',
+      quiz: 'Cuestionario',
+      ranking: '🏆 Clasificación',
+      noticias: 'Noticias',
+      enciclopedia: 'Enciclopedia',
+      galeria: 'Galería',
+      comunidade: 'Comunidad',
+      perfil: 'Mi Perfil',
+      sobre: 'Acerca de',
+      settings: '⚙️ Configuración',
+      saved: '¡Configuración guardada correctamente!'
+    }
+
+  };
+
+  // APLICAR IDIOMA
+  function applyLanguage(language) {
+
+    const lang = translations[language]
+      ? language
+      : 'pt';
+
+    document.querySelectorAll('nav button[data-page]')
+      .forEach(function (button) {
+
+        const page = button.dataset.page;
+
+        if (translations[lang][page]) {
+          button.textContent = translations[lang][page];
+        }
+
+      });
+
+    openBtn.textContent = translations[lang].settings;
+
+    document.documentElement.lang = lang;
+
+    localStorage.setItem('mf_language', lang);
+  }
+
+  // RECUPERAR PREFERÊNCIAS
+  const savedTheme =
+    localStorage.getItem('mf_theme') || 'light';
+
+  const savedLanguage =
+    localStorage.getItem('mf_language') || 'pt';
 
   themeSelect.value = savedTheme;
   languageSelect.value = savedLanguage;
@@ -1538,44 +1626,49 @@ window.addEventListener('load', function () {
     savedTheme === 'dark'
   );
 
-  // Abrir configurações
+  // APLICAR IDIOMA SALVO
+  applyLanguage(savedLanguage);
+
+  // ABRIR CONFIGURAÇÕES
   openBtn.addEventListener('click', function () {
     modal.style.display = 'flex';
   });
 
-  // Fechar configurações
+  // FECHAR CONFIGURAÇÕES
   closeBtn.addEventListener('click', function () {
     modal.style.display = 'none';
   });
 
-  // Fechar ao tocar fora da janela
+  // FECHAR AO CLICAR FORA
   modal.addEventListener('click', function (event) {
     if (event.target === modal) {
       modal.style.display = 'none';
     }
   });
 
-  // Salvar preferências
+  // SALVAR PREFERÊNCIAS
   saveBtn.addEventListener('click', function () {
 
     const theme = themeSelect.value;
     const language = languageSelect.value;
 
     localStorage.setItem('mf_theme', theme);
-    localStorage.setItem('mf_language', language);
 
     document.body.classList.toggle(
       'dark-mode',
       theme === 'dark'
     );
 
+    applyLanguage(language);
+
     modal.style.display = 'none';
 
-    alert('Configurações salvas com sucesso!');
+    alert(translations[language].saved);
+
   });
 
 })();
-</script>  
+</script>
   
 <script>
 (function () {
