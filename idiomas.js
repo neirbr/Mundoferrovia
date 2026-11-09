@@ -198,6 +198,8 @@ quiz_restart: "Repetir nivel",
 quiz_change_level: "Elegir otro nivel",
 quiz_ad_title: "ESPACIO PUBLICITARIO",
 quiz_ad_description: "La publicidad ayuda a mantener el contenido gratuito.",
+    }
+  };
 
   function applyPageTranslations() {
     const language =
