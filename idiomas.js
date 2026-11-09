@@ -56,7 +56,20 @@
       glossarySearchPlaceholder: "Buscar um termo...",
       glossarySearchAria: "Buscar termo do glossário",
       glossaryAdTitle: "ESPAÇO PUBLICITÁRIO",
-      glossaryAdDescription: "Seu anúncio pode aparecer aqui futuramente."
+      glossaryAdDescription: "Seu anúncio pode aparecer aqui futuramente.",
+      quiz_tag: "TESTE SEUS CONHECIMENTOS",
+      quiz_title: "Quiz ferroviário",
+      quiz_description: "Escolha seu nível e teste seus conhecimentos sobre o universo ferroviário.",
+      quiz_choose_level: "Escolha seu nível",
+      quiz_level_description: "Cada nível possui 10 perguntas.",
+      quiz_basic: "🟢 Básico",
+      quiz_intermediate: "🟡 Intermediário",
+      quiz_advanced: "🔴 Avançado",
+      quiz_next: "Próxima pergunta",
+      quiz_restart: "Refazer nível",
+      quiz_change_level: "Escolher outro nível",
+      quiz_ad_title: "ESPAÇO PUBLICITÁRIO",
+      quiz_ad_description: "Publicidade ajuda a manter o conteúdo gratuito."
     },
 
     en: {
@@ -106,7 +119,21 @@
       glossarySearchPlaceholder: "Search for a term...",
       glossarySearchAria: "Search glossary terms",
       glossaryAdTitle: "ADVERTISING SPACE",
-      glossaryAdDescription: "Your advertisement may appear here in the future."
+      glossaryAdDescription: "Your advertisement may appear here in the future.",
+
+quiz_tag: "TEST YOUR KNOWLEDGE",
+quiz_title: "Railway Quiz",
+quiz_description: "Choose your level and test your knowledge of the railway world.",
+quiz_choose_level: "Choose your level",
+quiz_level_description: "Each level has 10 questions.",
+quiz_basic: "🟢 Basic",
+quiz_intermediate: "🟡 Intermediate",
+quiz_advanced: "🔴 Advanced",
+quiz_next: "Next question",
+quiz_restart: "Restart level",
+quiz_change_level: "Choose another level",
+quiz_ad_title: "ADVERTISING SPACE",
+quiz_ad_description: "Advertising helps keep the content free."
     },
 
     es: {
@@ -156,9 +183,21 @@
       glossarySearchPlaceholder: "Buscar un término...",
       glossarySearchAria: "Buscar términos del glosario",
       glossaryAdTitle: "ESPACIO PUBLICITARIO",
-      glossaryAdDescription: "Su anuncio podrá aparecer aquí en el futuro."
-    }
-  };
+      glossaryAdDescription: "Su anuncio podrá aparecer aquí en el futuro.",
+
+quiz_tag: "PON A PRUEBA TUS CONOCIMIENTOS",
+quiz_title: "Cuestionario ferroviario",
+quiz_description: "Elige tu nivel y pon a prueba tus conocimientos sobre el mundo ferroviario.",
+quiz_choose_level: "Elige tu nivel",
+quiz_level_description: "Cada nivel tiene 10 preguntas.",
+quiz_basic: "🟢 Básico",
+quiz_intermediate: "🟡 Intermedio",
+quiz_advanced: "🔴 Avanzado",
+quiz_next: "Siguiente pregunta",
+quiz_restart: "Repetir nivel",
+quiz_change_level: "Elegir otro nivel",
+quiz_ad_title: "ESPACIO PUBLICITARIO",
+quiz_ad_description: "La publicidad ayuda a mantener el contenido gratuito.",
 
   function applyPageTranslations() {
     const language =
