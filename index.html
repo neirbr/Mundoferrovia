@@ -1256,9 +1256,107 @@ body.dark-mode .footer {
 <section id="sobre" class="page"><div class="section-head"><div><span class="tag">NOSSA MISSÃO</span><h2>Sobre o Mundo Ferroviário</h2></div></div><div class="card"><h3>Conhecimento que move trilhos.</h3><p>O Mundo Ferroviário nasce para aproximar pessoas do universo das ferrovias, valorizar a cultura ferroviária e facilitar o acesso a conteúdos educativos.</p><p>Queremos reunir curiosidades, materiais de estudo, glossário, histórias, oportunidades e uma comunidade de pessoas que compartilham essa paixão.</p><h3>Nosso compromisso</h3><ul class="content-list"><li>Conteúdo acessível para iniciantes e entusiastas.</li><li>Respeito à diversidade de profissionais e empresas do setor.</li><li>Informações técnicas apresentadas com contexto e responsabilidade.</li><li>Plataforma gratuita, sustentada por publicidade e parcerias.</li></ul><div class="notice"><strong>Transparência:</strong> esta versão é um protótipo demonstrativo. Os espaços publicitários ainda não exibem anúncios reais. A galeria permite envio de fotos por usuários cadastrados, com análise da equipe antes da publicação. A plataforma ainda depende da configuração do Firebase, Cloudinary e da hospedagem.</div></div></section>
 </main><footer class="footer"><strong>MUNDO FERROVIÁRIO</strong><br>Conhecimento que move trilhos. <br><small>Versão 2.1 • 2026 • Plataforma independente</small><br><small><a href="admin.html" style="color:#f0b323">Painel administrativo (protótipo local)</a></small></footer>
 <script>
-const terms=[['AMV / aparelho de mudança de via','Conjunto de componentes que permite encaminhar veículos ferroviários de uma via para outra, conforme o projeto e as regras locais.'],['Acoplamento','União entre veículos ferroviários por meio de dispositivos próprios.'],['Bitola','Distância entre as faces internas dos trilhos de uma via ferroviária.'],['Composição','Conjunto de veículos ferroviários unidos e movimentados em uma operação.'],['Dormente','Elemento transversal que apoia os trilhos e ajuda a manter a bitola.'],['Lastro','Camada de material granular, geralmente pedra britada, que dá suporte e estabilidade à via.'],['Engate','Dispositivo utilizado para unir veículos ferroviários.'],['Locomotiva','Veículo ferroviário motorizado usado para tracionar ou movimentar composições.'],['Material rodante','Conjunto de veículos ferroviários, como locomotivas, vagões e carros.'],['Pátio ferroviário','Área ferroviária destinada, entre outras atividades, à formação, recepção e movimentação de composições, conforme suas regras operacionais.'],['Pátio','Área ferroviária com vias destinadas a atividades como recepção, formação e movimentação de composições.'],['Sinalização ferroviária','Conjunto de indicações e sistemas que contribuem para a circulação segura, conforme regras operacionais.'],['Trilho','Perfil metálico que forma a superfície de rolamento e guia as rodas dos veículos ferroviários.'],['Vagão','Veículo ferroviário destinado principalmente ao transporte de cargas.'],['Via permanente','Conjunto de elementos físicos que compõem a via ferroviária, incluindo trilhos, dormentes, fixações e lastro, quando aplicável.']];
-function renderTerms(q=''){const list=terms.filter(t=>(t[0]+' '+t[1]).toLowerCase().includes(q.toLowerCase()));document.getElementById('terms').innerHTML=list.length?list.map(t=>`<div class="term"><strong>${t[0]}</strong><span class="muted">${t[1]}</span></div>`).join(''):'<div class="empty">Nenhum termo encontrado.</div>'}
-document.getElementById('glossSearch').addEventListener('input',e=>renderTerms(e.target.value));renderTerms();
+
+const termsByLanguage = {
+  pt: [
+    ['AMV / aparelho de mudança de via','Conjunto de componentes que permite encaminhar veículos ferroviários de uma via para outra, conforme o projeto e as regras locais.'],
+    ['Acoplamento','União entre veículos ferroviários por meio de dispositivos próprios.'],
+    ['Bitola','Distância entre as faces internas dos trilhos de uma via ferroviária.'],
+    ['Composição','Conjunto de veículos ferroviários unidos e movimentados em uma operação.'],
+    ['Dormente','Elemento transversal que apoia os trilhos e ajuda a manter a bitola.'],
+    ['Lastro','Camada de material granular, geralmente pedra britada, que dá suporte e estabilidade à via.'],
+    ['Engate','Dispositivo utilizado para unir veículos ferroviários.'],
+    ['Locomotiva','Veículo ferroviário motorizado usado para tracionar ou movimentar composições.'],
+    ['Material rodante','Conjunto de veículos ferroviários, como locomotivas, vagões e carros.'],
+    ['Pátio ferroviário','Área ferroviária destinada, entre outras atividades, à formação, recepção e movimentação de composições, conforme suas regras operacionais.'],
+    ['Pátio','Área ferroviária com vias destinadas a atividades como recepção, formação e movimentação de composições.'],
+    ['Sinalização ferroviária','Conjunto de indicações e sistemas que contribuem para a circulação segura, conforme regras operacionais.'],
+    ['Trilho','Perfil metálico que forma a superfície de rolamento e guia as rodas dos veículos ferroviários.'],
+    ['Vagão','Veículo ferroviário destinado principalmente ao transporte de cargas.'],
+    ['Via permanente','Conjunto de elementos físicos que compõem a via ferroviária, incluindo trilhos, dormentes, fixações e lastro, quando aplicável.']
+  ],
+
+  en: [
+    ['Switch / turnout','Assembly of components that allows railway vehicles to move from one track to another, according to the design and local rules.'],
+    ['Coupling','Connection between railway vehicles using dedicated devices.'],
+    ['Track gauge','Distance between the inner faces of the rails on a railway track.'],
+    ['Train consist','Group of railway vehicles coupled together and moved as part of an operation.'],
+    ['Sleeper / tie','Transverse element that supports the rails and helps maintain the track gauge.'],
+    ['Ballast','Layer of granular material, usually crushed stone, that supports and stabilizes the track.'],
+    ['Coupler','Device used to connect railway vehicles.'],
+    ['Locomotive','Powered railway vehicle used to haul or move train consists.'],
+    ['Rolling stock','Collection of railway vehicles, such as locomotives, freight wagons and passenger cars.'],
+    ['Railway yard','Railway area used, among other activities, for receiving, assembling and moving train consists, according to operating rules.'],
+    ['Yard','Railway area with tracks used for activities such as receiving, assembling and moving train consists.'],
+    ['Railway signaling','Set of indications and systems that help ensure safe railway operations, according to operating rules.'],
+    ['Rail','Metal profile that forms the running surface and guides the wheels of railway vehicles.'],
+    ['Freight wagon','Railway vehicle primarily designed to transport goods.'],
+    ['Permanent way / track','Physical components that make up a railway track, including rails, sleepers, fastenings and ballast, where applicable.']
+  ],
+
+  es: [
+    ['Aparato de vía / desvío','Conjunto de componentes que permite dirigir vehículos ferroviarios de una vía a otra, según el diseño y las normas locales.'],
+    ['Acoplamiento','Unión entre vehículos ferroviarios mediante dispositivos específicos.'],
+    ['Ancho de vía','Distancia entre las caras internas de los rieles de una vía ferroviaria.'],
+    ['Composición','Conjunto de vehículos ferroviarios unidos y movilizados durante una operación.'],
+    ['Traviesa','Elemento transversal que sostiene los rieles y ayuda a mantener el ancho de vía.'],
+    ['Balasto','Capa de material granular, generalmente piedra triturada, que proporciona soporte y estabilidad a la vía.'],
+    ['Enganche','Dispositivo utilizado para unir vehículos ferroviarios.'],
+    ['Locomotora','Vehículo ferroviario motorizado utilizado para arrastrar o mover composiciones.'],
+    ['Material rodante','Conjunto de vehículos ferroviarios, como locomotoras, vagones y coches.'],
+    ['Patio ferroviario','Área ferroviaria destinada, entre otras actividades, a la recepción, formación y movimiento de composiciones, según las normas operativas.'],
+    ['Patio','Área ferroviaria con vías destinadas a actividades como recepción, formación y movimiento de composiciones.'],
+    ['Señalización ferroviaria','Conjunto de indicaciones y sistemas que contribuyen a la circulación segura, según las normas operativas.'],
+    ['Riel','Perfil metálico que forma la superficie de rodadura y guía las ruedas de los vehículos ferroviarios.'],
+    ['Vagón','Vehículo ferroviario destinado principalmente al transporte de cargas.'],
+    ['Vía permanente','Conjunto de elementos físicos que componen la vía ferroviaria, incluidos rieles, traviesas, fijaciones y balasto, cuando corresponda.']
+  ]
+};
+
+const glossaryMessages = {
+  pt: 'Nenhum termo encontrado.',
+  en: 'No terms found.',
+  es: 'No se encontraron términos.'
+};
+
+function renderTerms(q = '') {
+  const lang = document.documentElement.lang ||
+    localStorage.getItem('mf_language') || 'pt';
+
+  const language = termsByLanguage[lang] ? lang : 'pt';
+  const terms = termsByLanguage[language];
+
+  const list = terms.filter(t =>
+    (t[0] + ' ' + t[1]).toLowerCase().includes(q.toLowerCase())
+  );
+
+  document.getElementById('terms').innerHTML = list.length
+    ? list.map(t => `
+        <div class="term">
+          <strong>${t[0]}</strong>
+          <span class="muted">${t[1]}</span>
+        </div>
+      `).join('')
+    : `<div class="empty">${glossaryMessages[language]}</div>`;
+}
+
+const glossSearch = document.getElementById('glossSearch');
+
+glossSearch.addEventListener('input', e => {
+  renderTerms(e.target.value);
+});
+
+renderTerms();
+
+const glossaryLanguageObserver = new MutationObserver(() => {
+  renderTerms(glossSearch.value);
+});
+
+glossaryLanguageObserver.observe(document.documentElement, {
+  attributes: true,
+  attributeFilter: ['lang']
+});
+
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));window.scrollTo({top:0,behavior:'smooth'})}document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
 
 const quizQuestions = {
