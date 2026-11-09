@@ -1334,12 +1334,15 @@ function renderTerms(q = '') {
 
   const language = termsByLanguage[lang] ? lang : 'pt';
   const terms = termsByLanguage[language];
+  const termsContainer = document.getElementById('terms');
+
+  if (!termsContainer) return;
 
   const list = terms.filter(t =>
     (t[0] + ' ' + t[1]).toLowerCase().includes(q.toLowerCase())
   );
 
-  document.getElementById('terms').innerHTML = list.length
+  termsContainer.innerHTML = list.length
     ? list.map(t => `
         <div class="term">
           <strong>${t[0]}</strong>
@@ -1351,24 +1354,41 @@ function renderTerms(q = '') {
 
 const glossSearch = document.getElementById('glossSearch');
 
-glossSearch.addEventListener('input', e => {
-  renderTerms(e.target.value);
+if (glossSearch) {
+  glossSearch.addEventListener('input', e => {
+    renderTerms(e.target.value);
+  });
+
+  renderTerms();
+
+  const glossaryLanguageObserver = new MutationObserver(() => {
+    renderTerms(glossSearch.value);
+  });
+
+  glossaryLanguageObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['lang']
+  });
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.toggle('active', p.id === id);
+  });
+
+  document.querySelectorAll('nav button[data-page]').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === id);
+  });
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('nav button[data-page]').forEach(b => {
+  b.addEventListener('click', () => showPage(b.dataset.page));
 });
-
-renderTerms();
-
-const glossaryLanguageObserver = new MutationObserver(() => {
-  renderTerms(glossSearch.value);
-});
-
-glossaryLanguageObserver.observe(document.documentElement, {
-  attributes: true,
-  attributeFilter: ['lang']
-});
-
-function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));window.scrollTo({top:0,behavior:'smooth'})}document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
 
 const quizQuestions = {
+  
   basico: [
     {q:'Qual é a principal função de uma locomotiva?',a:['Transportar passageiros dentro dos vagões','Fornecer tração para movimentar veículos ferroviários','Substituir os trilhos'],c:1,e:'A locomotiva fornece a força de tração necessária para movimentar uma composição ferroviária. Ela pode tracionar vagões de carga ou carros de passageiros.'},
     {q:'O que é um vagão?',a:['Um veículo ferroviário usado principalmente para transportar cargas','Um tipo de sinalização','Uma peça da locomotiva'],c:0,e:'O vagão é um veículo ferroviário destinado principalmente ao transporte de mercadorias. Existem modelos específicos para diferentes tipos de carga.'},
