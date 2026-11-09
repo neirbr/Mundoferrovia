@@ -2098,9 +2098,17 @@ function startQuiz() {
 
 function renderQuestion() {
   const x = qs[qi];
+  
+const language = document.documentElement.lang || 'pt';
 
-  document.getElementById('quizProgress').textContent =
-    `Pergunta ${qi + 1} de ${qs.length}`;
+const progressTexts = {
+  pt: `Pergunta ${qi + 1} de ${qs.length}`,
+  en: `Question ${qi + 1} of ${qs.length}`,
+  es: `Pregunta ${qi + 1} de ${qs.length}`
+};
+
+document.getElementById('quizProgress').textContent =
+  progressTexts[language] || progressTexts.pt;
 
   document.getElementById('question').textContent = x.q;
   document.getElementById('feedback').textContent = '';
@@ -2135,17 +2143,48 @@ function answer(i) {
     }
   });
 
+  const language = document.documentElement.lang || 'pt';
+
+  const texts = {
+    pt: {
+      correct: '✓ Resposta correta!',
+      incorrect: '✗ Resposta incorreta!',
+      answer: 'Resposta correta:',
+      explanation: 'Entenda:',
+      result: 'Ver resultado',
+      next: 'Próxima pergunta'
+    },
+    en: {
+      correct: '✓ Correct answer!',
+      incorrect: '✗ Incorrect answer!',
+      answer: 'Correct answer:',
+      explanation: 'Explanation:',
+      result: 'See results',
+      next: 'Next question'
+    },
+    es: {
+      correct: '✓ ¡Respuesta correcta!',
+      incorrect: '✗ ¡Respuesta incorrecta!',
+      answer: 'Respuesta correcta:',
+      explanation: 'Explicación:',
+      result: 'Ver resultado',
+      next: 'Siguiente pregunta'
+    }
+  };
+
+  const t = texts[language] || texts.pt;
+
   document.getElementById('feedback').innerHTML = `
     <div class="notice" style="margin-top:12px">
-      <strong>${ok ? '✓ Resposta correta!' : '✗ Resposta incorreta!'}</strong>
+      <strong>${ok ? t.correct : t.incorrect}</strong>
 
       <p style="margin-top:10px">
-        <strong>Resposta correta:</strong>
+        <strong>${t.answer}</strong>
         ${String.fromCharCode(65 + x.c)}. ${x.a[x.c]}
       </p>
 
       <p style="margin-top:10px">
-        <strong>Entenda:</strong> ${x.e}
+        <strong>${t.explanation}</strong> ${x.e}
       </p>
     </div>
   `;
@@ -2153,9 +2192,8 @@ function answer(i) {
   document.getElementById('nextBtn').style.display = 'inline-block';
 
   document.getElementById('nextBtn').textContent =
-    qi === qs.length - 1 ? 'Ver resultado' : 'Próxima pergunta';
+    qi === qs.length - 1 ? t.result : t.next;
 }
-
 
 function nextQuestion() {
   if (qi < qs.length - 1) {
@@ -2186,19 +2224,57 @@ function nextQuestion() {
       window.MF_SAVE_QUIZ_SCORE(pct, currentQuizLevel);
     }
 
-    document.getElementById('quizProgress').textContent = 'Quiz concluído!';
+    const language =
+      document.documentElement.lang ||
+      localStorage.getItem('mf_language') ||
+      'pt';
+
+    const lang = ['pt', 'en', 'es'].includes(language)
+      ? language
+      : 'pt';
+
+    const texts = {
+      pt: {
+        completed: 'Quiz concluído!',
+        score: `Você acertou ${score} de ${qs.length} perguntas!`,
+        result: `Seu resultado: ${pct}% de aproveitamento.`,
+        record: 'Seu recorde neste nível:',
+        message: 'Continue aprendendo e volte para testar seus conhecimentos.'
+      },
+      en: {
+        completed: 'Quiz completed!',
+        score: `You answered ${score} out of ${qs.length} questions correctly!`,
+        result: `Your score: ${pct}%.`,
+        record: 'Your best score at this level:',
+        message: 'Keep learning and come back to test your knowledge.'
+      },
+      es: {
+        completed: '¡Cuestionario completado!',
+        score: `¡Has acertado ${score} de ${qs.length} preguntas!`,
+        result: `Tu resultado: ${pct}%.`,
+        record: 'Tu mejor puntuación en este nivel:',
+        message: 'Sigue aprendiendo y vuelve para poner a prueba tus conocimientos.'
+      }
+    };
+
+    const t = texts[lang];
+
+    const best = localStorage.getItem(
+      'mf_best_' + currentQuizLevel
+    );
+
+    document.getElementById('quizProgress').textContent =
+      t.completed;
 
     document.getElementById('question').textContent =
-      `Você acertou ${score} de ${qs.length} perguntas!`;
+      t.score;
 
     document.getElementById('answers').innerHTML =
-      `<p class="muted">Seu resultado: ${pct}% de aproveitamento.</p>
-       <p class="muted">Seu recorde neste nível: ${
-         localStorage.getItem('mf_best_' + currentQuizLevel)
-       }%</p>`;
+      `<p class="muted">${t.result}</p>
+       <p class="muted">${t.record} ${best}%</p>`;
 
     document.getElementById('feedback').textContent =
-      'Continue aprendendo e volte para testar seus conhecimentos.';
+      t.message;
 
     document.getElementById('nextBtn').style.display = 'none';
     document.getElementById('restartBtn').style.display = 'inline-block';
