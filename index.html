@@ -2041,15 +2041,44 @@ function selectQuizLevel(level) {
   if (!quizQuestions[level]) return;
 
   currentQuizLevel = level;
-  qs = quizQuestions[level];
+
+  const language =
+    document.documentElement.lang ||
+    localStorage.getItem('mf_language') ||
+    'pt';
+
+  const lang = ['pt', 'en', 'es'].includes(language)
+    ? language
+    : 'pt';
+
+  if (lang === 'pt') {
+    qs = quizQuestions[level];
+  } else {
+    qs = quizQuestionsTranslated[lang][level] ||
+         quizQuestions[level];
+  }
 
   const names = {
-    basico: 'Nível Básico',
-    intermediario: 'Nível Intermediário',
-    avancado: 'Nível Avançado'
+    pt: {
+      basico: 'Nível Básico',
+      intermediario: 'Nível Intermediário',
+      avancado: 'Nível Avançado'
+    },
+    en: {
+      basico: 'Basic Level',
+      intermediario: 'Intermediate Level',
+      avancado: 'Advanced Level'
+    },
+    es: {
+      basico: 'Nivel Básico',
+      intermediario: 'Nivel Intermedio',
+      avancado: 'Nivel Avanzado'
+    }
   };
 
-  document.getElementById('quizLevelName').textContent = names[level];
+  document.getElementById('quizLevelName').textContent =
+    names[lang][level];
+
   document.getElementById('quizLevels').style.display = 'none';
   document.getElementById('quizBox').style.display = 'block';
 
