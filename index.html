@@ -2096,6 +2096,40 @@ function startQuiz() {
   renderQuestion();
 }
 
+  function backToQuizLevels() {
+  const language =
+    document.documentElement.lang ||
+    localStorage.getItem('mf_language') ||
+    'pt';
+
+  const texts = {
+    pt: 'Escolha seu nível',
+    en: 'Choose your level',
+    es: 'Elige tu nivel'
+  };
+
+  document.getElementById('quizBox').style.display = 'none';
+  document.getElementById('quizLevels').style.display = 'block';
+
+  const messages = {
+  pt: 'Prepare-se para começar!',
+  en: 'Get ready to start!',
+  es: '¡Prepárate para comenzar!'
+};
+
+document.getElementById('question').textContent =
+  messages[language] || messages.pt;
+
+  document.getElementById('quizProgress').textContent = '';
+
+  document.getElementById('answers').innerHTML = '';
+  document.getElementById('feedback').textContent = '';
+
+  document.getElementById('restartBtn').style.display = 'none';
+  document.getElementById('changeLevelBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+}
+  
 function renderQuestion() {
   const x = qs[qi];
   
