@@ -13,8 +13,12 @@
   const adminPanel = document.getElementById('encyclopediaAdminPanel');
   const pendingContainer = document.getElementById('encyclopediaPendingSuggestions');
 
-  // UID DO ADMINISTRADOR CADASTRADO NAS REGRAS DO FIRESTORE
   const ADMIN_UID = 'QWD9zZ4EQkPKwEQ1xMC2WzfUJuF3';
+
+  // TRADUTOR CENTRAL
+  function t(text) {
+    return window.MF_T ? window.MF_T(text) : text;
+  }
 
   if (!auth || !db) {
     console.error('Firebase Auth ou Firestore não inicializado.');
@@ -51,7 +55,7 @@
       const user = auth.currentUser;
 
       if (!user) {
-        alert('Você precisa estar logado para sugerir um artigo.');
+        alert(t('Você precisa estar logado para sugerir um artigo.'));
         return;
       }
 
@@ -62,7 +66,7 @@
       const source = document.getElementById('encyclopediaSource').value.trim();
 
       if (!title || !category || !summary || !content) {
-        alert('Preencha todos os campos obrigatórios.');
+        alert(t('Preencha todos os campos obrigatórios.'));
         return;
       }
 
@@ -70,7 +74,7 @@
 
       if (submitButton) {
         submitButton.disabled = true;
-        submitButton.textContent = 'Enviando sugestão...';
+        submitButton.textContent = t('Enviando sugestão...');
       }
 
       try {
@@ -86,7 +90,7 @@
           created_at: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        alert('Sugestão enviada com sucesso! Ela será analisada pela administração.');
+        alert(t('Sugestão enviada com sucesso! Ela será analisada pela administração.'));
 
         form.reset();
 
@@ -96,11 +100,11 @@
 
       } catch (error) {
         console.error('Erro ao enviar sugestão:', error);
-        alert('Não foi possível enviar a sugestão. Verifique as permissões do Firebase.');
+        alert(t('Não foi possível enviar a sugestão. Verifique as permissões do Firebase.'));
       } finally {
         if (submitButton) {
           submitButton.disabled = false;
-          submitButton.textContent = 'Enviar sugestão para aprovação';
+          submitButton.textContent = t('Enviar sugestão para aprovação');
         }
       }
     });
@@ -110,191 +114,192 @@
   // CARREGAR ARTIGOS PUBLICADOS
   // =====================================
 
-  
-async function carregarArtigos() {
-  if (!articlesContainer) return;
+  async function carregarArtigos() {
+    if (!articlesContainer) return;
 
-  try {
-    const snapshot = await db.collection('encyclopedia_articles')
-      .where('status', '==', 'published')
-      .get();
+    try {
+      const snapshot = await db.collection('encyclopedia_articles')
+        .where('status', '==', 'published')
+        .get();
 
-    if (snapshot.empty) {
-      articlesContainer.innerHTML =
-        '<div class="empty">Ainda não existem artigos publicados na Enciclopédia.</div>';
-      return;
-    }
+      if (snapshot.empty) {
+        articlesContainer.innerHTML =
+          '<div class="empty">Ainda não existem artigos publicados na Enciclopédia.</div>';
+        return;
+      }
 
-    const artigos = [];
+      const artigos = [];
 
-    snapshot.forEach(function (doc) {
-      artigos.push({
-        id: doc.id,
-        ...doc.data()
-      });
-    });
-
-    artigos.sort(function (a, b) {
-      return timestampValue(b.published_at) - timestampValue(a.published_at);
-    });
-
-    articlesContainer.innerHTML = artigos.map(function (artigo) {
-      return `
-        <div class="card">
-          <span class="tag">${escapeHTML(artigo.category)}</span>
-          <h3>${escapeHTML(artigo.title)}</h3>
-          <p>${escapeHTML(artigo.summary)}</p>
-
-          <details>
-            <summary class="btn">Ler artigo completo</summary>
-
-            <div style="margin-top:15px; white-space:pre-wrap;">
-              ${escapeHTML(artigo.content)}
-            </div>
-
-            ${artigo.source ? `
-              <p class="muted" style="margin-top:15px">
-                Fonte: ${escapeHTML(artigo.source)}
-              </p>
-            ` : ''}
-          </details>
-
-          <p class="muted" style="margin-top:12px">
-            Contribuição: ${escapeHTML(artigo.author_name || 'Comunidade ferroviária')}
-          </p>
-
-          ${auth.currentUser && auth.currentUser.uid === ADMIN_UID ? `
-            <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
-              <button type="button"
-                class="btn btn-secondary"
-                data-edit-article="${artigo.id}">
-                ✏️ Editar
-              </button>
-
-              <button type="button"
-                class="btn btn-danger"
-                data-delete-article="${artigo.id}">
-                🗑️ Excluir
-              </button>
-            </div>
-          ` : ''}
-        </div>
-      `;
-    }).join('');
-
-  } catch (error) {
-    console.error('Erro ao carregar artigos:', error);
-
-    articlesContainer.innerHTML =
-      '<div class="empty">Não foi possível carregar os artigos.</div>';
-  }
-}
-
-
-// AÇÕES ADMINISTRATIVAS DOS ARTIGOS
-if (articlesContainer) {
-  articlesContainer.addEventListener('click', async function (event) {
-
-
-const editButton = event.target.closest('[data-edit-article]');
-const deleteButton = event.target.closest('[data-delete-article]');
-
-if (!editButton && !deleteButton) return;
-
-const user = auth.currentUser;
-
-if (!user || user.uid !== ADMIN_UID) {
-  alert('Apenas o administrador pode realizar esta ação.');
-  return;
-}
-
-// EDITAR ARTIGO
-
-    if (editButton) {
-      const articleId = editButton.getAttribute('data-edit-article');
-
-      try {
-        const articleRef = db.collection('encyclopedia_articles').doc(articleId);
-        const articleDoc = await articleRef.get();
-
-        if (!articleDoc.exists) {
-          alert('Artigo não encontrado.');
-          return;
-        }
-
-        const artigo = articleDoc.data();
-
-        const title = prompt('Título do artigo:', artigo.title || '');
-        if (title === null) return;
-
-        const category = prompt('Categoria:', artigo.category || '');
-        if (category === null) return;
-
-        const summary = prompt('Resumo do artigo:', artigo.summary || '');
-        if (summary === null) return;
-
-        const content = prompt('Conteúdo completo:', artigo.content || '');
-        if (content === null) return;
-
-        const source = prompt('Fonte do artigo (opcional):', artigo.source || '');
-        if (source === null) return;
-
-        if (!title.trim() || !category.trim() ||
-            !summary.trim() || !content.trim()) {
-          alert('Título, categoria, resumo e conteúdo são obrigatórios.');
-          return;
-        }
-
-        await articleRef.update({
-          title: title.trim(),
-          category: category.trim(),
-          summary: summary.trim(),
-          content: content.trim(),
-          source: source.trim(),
-          updated_at: firebase.firestore.FieldValue.serverTimestamp()
+      snapshot.forEach(function (doc) {
+        artigos.push({
+          id: doc.id,
+          ...doc.data()
         });
+      });
 
-        alert('Artigo atualizado com sucesso!');
+      artigos.sort(function (a, b) {
+        return timestampValue(b.published_at) - timestampValue(a.published_at);
+      });
 
-        await carregarArtigos();
+      articlesContainer.innerHTML = artigos.map(function (artigo) {
+        return `
+          <div class="card">
+            <span class="tag">${escapeHTML(artigo.category)}</span>
+            <h3>${escapeHTML(artigo.title)}</h3>
+            <p>${escapeHTML(artigo.summary)}</p>
 
-      } catch (error) {
-        console.error('Erro ao editar artigo:', error);
-        alert('Não foi possível editar o artigo.');
+            <details>
+              <summary class="btn">Ler artigo completo</summary>
+
+              <div style="margin-top:15px; white-space:pre-wrap;">
+                ${escapeHTML(artigo.content)}
+              </div>
+
+              ${artigo.source ? `
+                <p class="muted" style="margin-top:15px">
+                  Fonte: ${escapeHTML(artigo.source)}
+                </p>
+              ` : ''}
+            </details>
+
+            <p class="muted" style="margin-top:12px">
+              Contribuição: ${escapeHTML(artigo.author_name || 'Comunidade ferroviária')}
+            </p>
+
+            ${auth.currentUser && auth.currentUser.uid === ADMIN_UID ? `
+              <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+                <button type="button"
+                  class="btn btn-secondary"
+                  data-edit-article="${artigo.id}">
+                  ✏️ Editar
+                </button>
+
+                <button type="button"
+                  class="btn btn-danger"
+                  data-delete-article="${artigo.id}">
+                  🗑️ Excluir
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+
+    } catch (error) {
+      console.error('Erro ao carregar artigos:', error);
+
+      articlesContainer.innerHTML =
+        '<div class="empty">Não foi possível carregar os artigos.</div>';
+    }
+  }
+
+  // =====================================
+  // AÇÕES ADMINISTRATIVAS DOS ARTIGOS
+  // =====================================
+
+  if (articlesContainer) {
+    articlesContainer.addEventListener('click', async function (event) {
+      const editButton = event.target.closest('[data-edit-article]');
+      const deleteButton = event.target.closest('[data-delete-article]');
+
+      if (!editButton && !deleteButton) return;
+
+      const user = auth.currentUser;
+
+      if (!user || user.uid !== ADMIN_UID) {
+        alert(t('Apenas o administrador pode realizar esta ação.'));
+        return;
       }
 
-      return;
-    }
+      // EDITAR ARTIGO
 
-    // EXCLUIR ARTIGO
+      if (editButton) {
+        const articleId = editButton.getAttribute('data-edit-article');
 
-    if (deleteButton) {
-      const articleId = deleteButton.getAttribute('data-delete-article');
+        try {
+          const articleRef = db.collection('encyclopedia_articles').doc(articleId);
+          const articleDoc = await articleRef.get();
 
-      const confirmar = confirm(
-        'Tem certeza que deseja excluir este artigo? Esta ação não poderá ser desfeita.'
-      );
+          if (!articleDoc.exists) {
+            alert(t('Artigo não encontrado.'));
+            return;
+          }
 
-      if (!confirmar) return;
+          const artigo = articleDoc.data();
 
-      try {
-        await db.collection('encyclopedia_articles')
-          .doc(articleId)
-          .delete();
+          const title = prompt(t('Título do artigo:'), artigo.title || '');
+          if (title === null) return;
 
-        alert('Artigo excluído com sucesso!');
+          const category = prompt(t('Categoria:'), artigo.category || '');
+          if (category === null) return;
 
-        await carregarArtigos();
+          const summary = prompt(t('Resumo do artigo:'), artigo.summary || '');
+          if (summary === null) return;
 
-      } catch (error) {
-        console.error('Erro ao excluir artigo:', error);
-        alert('Não foi possível excluir o artigo.');
+          const content = prompt(t('Conteúdo completo:'), artigo.content || '');
+          if (content === null) return;
+
+          const source = prompt(t('Fonte do artigo (opcional):'), artigo.source || '');
+          if (source === null) return;
+
+          if (
+            !title.trim() ||
+            !category.trim() ||
+            !summary.trim() ||
+            !content.trim()
+          ) {
+            alert(t('Título, categoria, resumo e conteúdo são obrigatórios.'));
+            return;
+          }
+
+          await articleRef.update({
+            title: title.trim(),
+            category: category.trim(),
+            summary: summary.trim(),
+            content: content.trim(),
+            source: source.trim(),
+            updated_at: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+          alert(t('Artigo atualizado com sucesso!'));
+
+          await carregarArtigos();
+
+        } catch (error) {
+          console.error('Erro ao editar artigo:', error);
+          alert(t('Não foi possível editar o artigo.'));
+        }
+
+        return;
       }
-    }
 
-  });
-}
-  
+      // EXCLUIR ARTIGO
+
+      if (deleteButton) {
+        const articleId = deleteButton.getAttribute('data-delete-article');
+
+        const confirmar = confirm(
+          t('Tem certeza que deseja excluir este artigo? Esta ação não poderá ser desfeita.')
+        );
+
+        if (!confirmar) return;
+
+        try {
+          await db.collection('encyclopedia_articles')
+            .doc(articleId)
+            .delete();
+
+          alert(t('Artigo excluído com sucesso!'));
+
+          await carregarArtigos();
+
+        } catch (error) {
+          console.error('Erro ao excluir artigo:', error);
+          alert(t('Não foi possível excluir o artigo.'));
+        }
+      }
+    });
+  }
 
   // =====================================
   // CARREGAR SUGESTÕES DO ADMINISTRADOR
@@ -397,7 +402,7 @@ if (!user || user.uid !== ADMIN_UID) {
 
   async function aprovarSugestao(suggestionId) {
     if (auth.currentUser?.uid !== ADMIN_UID) {
-      alert('Apenas o administrador pode aprovar artigos.');
+      alert(t('Apenas o administrador pode aprovar artigos.'));
       return;
     }
 
@@ -408,7 +413,7 @@ if (!user || user.uid !== ADMIN_UID) {
       const suggestionDoc = await suggestionRef.get();
 
       if (!suggestionDoc.exists || suggestionDoc.data().status !== 'pending') {
-        alert('Esta sugestão não está mais pendente.');
+        alert(t('Esta sugestão não está mais pendente.'));
         await carregarSugestoes();
         return;
       }
@@ -441,14 +446,14 @@ if (!user || user.uid !== ADMIN_UID) {
 
       await batch.commit();
 
-      alert('Artigo aprovado e publicado com sucesso!');
+      alert(t('Artigo aprovado e publicado com sucesso!'));
 
       await carregarSugestoes();
       await carregarArtigos();
 
     } catch (error) {
       console.error('Erro ao aprovar artigo:', error);
-      alert('Não foi possível publicar o artigo. Verifique o Firebase.');
+      alert(t('Não foi possível publicar o artigo. Verifique o Firebase.'));
     }
   }
 
@@ -458,12 +463,12 @@ if (!user || user.uid !== ADMIN_UID) {
 
   async function rejeitarSugestao(suggestionId) {
     if (auth.currentUser?.uid !== ADMIN_UID) {
-      alert('Apenas o administrador pode rejeitar sugestões.');
+      alert(t('Apenas o administrador pode rejeitar sugestões.'));
       return;
     }
 
     const confirmar = confirm(
-      'Deseja realmente rejeitar esta sugestão?'
+      t('Deseja realmente rejeitar esta sugestão?')
     );
 
     if (!confirmar) return;
@@ -476,13 +481,13 @@ if (!user || user.uid !== ADMIN_UID) {
           reviewed_at: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-      alert('Sugestão rejeitada.');
+      alert(t('Sugestão rejeitada.'));
 
       await carregarSugestoes();
 
     } catch (error) {
       console.error('Erro ao rejeitar sugestão:', error);
-      alert('Não foi possível rejeitar a sugestão.');
+      alert(t('Não foi possível rejeitar a sugestão.'));
     }
   }
 
@@ -516,6 +521,25 @@ if (!user || user.uid !== ADMIN_UID) {
   }
 
   // =====================================
+  // ATUALIZAR ENCICLOPÉDIA AO TROCAR IDIOMA
+  // =====================================
+
+  window.addEventListener('mf-language-changed', function () {
+    carregarArtigos();
+
+    if (auth.currentUser?.uid === ADMIN_UID) {
+      carregarSugestoes();
+    }
+
+    if (form) {
+      const submitButton = form.querySelector('button[type="submit"]');
+      if (submitButton) {
+        submitButton.textContent = t('Enviar sugestão para aprovação');
+      }
+    }
+  });
+
+  // =====================================
   // IDENTIFICAR ADMINISTRADOR
   // =====================================
 
@@ -538,4 +562,3 @@ if (!user || user.uid !== ADMIN_UID) {
   console.log('ENCICLOPÉDIA.JS INICIADO 🚂');
 
 })();
- 
