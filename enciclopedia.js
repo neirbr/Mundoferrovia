@@ -1,4 +1,3 @@
-
 (function () {
   'use strict';
 
@@ -15,9 +14,141 @@
 
   const ADMIN_UID = 'QWD9zZ4EQkPKwEQ1xMC2WzfUJuF3';
 
-  // TRADUTOR CENTRAL
+  // =====================================
+  // TRADUÇÕES DA ENCICLOPÉDIA
+  // =====================================
+
+  const translations = {
+    en: {
+      'Firebase Auth ou Firestore não inicializado.': 'Firebase Auth or Firestore not initialized.',
+      'Você precisa estar logado para sugerir um artigo.': 'You must be logged in to suggest an article.',
+      'Preencha todos os campos obrigatórios.': 'Please fill in all required fields.',
+      'Enviando sugestão...': 'Sending suggestion...',
+      'Sugestão enviada com sucesso! Ela será analisada pela administração.': 'Suggestion submitted successfully! It will be reviewed by the administration.',
+      'Não foi possível enviar a sugestão. Verifique as permissões do Firebase.': 'Could not submit the suggestion. Check Firebase permissions.',
+      'Enviar sugestão para aprovação': 'Submit suggestion for approval',
+      'Ainda não existem artigos publicados na Enciclopédia.': 'There are no articles published in the Encyclopedia yet.',
+      'Ler artigo completo': 'Read full article',
+      'Fonte:': 'Source:',
+      'Contribuição:': 'Contribution:',
+      'Comunidade ferroviária': 'Railway community',
+      'Editar': 'Edit',
+      'Excluir': 'Delete',
+      'Não foi possível carregar os artigos.': 'Could not load articles.',
+      'Apenas o administrador pode realizar esta ação.': 'Only the administrator can perform this action.',
+      'Artigo não encontrado.': 'Article not found.',
+      'Título do artigo:': 'Article title:',
+      'Categoria:': 'Category:',
+      'Resumo do artigo:': 'Article summary:',
+      'Conteúdo completo:': 'Full content:',
+      'Fonte do artigo (opcional):': 'Article source (optional):',
+      'Título, categoria, resumo e conteúdo são obrigatórios.': 'Title, category, summary and content are required.',
+      'Artigo atualizado com sucesso!': 'Article updated successfully!',
+      'Não foi possível editar o artigo.': 'Could not edit the article.',
+      'Tem certeza que deseja excluir este artigo? Esta ação não poderá ser desfeita.': 'Are you sure you want to delete this article? This action cannot be undone.',
+      'Artigo excluído com sucesso!': 'Article deleted successfully!',
+      'Não foi possível excluir o artigo.': 'Could not delete the article.',
+      'Carregando sugestões...': 'Loading suggestions...',
+      'Não existem sugestões pendentes no momento.': 'There are no pending suggestions at the moment.',
+      'PENDENTE DE APROVAÇÃO': 'PENDING APPROVAL',
+      'Autor:': 'Author:',
+      'Resumo:': 'Summary:',
+      'Visualizar conteúdo completo': 'View full content',
+      'Aprovar e publicar': 'Approve and publish',
+      'Rejeitar': 'Reject',
+      'Erro ao carregar sugestões. Verifique as permissões.': 'Error loading suggestions. Check permissions.',
+      'Apenas o administrador pode aprovar artigos.': 'Only the administrator can approve articles.',
+      'Esta sugestão não está mais pendente.': 'This suggestion is no longer pending.',
+      'Artigo aprovado e publicado com sucesso!': 'Article approved and published successfully!',
+      'Não foi possível publicar o artigo. Verifique o Firebase.': 'Could not publish the article. Check Firebase.',
+      'Apenas o administrador pode rejeitar sugestões.': 'Only the administrator can reject suggestions.',
+      'Deseja realmente rejeitar esta sugestão?': 'Do you really want to reject this suggestion?',
+      'Sugestão rejeitada.': 'Suggestion rejected.',
+      'Não foi possível rejeitar a sugestão.': 'Could not reject the suggestion.',
+
+      'Locomotivas': 'Locomotives',
+      'Vagões': 'Freight cars',
+      'Componentes ferroviários': 'Railway components',
+      'Sinalização': 'Signaling',
+      'Operações ferroviárias': 'Railway operations',
+      'História ferroviária': 'Railway history'
+    },
+
+    es: {
+      'Firebase Auth ou Firestore não inicializado.': 'Firebase Auth o Firestore no está inicializado.',
+      'Você precisa estar logado para sugerir um artigo.': 'Debes iniciar sesión para sugerir un artículo.',
+      'Preencha todos os campos obrigatórios.': 'Completa todos los campos obligatorios.',
+      'Enviando sugestão...': 'Enviando sugerencia...',
+      'Sugestão enviada com sucesso! Ela será analisada pela administração.': '¡Sugerencia enviada correctamente! Será revisada por la administración.',
+      'Não foi possível enviar a sugestão. Verifique as permissões do Firebase.': 'No se pudo enviar la sugerencia. Comprueba los permisos de Firebase.',
+      'Enviar sugestão para aprovação': 'Enviar sugerencia para aprobación',
+      'Ainda não existem artigos publicados na Enciclopédia.': 'Todavía no hay artículos publicados en la Enciclopedia.',
+      'Ler artigo completo': 'Leer artículo completo',
+      'Fonte:': 'Fuente:',
+      'Contribuição:': 'Contribución:',
+      'Comunidade ferroviária': 'Comunidad ferroviaria',
+      'Editar': 'Editar',
+      'Excluir': 'Eliminar',
+      'Não foi possível carregar os artigos.': 'No se pudieron cargar los artículos.',
+      'Apenas o administrador pode realizar esta ação.': 'Solo el administrador puede realizar esta acción.',
+      'Artigo não encontrado.': 'Artículo no encontrado.',
+      'Título do artigo:': 'Título del artículo:',
+      'Categoria:': 'Categoría:',
+      'Resumo do artigo:': 'Resumen del artículo:',
+      'Conteúdo completo:': 'Contenido completo:',
+      'Fonte do artigo (opcional):': 'Fuente del artículo (opcional):',
+      'Título, categoria, resumo e conteúdo são obrigatórios.': 'El título, la categoría, el resumen y el contenido son obligatorios.',
+      'Artigo atualizado com sucesso!': '¡Artículo actualizado correctamente!',
+      'Não foi possível editar o artigo.': 'No se pudo editar el artículo.',
+      'Tem certeza que deseja excluir este artigo? Esta ação não poderá ser desfeita.': '¿Estás seguro de que deseas eliminar este artículo? Esta acción no se puede deshacer.',
+      'Artigo excluído com sucesso!': '¡Artículo eliminado correctamente!',
+      'Não foi possível excluir o artigo.': 'No se pudo eliminar el artículo.',
+      'Carregando sugestões...': 'Cargando sugerencias...',
+      'Não existem sugestões pendentes no momento.': 'No hay sugerencias pendientes en este momento.',
+      'PENDENTE DE APROVAÇÃO': 'PENDIENTE DE APROBACIÓN',
+      'Autor:': 'Autor:',
+      'Resumo:': 'Resumen:',
+      'Visualizar conteúdo completo': 'Ver contenido completo',
+      'Aprovar e publicar': 'Aprobar y publicar',
+      'Rejeitar': 'Rechazar',
+      'Erro ao carregar sugestões. Verifique as permissões.': 'Error al cargar sugerencias. Comprueba los permisos.',
+      'Apenas o administrador pode aprovar artigos.': 'Solo el administrador puede aprobar artículos.',
+      'Esta sugestão não está mais pendente.': 'Esta sugerencia ya no está pendiente.',
+      'Artigo aprovado e publicado com sucesso!': '¡Artículo aprobado y publicado correctamente!',
+      'Não foi possível publicar o artigo. Verifique o Firebase.': 'No se pudo publicar el artículo. Comprueba Firebase.',
+      'Apenas o administrador pode rejeitar sugestões.': 'Solo el administrador puede rechazar sugerencias.',
+      'Deseja realmente rejeitar esta sugestão?': '¿Realmente deseas rechazar esta sugerencia?',
+      'Sugestão rejeitada.': 'Sugerencia rechazada.',
+      'Não foi possível rejeitar a sugestão.': 'No se pudo rechazar la sugerencia.',
+
+      'Locomotivas': 'Locomotoras',
+      'Vagões': 'Vagones',
+      'Componentes ferroviários': 'Componentes ferroviarios',
+      'Sinalização': 'Señalización',
+      'Operações ferroviárias': 'Operaciones ferroviarias',
+      'História ferroviária': 'Historia ferroviaria'
+    }
+  };
+
+  function idiomaAtual() {
+    const idioma = (
+      document.documentElement.lang ||
+      localStorage.getItem('mf_language') ||
+      'pt'
+    ).toLowerCase();
+
+    if (idioma.startsWith('en')) return 'en';
+    if (idioma.startsWith('es')) return 'es';
+
+    return 'pt';
+  }
+
   function t(text) {
-    return window.MF_T ? window.MF_T(text) : text;
+    const idioma = idiomaAtual();
+
+    if (idioma === 'pt') return text;
+
+    return translations[idioma]?.[text] || text;
   }
 
   if (!auth || !db) {
@@ -25,7 +156,10 @@
     return;
   }
 
+  // =====================================
   // PROTEÇÃO CONTRA HTML INDESEJADO
+  // =====================================
+
   function escapeHTML(value) {
     return String(value || '').replace(/[&<>"']/g, function (char) {
       return {
@@ -38,12 +172,14 @@
     });
   }
 
-  // TRADUZIR E PROTEGER TEXTOS FIXOS
   function textoHTML(text) {
     return escapeHTML(t(text));
   }
 
+  // =====================================
   // ORDENAÇÃO POR DATA
+  // =====================================
+
   function timestampValue(timestamp) {
     if (!timestamp) return 0;
     return timestamp.toMillis ? timestamp.toMillis() : 0;
@@ -538,10 +674,10 @@
   }
 
   // =====================================
-  // ATUALIZAR ENCICLOPÉDIA AO TROCAR IDIOMA
+  // ATUALIZAR QUANDO O IDIOMA MUDAR
   // =====================================
 
-  window.addEventListener('mf-language-changed', function () {
+  function atualizarIdiomaEnciclopedia() {
     carregarArtigos();
 
     if (auth.currentUser?.uid === ADMIN_UID) {
@@ -555,6 +691,24 @@
         submitButton.textContent = t('Enviar sugestão para aprovação');
       }
     }
+  }
+
+  // Observa a alteração do idioma no documento.
+  // Não depende de MF_T nem de eventos externos.
+
+  const languageObserver = new MutationObserver(function (mutations) {
+    const idiomaMudou = mutations.some(function (mutation) {
+      return mutation.attributeName === 'lang';
+    });
+
+    if (idiomaMudou) {
+      atualizarIdiomaEnciclopedia();
+    }
+  });
+
+  languageObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['lang']
   });
 
   // =====================================
@@ -575,8 +729,18 @@
     }
 
     await carregarArtigos();
+
+    if (form) {
+      const submitButton = form.querySelector('button[type="submit"]');
+
+      if (submitButton && !submitButton.disabled) {
+        submitButton.textContent = t('Enviar sugestão para aprovação');
+      }
+    }
   });
 
   console.log('ENCICLOPÉDIA.JS INICIADO 🚂');
-
-})();
+  
+  })();
+                
+                
