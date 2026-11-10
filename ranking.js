@@ -1,6 +1,8 @@
-// ============================================
-// MUNDO FERROVIÁRIO - RANKING FERROVIÁRIO
-// ============================================
+
+ // ============================================
+ // MUNDO FERROVIÁRIO - RANKING FERROVIÁRIO
+ // PORTUGUÊS • INGLÊS • ESPANHOL
+ // ============================================
 
 (function () {
   'use strict';
@@ -14,7 +16,94 @@
     avancado: 'Avançado'
   };
 
+  const traducoes = {
+    pt: {
+      levels: {
+        basico: 'Básico',
+        intermediario: 'Intermediário',
+        avancado: 'Avançado'
+      },
+      level: 'Nível',
+      waiting: 'Aguardando participante',
+      percentage: '% de aproveitamento',
+      firebase: 'Conexão com o Firebase indisponível.',
+      loading: 'Carregando classificação...',
+      empty: 'Ainda não existem participantes neste nível. Seja o primeiro!',
+      error: 'Não foi possível carregar o Ranking. Tente novamente.',
+      login: 'Entre na sua conta para participar do Ranking.'
+    },
+
+    en: {
+      levels: {
+        basico: 'Basic',
+        intermediario: 'Intermediate',
+        avancado: 'Advanced'
+      },
+      level: 'Level',
+      waiting: 'Waiting for participant',
+      percentage: '% performance',
+      firebase: 'Firebase connection unavailable.',
+      loading: 'Loading rankings...',
+      empty: 'There are no participants at this level yet. Be the first!',
+      error: 'Unable to load the ranking. Please try again.',
+      login: 'Sign in to your account to participate in the ranking.'
+    },
+
+    es: {
+      levels: {
+        basico: 'Básico',
+        intermediario: 'Intermedio',
+        avancado: 'Avanzado'
+      },
+      level: 'Nivel',
+      waiting: 'Esperando participante',
+      percentage: '% de aprovechamiento',
+      firebase: 'Conexión con Firebase no disponible.',
+      loading: 'Cargando clasificación...',
+      empty: 'Todavía no hay participantes en este nivel. ¡Sé el primero!',
+      error: 'No fue posible cargar la clasificación. Inténtalo de nuevo.',
+      login: 'Inicia sesión para participar en la clasificación.'
+    }
+  };
+
   let nivelAtual = 'basico';
+  let idiomaAtual = obterIdioma();
+
+  function obterIdioma() {
+    const idioma =
+      document.documentElement.lang ||
+      localStorage.getItem('mf_language') ||
+      'pt';
+
+    return traducoes[idioma] ? idioma : 'pt';
+  }
+
+  function textos() {
+    return traducoes[idiomaAtual] || traducoes.pt;
+  }
+
+  function nomeNivel(nivel) {
+    return textos().levels[nivel] || niveis[nivel] || '';
+  }
+
+  function posicaoTexto(posicao) {
+    if (idiomaAtual === 'en') {
+      const finais = {
+        1: 'st',
+        2: 'nd',
+        3: 'rd'
+      };
+
+      const final = finais[posicao] || 'th';
+      return posicao + final + ' place';
+    }
+
+    if (idiomaAtual === 'es') {
+      return posicao + '.º lugar';
+    }
+
+    return posicao + 'º lugar';
+  }
 
   // --------------------------------------------
   // SALVAR MELHOR PONTUAÇÃO NO FIREBASE
@@ -30,7 +119,7 @@
       const user = window.MF_AUTH.currentUser;
 
       if (!user) {
-        console.log('Entre na sua conta para participar do Ranking.');
+        console.log(textos().login);
         return;
       }
 
@@ -97,21 +186,17 @@
 
     elemento.innerHTML = '';
 
+    elemento.appendChild(
+      criarElemento('strong', '', posicaoTexto(posicao))
+    );
+
     if (!participante) {
       elemento.appendChild(
-        criarElemento('strong', '', posicao + 'º lugar')
-      );
-
-      elemento.appendChild(
-        criarElemento('p', 'muted', 'Aguardando participante')
+        criarElemento('p', 'muted', textos().waiting)
       );
 
       return;
     }
-
-    elemento.appendChild(
-      criarElemento('strong', '', posicao + 'º lugar')
-    );
 
     elemento.appendChild(
       criarElemento('h3', '', participante.author_name)
@@ -121,7 +206,7 @@
       criarElemento(
         'p',
         '',
-        participante.best_score + '% de aproveitamento'
+        participante.best_score + textos().percentage
       )
     );
   }
@@ -131,23 +216,24 @@
   // --------------------------------------------
 
   async function carregarRanking(nivel) {
-    nivelAtual = nivel || nivelAtual;
+    nivelAtual = niveis[nivel] ? nivel : nivelAtual;
 
     const titulo = document.getElementById('rankingLevelName');
     const lista = document.getElementById('rankingList');
 
     if (titulo) {
-      titulo.textContent = 'Nível ' + niveis[nivelAtual];
+      titulo.textContent =
+        textos().level + ' ' + nomeNivel(nivelAtual);
     }
 
     if (!lista) return;
 
     if (!window.MF_DB) {
-      lista.textContent = 'Conexão com o Firebase indisponível.';
+      lista.textContent = textos().firebase;
       return;
     }
 
-    lista.textContent = 'Carregando classificação...';
+    lista.textContent = textos().loading;
 
     try {
       const resultado = await window.MF_DB
@@ -192,8 +278,7 @@
       lista.innerHTML = '';
 
       if (participantes.length === 0) {
-        lista.textContent =
-          'Ainda não existem participantes neste nível. Seja o primeiro!';
+        lista.textContent = textos().empty;
         return;
       }
 
@@ -203,7 +288,7 @@
         const colocacao = criarElemento(
           'strong',
           'ranking-position',
-          (indice + 1) + 'º'
+          posicaoTexto(indice + 1)
         );
 
         const informacoes = criarElemento(
@@ -216,11 +301,7 @@
         );
 
         informacoes.appendChild(
-          criarElemento(
-            'small',
-            '',
-            niveis[nivelAtual]
-          )
+          criarElemento('small', '', nomeNivel(nivelAtual))
         );
 
         const pontos = criarElemento(
@@ -239,8 +320,7 @@
     } catch (error) {
       console.error('Erro ao carregar Ranking:', error);
 
-      lista.textContent =
-        'Não foi possível carregar o Ranking. Tente novamente.';
+      lista.textContent = textos().error;
     }
   }
 
@@ -264,6 +344,35 @@
   }
 
   // --------------------------------------------
+  // ATUALIZAR AO TROCAR O IDIOMA
+  // --------------------------------------------
+
+  const observadorIdioma = new MutationObserver(() => {
+    const novoIdioma = obterIdioma();
+
+    if (novoIdioma !== idiomaAtual) {
+      idiomaAtual = novoIdioma;
+      carregarRanking(nivelAtual);
+    }
+  });
+
+  observadorIdioma.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['lang']
+  });
+
+  window.addEventListener('storage', function (evento) {
+    if (evento.key === 'mf_language') {
+      const novoIdioma = obterIdioma();
+
+      if (novoIdioma !== idiomaAtual) {
+        idiomaAtual = novoIdioma;
+        carregarRanking(nivelAtual);
+      }
+    }
+  });
+
+  // --------------------------------------------
   // DISPONIBILIZAR FUNÇÕES PARA O QUIZ
   // --------------------------------------------
 
@@ -277,4 +386,3 @@
   }
 
 })();
-
