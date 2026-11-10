@@ -1,0 +1,2993 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#102b3f">
+<link rel="manifest" href="manifest.json">
+<meta name="description" content="Mundo Ferroviário — Conhecimento que move trilhos">
+<style>
+/* GALERIA FERROVIÁRIA TEMPORARIAMENTE OCULTA */
+nav button[data-page="galeria"],
+#galeria {
+  display: none !important;
+}
+
+/* TELA DE ABERTURA MUNDO FERROVIÁRIO */
+#splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #102b3f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  transition: opacity .7s ease, visibility .7s ease;
+}
+
+#splash-screen.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.splash-logo {
+  width: 112px;
+  height: 112px;
+  border: 3px solid #f0b323;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 65px;
+  margin-bottom: 25px;
+}
+
+.splash-title {
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.splash-title span {
+  color: #f0b323;
+}
+
+.splash-subtitle {
+  color: #f0b323;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.splash-loader {
+  width: 150px;
+  height: 4px;
+  background: #315268;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 35px;
+}
+
+.splash-loader::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 40%;
+  background: #f0b323;
+  animation: splashLoading 1.2s infinite ease-in-out;
+}
+
+@keyframes splashLoading {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+ :root{--navy:#102b3f;--blue:#174a67;--gold:#f0b323;--paper:#f3f6f8;--ink:#172b38;--muted:#617482;--white:#fff;--line:#dce5ea;--green:#247a55}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--paper);color:var(--ink)}button,input{font:inherit}.top{background:var(--navy);color:#fff;padding:14px max(20px,calc((100% - 1160px)/2));display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:5}.brand{font-weight:900;letter-spacing:.04em;font-size:18px}.brand span{color:var(--gold)}nav{display:flex;gap:8px;flex-wrap:wrap}nav button{border:0;background:transparent;color:#dce8ee;padding:9px 11px;border-radius:9px;cursor:pointer}nav button.active,nav button:hover{background:#24485e;color:#fff}.ad-slot{border:1px dashed #b8c7d0;background:#f8fafb;border-radius:13px;padding:15px;text-align:center;color:#617482;margin:22px 0}.ad-slot strong{display:block;color:#31566b;font-size:11px;letter-spacing:.12em;margin-bottom:5px}.filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px}.filters button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:8px 12px;cursor:pointer;color:var(--ink)}.filters button.active{background:var(--navy);color:#fff;border-color:var(--navy)}.item-card{display:flex;flex-direction:column;min-height:100%}.item-card .tag{align-self:flex-start;margin-top:auto}.pill{display:inline-block;border-radius:99px;padding:5px 9px;background:#fff3d2;color:#74520a;font-size:11px;font-weight:800}.hero-actions{display:flex;gap:10px;flex-wrap:wrap}.btn.outline{background:transparent;border:1px solid #d7e2e8;color:#fff}.small{font-size:13px}.content-list{padding-left:19px;color:var(--muted);line-height:1.7}.top-note{background:#fff3d2;color:#684c0b;padding:10px 20px;text-align:center;font-size:13px}.wrap{max-width:1160px;margin:auto;padding:26px 20px 60px}.hero{border-radius:22px;overflow:hidden;background:linear-gradient(100deg,rgba(8,30,45,.95),rgba(8,30,45,.68)),url('https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1800&q=85') center/cover;color:white;padding:54px 38px;min-height:290px;display:flex;align-items:center}.hero-inner{max-width:650px}.eyebrow{color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.15em;text-transform:uppercase}.hero h1{font-size:clamp(34px,5vw,58px);line-height:1.02;margin:12px 0}.hero p{font-size:17px;line-height:1.6;color:#e1e9ee;max-width:570px}.btn{border:0;background:var(--gold);color:#182b36;padding:12px 17px;border-radius:10px;font-weight:800;cursor:pointer}.btn.secondary{background:var(--navy);color:#fff}.section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin:32px 0 16px}.section-head h2{margin:0;font-size:24px}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 4px 18px rgba(17,46,64,.04)}.card .emoji{font-size:28px}.card h3{margin:10px 0 7px}.card p{color:var(--muted);line-height:1.5;margin:0 0 14px}.card button,.textbtn{background:none;border:0;color:var(--blue);font-weight:800;padding:0;cursor:pointer}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.stat{background:#e7eef2;border-radius:14px;padding:15px}.stat strong{display:block;font-size:23px;color:var(--navy)}.stat small{color:var(--muted)}.page{display:none}.page.active{display:block}.search{width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:11px;margin:8px 0 16px;background:#fff}.term{padding:15px 0;border-bottom:1px solid var(--line)}.term strong{display:block;margin-bottom:4px}.quizbox{max-width:720px}.answers{display:grid;gap:9px;margin:18px 0}.answers button{text-align:left;border:1px solid var(--line);background:#fff;border-radius:10px;padding:13px;cursor:pointer}.answers button:hover{border-color:var(--blue)}.feedback{font-weight:700;min-height:25px}.notice{background:#fff7e2;border:1px solid #f1d58c;border-radius:12px;padding:14px;color:#684c0b;line-height:1.5}.footer{background:var(--navy);color:#dce8ee;padding:28px 20px;text-align:center}.footer strong{color:var(--gold)}.tag{display:inline-block;background:#e9f1f5;color:#31566b;padding:5px 9px;border-radius:99px;font-size:12px;font-weight:800}.empty{padding:20px;text-align:center;color:var(--muted)}
+@media(max-width:760px){.top{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr}.hero{padding:35px 24px}.stats{grid-template-columns:1fr 1fr}.wrap{padding-top:18px}nav{width:100%}nav button{padding:8px}}
+
+/* BOTÃO EXCLUIR PUBLICAÇÃO */
+.btn-delete-post {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #b83b3b;
+  border-radius: 10px;
+  background: #b83b3b;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-post:hover {
+  background: #922d2d;
+  border-color: #922d2d;
+}
+
+.btn-delete-post:active {
+  transform: scale(0.96);
+}
+
+/* =================================
+   RANKING FERROVIÁRIO
+================================= */
+
+#ranking .card {
+  border-radius: 18px;
+  border: 1px solid #dce5ea;
+  box-shadow: 0 5px 18px rgba(16, 43, 63, 0.07);
+}
+
+#ranking .card > h3 {
+  color: #102b3f;
+  font-weight: 900;
+}
+
+#ranking [data-ranking-level] {
+  min-height: 46px;
+  border-radius: 11px;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+#ranking [data-ranking-level]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(16, 43, 63, .15);
+}
+
+/* PÓDIO */
+
+#ranking #rankingFirst,
+#ranking #rankingSecond,
+#ranking #rankingThird {
+  min-height: 105px;
+  padding: 15px 10px;
+  border-radius: 13px;
+  text-align: center;
+  background: #f3f6f8;
+  border: 1px solid #dce5ea;
+}
+
+#ranking #rankingFirst {
+  background: linear-gradient(145deg, #fff5cf, #fffdf5);
+  border: 2px solid #f0b323;
+}
+
+#ranking #rankingSecond {
+  background: linear-gradient(145deg, #edf1f4, #ffffff);
+  border: 2px solid #aebbc4;
+}
+
+#ranking #rankingThird {
+  background: linear-gradient(145deg, #f8e6d7, #fffaf5);
+  border: 2px solid #bd8054;
+}
+
+#ranking #rankingFirst h3,
+#ranking #rankingSecond h3,
+#ranking #rankingThird h3 {
+  color: #102b3f;
+  overflow-wrap: anywhere;
+}
+
+/* LISTA TOP 10 */
+
+#ranking .ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  margin: 10px 0;
+  border: 1px solid #dce5ea;
+  border-radius: 13px;
+  background: #f8fafb;
+  transition: transform .2s ease;
+}
+
+#ranking .ranking-item:first-child {
+  background: #fff8df;
+  border-color: #f0b323;
+}
+
+#ranking .ranking-item:hover {
+  transform: translateX(3px);
+}
+
+#ranking .ranking-position {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #102b3f;
+  color: #fff;
+  font-weight: 900;
+}
+
+#ranking .ranking-info {
+  flex: 1;
+  min-width: 0;
+}
+
+#ranking .ranking-info strong {
+  display: block;
+  color: #102b3f;
+  overflow-wrap: anywhere;
+}
+
+#ranking .ranking-info small {
+  display: block;
+  margin-top: 4px;
+  color: #617482;
+}
+
+#ranking .ranking-score {
+  color: #174a67;
+  font-size: 17px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+/* AJUSTES PARA CELULAR */
+
+@media (max-width: 600px) {
+  #ranking .card {
+    padding: 15px;
+  }
+
+  #ranking .ranking-item {
+    gap: 9px;
+    padding: 11px;
+  }
+
+  #ranking .ranking-score {
+    font-size: 15px;
+  }
+}
+
+/* =====================================
+   MUNDO FERROVIÁRIO - TEMA ESCURO
+===================================== */
+
+body.dark-mode {
+  --navy: #071a27;
+  --blue: #236080;
+  --gold: #f0b323;
+  --paper: #101c25;
+  --ink: #e6edf2;
+  --muted: #a8b7c2;
+  --white: #172833;
+  --line: #344957;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* ÁREA PRINCIPAL */
+body.dark-mode .wrap {
+  background: var(--paper);
+}
+
+/* CARTÕES */
+body.dark-mode .card {
+  background: #192b37;
+  border-color: #344957;
+  color: #e6edf2;
+  box-shadow: 0 4px 18px rgba(0,0,0,.2);
+}
+
+body.dark-mode .card p,
+body.dark-mode .muted {
+  color: #a8b7c2;
+}
+
+/* ESTATÍSTICAS */
+body.dark-mode .stat {
+  background: #223845;
+}
+
+body.dark-mode .stat strong {
+  color: #f0b323;
+}
+
+/* PESQUISAS E CAMPOS */
+body.dark-mode .search,
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+  background: #192b37;
+  color: #e6edf2;
+  border-color: #455c6b;
+}
+
+/* BOTÕES DE FILTRO */
+body.dark-mode .filters button {
+  background: #192b37;
+  color: #e6edf2;
+  border-color: #455c6b;
+}
+
+/* QUIZ */
+body.dark-mode .answers button {
+  background: #192b37;
+  color: #e6edf2;
+  border-color: #455c6b;
+}
+
+body.dark-mode .answers button:hover {
+  border-color: #f0b323;
+}
+
+/* AVISOS */
+body.dark-mode .notice {
+  background: #3b321d;
+  border-color: #806626;
+  color: #f5d98b;
+}
+
+/* PUBLICIDADE */
+body.dark-mode .ad-slot {
+  background: #192b37;
+  border-color: #455c6b;
+  color: #a8b7c2;
+}
+
+body.dark-mode .ad-slot strong {
+  color: #f0b323;
+}
+
+/* TERMOS E DIVISÓRIAS */
+body.dark-mode .term {
+  border-color: #344957;
+}
+
+/* ETIQUETAS */
+body.dark-mode .tag {
+  background: #263f4e;
+  color: #d7eaf4;
+}
+
+/* AVISO SUPERIOR */
+body.dark-mode .top-note {
+  background: #3b321d;
+  color: #f5d98b;
+}
+
+/* BOTÕES DE TEXTO */
+body.dark-mode .card button,
+body.dark-mode .textbtn {
+  color: #f0b323;
+}
+
+/* MODAL DE CONFIGURAÇÕES */
+body.dark-mode #settingsModal > div {
+  background: #192b37;
+  color: #e6edf2;
+}
+
+/* TEXTOS DE NOTÍCIAS */
+body.dark-mode .full-news-body {
+  color: #d5e0e7;
+}
+
+/* RODAPÉ */
+body.dark-mode .footer {
+  background: #071a27;
+}
+     
+</style></head>
+<body>
+ <div id="splash-screen">
+  <div class="splash-logo">🚂</div>
+  <div class="splash-title">MUNDO <span>FERROVIÁRIO</span></div>
+  <div class="splash-subtitle">Conhecimento que move trilhos</div>
+  <div class="splash-loader"></div>
+ </div><header class="top"><div class="brand">🚂 MUNDO <span>FERROVIÁRIO</span></div><nav aria-label="Navegação principal">
+<button class="active" data-page="home">Início</button>
+<button data-page="locomotivas">Locomotivas</button>
+<button data-page="vagoes">Vagões</button>
+<button data-page="aprender">Aprenda</button>
+<button data-page="glossario">Glossário</button>
+<button data-page="quiz">Quiz</button>   
+<button data-page="ranking">🏆 Ranking</button>
+<button data-page="noticias">Notícias</button>
+<button data-page="enciclopedia">Enciclopédia</button>
+<button data-page="galeria">Galeria</button>
+<button data-page="comunidade">Comunidade</button>
+<button data-page="perfil">Meu Perfil</button>
+<button data-page="sobre">Sobre</button>
+
+<button type="button" id="openSettings"
+  aria-label="Configurações"
+  title="Configurações">
+  ⚙️ Configurações
+</button>
+
+</nav></header>
+<div class="top-note">PLATAFORMA GRATUITA • CONHECIMENTO, CULTURA E PAIXÃO FERROVIÁRIA</div><main class="wrap">
+
+<section id="home" class="page active">
+
+  <div class="hero">
+    <div class="hero-inner">
+
+      <div class="eyebrow" data-i18n="heroEyebrow">
+        Conhecimento que move trilhos
+      </div>
+
+      <h1 data-i18n="heroTitle">
+        O universo ferroviário em um só lugar.
+      </h1>
+
+      <p data-i18n="heroDescription">
+        História, locomotivas, vagões e aprendizado para quem vive ou é apaixonado pelo mundo dos trilhos.
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn" onclick="showPage('aprender')" data-i18n="heroExplore">
+          Começar a explorar →
+        </button>
+
+        <button class="btn outline" onclick="showPage('quiz')" data-i18n="heroQuiz">
+          Testar conhecimentos
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-head">
+    <div>
+      <span class="tag" data-i18n="exploreTag">EXPLORE</span>
+      <h2 data-i18n="areasTitle">Conheça nossas áreas</h2>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <article class="card">
+      <div class="emoji">🚆</div>
+      <h3 data-i18n="homeLocomotives">Locomotivas</h3>
+      <p data-i18n="homeLocomotivesDesc">
+        Conheça os tipos de locomotivas, suas aplicações e a evolução da tração ferroviária.
+      </p>
+      <button onclick="showPage('aprender')" data-i18n="exploreContent">
+        Explorar conteúdo →
+      </button>
+    </article>
+
+    <article class="card">
+      <div class="emoji">🚃</div>
+      <h3 data-i18n="homeWagons">Vagões</h3>
+      <p data-i18n="homeWagonsDesc">
+        Descubra categorias de vagões e como diferentes cargas são transportadas.
+      </p>
+      <button onclick="showPage('aprender')" data-i18n="exploreContent">
+        Explorar conteúdo →
+      </button>
+    </article>
+
+    <article class="card">
+      <div class="emoji">📚</div>
+      <h3 data-i18n="homeGlossary">Glossário ferroviário</h3>
+      <p data-i18n="homeGlossaryDesc">
+        Aprenda termos e expressões usados no cotidiano ferroviário.
+      </p>
+      <button onclick="showPage('glossario')" data-i18n="consultGlossary">
+        Consultar glossário →
+      </button>
+    </article>
+
+  </div>
+
+  <div class="ad-slot">
+    <strong data-i18n="advertising">ESPAÇO PUBLICITÁRIO</strong>
+    <span data-i18n="advertisingDesc">
+      Este espaço poderá receber anúncios de parceiros e serviços do setor ferroviário.
+    </span>
+  </div>
+
+  <div class="section-head">
+    <h2 data-i18n="learningTitle">Seu aprendizado</h2>
+  </div>
+
+  <div class="stats">
+
+    <div class="stat">
+      <strong id="progressCount">0</strong>
+      <small data-i18n="quizzesCompleted">quizzes concluídos</small>
+    </div>
+
+    <div class="stat">
+      <strong id="scoreCount">0%</strong>
+      <small data-i18n="bestPerformance">melhor aproveitamento</small>
+    </div>
+
+    <div class="stat">
+      <strong>100%</strong>
+      <small data-i18n="railwayPassion">paixão pelos trilhos</small>
+    </div>
+
+  </div>
+
+</section>
+
+<section id="locomotivas" class="page">
+  <div class="section-head">
+    <div>
+      <span class="tag" data-i18n="locoTag">MATERIAL RODANTE</span>
+      <h2 data-i18n="locoTitle">Universo das locomotivas</h2>
+      <p class="muted" data-i18n="locoDescription">Conheça conceitos e famílias de locomotivas. Características variam conforme fabricante, modelo e configuração.</p>
+    </div>
+  </div>
+
+  <div class="grid">
+    <article class="card item-card">
+      <div class="emoji">🚂</div>
+      <h3 data-i18n="locoDieselTitle">Diesel-elétrica</h3>
+      <p data-i18n="locoDieselDescription">Utiliza um motor diesel para acionar um gerador ou alternador, que fornece energia aos motores elétricos de tração.</p>
+      <span class="tag" data-i18n="locoDieselTag">Tração diesel-elétrica</span>
+    </article>
+
+    <article class="card item-card">
+      <div class="emoji">⚡</div>
+      <h3 data-i18n="locoElectricTitle">Elétrica</h3>
+      <p data-i18n="locoElectricDescription">Recebe energia de uma fonte externa, como rede aérea ou terceiro trilho, e utiliza motores elétricos para produzir tração.</p>
+      <span class="tag" data-i18n="locoElectricTag">Tração elétrica</span>
+    </article>
+
+    <article class="card item-card">
+      <div class="emoji">🔥</div>
+      <h3 data-i18n="locoSteamTitle">Vapor</h3>
+      <p data-i18n="locoSteamDescription">Modelo histórico que utiliza vapor sob pressão para movimentar mecanismos ligados às rodas motrizes.</p>
+      <span class="tag" data-i18n="locoSteamTag">História ferroviária</span>
+    </article>
+  </div>
+
+  <div class="ad-slot">
+    <strong data-i18n="locoAdvertising">ESPAÇO PUBLICITÁRIO</strong>
+    <span data-i18n="locoAdvertisingDescription">Publicidade relevante para leitores e profissionais do setor.</span>
+  </div>
+
+  <div class="notice">
+    <strong data-i18n="locoNoteTitle">Nota:</strong>
+    <span data-i18n="locoNoteDescription"> informações técnicas detalhadas de cada modelo deverão ser conferidas em manuais do fabricante e documentos oficiais.</span>
+  </div>
+
+</section>
+
+<section id="vagoes" class="page">
+  <div class="section-head">
+    <div>
+      <span class="tag" data-i18n="wagonsTag">TRANSPORTE FERROVIÁRIO</span>
+      <h2 data-i18n="wagonsTitle">Conheça os vagões</h2>
+      <p class="muted" data-i18n="wagonsDescription">Exemplos de categorias de vagões e suas aplicações gerais.</p>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <article class="card item-card">
+      <div class="emoji">🪨</div>
+      <h3 data-i18n="wagonGondola">Gôndola</h3>
+      <p data-i18n="wagonGondolaDescription">Vagão de laterais fixas, utilizado em diferentes configurações para cargas como minério, carvão e outros granéis sólidos.</p>
+      <span class="tag" data-i18n="wagonBulkTag">Granéis sólidos</span>
+    </article>
+
+    <article class="card item-card">
+      <div class="emoji">🌾</div>
+      <h3 data-i18n="wagonHopper">Hopper / tremonha</h3>
+      <p data-i18n="wagonHopperDescription">Possui compartimentos e sistemas de descarga, frequentemente empregado no transporte de granéis.</p>
+      <span class="tag" data-i18n="wagonGravityTag">Descarga por gravidade</span>
+    </article>
+
+    <article class="card item-card">
+      <div class="emoji">🛢️</div>
+      <h3 data-i18n="wagonTank">Tanque</h3>
+      <p data-i18n="wagonTankDescription">Projetado para transportar líquidos ou gases, conforme especificações construtivas e requisitos aplicáveis à carga.</p>
+      <span class="tag" data-i18n="wagonLiquidTag">Cargas líquidas e gases</span>
+    </article>
+
+    <article class="card item-card">
+      <div class="emoji">📦</div>
+      <h3 data-i18n="wagonCovered">Fechado</h3>
+      <p data-i18n="wagonCoveredDescription">Possui estrutura fechada para proteger mercadorias contra intempéries e outros fatores externos.</p>
+      <span class="tag" data-i18n="wagonGeneralCargoTag">Carga geral</span>
+    </article>
+
+    <article class="card item-card">
+      <div class="emoji">🪵</div>
+      <h3 data-i18n="wagonFlatcar">Plataforma</h3>
+      <p data-i18n="wagonFlatcarDescription">Tem piso aberto e pode ser configurado para cargas como contêineres, madeira e produtos de dimensões especiais.</p>
+      <span class="tag" data-i18n="wagonVariousCargoTag">Cargas diversas</span>
+    </article>
+
+    <article class="card item-card">
+      <div class="emoji">🚗</div>
+      <h3 data-i18n="wagonSpecialized">Prancha / especializado</h3>
+      <p data-i18n="wagonSpecializedDescription">Existem projetos específicos para transportar veículos, bobinas, produtos siderúrgicos e outras cargas.</p>
+      <span class="tag" data-i18n="wagonSpecializedTag">Uso especializado</span>
+    </article>
+
+  </div>
+
+  <div class="notice" style="margin-top:18px" data-i18n="wagonsNotice">
+    A escolha do vagão depende da carga, das características da via, dos limites operacionais e das regras aplicáveis ao transporte.
+  </div>
+</section>
+
+<section id="aprender" class="page">
+  <div class="section-head">
+    <div>
+      <span class="tag" data-i18n="learningTag">BIBLIOTECA</span>
+      <h2 data-i18n="learningTitle">Aprenda sobre ferrovias</h2>
+      <p class="muted" data-i18n="learningDescription">Conteúdo introdutório para começar sua jornada.</p>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <article class="card">
+      <div class="emoji">🚂</div>
+      <h3 data-i18n="learningLocomotives">Conhecendo as locomotivas</h3>
+      <p data-i18n="learningLocomotivesDescription">Uma locomotiva é um veículo ferroviário motorizado utilizado para tracionar ou movimentar veículos sobre trilhos. Existem diferentes tecnologias, como diesel-elétrica e elétrica.</p>
+      <span class="tag" data-i18n="learningFundamentals">Fundamentos</span>
+    </article>
+
+    <article class="card">
+      <div class="emoji">🚃</div>
+      <h3 data-i18n="learningWagons">Tipos de vagões</h3>
+      <p data-i18n="learningWagonsDescription">Vagões são veículos ferroviários destinados ao transporte de cargas ou passageiros. Seu formato e equipamento variam conforme a finalidade e a carga transportada.</p>
+      <span class="tag" data-i18n="learningRollingStock">Material rodante</span>
+    </article>
+
+    <article class="card">
+      <div class="emoji">🛤️</div>
+      <h3 data-i18n="learningInfrastructure">Infraestrutura ferroviária</h3>
+      <p data-i18n="learningInfrastructureDescription">A via permanente reúne componentes como trilhos, dormentes, fixações e lastro, que formam a estrutura de circulação ferroviária.</p>
+      <span class="tag" data-i18n="learningInfrastructureTag">Infraestrutura</span>
+    </article>
+
+  </div>
+
+  <div class="ad-slot">
+    <strong data-i18n="learningAdTitle">ESPAÇO PUBLICITÁRIO</strong>
+    <span data-i18n="learningAdDescription">Área reservada para anunciantes e apoiadores do projeto.</span>
+  </div>
+
+  <div class="notice" style="margin-top:18px">
+    <strong data-i18n="learningImportant">Importante:</strong>
+    <span data-i18n="learningSafetyNotice"> este conteúdo é educativo e introdutório. Atividades operacionais, manobras, sinalização e segurança devem sempre seguir os procedimentos oficiais, treinamentos e regras da empresa responsável.</span>
+  </div>
+</section>
+
+<section id="glossario" class="page">
+  <div class="section-head">
+    <div>
+      <span class="tag" data-i18n="glossaryTag">CONSULTA RÁPIDA</span>
+      <h2 data-i18n="glossaryTitle">Glossário ferroviário</h2>
+      <p class="muted" data-i18n="glossaryDescription">Pesquise alguns termos básicos do setor.</p>
+    </div>
+  </div>
+
+  <input
+    class="search"
+    id="glossSearch"
+    placeholder="Buscar um termo..."
+    aria-label="Buscar termo do glossário"
+    data-i18n-placeholder="glossarySearchPlaceholder"
+    data-i18n-aria-label="glossarySearchAria"
+  >
+
+  <div id="terms"></div>
+
+  <div class="ad-slot">
+    <strong data-i18n="glossaryAdTitle">ESPAÇO PUBLICITÁRIO</strong>
+    <span data-i18n="glossaryAdDescription">Seu anúncio pode aparecer aqui futuramente.</span>
+  </div>
+  
+</section>
+
+<!-- INÍCIO DA PÁGINA QUIZ -->
+<section id="quiz" class="page">
+
+  <div class="section-head">
+  <div>
+    <span class="tag" data-i18n="quiz_tag">TESTE SEUS CONHECIMENTOS</span>
+    <h2 data-i18n="quiz_title">Quiz ferroviário</h2>
+    <p class="muted" data-i18n="quiz_description">
+      Escolha seu nível e teste seus conhecimentos sobre o universo ferroviário.
+    </p>
+  </div>
+</div>
+
+<div id="quizLevels" class="card">
+  <h3 data-i18n="quiz_choose_level">Escolha seu nível</h3>
+  <p class="muted" data-i18n="quiz_level_description">
+    Cada nível possui 10 perguntas.
+  </p>
+
+  <div class="grid">
+    <button class="btn" onclick="selectQuizLevel('basico')" data-i18n="quiz_basic">
+      🟢 Básico
+    </button>
+
+    <button class="btn" onclick="selectQuizLevel('intermediario')" data-i18n="quiz_intermediate">
+      🟡 Intermediário
+    </button>
+
+    <button class="btn" onclick="selectQuizLevel('avancado')" data-i18n="quiz_advanced">
+      🔴 Avançado
+    </button>
+  </div>
+</div>
+
+<div class="card quizbox" id="quizBox" style="display:none">
+  <div id="quizLevelName" class="tag">Nível Básico</div>
+
+  <div id="quizProgress" class="tag">
+    Pergunta 1 de 10
+  </div>
+
+  <h3 id="question">Prepare-se para começar!</h3>
+
+  <div id="answers" class="answers"></div>
+
+  <div id="feedback" class="feedback" aria-live="polite"></div>
+
+  <button id="nextBtn" class="btn" style="display:none"
+    onclick="nextQuestion()" data-i18n="quiz_next">
+    Próxima pergunta
+  </button>
+
+  <button id="restartBtn" class="btn secondary"
+    style="display:none" onclick="startQuiz()" data-i18n="quiz_restart">
+    Refazer nível
+  </button>
+
+  <button id="changeLevelBtn" class="btn secondary"
+    style="display:none" onclick="backToQuizLevels()" data-i18n="quiz_change_level">
+    Escolher outro nível
+  </button>
+</div>
+
+<div class="ad-slot">
+  <strong data-i18n="quiz_ad_title">ESPAÇO PUBLICITÁRIO</strong>
+  <span data-i18n="quiz_ad_description">
+    Publicidade ajuda a manter o conteúdo gratuito.
+  </span>
+</div>
+
+</section>
+
+<section id="ranking" class="page">
+
+  <div class="section-head">
+    <div>
+      <span class="tag">🏆 DESTAQUES FERROVIÁRIOS</span>
+      <h2>Ranking Ferroviário</h2>
+      <p class="muted">
+        Descubra quem são os maiores conhecedores do universo ferroviário!
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🏅 Escolha o nível</h3>
+
+    <div class="grid">
+      <button class="btn" data-ranking-level="basico">
+        🟢 Básico
+      </button>
+
+      <button class="btn" data-ranking-level="intermediario">
+        🟡 Intermediário
+      </button>
+
+      <button class="btn" data-ranking-level="avancado">
+        🔴 Avançado
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🏆 Pódio dos campeões</h3>
+
+    <div class="grid">
+      <div class="card">
+        <h3>🥇 1º lugar</h3>
+        <p id="rankingFirst">Aguardando participantes</p>
+      </div>
+
+      <div class="card">
+        <h3>🥈 2º lugar</h3>
+        <p id="rankingSecond">Aguardando participantes</p>
+      </div>
+
+      <div class="card">
+        <h3>🥉 3º lugar</h3>
+        <p id="rankingThird">Aguardando participantes</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📊 Top 10 ferroviários</h3>
+
+    <p class="muted" id="rankingLevelName">
+      Ranking do nível Básico
+    </p>
+
+    <div id="rankingList">
+      <p class="muted">
+        O ranking será atualizado após a integração com o sistema de pontuação.
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🚂 Como participar?</h3>
+    <p class="muted">
+      Entre na sua conta, participe do Quiz Ferroviário,
+      responda às perguntas e acumule pontos para conquistar
+      seu lugar entre os melhores!
+    </p>
+  </div>
+
+  <div class="ad-slot">
+    <strong>ESPAÇO PUBLICITÁRIO</strong>
+    Publicidade ajuda a manter o conteúdo gratuito.
+  </div>
+</section>
+
+<section id="noticias" class="page"><div class="section-head"><div><span class="tag">ATUALIZAÇÕES</span><h2>Notícias ferroviárias</h2><p class="muted">Artigos publicados pela equipe Mundo Ferroviário.</p></div></div><div id="publishedNews" class="grid"><div class="empty">Carregando notícias...</div></div></section>
+  
+<section id="noticiaCompleta" class="page">
+  <button class="btn secondary" onclick="showPage('noticias')">
+    ← Voltar às notícias
+  </button>
+
+  <article class="card" id="fullNewsContent" style="margin-top:18px">
+    <div class="empty">Selecione uma notícia para leitura.</div>
+  </article>
+
+  <div class="ad-slot">
+    <strong>ESPAÇO PUBLICITÁRIO</strong>
+    Publicidade ajuda a manter o Mundo Ferroviário gratuito.
+  </div>
+  
+</section>
+
+<section id="enciclopedia" class="page">
+  <div class="section-head">
+    <div>
+      <span class="tag">CONHECIMENTO FERROVIÁRIO</span>
+      <h2>Enciclopédia Ferroviária</h2>
+      <p class="muted">Um espaço para conhecer, pesquisar e compartilhar conhecimentos sobre o universo ferroviário.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Explore a Enciclopédia</h3>
+    <p class="muted">Selecione uma categoria para começar sua pesquisa.</p>
+    <input id="encyclopediaSearch" class="search" type="search" placeholder="Pesquisar artigos, modelos ou fabricantes...">
+  </div>
+
+  <div class="grid" id="encyclopediaCategories">
+    <article class="card">
+      <div class="emoji">🚂</div>
+      <h3>Locomotivas</h3>
+      <p>Modelos, fabricantes, tecnologias e características.</p>
+    </article>
+    <article class="card">
+      <div class="emoji">🚃</div>
+      <h3>Vagões</h3>
+      <p>Tipos, aplicações e características dos vagões.</p>
+    </article>
+    <article class="card">
+      <div class="emoji">⚙️</div>
+      <h3>Componentes ferroviários</h3>
+      <p>Peças, sistemas e equipamentos ferroviários.</p>
+    </article>
+    <article class="card">
+      <div class="emoji">🚦</div>
+      <h3>Sinalização</h3>
+      <p>Sistemas, equipamentos e conceitos de sinalização.</p>
+    </article>
+    <article class="card">
+      <div class="emoji">🛤️</div>
+      <h3>Operações ferroviárias</h3>
+      <p>Operações, procedimentos e conceitos do setor.</p>
+    </article>
+    <article class="card">
+      <div class="emoji">📜</div>
+      <h3>História ferroviária</h3>
+      <p>Ferrovias, acontecimentos e evolução do transporte ferroviário.</p>
+    </article>
+  </div>
+
+  <div class="section-head">
+    <div>
+      <h2>Artigos publicados</h2>
+      <p class="muted">Conteúdos aprovados pela administração.</p>
+    </div>
+  </div>
+
+  <div id="encyclopediaArticles" class="grid">
+    <div class="empty">Os artigos da Enciclopédia aparecerão aqui.</div>
+  </div>
+
+  <!-- PAINEL ADMINISTRATIVO DA ENCICLOPÉDIA -->
+  <div id="encyclopediaAdminPanel" class="card"
+       style="display:none; margin-top:20px;">
+
+    <h3>⚙️ Administração da Enciclopédia</h3>
+
+    <p class="muted">
+      Gerencie as sugestões enviadas pelos membros da comunidade.
+    </p>
+
+    <div id="encyclopediaPendingSuggestions">
+      <div class="empty">
+        Carregando sugestões...
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h3>Compartilhe seu conhecimento</h3>
+    <p class="muted">Você poderá sugerir artigos para a Enciclopédia. As sugestões serão analisadas pela administração antes da publicação.</p>
+    <button class="btn" type="button" onclick="document.getElementById('encyclopediaSuggestion').scrollIntoView({behavior:'smooth'})">Sugerir um artigo</button>
+    
+<div id="encyclopediaSuggestion">
+  <form id="encyclopediaSuggestionForm" style="margin-top:18px">
+
+    <div class="form-group">
+      <label for="encyclopediaTitle">Título do artigo</label>
+      <input
+        id="encyclopediaTitle"
+        type="text"
+        maxlength="120"
+        placeholder="Ex: Locomotiva GE AC44i"
+        required>
+    </div>
+
+    <div class="form-group">
+      <label for="encyclopediaCategory">Categoria</label>
+      <select id="encyclopediaCategory" required>
+        <option value="">Selecione uma categoria</option>
+        <option value="Locomotivas">Locomotivas</option>
+        <option value="Vagões">Vagões</option>
+        <option value="Componentes ferroviários">Componentes ferroviários</option>
+        <option value="Sinalização">Sinalização</option>
+        <option value="Operações ferroviárias">Operações ferroviárias</option>
+        <option value="História ferroviária">História ferroviária</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="encyclopediaSummary">Resumo do artigo</label>
+      <textarea
+        id="encyclopediaSummary"
+        maxlength="500"
+        rows="3"
+        placeholder="Faça um breve resumo do conteúdo..."
+        required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="encyclopediaContent">Conteúdo do artigo</label>
+      <textarea
+        id="encyclopediaContent"
+        maxlength="15000"
+        rows="8"
+        placeholder="Escreva aqui o conteúdo completo do artigo..."
+        required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="encyclopediaSource">Fonte ou referência (opcional)</label>
+      <input
+        id="encyclopediaSource"
+        type="text"
+        maxlength="500"
+        placeholder="Ex: Manual técnico, livro ou site">
+    </div>
+
+    <button class="btn" type="submit">
+      Enviar sugestão para aprovação
+    </button>
+
+    <p class="muted" style="margin-top:10px">
+      Sua sugestão será analisada pela administração antes de ser publicada.
+    </p>
+
+  </form>
+</div>
+
+    <!-- PAINEL ADMINISTRATIVO DA ENCICLOPÉDIA -->
+
+<div id="encyclopediaAdminPanel"
+     class="card"
+     style="display:none; margin-top:20px">
+
+  <h3>🛠️ Administração da Enciclopédia</h3>
+
+  <p class="muted">
+    Analise as sugestões enviadas pelos usuários.
+    Você poderá aprovar, editar ou rejeitar os artigos.
+  </p>
+
+  <div id="encyclopediaPendingSuggestions">
+
+    <div class="empty">
+      Carregando sugestões pendentes...
+    </div>
+
+  </div>
+
+</div>
+
+<!-- FIM DO PAINEL ADMINISTRATIVO -->
+
+  </div>
+</section>
+
+<section id="galeria" class="page">
+
+ <div class="section-head"><div><span class="tag">COMUNIDADE FERROVIÁRIA</span><h2>Comunidade Ferroviária</h2><p class="muted">Compartilhe fotos de locomotivas, trens, estações e paisagens ferroviárias. As imagens passam por moderação antes de aparecer publicamente.</p></div></div>
+ <div class="grid" style="grid-template-columns:1fr 1fr;align-items:start">
+  <div class="card">
+   <h3>Entre ou crie sua conta</h3><p class="muted">É necessário entrar para enviar uma fotografia.</p>
+   <label for="galleryEmail">E-mail</label><input id="galleryEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com">
+   <label for="galleryPassword">Senha</label><input id="galleryPassword" type="password" autocomplete="current-password" placeholder="Mínimo de 8 caracteres">
+   <div class="hero-actions" style="margin-top:12px"><button class="btn" id="galleryLogin">Entrar</button><button class="btn secondary" id="gallerySignup">Criar conta</button><button class="btn outline" id="galleryLogout" style="display:none">Sair</button></div>
+   <p id="galleryAuthMsg" class="muted" aria-live="polite">Configure o Firebase para ativar a galeria.</p>
+  </div>
+  <div class="card">
+   <h3>Criar publicação</h3>
+   <form id="galleryUpload">
+    <label for="photoTitle">Título da foto *</label><input id="photoTitle" maxlength="90" required placeholder="Ex.: Locomotiva em viagem">
+    <label for="photoCategory">Categoria *</label><select id="photoCategory" required><option value="Locomotiva">Locomotiva</option><option value="Trem">Trem / composição</option><option value="Vagão">Vagão</option><option value="Estação">Estação</option><option value="Paisagem ferroviária">Paisagem ferroviária</option><option value="Histórica">Foto histórica</option><option value="Outra">Outra</option></select>
+    <label for="photoDescription">Descrição (opcional)</label><textarea id="photoDescription" maxlength="500" rows="3" placeholder="Conte um pouco sobre a imagem..."></textarea>
+    <label for="photoFile">Escolha a imagem *</label><input id="photoFile" type="file" accept="image/jpeg,image/png,image/webp" required>
+    <label style="display:flex;gap:8px;align-items:flex-start;font-weight:500"><input id="photoRights" type="checkbox" required style="width:auto;margin-top:3px"> Confirmo que tenho autorização para enviar esta foto e que ela não expõe informações operacionais, pessoas ou dados privados sem consentimento.</label>
+    <button class="btn" type="submit" id="photoSubmit">Publicar foto</button><p id="galleryUploadMsg" class="muted" aria-live="polite"></p>
+   </form>
+  </div>
+ </div>
+ <div class="notice" style="margin-top:18px"><strong>Regras da galeria:</strong> somente imagens JPG, PNG ou WebP de até 10 MB. Não envie imagens de áreas restritas, documentos, telas, placas com dados pessoais ou situações que possam comprometer a segurança. Publique apenas fotos próprias ou autorizadas. O envio não significa publicação imediata.</div>
+ <div class="section-head"><div><h2>Publicações da comunidade</h2><p class="muted">Somente imagens aprovadas pela moderação são exibidas aqui.</p></div><button class="btn secondary" id="galleryRefresh" type="button">Atualizar</button></div>
+ <div id="galleryGrid" class="grid"><div class="empty">As publicações da comunidade aparecerão aqui. </div></div>
+</section>
+  
+<!-- PERFIL DO FERROVIÁRIO -->
+<section id="perfil" class="page">
+
+  <div class="section-head">
+    <div>
+      <span class="tag">MUNDO FERROVIÁRIO</span>
+      <h2>Meu Perfil 🚂</h2>
+      <p class="muted">
+        Personalize seu perfil e compartilhe sua história ferroviária.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="max-width:600px;margin:auto">
+
+    <div style="text-align:center;margin-bottom:20px">
+      <div id="profilePreview"
+        style="width:110px;height:110px;border-radius:50%;
+        background:#102b3f;color:#f0b323;
+        display:flex;align-items:center;justify-content:center;
+        font-size:50px;margin:auto">
+        🚂
+      </div>
+    </div>
+
+    <form id="profileForm">
+
+      <label for="profilePhoto">Foto de perfil</label>
+      <input type="file" id="profilePhoto"
+        accept="image/jpeg,image/png,image/webp">
+
+      <label for="profileName">Nome do ferroviário</label>
+      <input type="text" id="profileName"
+        maxlength="60" required
+        placeholder="Seu nome">
+
+      <label for="profileBio">Biografia</label>
+      <textarea id="profileBio"
+        maxlength="300" rows="4"
+        placeholder="Conte um pouco sobre você e sua paixão pelas ferrovias..."></textarea>
+
+      <label for="profileCity">Cidade</label>
+      <input type="text" id="profileCity"
+        maxlength="60"
+        placeholder="Sua cidade">
+
+      <label for="profileState">Estado</label>
+      <input type="text" id="profileState"
+        maxlength="2"
+        placeholder="Ex.: RJ">
+
+      <button type="submit" class="btn"
+        id="profileSave"
+        style="margin-top:18px">
+        Salvar Perfil
+      </button>
+
+      <p id="profileMessage"
+        class="muted" aria-live="polite"></p>
+
+    </form>
+  </div>
+
+</section>
+<!-- FIM DO PERFIL -->
+  
+  <!-- COMUNIDADE FERROVIÁRIA -->
+<section id="comunidade" class="page">
+
+  <div class="section-head">
+    <div>
+      <span class="tag">MUNDO FERROVIÁRIO</span>
+      <h2>Comunidade Ferroviária 🚂</h2>
+      <p class="muted">
+        Compartilhe sua paixão pelos trilhos!
+        Publique fotos, curta e converse com outros ferroviários.
+      </p>
+    </div>
+  </div>
+
+
+  <!-- LOGIN -->
+  <div class="card">
+    <h3>Entre na comunidade</h3>
+
+    <label for="communityEmail">E-mail</label>
+    <input id="communityEmail" type="email"
+      placeholder="Seu e-mail">
+
+    <label for="communityPassword">Senha</label>
+    <input id="communityPassword" type="password"
+      placeholder="Sua senha">
+
+    <div class="hero-actions">
+      <button type="button" class="btn" id="communityLogin">
+        Entrar
+      </button>
+
+      <button type="button" class="btn outline" id="communitySignup">
+        Criar conta
+      </button>
+    </div>
+
+    <p id="communityAuthMsg" class="muted"
+      aria-live="polite"></p>
+  </div>
+
+  <!-- NOVA PUBLICAÇÃO -->
+  <div class="card" style="margin-top:18px">
+
+    <h3>Compartilhe sua publicação 📸</h3>
+
+    <form id="communityPostForm">
+
+      <label for="communityText">
+        O que você gostaria de compartilhar?
+      </label>
+
+      <textarea id="communityText"
+        placeholder="Conte uma novidade, experiência ou curiosidade ferroviária..."
+        maxlength="1000" required></textarea>
+
+      <label for="communityPhoto">
+        Adicionar fotografia
+      </label>
+
+      <input id="communityPhoto"
+        type="file"
+        accept="image/jpeg,image/png,image/webp">
+
+      <label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px">
+        <input id="communityRights"
+          type="checkbox" required>
+        Confirmo que sou proprietário da imagem
+        ou tenho autorização para publicá-la.
+      </label>
+
+
+      <button class="btn" type="submit"
+        id="communityPublish">
+        Publicar
+      </button>
+
+      <p id="communityPostMsg"
+        class="muted" aria-live="polite"></p>
+
+    </form>
+  </div>
+
+  <!-- PUBLICAÇÕES -->
+  
+ <!-- MEMBROS DA COMUNIDADE -->
+  <div class="section-head" style="margin-top:28px">
+    <div>
+      <h2>Nossos Ferroviários 👥</h2>
+      <p class="muted">
+        Conheça os membros do Mundo Ferroviário.
+      </p>
+    </div>
+  </div>
+
+  <div id="communityMembers" class="grid">
+    <div class="empty">
+      Carregando membros...
+    </div>
+  </div>
+
+  <!-- PERFIL PÚBLICO -->
+  <div id="publicProfile" class="card"
+    style="display:none;margin-top:18px">
+    <button type="button" class="btn outline"
+      id="closePublicProfile">
+      ← Voltar aos membros
+    </button>
+
+    <div id="publicProfileContent"></div>
+  </div>
+  
+  <div class="section-head" style="margin-top:28px">
+    <div>
+      <h2>Publicações dos ferroviários</h2>
+      <p class="muted">
+        Veja o que a nossa comunidade está compartilhando.
+      </p>
+    </div>
+  </div>
+
+  <div id="communityFeed" class="grid">
+    <div class="empty">
+      Carregando publicações...
+    </div>
+  </div>
+
+</section>
+<!-- FIM DA COMUNIDADE -->
+<section id="sobre" class="page"><div class="section-head"><div><span class="tag">NOSSA MISSÃO</span><h2>Sobre o Mundo Ferroviário</h2></div></div><div class="card"><h3>Conhecimento que move trilhos.</h3><p>O Mundo Ferroviário nasce para aproximar pessoas do universo das ferrovias, valorizar a cultura ferroviária e facilitar o acesso a conteúdos educativos.</p><p>Queremos reunir curiosidades, materiais de estudo, glossário, histórias, oportunidades e uma comunidade de pessoas que compartilham essa paixão.</p><h3>Nosso compromisso</h3><ul class="content-list"><li>Conteúdo acessível para iniciantes e entusiastas.</li><li>Respeito à diversidade de profissionais e empresas do setor.</li><li>Informações técnicas apresentadas com contexto e responsabilidade.</li><li>Plataforma gratuita, sustentada por publicidade e parcerias.</li></ul><div class="notice"><strong>Transparência:</strong> esta versão é um protótipo demonstrativo. Os espaços publicitários ainda não exibem anúncios reais. A galeria permite envio de fotos por usuários cadastrados, com análise da equipe antes da publicação. A plataforma ainda depende da configuração do Firebase, Cloudinary e da hospedagem.</div></div></section>
+</main><footer class="footer"><strong>MUNDO FERROVIÁRIO</strong><br>Conhecimento que move trilhos. <br><small>Versão 2.1 • 2026 • Plataforma independente</small><br><small><a href="admin.html" style="color:#f0b323">Painel administrativo (protótipo local)</a></small></footer>
+<script>
+
+const termsByLanguage = {
+  pt: [
+    ['AMV / aparelho de mudança de via','Conjunto de componentes que permite encaminhar veículos ferroviários de uma via para outra, conforme o projeto e as regras locais.'],
+    ['Acoplamento','União entre veículos ferroviários por meio de dispositivos próprios.'],
+    ['Bitola','Distância entre as faces internas dos trilhos de uma via ferroviária.'],
+    ['Composição','Conjunto de veículos ferroviários unidos e movimentados em uma operação.'],
+    ['Dormente','Elemento transversal que apoia os trilhos e ajuda a manter a bitola.'],
+    ['Lastro','Camada de material granular, geralmente pedra britada, que dá suporte e estabilidade à via.'],
+    ['Engate','Dispositivo utilizado para unir veículos ferroviários.'],
+    ['Locomotiva','Veículo ferroviário motorizado usado para tracionar ou movimentar composições.'],
+    ['Material rodante','Conjunto de veículos ferroviários, como locomotivas, vagões e carros.'],
+    ['Pátio ferroviário','Área ferroviária destinada, entre outras atividades, à formação, recepção e movimentação de composições, conforme suas regras operacionais.'],
+    ['Pátio','Área ferroviária com vias destinadas a atividades como recepção, formação e movimentação de composições.'],
+    ['Sinalização ferroviária','Conjunto de indicações e sistemas que contribuem para a circulação segura, conforme regras operacionais.'],
+    ['Trilho','Perfil metálico que forma a superfície de rolamento e guia as rodas dos veículos ferroviários.'],
+    ['Vagão','Veículo ferroviário destinado principalmente ao transporte de cargas.'],
+    ['Via permanente','Conjunto de elementos físicos que compõem a via ferroviária, incluindo trilhos, dormentes, fixações e lastro, quando aplicável.']
+  ],
+
+  en: [
+    ['Switch / turnout','Assembly of components that allows railway vehicles to move from one track to another, according to the design and local rules.'],
+    ['Coupling','Connection between railway vehicles using dedicated devices.'],
+    ['Track gauge','Distance between the inner faces of the rails on a railway track.'],
+    ['Train consist','Group of railway vehicles coupled together and moved as part of an operation.'],
+    ['Sleeper / tie','Transverse element that supports the rails and helps maintain the track gauge.'],
+    ['Ballast','Layer of granular material, usually crushed stone, that supports and stabilizes the track.'],
+    ['Coupler','Device used to connect railway vehicles.'],
+    ['Locomotive','Powered railway vehicle used to haul or move train consists.'],
+    ['Rolling stock','Collection of railway vehicles, such as locomotives, freight wagons and passenger cars.'],
+    ['Railway yard','Railway area used, among other activities, for receiving, assembling and moving train consists, according to operating rules.'],
+    ['Yard','Railway area with tracks used for activities such as receiving, assembling and moving train consists.'],
+    ['Railway signaling','Set of indications and systems that help ensure safe railway operations, according to operating rules.'],
+    ['Rail','Metal profile that forms the running surface and guides the wheels of railway vehicles.'],
+    ['Freight wagon','Railway vehicle primarily designed to transport goods.'],
+    ['Permanent way / track','Physical components that make up a railway track, including rails, sleepers, fastenings and ballast, where applicable.']
+  ],
+
+  es: [
+    ['Aparato de vía / desvío','Conjunto de componentes que permite dirigir vehículos ferroviarios de una vía a otra, según el diseño y las normas locales.'],
+    ['Acoplamiento','Unión entre vehículos ferroviarios mediante dispositivos específicos.'],
+    ['Ancho de vía','Distancia entre las caras internas de los rieles de una vía ferroviaria.'],
+    ['Composición','Conjunto de vehículos ferroviarios unidos y movilizados durante una operación.'],
+    ['Traviesa','Elemento transversal que sostiene los rieles y ayuda a mantener el ancho de vía.'],
+    ['Balasto','Capa de material granular, generalmente piedra triturada, que proporciona soporte y estabilidad a la vía.'],
+    ['Enganche','Dispositivo utilizado para unir vehículos ferroviarios.'],
+    ['Locomotora','Vehículo ferroviario motorizado utilizado para arrastrar o mover composiciones.'],
+    ['Material rodante','Conjunto de vehículos ferroviarios, como locomotoras, vagones y coches.'],
+    ['Patio ferroviario','Área ferroviaria destinada, entre otras actividades, a la recepción, formación y movimiento de composiciones, según las normas operativas.'],
+    ['Patio','Área ferroviaria con vías destinadas a actividades como recepción, formación y movimiento de composiciones.'],
+    ['Señalización ferroviaria','Conjunto de indicaciones y sistemas que contribuyen a la circulación segura, según las normas operativas.'],
+    ['Riel','Perfil metálico que forma la superficie de rodadura y guía las ruedas de los vehículos ferroviarios.'],
+    ['Vagón','Vehículo ferroviario destinado principalmente al transporte de cargas.'],
+    ['Vía permanente','Conjunto de elementos físicos que componen la vía ferroviaria, incluidos rieles, traviesas, fijaciones y balasto, cuando corresponda.']
+  ]
+};
+
+const glossaryMessages = {
+  pt: 'Nenhum termo encontrado.',
+  en: 'No terms found.',
+  es: 'No se encontraron términos.'
+};
+
+function renderTerms(q = '') {
+  const lang = document.documentElement.lang ||
+    localStorage.getItem('mf_language') || 'pt';
+
+  const language = termsByLanguage[lang] ? lang : 'pt';
+  const terms = termsByLanguage[language];
+  const termsContainer = document.getElementById('terms');
+
+  if (!termsContainer) return;
+
+  const list = terms.filter(t =>
+    (t[0] + ' ' + t[1]).toLowerCase().includes(q.toLowerCase())
+  );
+
+  termsContainer.innerHTML = list.length
+    ? list.map(t => `
+        <div class="term">
+          <strong>${t[0]}</strong>
+          <span class="muted">${t[1]}</span>
+        </div>
+      `).join('')
+    : `<div class="empty">${glossaryMessages[language]}</div>`;
+}
+
+const glossSearch = document.getElementById('glossSearch');
+
+if (glossSearch) {
+  glossSearch.addEventListener('input', e => {
+    renderTerms(e.target.value);
+  });
+
+  renderTerms();
+
+  const glossaryLanguageObserver = new MutationObserver(() => {
+    renderTerms(glossSearch.value);
+  });
+
+  glossaryLanguageObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['lang']
+  });
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.toggle('active', p.id === id);
+  });
+
+  document.querySelectorAll('nav button[data-page]').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === id);
+  });
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('nav button[data-page]').forEach(b => {
+  b.addEventListener('click', () => showPage(b.dataset.page));
+});
+
+const quizQuestions = {
+  
+  basico: [
+    {q:'Qual é a principal função de uma locomotiva?',a:['Transportar passageiros dentro dos vagões','Fornecer tração para movimentar veículos ferroviários','Substituir os trilhos'],c:1,e:'A locomotiva fornece a força de tração necessária para movimentar uma composição ferroviária. Ela pode tracionar vagões de carga ou carros de passageiros.'},
+    {q:'O que é um vagão?',a:['Um veículo ferroviário usado principalmente para transportar cargas','Um tipo de sinalização','Uma peça da locomotiva'],c:0,e:'O vagão é um veículo ferroviário destinado principalmente ao transporte de mercadorias. Existem modelos específicos para diferentes tipos de carga.'},
+    {q:'Qual componente ajuda a manter a distância entre os trilhos?',a:['Engate','Roda','Dormente'],c:2,e:'Os dormentes são elementos transversais que apoiam os trilhos e ajudam a manter a bitola da via, além de distribuir esforços para a estrutura de suporte.'},
+    {q:'O que é a bitola ferroviária?',a:['O comprimento da locomotiva','A distância entre as faces internas dos trilhos','A altura dos vagões'],c:1,e:'A bitola é a distância entre as faces internas dos trilhos, medida conforme critérios técnicos definidos para a via. Existem diferentes padrões de bitola.'},
+    {q:'Qual vagão é projetado para transportar líquidos?',a:['Vagão-tanque','Vagão-plataforma','Vagão fechado'],c:0,e:'O vagão-tanque possui um reservatório projetado para transportar líquidos ou determinados gases. Sua construção depende das características da carga e dos requisitos de segurança.'},
+    {q:'Para que serve o lastro da via?',a:['Armazenar combustível','Transportar mercadorias','Apoiar e dar estabilidade à estrutura da via'],c:2,e:'O lastro, geralmente formado por pedra britada, ajuda a distribuir esforços, manter a geometria da via e facilitar a drenagem da água.'},
+    {q:'Qual é a função dos trilhos?',a:['Guiar e oferecer superfície de rolamento às rodas','Armazenar cargas','Produzir energia elétrica'],c:0,e:'Os trilhos formam a superfície de rolamento e orientam o deslocamento das rodas dos veículos ferroviários. Também transmitem esforços à estrutura da via.'},
+    {q:'O que é uma composição ferroviária?',a:['Um conjunto de estações','Um conjunto de veículos ferroviários unidos','Uma equipe de manutenção'],c:1,e:'Uma composição é formada por uma locomotiva ou mais e pelos veículos ferroviários acoplados, de acordo com sua finalidade e configuração operacional.'},
+    {q:'Qual tecnologia utiliza motores elétricos de tração alimentados por energia de um sistema externo?',a:['Locomotiva a vapor','Locomotiva elétrica','Locomotiva diesel-mecânica'],c:1,e:'A locomotiva elétrica recebe energia de uma fonte externa, como uma rede aérea ou terceiro trilho, e utiliza motores elétricos para produzir tração.'},
+    {q:'O que é um pátio ferroviário?',a:['Uma oficina exclusivamente rodoviária','Um local destinado somente a passageiros','Uma área com vias para atividades ferroviárias'],c:2,e:'O pátio ferroviário é uma área com diferentes vias que pode ser utilizada para recepção, formação, classificação e movimentação de composições, conforme as regras locais.'}
+  ],
+
+  intermediario: [
+    {q:'Em uma locomotiva diesel-elétrica, qual é a função principal do alternador ou gerador?',a:['Produzir energia elétrica para alimentar os motores de tração','Armazenar os vagões','Controlar a bitola da via'],c:0,e:'O motor diesel fornece energia mecânica ao gerador ou alternador, que produz energia elétrica para alimentar os motores de tração.'},
+    {q:'Qual é a finalidade geral de um sistema de freio ferroviário?',a:['Aumentar a capacidade de carga','Reduzir ou controlar a velocidade e imobilizar veículos','Alterar a bitola'],c:1,e:'O sistema de freio permite controlar a velocidade e realizar a imobilização dos veículos. Existem diferentes tecnologias e configurações de freio ferroviário.'},
+    {q:'O que caracteriza um vagão gôndola?',a:['Possui laterais e é utilizado frequentemente para granéis sólidos','É sempre destinado a passageiros','Transporta exclusivamente líquidos'],c:0,e:'O vagão gôndola possui laterais e pode ser utilizado para transportar cargas como minério e carvão. Seu formato e sistema de descarga variam conforme o projeto.'},
+    {q:'Qual é a função de um aparelho de mudança de via (AMV)?',a:['Abastecer locomotivas','Medir a velocidade do trem','Permitir a passagem de veículos de uma via para outra'],c:2,e:'O AMV permite direcionar os veículos ferroviários de uma linha para outra. É um conjunto de componentes da infraestrutura que exige manutenção e controle adequados.'},
+    {q:'Qual é a função dos rodeiros em um veículo ferroviário?',a:['Apoiar o veículo e permitir seu deslocamento sobre os trilhos','Produzir combustível','Acionar a sinalização das estações'],c:0,e:'Os rodeiros são conjuntos de rodas e eixo que sustentam parte do peso do veículo e permitem seu deslocamento sobre os trilhos.'},
+    {q:'O que é um truque ferroviário?',a:['Um tipo de vagão-tanque','Um conjunto que reúne componentes de apoio e rolamento, como rodeiros e estrutura','Um sistema de comunicação'],c:1,e:'O truque é um conjunto estrutural instalado sob determinados veículos ferroviários. Pode reunir rodeiros, suspensão, estrutura e outros componentes.'},
+    {q:'Qual é a finalidade das fixações ferroviárias?',a:['Armazenar materiais','Aumentar o peso da locomotiva','Prender os trilhos aos dormentes e contribuir para a estabilidade da via'],c:2,e:'As fixações unem os trilhos aos dormentes e ajudam a manter o posicionamento e a estabilidade da via. Existem diferentes tipos de sistemas de fixação.'},
+    {q:'Em termos gerais, o que é sinalização ferroviária?',a:['Um conjunto de sistemas e indicações que contribui para a circulação segura','Uma identificação visual de cargas','Um tipo de manutenção dos vagões'],c:0,e:'A sinalização ferroviária reúne equipamentos, indicações e sistemas de controle que orientam e organizam a circulação dos trens. Sua aplicação depende das regras operacionais da ferrovia.'},
+    {q:'Qual é uma característica comum dos vagões hopper ou tremonha?',a:['Possuem cabine de condução','Possuem compartimentos que podem permitir descarga por gravidade','São utilizados exclusivamente para passageiros'],c:1,e:'Vagões hopper ou tremonha possuem compartimentos projetados para receber e descarregar granéis. Muitos modelos utilizam aberturas inferiores para a descarga.'},
+    {q:'Por que a distribuição da carga em um vagão é importante?',a:['Para alterar a cor do veículo','Para aumentar o comprimento da composição','Para respeitar limites de carga e contribuir para a estabilidade do veículo'],c:2,e:'A distribuição adequada ajuda a respeitar os limites de carga por eixo e por veículo, além de contribuir para a estabilidade e a segurança do transporte.'}
+  ],
+
+  avancado: [
+    {q:'Em uma locomotiva diesel-elétrica, qual é a relação entre o motor diesel e os motores de tração?',a:['O motor diesel aciona um gerador ou alternador que fornece energia aos motores de tração','Os motores de tração produzem combustível para o motor diesel','O motor diesel movimenta diretamente os trilhos'],c:0,e:'Na transmissão diesel-elétrica, o motor diesel aciona um gerador ou alternador. A energia elétrica produzida é utilizada pelos motores de tração, que movimentam os rodeiros.'},
+    {q:'Qual é a finalidade geral da suspensão de um veículo ferroviário?',a:['Aumentar a bitola da via','Contribuir para o conforto, a estabilidade e a interação entre veículo e via','Substituir o sistema de freios'],c:1,e:'A suspensão ajuda a absorver irregularidades e controlar os movimentos relativos entre a estrutura do veículo e os rodeiros. Seu projeto influencia a estabilidade e o comportamento dinâmico.'},
+    {q:'O que pode indicar um desgaste irregular em rodas ferroviárias?',a:['Necessariamente uma falha na sinalização','Somente excesso de pintura','Possíveis problemas de contato, condições de operação ou manutenção que exigem avaliação técnica'],c:2,e:'O desgaste irregular pode estar relacionado às condições de contato roda-trilho, geometria, esforços e condições de operação. A identificação da causa exige inspeção e avaliação técnica.'},
+    {q:'Por que a inspeção de componentes de um rodeiro é importante?',a:['Para identificar condições que possam comprometer a segurança e a confiabilidade','Para aumentar artificialmente a capacidade de carga','Para dispensar a manutenção preventiva'],c:0,e:'A inspeção permite identificar desgastes, danos e outras anormalidades nos componentes. Isso contribui para a confiabilidade do material rodante e para a prevenção de falhas.'},
+    {q:'Qual é a função geral de um sistema de lubrificação em componentes mecânicos?',a:['Aumentar o atrito','Reduzir o atrito e o desgaste entre superfícies em contato','Substituir as inspeções'],c:1,e:'A lubrificação forma uma película entre superfícies em movimento, reduzindo o atrito e o desgaste. O lubrificante e sua aplicação devem atender às especificações do fabricante.'},
+    {q:'Em uma via ferroviária, o que significa superelevação em uma curva?',a:['Aumento da potência da locomotiva','Elevação da plataforma de uma estação','Diferença de nível entre os trilhos da curva'],c:2,e:'A superelevação é a diferença de altura entre os trilhos de uma curva. Seu dimensionamento considera fatores como velocidade, geometria e características da via.'},
+    {q:'Qual é a importância da compatibilidade entre vagão e carga transportada?',a:['Garantir que o veículo, seus equipamentos e limites sejam adequados à carga','Permitir utilizar qualquer vagão sem avaliação','Eliminar a necessidade de acondicionamento'],c:0,e:'A compatibilidade envolve capacidade de carga, dimensões, características físicas e químicas da mercadoria e equipamentos necessários para o transporte seguro.'},
+    {q:'Qual é o objetivo geral do licenciamento ou controle de circulação ferroviária?',a:['Definir o tipo de carga de cada vagão','Organizar e controlar a ocupação dos trechos de via, conforme o sistema e as regras aplicáveis','Substituir a manutenção da infraestrutura'],c:1,e:'Os sistemas de controle de circulação organizam a utilização dos trechos ferroviários e ajudam a evitar conflitos de ocupação. Os métodos e procedimentos variam conforme a ferrovia.'},
+    {q:'Por que a interação entre roda e trilho é importante?',a:['Porque determina a cor dos veículos','Porque elimina a necessidade de freios','Porque influencia a transmissão de esforços, o desgaste e a dinâmica do veículo'],c:2,e:'O contato entre roda e trilho transmite esforços e influencia a movimentação, o desgaste, a estabilidade e o comportamento dinâmico do veículo ferroviário.'},
+    {q:'Diante de uma anormalidade identificada em um veículo ferroviário, qual deve ser a conduta geral?',a:['Comunicar e seguir os procedimentos oficiais de segurança e avaliação técnica','Ignorar a anormalidade se o trem estiver em movimento','Realizar qualquer intervenção sem autorização'],c:0,e:'Anormalidades devem ser comunicadas e tratadas conforme os procedimentos oficiais da ferrovia, com avaliação por profissionais autorizados. A segurança deve prevalecer sobre a continuidade da operação.'}
+  ]
+};
+
+// TRADUÇÕES DO QUIZ — NÍVEL BÁSICO
+const quizQuestionsTranslated = {
+  en: {
+    basico: [
+      {
+        q: 'What is the main function of a locomotive?',
+        a: [
+          'Transport passengers inside railway cars',
+          'Provide traction to move railway vehicles',
+          'Replace the rails'
+        ],
+        c: 1,
+        e: 'The locomotive provides the tractive force needed to move a train consist. It can haul freight wagons or passenger coaches.'
+      },
+      {
+        q: 'What is a railway wagon?',
+        a: [
+          'A railway vehicle mainly used to transport freight',
+          'A type of signaling',
+          'A locomotive component'
+        ],
+        c: 0,
+        e: 'A railway wagon is a vehicle primarily designed to transport goods. Different models are available for different types of cargo.'
+      },
+      {
+        q: 'Which component helps maintain the distance between the rails?',
+        a: [
+          'Coupler',
+          'Wheel',
+          'Sleeper'
+        ],
+        c: 2,
+        e: 'Sleepers support the rails and help maintain the track gauge. They also distribute loads to the supporting track structure.'
+      },
+      {
+        q: 'What is railway track gauge?',
+        a: [
+          'The length of the locomotive',
+          'The distance between the inner faces of the rails',
+          'The height of the wagons'
+        ],
+        c: 1,
+        e: 'Track gauge is the distance between the inner faces of the rails, measured according to the technical criteria established for the track. Different gauge standards exist.'
+      },
+      {
+        q: 'Which wagon is designed to transport liquids?',
+        a: [
+          'Tank wagon',
+          'Flat wagon',
+          'Covered wagon'
+        ],
+        c: 0,
+        e: 'A tank wagon has a tank designed to transport liquids or certain gases. Its construction depends on the cargo characteristics and safety requirements.'
+      },
+      {
+        q: 'What is the purpose of railway track ballast?',
+        a: [
+          'Store fuel',
+          'Transport goods',
+          'Support and stabilize the track structure'
+        ],
+        c: 2,
+        e: 'Ballast, usually made of crushed stone, helps distribute loads, maintain track geometry and provide water drainage.'
+      },
+      {
+        q: 'What is the function of rails?',
+        a: [
+          'Guide the wheels and provide a running surface',
+          'Store cargo',
+          'Generate electrical energy'
+        ],
+        c: 0,
+        e: 'Rails provide the running surface and guide the movement of railway vehicle wheels. They also transfer loads to the track structure.'
+      },
+      {
+        q: 'What is a train consist?',
+        a: [
+          'A group of stations',
+          'A group of coupled railway vehicles',
+          'A maintenance team'
+        ],
+        c: 1,
+        e: 'A train consist is formed by one or more locomotives and the railway vehicles coupled to them, according to its purpose and operating configuration.'
+      },
+      {
+        q: 'Which technology uses electric traction motors powered by an external energy supply?',
+        a: [
+          'Steam locomotive',
+          'Electric locomotive',
+          'Diesel-mechanical locomotive'
+        ],
+        c: 1,
+        e: 'An electric locomotive receives energy from an external source, such as an overhead line or third rail, and uses electric motors to produce traction.'
+      },
+      {
+        q: 'What is a railway yard?',
+        a: [
+          'A facility exclusively for road vehicles',
+          'A place intended only for passengers',
+          'An area with tracks used for railway operations'
+        ],
+        c: 2,
+        e: 'A railway yard is an area with multiple tracks that may be used for receiving, forming, classifying and moving train consists, according to local operating rules.'
+      }
+    ]
+  },
+
+  es: {
+    basico: [
+      {
+        q: '¿Cuál es la función principal de una locomotora?',
+        a: [
+          'Transportar pasajeros dentro de los vagones',
+          'Proporcionar tracción para mover vehículos ferroviarios',
+          'Sustituir los rieles'
+        ],
+        c: 1,
+        e: 'La locomotora proporciona la fuerza de tracción necesaria para mover una composición ferroviaria. Puede arrastrar vagones de carga o coches de pasajeros.'
+      },
+      {
+        q: '¿Qué es un vagón ferroviario?',
+        a: [
+          'Un vehículo ferroviario utilizado principalmente para transportar cargas',
+          'Un tipo de señalización',
+          'Una pieza de la locomotora'
+        ],
+        c: 0,
+        e: 'El vagón es un vehículo ferroviario destinado principalmente al transporte de mercancías. Existen diferentes modelos para distintos tipos de carga.'
+      },
+      {
+        q: '¿Qué componente ayuda a mantener la distancia entre los rieles?',
+        a: [
+          'Enganche',
+          'Rueda',
+          'Durmiente'
+        ],
+        c: 2,
+        e: 'Los durmientes apoyan los rieles y ayudan a mantener el ancho de vía. También distribuyen los esfuerzos hacia la estructura de soporte.'
+      },
+      {
+        q: '¿Qué es el ancho de vía ferroviario?',
+        a: [
+          'La longitud de la locomotora',
+          'La distancia entre las caras internas de los rieles',
+          'La altura de los vagones'
+        ],
+        c: 1,
+        e: 'El ancho de vía es la distancia entre las caras internas de los rieles, medida según los criterios técnicos establecidos para la vía. Existen diferentes estándares.'
+      },
+      {
+        q: '¿Qué vagón está diseñado para transportar líquidos?',
+        a: [
+          'Vagón cisterna',
+          'Vagón plataforma',
+          'Vagón cerrado'
+        ],
+        c: 0,
+        e: 'El vagón cisterna tiene un depósito diseñado para transportar líquidos o determinados gases. Su construcción depende de las características de la carga y de los requisitos de seguridad.'
+      },
+      {
+        q: '¿Para qué sirve el balasto de la vía?',
+        a: [
+          'Almacenar combustible',
+          'Transportar mercancías',
+          'Apoyar y estabilizar la estructura de la vía'
+        ],
+        c: 2,
+        e: 'El balasto, generalmente formado por piedra triturada, ayuda a distribuir los esfuerzos, mantener la geometría de la vía y facilitar el drenaje del agua.'
+      },
+      {
+        q: '¿Cuál es la función de los rieles?',
+        a: [
+          'Guiar las ruedas y ofrecer una superficie de rodadura',
+          'Almacenar cargas',
+          'Producir energía eléctrica'
+        ],
+        c: 0,
+        e: 'Los rieles forman la superficie de rodadura y guían el desplazamiento de las ruedas de los vehículos ferroviarios. También transmiten esfuerzos a la estructura de la vía.'
+      },
+      {
+        q: '¿Qué es una composición ferroviaria?',
+        a: [
+          'Un conjunto de estaciones',
+          'Un conjunto de vehículos ferroviarios acoplados',
+          'Un equipo de mantenimiento'
+        ],
+        c: 1,
+        e: 'Una composición está formada por una o más locomotoras y los vehículos ferroviarios acoplados, según su finalidad y configuración operativa.'
+      },
+      {
+        q: '¿Qué tecnología utiliza motores eléctricos de tracción alimentados por una fuente externa de energía?',
+        a: [
+          'Locomotora de vapor',
+          'Locomotora eléctrica',
+          'Locomotora diésel-mecánica'
+        ],
+        c: 1,
+        e: 'La locomotora eléctrica recibe energía de una fuente externa, como una línea aérea o un tercer riel, y utiliza motores eléctricos para producir tracción.'
+      },
+      {
+        q: '¿Qué es un patio ferroviario?',
+        a: [
+          'Un taller exclusivamente para vehículos de carretera',
+          'Un lugar destinado solamente a pasajeros',
+          'Un área con vías para actividades ferroviarias'
+        ],
+        c: 2,
+        e: 'El patio ferroviario es un área con diferentes vías que puede utilizarse para recibir, formar, clasificar y mover composiciones, según las normas operativas locales.'
+      }
+    ]
+  
+  }
+};
+
+// TRADUÇÕES — NÍVEL INTERMEDIÁRIO
+
+quizQuestionsTranslated.en.intermediario = [
+  {
+    q: 'In a diesel-electric locomotive, what is the main function of the alternator or generator?',
+    a: [
+      'Generate electrical power to supply the traction motors',
+      'Store railway wagons',
+      'Control the track gauge'
+    ],
+    c: 0,
+    e: 'The diesel engine provides mechanical energy to the generator or alternator, which produces electrical energy to power the traction motors.'
+  },
+  {
+    q: 'What is the general purpose of a railway braking system?',
+    a: [
+      'Increase load capacity',
+      'Reduce or control speed and bring vehicles to a stop',
+      'Change the track gauge'
+    ],
+    c: 1,
+    e: 'The braking system allows the speed of vehicles to be controlled and enables them to be brought to a stop. Different railway braking technologies and configurations exist.'
+  },
+  {
+    q: 'What characterizes a gondola wagon?',
+    a: [
+      'It has sides and is often used to transport bulk solids',
+      'It is always intended for passengers',
+      'It transports liquids exclusively'
+    ],
+    c: 0,
+    e: 'A gondola wagon has sides and can be used to transport cargo such as ore and coal. Its shape and unloading system vary according to its design.'
+  },
+  {
+    q: 'What is the function of a railway turnout?',
+    a: [
+      'Supply fuel to locomotives',
+      'Measure train speed',
+      'Allow railway vehicles to move from one track to another'
+    ],
+    c: 2,
+    e: 'A turnout allows railway vehicles to be directed from one track to another. It is an infrastructure assembly that requires proper maintenance and control.'
+  },
+  {
+    q: 'What is the function of wheelsets in a railway vehicle?',
+    a: [
+      'Support the vehicle and allow it to move along the rails',
+      'Produce fuel',
+      'Activate station signaling'
+    ],
+    c: 0,
+    e: 'Wheelsets consist of wheels and an axle. They support part of the vehicle weight and allow it to move along the rails.'
+  },
+  {
+    q: 'What is a railway bogie?',
+    a: [
+      'A type of tank wagon',
+      'An assembly containing support and running components, such as wheelsets and a frame',
+      'A communication system'
+    ],
+    c: 1,
+    e: 'A bogie is a structural assembly installed beneath certain railway vehicles. It may include wheelsets, suspension, a frame and other components.'
+  },
+  {
+    q: 'What is the purpose of railway fastenings?',
+    a: [
+      'Store materials',
+      'Increase locomotive weight',
+      'Secure the rails to the sleepers and contribute to track stability'
+    ],
+    c: 2,
+    e: 'Fastenings connect the rails to the sleepers and help maintain their position and track stability. Different fastening systems exist.'
+  },
+  {
+    q: 'In general terms, what is railway signaling?',
+    a: [
+      'A set of systems and indications that contribute to safe train movement',
+      'A visual identification of cargo',
+      'A type of wagon maintenance'
+    ],
+    c: 0,
+    e: 'Railway signaling includes equipment, indications and control systems that guide and organize train movements. Its application depends on the railway operating rules.'
+  },
+  {
+    q: 'What is a common characteristic of hopper wagons?',
+    a: [
+      'They have a driving cab',
+      'They have compartments that may allow gravity unloading',
+      'They are used exclusively for passengers'
+    ],
+    c: 1,
+    e: 'Hopper wagons have compartments designed to receive and unload bulk materials. Many models use bottom openings for unloading.'
+  },
+  {
+    q: 'Why is cargo distribution inside a wagon important?',
+    a: [
+      'To change the vehicle color',
+      'To increase the length of the train consist',
+      'To comply with load limits and contribute to vehicle stability'
+    ],
+    c: 2,
+    e: 'Proper load distribution helps comply with axle and vehicle load limits, while also contributing to transport stability and safety.'
+  }
+];
+
+quizQuestionsTranslated.es.intermediario = [
+  {
+    q: 'En una locomotora diésel-eléctrica, ¿cuál es la función principal del alternador o generador?',
+    a: [
+      'Producir energía eléctrica para alimentar los motores de tracción',
+      'Almacenar los vagones',
+      'Controlar el ancho de vía'
+    ],
+    c: 0,
+    e: 'El motor diésel proporciona energía mecánica al generador o alternador, que produce energía eléctrica para alimentar los motores de tracción.'
+  },
+  {
+    q: '¿Cuál es la finalidad general de un sistema de freno ferroviario?',
+    a: [
+      'Aumentar la capacidad de carga',
+      'Reducir o controlar la velocidad e inmovilizar los vehículos',
+      'Modificar el ancho de vía'
+    ],
+    c: 1,
+    e: 'El sistema de freno permite controlar la velocidad y detener los vehículos. Existen diferentes tecnologías y configuraciones de frenos ferroviarios.'
+  },
+  {
+    q: '¿Qué caracteriza a un vagón góndola?',
+    a: [
+      'Tiene laterales y se utiliza frecuentemente para transportar graneles sólidos',
+      'Está destinado siempre al transporte de pasajeros',
+      'Transporta exclusivamente líquidos'
+    ],
+    c: 0,
+    e: 'El vagón góndola tiene laterales y puede utilizarse para transportar cargas como mineral y carbón. Su forma y sistema de descarga varían según el diseño.'
+  },
+  {
+    q: '¿Cuál es la función de un aparato de cambio de vía (desvío)?',
+    a: [
+      'Abastecer de combustible a las locomotoras',
+      'Medir la velocidad del tren',
+      'Permitir que los vehículos ferroviarios pasen de una vía a otra'
+    ],
+    c: 2,
+    e: 'El desvío permite dirigir los vehículos ferroviarios de una vía a otra. Es un conjunto de componentes de infraestructura que requiere mantenimiento y control adecuados.'
+  },
+  {
+    q: '¿Cuál es la función de los juegos de ruedas en un vehículo ferroviario?',
+    a: [
+      'Apoyar el vehículo y permitir su desplazamiento sobre los rieles',
+      'Producir combustible',
+      'Activar la señalización de las estaciones'
+    ],
+    c: 0,
+    e: 'Los juegos de ruedas están formados por ruedas y un eje. Soportan parte del peso del vehículo y permiten su desplazamiento sobre los rieles.'
+  },
+  {
+    q: '¿Qué es un bogie ferroviario?',
+    a: [
+      'Un tipo de vagón cisterna',
+      'Un conjunto que reúne componentes de apoyo y rodadura, como juegos de ruedas y estructura',
+      'Un sistema de comunicación'
+    ],
+    c: 1,
+    e: 'El bogie es un conjunto estructural instalado debajo de determinados vehículos ferroviarios. Puede reunir juegos de ruedas, suspensión, estructura y otros componentes.'
+  },
+  {
+    q: '¿Cuál es la finalidad de las fijaciones ferroviarias?',
+    a: [
+      'Almacenar materiales',
+      'Aumentar el peso de la locomotora',
+      'Sujetar los rieles a los durmientes y contribuir a la estabilidad de la vía'
+    ],
+    c: 2,
+    e: 'Las fijaciones unen los rieles a los durmientes y ayudan a mantener su posición y la estabilidad de la vía. Existen diferentes sistemas de fijación.'
+  },
+  {
+    q: 'En términos generales, ¿qué es la señalización ferroviaria?',
+    a: [
+      'Un conjunto de sistemas e indicaciones que contribuye a la circulación segura',
+      'Una identificación visual de las cargas',
+      'Un tipo de mantenimiento de vagones'
+    ],
+    c: 0,
+    e: 'La señalización ferroviaria reúne equipos, indicaciones y sistemas de control que orientan y organizan la circulación de los trenes. Su aplicación depende de las normas operativas del ferrocarril.'
+  },
+  {
+    q: '¿Cuál es una característica común de los vagones hopper o tolva?',
+    a: [
+      'Tienen cabina de conducción',
+      'Tienen compartimentos que pueden permitir la descarga por gravedad',
+      'Se utilizan exclusivamente para pasajeros'
+    ],
+    c: 1,
+    e: 'Los vagones hopper o tolva tienen compartimentos diseñados para recibir y descargar graneles. Muchos modelos utilizan aberturas inferiores para la descarga.'
+  },
+  {
+    q: '¿Por qué es importante la distribución de la carga en un vagón?',
+    a: [
+      'Para cambiar el color del vehículo',
+      'Para aumentar la longitud de la composición',
+      'Para respetar los límites de carga y contribuir a la estabilidad del vehículo'
+    ],
+    c: 2,
+    e: 'Una distribución adecuada ayuda a respetar los límites de carga por eje y por vehículo, además de contribuir a la estabilidad y seguridad del transporte.'
+  }
+];
+
+// TRADUÇÕES — NÍVEL AVANÇADO
+
+quizQuestionsTranslated.en.avancado = [
+  {
+    q: 'In a diesel-electric locomotive, what is the relationship between the diesel engine and the traction motors?',
+    a: [
+      'The diesel engine drives a generator or alternator that supplies power to the traction motors',
+      'The traction motors produce fuel for the diesel engine',
+      'The diesel engine directly moves the rails'
+    ],
+    c: 0,
+    e: 'In a diesel-electric transmission system, the diesel engine drives a generator or alternator. The electrical energy produced is used by the traction motors, which drive the wheelsets.'
+  },
+  {
+    q: 'What is the general purpose of a railway vehicle suspension system?',
+    a: [
+      'To increase the track gauge',
+      'To contribute to comfort, stability, and interaction between the vehicle and the track',
+      'To replace the braking system'
+    ],
+    c: 1,
+    e: 'The suspension helps absorb irregularities and control relative movements between the vehicle structure and the wheelsets. Its design influences stability and dynamic behavior.'
+  },
+  {
+    q: 'What can irregular wear on railway wheels indicate?',
+    a: [
+      'Necessarily a signaling failure',
+      'Only excessive paint',
+      'Possible contact, operating, or maintenance problems that require technical assessment'
+    ],
+    c: 2,
+    e: 'Irregular wear may be related to wheel-rail contact conditions, geometry, forces, and operating conditions. Identifying the cause requires inspection and technical assessment.'
+  },
+  {
+    q: 'Why is inspecting wheelset components important?',
+    a: [
+      'To identify conditions that could compromise safety and reliability',
+      'To artificially increase load capacity',
+      'To eliminate the need for preventive maintenance'
+    ],
+    c: 0,
+    e: 'Inspection makes it possible to identify wear, damage, and other abnormalities in components. This contributes to rolling stock reliability and helps prevent failures.'
+  },
+  {
+    q: 'What is the general function of a lubrication system in mechanical components?',
+    a: [
+      'To increase friction',
+      'To reduce friction and wear between contacting surfaces',
+      'To replace inspections'
+    ],
+    c: 1,
+    e: 'Lubrication forms a film between moving surfaces, reducing friction and wear. The lubricant and its application must meet the manufacturer\'s specifications.'
+  },
+  {
+    q: 'On a railway track, what does superelevation on a curve mean?',
+    a: [
+      'An increase in locomotive power',
+      'Elevation of a station platform',
+      'A difference in height between the rails on a curve'
+    ],
+    c: 2,
+    e: 'Superelevation is the difference in height between the rails on a curve. Its design considers factors such as speed, geometry, and track characteristics.'
+  },
+  {
+    q: 'Why is compatibility between a wagon and its cargo important?',
+    a: [
+      'To ensure the vehicle, its equipment, and its limits are suitable for the cargo',
+      'To allow any wagon to be used without assessment',
+      'To eliminate the need for proper cargo securing'
+    ],
+    c: 0,
+    e: 'Compatibility involves load capacity, dimensions, the physical and chemical characteristics of the goods, and the equipment required for safe transportation.'
+  },
+  {
+    q: 'What is the general objective of railway movement authorization or traffic control?',
+    a: [
+      'To define the type of cargo carried by each wagon',
+      'To organize and control track section occupancy according to the applicable system and rules',
+      'To replace infrastructure maintenance'
+    ],
+    c: 1,
+    e: 'Traffic control systems organize the use of railway sections and help prevent conflicting occupancy. Methods and procedures vary depending on the railway.'
+  },
+  {
+    q: 'Why is wheel-rail interaction important?',
+    a: [
+      'Because it determines vehicle colors',
+      'Because it eliminates the need for brakes',
+      'Because it influences force transmission, wear, and vehicle dynamics'
+    ],
+    c: 2,
+    e: 'Contact between the wheel and rail transmits forces and influences movement, wear, stability, and the dynamic behavior of the railway vehicle.'
+  },
+  {
+    q: 'When an abnormality is identified in a railway vehicle, what should generally be done?',
+    a: [
+      'Report it and follow official safety procedures and technical assessment requirements',
+      'Ignore the abnormality if the train is moving',
+      'Perform any intervention without authorization'
+    ],
+    c: 0,
+    e: 'Abnormalities must be reported and handled according to the railway’s official procedures, with assessment by authorized professionals. Safety must take priority over operational continuity.'
+  }
+];
+
+quizQuestionsTranslated.es.avancado = [
+  {
+    q: 'En una locomotora diésel-eléctrica, ¿cuál es la relación entre el motor diésel y los motores de tracción?',
+    a: [
+      'El motor diésel acciona un generador o alternador que suministra energía a los motores de tracción',
+      'Los motores de tracción producen combustible para el motor diésel',
+      'El motor diésel mueve directamente los rieles'
+    ],
+    c: 0,
+    e: 'En la transmisión diésel-eléctrica, el motor diésel acciona un generador o alternador. La energía eléctrica producida es utilizada por los motores de tracción, que mueven los juegos de ruedas.'
+  },
+  {
+    q: '¿Cuál es la finalidad general de la suspensión de un vehículo ferroviario?',
+    a: [
+      'Aumentar el ancho de vía',
+      'Contribuir al confort, la estabilidad y la interacción entre el vehículo y la vía',
+      'Sustituir el sistema de frenos'
+    ],
+    c: 1,
+    e: 'La suspensión ayuda a absorber irregularidades y controlar los movimientos relativos entre la estructura del vehículo y los juegos de ruedas. Su diseño influye en la estabilidad y el comportamiento dinámico.'
+  },
+  {
+    q: '¿Qué puede indicar un desgaste irregular en las ruedas ferroviarias?',
+    a: [
+      'Necesariamente una falla en la señalización',
+      'Solamente exceso de pintura',
+      'Posibles problemas de contacto, condiciones de operación o mantenimiento que requieren una evaluación técnica'
+    ],
+    c: 2,
+    e: 'El desgaste irregular puede estar relacionado con las condiciones de contacto rueda-riel, la geometría, los esfuerzos y las condiciones de operación. La identificación de la causa requiere inspección y evaluación técnica.'
+  },
+  {
+    q: '¿Por qué es importante inspeccionar los componentes de un juego de ruedas?',
+    a: [
+      'Para identificar condiciones que puedan comprometer la seguridad y la confiabilidad',
+      'Para aumentar artificialmente la capacidad de carga',
+      'Para eliminar la necesidad de mantenimiento preventivo'
+    ],
+    c: 0,
+    e: 'La inspección permite identificar desgastes, daños y otras anomalías en los componentes. Esto contribuye a la confiabilidad del material rodante y ayuda a prevenir fallas.'
+  },
+  {
+    q: '¿Cuál es la función general de un sistema de lubricación en componentes mecánicos?',
+    a: [
+      'Aumentar la fricción',
+      'Reducir la fricción y el desgaste entre superficies en contacto',
+      'Sustituir las inspecciones'
+    ],
+    c: 1,
+    e: 'La lubricación forma una película entre superficies en movimiento, reduciendo la fricción y el desgaste. El lubricante y su aplicación deben cumplir con las especificaciones del fabricante.'
+  },
+  {
+    q: 'En una vía ferroviaria, ¿qué significa la superelevación en una curva?',
+    a: [
+      'Aumento de la potencia de la locomotora',
+      'Elevación de la plataforma de una estación',
+      'Diferencia de altura entre los rieles de una curva'
+    ],
+    c: 2,
+    e: 'La superelevación es la diferencia de altura entre los rieles de una curva. Su dimensionamiento considera factores como la velocidad, la geometría y las características de la vía.'
+  },
+  {
+    q: '¿Cuál es la importancia de la compatibilidad entre el vagón y la carga transportada?',
+    a: [
+      'Garantizar que el vehículo, sus equipos y sus límites sean adecuados para la carga',
+      'Permitir utilizar cualquier vagón sin evaluación',
+      'Eliminar la necesidad de acondicionar la carga'
+    ],
+    c: 0,
+    e: 'La compatibilidad incluye la capacidad de carga, las dimensiones, las características físicas y químicas de la mercancía y los equipos necesarios para el transporte seguro.'
+  },
+  {
+    q: '¿Cuál es el objetivo general de la autorización o el control de la circulación ferroviaria?',
+    a: [
+      'Definir el tipo de carga de cada vagón',
+      'Organizar y controlar la ocupación de los tramos de vía según el sistema y las reglas aplicables',
+      'Sustituir el mantenimiento de la infraestructura'
+    ],
+    c: 1,
+    e: 'Los sistemas de control de circulación organizan el uso de los tramos ferroviarios y ayudan a evitar conflictos de ocupación. Los métodos y procedimientos varían según el ferrocarril.'
+  },
+  {
+    q: '¿Por qué es importante la interacción entre la rueda y el riel?',
+    a: [
+      'Porque determina el color de los vehículos',
+      'Porque elimina la necesidad de frenos',
+      'Porque influye en la transmisión de esfuerzos, el desgaste y la dinámica del vehículo'
+    ],
+    c: 2,
+    e: 'El contacto entre la rueda y el riel transmite esfuerzos e influye en el movimiento, el desgaste, la estabilidad y el comportamiento dinámico del vehículo ferroviario.'
+  },
+  {
+    q: 'Ante una anomalía identificada en un vehículo ferroviario, ¿cuál debe ser la conducta general?',
+    a: [
+      'Comunicarla y seguir los procedimientos oficiales de seguridad y evaluación técnica',
+      'Ignorar la anomalía si el tren está en movimiento',
+      'Realizar cualquier intervención sin autorización'
+    ],
+    c: 0,
+    e: 'Las anomalías deben comunicarse y tratarse según los procedimientos oficiales del ferrocarril, con evaluación por profesionales autorizados. La seguridad debe prevalecer sobre la continuidad de la operación.'
+  }
+];  
+
+let qs = [];
+
+let currentQuizLevel = '';
+let qi = 0;
+let score = 0;
+let answered = false;
+
+function selectQuizLevel(level) {
+  if (!quizQuestions[level]) return;
+
+  currentQuizLevel = level;
+
+  const language =
+    document.documentElement.lang ||
+    localStorage.getItem('mf_language') ||
+    'pt';
+
+  const lang = ['pt', 'en', 'es'].includes(language)
+    ? language
+    : 'pt';
+
+  if (lang === 'pt') {
+    qs = quizQuestions[level];
+  } else {
+    qs = quizQuestionsTranslated[lang][level] ||
+         quizQuestions[level];
+  }
+
+  const names = {
+    pt: {
+      basico: 'Nível Básico',
+      intermediario: 'Nível Intermediário',
+      avancado: 'Nível Avançado'
+    },
+    en: {
+      basico: 'Basic Level',
+      intermediario: 'Intermediate Level',
+      avancado: 'Advanced Level'
+    },
+    es: {
+      basico: 'Nivel Básico',
+      intermediario: 'Nivel Intermedio',
+      avancado: 'Nivel Avanzado'
+    }
+  };
+
+  document.getElementById('quizLevelName').textContent =
+    names[lang][level];
+
+  document.getElementById('quizLevels').style.display = 'none';
+  document.getElementById('quizBox').style.display = 'block';
+
+  startQuiz();
+}
+
+function startQuiz() {
+  qi = 0;
+  score = 0;
+  answered = false;
+
+  document.getElementById('restartBtn').style.display = 'none';
+  document.getElementById('changeLevelBtn').style.display = 'none';
+
+  renderQuestion();
+}
+
+  function backToQuizLevels() {
+  const language =
+    document.documentElement.lang ||
+    localStorage.getItem('mf_language') ||
+    'pt';
+
+  const texts = {
+    pt: 'Escolha seu nível',
+    en: 'Choose your level',
+    es: 'Elige tu nivel'
+  };
+
+  document.getElementById('quizBox').style.display = 'none';
+  document.getElementById('quizLevels').style.display = 'block';
+
+  const messages = {
+  pt: 'Prepare-se para começar!',
+  en: 'Get ready to start!',
+  es: '¡Prepárate para comenzar!'
+};
+
+document.getElementById('question').textContent =
+  messages[language] || messages.pt;
+
+  document.getElementById('quizProgress').textContent = '';
+
+  document.getElementById('answers').innerHTML = '';
+  document.getElementById('feedback').textContent = '';
+
+  document.getElementById('restartBtn').style.display = 'none';
+  document.getElementById('changeLevelBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+}
+  
+function renderQuestion() {
+  const x = qs[qi];
+  
+const language = document.documentElement.lang || 'pt';
+
+const progressTexts = {
+  pt: `Pergunta ${qi + 1} de ${qs.length}`,
+  en: `Question ${qi + 1} of ${qs.length}`,
+  es: `Pregunta ${qi + 1} de ${qs.length}`
+};
+
+document.getElementById('quizProgress').textContent =
+  progressTexts[language] || progressTexts.pt;
+
+  document.getElementById('question').textContent = x.q;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  document.getElementById('answers').innerHTML = x.a.map((a, i) =>
+    `<button onclick="answer(${i})">${String.fromCharCode(65 + i)}. ${a}</button>`
+  ).join('');
+
+  answered = false;
+}
+
+function answer(i) {
+  if (answered) return;
+
+  answered = true;
+
+  const x = qs[qi];
+  const ok = i === x.c;
+
+  if (ok) score++;
+
+  document.querySelectorAll('#answers button').forEach((b, j) => {
+    b.disabled = true;
+
+    if (j === x.c) {
+      b.style.borderColor = '#247a55';
+      b.style.background = '#e5f5eb';
+    } else if (j === i && !ok) {
+      b.style.borderColor = '#c0392b';
+      b.style.background = '#fdeaea';
+    }
+  });
+
+  const language = document.documentElement.lang || 'pt';
+
+  const texts = {
+    pt: {
+      correct: '✓ Resposta correta!',
+      incorrect: '✗ Resposta incorreta!',
+      answer: 'Resposta correta:',
+      explanation: 'Entenda:',
+      result: 'Ver resultado',
+      next: 'Próxima pergunta'
+    },
+    en: {
+      correct: '✓ Correct answer!',
+      incorrect: '✗ Incorrect answer!',
+      answer: 'Correct answer:',
+      explanation: 'Explanation:',
+      result: 'See results',
+      next: 'Next question'
+    },
+    es: {
+      correct: '✓ ¡Respuesta correcta!',
+      incorrect: '✗ ¡Respuesta incorrecta!',
+      answer: 'Respuesta correcta:',
+      explanation: 'Explicación:',
+      result: 'Ver resultado',
+      next: 'Siguiente pregunta'
+    }
+  };
+
+  const t = texts[language] || texts.pt;
+
+  document.getElementById('feedback').innerHTML = `
+    <div class="notice" style="margin-top:12px">
+      <strong>${ok ? t.correct : t.incorrect}</strong>
+
+      <p style="margin-top:10px">
+        <strong>${t.answer}</strong>
+        ${String.fromCharCode(65 + x.c)}. ${x.a[x.c]}
+      </p>
+
+      <p style="margin-top:10px">
+        <strong>${t.explanation}</strong> ${x.e}
+      </p>
+    </div>
+  `;
+
+  document.getElementById('nextBtn').style.display = 'inline-block';
+
+  document.getElementById('nextBtn').textContent =
+    qi === qs.length - 1 ? t.result : t.next;
+}
+
+function nextQuestion() {
+  if (qi < qs.length - 1) {
+    qi++;
+    renderQuestion();
+  } else {
+    const pct = Math.round(score / qs.length * 100);
+
+    const old = Number(localStorage.getItem('mf_best') || 0);
+
+    localStorage.setItem('mf_best', Math.max(old, pct));
+
+    localStorage.setItem(
+      'mf_done',
+      Number(localStorage.getItem('mf_done') || 0) + 1
+    );
+
+    localStorage.setItem(
+      'mf_best_' + currentQuizLevel,
+      Math.max(
+        Number(localStorage.getItem('mf_best_' + currentQuizLevel) || 0),
+        pct
+      )
+    );
+
+    // SALVAR MELHOR PONTUAÇÃO NO FIREBASE
+    if (typeof window.MF_SAVE_QUIZ_SCORE === 'function') {
+      window.MF_SAVE_QUIZ_SCORE(pct, currentQuizLevel);
+    }
+
+    const language =
+      document.documentElement.lang ||
+      localStorage.getItem('mf_language') ||
+      'pt';
+
+    const lang = ['pt', 'en', 'es'].includes(language)
+      ? language
+      : 'pt';
+
+    const texts = {
+      pt: {
+        completed: 'Quiz concluído!',
+        score: `Você acertou ${score} de ${qs.length} perguntas!`,
+        result: `Seu resultado: ${pct}% de aproveitamento.`,
+        record: 'Seu recorde neste nível:',
+        message: 'Continue aprendendo e volte para testar seus conhecimentos.'
+      },
+      en: {
+        completed: 'Quiz completed!',
+        score: `You answered ${score} out of ${qs.length} questions correctly!`,
+        result: `Your score: ${pct}%.`,
+        record: 'Your best score at this level:',
+        message: 'Keep learning and come back to test your knowledge.'
+      },
+      es: {
+        completed: '¡Cuestionario completado!',
+        score: `¡Has acertado ${score} de ${qs.length} preguntas!`,
+        result: `Tu resultado: ${pct}%.`,
+        record: 'Tu mejor puntuación en este nivel:',
+        message: 'Sigue aprendiendo y vuelve para poner a prueba tus conocimientos.'
+      }
+    };
+
+    const t = texts[lang];
+
+    const best = localStorage.getItem(
+      'mf_best_' + currentQuizLevel
+    );
+
+    document.getElementById('quizProgress').textContent =
+      t.completed;
+
+    document.getElementById('question').textContent =
+      t.score;
+
+    document.getElementById('answers').innerHTML =
+      `<p class="muted">${t.result}</p>
+       <p class="muted">${t.record} ${best}%</p>`;
+
+    document.getElementById('feedback').textContent =
+      t.message;
+
+    document.getElementById('nextBtn').style.display = 'none';
+    document.getElementById('restartBtn').style.display = 'inline-block';
+    document.getElementById('changeLevelBtn').style.display = 'inline-block';
+
+    updateStats();
+  }
+}
+
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+<script src="firebase-config.js"></script>
+<script src="firebase-init.js?v=2026110301"></script>
+<script src="comunidade.js?v=202611032000"></script>
+<script src="enciclopedia.js?v=2026110401"></script>
+<script src="ranking.js?v=2026110701"></script>
+  <script>
+window.addEventListener('load', async()=>{
+  const box=document.getElementById('publishedNews');
+  if(!box) return;
+
+  try {
+    const snap=await MF_DB.collection('articles')
+      .where('published','==',true)
+      .orderBy('created_at','desc')
+      .get();
+
+    const data=snap.docs.map(d=>({id:d.id,...d.data()}));
+
+    box.innerHTML=data.length ? data.map(a=>`
+      <article class="card news-card">
+        ${a.image_url ? `
+          <img class="news-cover"
+            src="${esc(a.image_url)}"
+            alt="${esc(a.title||'Notícia ferroviária')}"
+            loading="lazy">
+        ` : `
+          <div class="news-placeholder">🚂</div>
+        `}
+
+        <div class="news-content">
+          <span class="tag">${esc(a.category||'Notícia ferroviária')}</span>
+
+          <h3>${esc(a.title||'Sem título')}</h3>
+
+          <p>${esc(a.summary||a.body||'').slice(0,260)}</p>
+
+          <small class="muted">
+            ${a.created_at?.toDate
+              ? a.created_at.toDate().toLocaleDateString('pt-BR')
+              : 'Notícia recente'}
+          </small>
+
+          <button class="btn" type="button"
+            data-news-id="${esc(a.id)}">
+            Ler matéria completa →
+          </button>
+        </div>
+      </article>
+    `).join('') :
+    '<div class="empty">Ainda não há notícias publicadas.</div>';
+
+    box.onclick=event=>{
+      const btn=event.target.closest('[data-news-id]');
+      if(!btn) return;
+
+      const article=data.find(a=>a.id===btn.dataset.newsId);
+      if(!article) return;
+
+      const full=document.getElementById('fullNewsContent');
+      if(!full) return;
+
+      full.innerHTML=`
+        ${article.image_url ? `
+          <img class="full-news-cover"
+            src="${esc(article.image_url)}"
+            alt="${esc(article.title||'Notícia ferroviária')}">
+        ` : ''}
+
+        <span class="tag">${esc(article.category||'Notícia ferroviária')}</span>
+
+        <h1>${esc(article.title||'Sem título')}</h1>
+
+        <small class="muted">
+          ${article.created_at?.toDate
+            ? article.created_at.toDate().toLocaleDateString('pt-BR')
+            : 'Notícia recente'}
+        </small>
+
+        <div class="full-news-body">${esc(article.body||article.summary||'Conteúdo não informado.')}</div>
+
+        ${article.source ? `
+          <p class="muted">Fonte: ${esc(article.source)}</p>
+        ` : ''}
+      `;
+
+      showPage('noticiaCompleta');
+    };
+
+  } catch(e) {
+    console.error('Erro ao carregar notícias:',e);
+    box.innerHTML='<div class="empty">Erro ao carregar notícias. Confira a conexão com o Firebase.</div>';
+  }
+}); 
+
+  function esc(s){
+  return String(s??'').replace(/[&<>"']/g,c=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[c]));
+}
+  
+</script>
+
+<style> 
+/* ==================================
+   CONFIGURAÇÕES - MUNDO FERROVIÁRIO
+================================== */
+
+.settings-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.settings-box {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: #102b3f;
+  color: #ffffff;
+  border: 2px solid #f0b323;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
+}
+
+.settings-box h2 {
+  color: #f0b323;
+  text-align: center;
+  margin: 10px 0 25px;
+}
+
+.settings-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.settings-option {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.settings-option label {
+  font-weight: bold;
+}
+
+.settings-option select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #f0b323;
+  background: #ffffff;
+  color: #102b3f;
+  font-size: 16px;
+}
+
+.settings-save {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  background: #f0b323;
+  color: #102b3f;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}  
+  
+  .full-news-cover {
+  width:100%;
+  max-height:420px;
+  object-fit:cover;
+  border-radius:12px;
+  margin-bottom:20px;
+}
+
+.full-news-body {
+  white-space:pre-line;
+  line-height:1.8;
+  font-size:16px;
+  color:#34434d;
+  margin-top:22px;
+}
+
+#fullNewsContent {
+  padding:22px;
+}
+
+#fullNewsContent h1 {
+  color:#102b3f;
+  line-height:1.3;
+  margin:16px 0;
+}
+.news-card {
+  padding:0;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+.news-cover {
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  display:block;
+}
+
+.news-placeholder {
+  height:180px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:55px;
+  background:linear-gradient(135deg,#102b3f,#174a67);
+}
+
+.news-content {
+  padding:18px;
+}
+
+.news-content h3 {
+  color:#102b3f;
+  margin:12px 0;
+  line-height:1.35;
+}
+
+.news-content p {
+  line-height:1.6;
+  color:#53616b;
+}
+
+.news-content .tag {
+  display:inline-block;
+}
+</style>
+<script>
+window.addEventListener('load', function () {
+  const splash = document.getElementById('splash-screen');
+
+  if (splash) {
+    setTimeout(function () {
+      splash.classList.add('hide');
+
+      setTimeout(function () {
+        splash.remove();
+      }, 800);
+
+    }, 1800);
+  }
+});
+</script>
+
+<!-- JANELA DE CONFIGURAÇÕES -->
+<div id="settingsModal" class="settings-modal" style="display:none;">
+
+  <div class="settings-box">
+
+    <button type="button" id="closeSettings" class="settings-close">
+      ✖
+    </button>
+
+    <h2>⚙️ Configurações</h2>
+
+    <div class="settings-option">
+      <label for="themeSelect">🎨 Aparência</label>
+
+      <select id="themeSelect">
+        <option value="light">Modo claro</option>
+        <option value="dark">Modo escuro</option>
+      </select>
+    </div>
+
+    <div class="settings-option">
+      <label for="languageSelect">🌎 Idioma</label>
+
+      <select id="languageSelect">
+        <option value="pt">Português</option>
+        <option value="en">English</option>
+        <option value="es">Español</option>
+      </select>
+    </div>
+
+    <button type="button" id="saveSettings" class="settings-save">
+      Salvar configurações
+    </button>
+
+  </div>
+</div>
+<!-- FIM DAS CONFIGURAÇÕES -->
+
+<script>
+// CONFIGURAÇÕES E IDIOMAS - MUNDO FERROVIÁRIO
+(function () {
+
+  const openBtn = document.getElementById('openSettings');
+  const closeBtn = document.getElementById('closeSettings');
+  const modal = document.getElementById('settingsModal');
+  const themeSelect = document.getElementById('themeSelect');
+  const languageSelect = document.getElementById('languageSelect');
+  const saveBtn = document.getElementById('saveSettings');
+
+  if (!openBtn || !closeBtn || !modal ||
+      !themeSelect || !languageSelect || !saveBtn) {
+    return;
+  }
+
+  // TRADUÇÕES DO SITE
+  const translations = {
+
+    pt: {
+      home: 'Início',
+      locomotivas: 'Locomotivas',
+      vagoes: 'Vagões',
+      aprender: 'Aprenda',
+      glossario: 'Glossário',
+      quiz: 'Quiz',
+      ranking: '🏆 Ranking',
+      noticias: 'Notícias',
+      enciclopedia: 'Enciclopédia',
+      galeria: 'Galeria',
+      comunidade: 'Comunidade',
+      perfil: 'Meu Perfil',
+      sobre: 'Sobre',
+      settings: '⚙️ Configurações',
+      saved: 'Configurações salvas com sucesso!',
+
+      heroEyebrow: 'Conhecimento que move trilhos',
+      heroTitle: 'O universo ferroviário em um só lugar.',
+      heroDescription: 'História, locomotivas, vagões e aprendizado para quem vive ou é apaixonado pelo mundo dos trilhos.',
+      heroExplore: 'Começar a explorar →',
+      heroQuiz: 'Testar conhecimentos',
+      exploreTag: 'EXPLORE',
+      areasTitle: 'Conheça nossas áreas',
+      homeLocomotives: 'Locomotivas',
+      homeLocomotivesDesc: 'Conheça os tipos de locomotivas, suas aplicações e a evolução da tração ferroviária.',
+      homeWagons: 'Vagões',
+      homeWagonsDesc: 'Descubra categorias de vagões e como diferentes cargas são transportadas.',
+      homeGlossary: 'Glossário ferroviário',
+      homeGlossaryDesc: 'Aprenda termos e expressões usados no cotidiano ferroviário.',
+      exploreContent: 'Explorar conteúdo →',
+      consultGlossary: 'Consultar glossário →',
+      advertising: 'ESPAÇO PUBLICITÁRIO',
+      advertisingDesc: 'Este espaço poderá receber anúncios de parceiros e serviços do setor ferroviário.',
+      learningTitle: 'Seu aprendizado',
+      quizzesCompleted: 'quizzes concluídos',
+      bestPerformance: 'melhor aproveitamento',
+      railwayPassion: 'paixão pelos trilhos',
+
+      locoTag: 'MATERIAL RODANTE',
+      locoTitle: 'Universo das locomotivas',
+      locoDescription: 'Conheça conceitos e famílias de locomotivas. Características variam conforme fabricante, modelo e configuração.',
+      locoDieselTitle: 'Diesel-elétrica',
+      locoDieselDescription: 'Utiliza um motor diesel para acionar um gerador ou alternador, que fornece energia aos motores elétricos de tração.',
+      locoDieselTag: 'Tração diesel-elétrica',
+      locoElectricTitle: 'Elétrica',
+      locoElectricDescription: 'Recebe energia de uma fonte externa, como rede aérea ou terceiro trilho, e utiliza motores elétricos para produzir tração.',
+      locoElectricTag: 'Tração elétrica',
+      locoSteamTitle: 'Vapor',
+      locoSteamDescription: 'Modelo histórico que utiliza vapor sob pressão para movimentar mecanismos ligados às rodas motrizes.',
+      locoSteamTag: 'História ferroviária',
+      locoAdvertising: 'ESPAÇO PUBLICITÁRIO',
+      locoAdvertisingDescription: 'Publicidade relevante para leitores e profissionais do setor.',
+      locoNoteTitle: 'Nota:',
+      locoNoteDescription: ' informações técnicas detalhadas de cada modelo deverão ser conferidas em manuais do fabricante e documentos oficiais.'
+    },
+
+    en: {
+      home: 'Home',
+      locomotivas: 'Locomotives',
+      vagoes: 'Railway Cars',
+      aprender: 'Learn',
+      glossario: 'Glossary',
+      quiz: 'Quiz',
+      ranking: '🏆 Ranking',
+      noticias: 'News',
+      enciclopedia: 'Encyclopedia',
+      galeria: 'Gallery',
+      comunidade: 'Community',
+      perfil: 'My Profile',
+      sobre: 'About',
+      settings: '⚙️ Settings',
+      saved: 'Settings saved successfully!',
+
+      heroEyebrow: 'Knowledge that moves the rails',
+      heroTitle: 'The railway universe in one place.',
+      heroDescription: 'History, locomotives, railway cars and learning for those who work in or love the world of railways.',
+      heroExplore: 'Start exploring →',
+      heroQuiz: 'Test your knowledge',
+      exploreTag: 'EXPLORE',
+      areasTitle: 'Discover our sections',
+      homeLocomotives: 'Locomotives',
+      homeLocomotivesDesc: 'Discover locomotive types, their applications and the evolution of railway traction.',
+      homeWagons: 'Railway Cars',
+      homeWagonsDesc: 'Discover railway car categories and how different types of cargo are transported.',
+      homeGlossary: 'Railway Glossary',
+      homeGlossaryDesc: 'Learn terms and expressions used in everyday railway operations.',
+      exploreContent: 'Explore content →',
+      consultGlossary: 'View glossary →',
+      advertising: 'ADVERTISING SPACE',
+      advertisingDesc: 'This space may feature advertisements from railway industry partners and service providers.',
+      learningTitle: 'Your Learning',
+      quizzesCompleted: 'quizzes completed',
+      bestPerformance: 'best score',
+      railwayPassion: 'passion for railways',
+
+      locoTag: 'ROLLING STOCK',
+      locoTitle: 'The World of Locomotives',
+      locoDescription: 'Discover locomotive concepts and families. Characteristics vary according to manufacturer, model and configuration.',
+      locoDieselTitle: 'Diesel-Electric',
+      locoDieselDescription: 'Uses a diesel engine to drive a generator or alternator, which supplies power to the electric traction motors.',
+      locoDieselTag: 'Diesel-Electric Traction',
+      locoElectricTitle: 'Electric',
+      locoElectricDescription: 'Receives power from an external source, such as an overhead line or third rail, and uses electric motors to produce traction.',
+      locoElectricTag: 'Electric Traction',
+      locoSteamTitle: 'Steam',
+      locoSteamDescription: 'A historical locomotive that uses pressurized steam to move mechanisms connected to the driving wheels.',
+      locoSteamTag: 'Railway History',
+      locoAdvertising: 'ADVERTISING SPACE',
+      locoAdvertisingDescription: 'Relevant advertising for railway readers and industry professionals.',
+      locoNoteTitle: 'Note:',
+      locoNoteDescription: ' detailed technical information for each model should be verified in manufacturer manuals and official documents.'
+    },
+
+    es: {
+      home: 'Inicio',
+      locomotivas: 'Locomotoras',
+      vagoes: 'Vagones',
+      aprender: 'Aprender',
+      glossario: 'Glosario',
+      quiz: 'Cuestionario',
+      ranking: '🏆 Clasificación',
+      noticias: 'Noticias',
+      enciclopedia: 'Enciclopedia',
+      galeria: 'Galería',
+      comunidade: 'Comunidad',
+      perfil: 'Mi Perfil',
+      sobre: 'Acerca de',
+      settings: '⚙️ Configuración',
+      saved: '¡Configuración guardada correctamente!',
+
+      heroEyebrow: 'Conocimiento que mueve los rieles',
+      heroTitle: 'El universo ferroviario en un solo lugar.',
+      heroDescription: 'Historia, locomotoras, vagones y aprendizaje para quienes trabajan o sienten pasión por el mundo ferroviario.',
+      heroExplore: 'Comenzar a explorar →',
+      heroQuiz: 'Poner a prueba tus conocimientos',
+      exploreTag: 'EXPLORA',
+      areasTitle: 'Conoce nuestras secciones',
+      homeLocomotives: 'Locomotoras',
+      homeLocomotivesDesc: 'Conoce los tipos de locomotoras, sus aplicaciones y la evolución de la tracción ferroviaria.',
+      homeWagons: 'Vagones',
+      homeWagonsDesc: 'Descubre las categorías de vagones y cómo se transportan diferentes cargas.',
+      homeGlossary: 'Glosario ferroviario',
+      homeGlossaryDesc: 'Aprende términos y expresiones utilizados en el día a día ferroviario.',
+      exploreContent: 'Explorar contenido →',
+      consultGlossary: 'Consultar glosario →',
+      advertising: 'ESPACIO PUBLICITARIO',
+      advertisingDesc: 'Este espacio podrá recibir anuncios de socios y servicios del sector ferroviario.',
+      learningTitle: 'Tu aprendizaje',
+      quizzesCompleted: 'cuestionarios completados',
+      bestPerformance: 'mejor rendimiento',
+      railwayPassion: 'pasión por los rieles',
+
+      locoTag: 'MATERIAL RODANTE',
+      locoTitle: 'Universo de las locomotoras',
+      locoDescription: 'Conoce conceptos y familias de locomotoras. Las características varían según el fabricante, modelo y configuración.',
+      locoDieselTitle: 'Diésel-eléctrica',
+      locoDieselDescription: 'Utiliza un motor diésel para accionar un generador o alternador, que suministra energía a los motores eléctricos de tracción.',
+      locoDieselTag: 'Tracción diésel-eléctrica',
+      locoElectricTitle: 'Eléctrica',
+      locoElectricDescription: 'Recibe energía de una fuente externa, como una línea aérea o un tercer riel, y utiliza motores eléctricos para producir tracción.',
+      locoElectricTag: 'Tracción eléctrica',
+      locoSteamTitle: 'Vapor',
+      locoSteamDescription: 'Modelo histórico que utiliza vapor a presión para mover mecanismos conectados a las ruedas motrices.',
+      locoSteamTag: 'Historia ferroviaria',
+      locoAdvertising: 'ESPACIO PUBLICITARIO',
+      locoAdvertisingDescription: 'Publicidad relevante para lectores y profesionales del sector.',
+      locoNoteTitle: 'Nota:',
+      locoNoteDescription: ' la información técnica detallada de cada modelo debe verificarse en los manuales del fabricante y documentos oficiales.'
+    }
+
+  };
+
+  // APLICAR IDIOMA
+  function applyLanguage(language) {
+
+    const lang = translations[language]
+      ? language
+      : 'pt';
+
+    // TRADUZIR MENU
+    document.querySelectorAll('nav button[data-page]')
+      .forEach(function (button) {
+
+        const page = button.dataset.page;
+
+        if (translations[lang][page]) {
+          button.textContent = translations[lang][page];
+        }
+
+      });
+
+    // TRADUZIR BOTÃO DE CONFIGURAÇÕES
+    openBtn.textContent = translations[lang].settings;
+
+    // TRADUZIR ELEMENTOS DA PÁGINA
+    document.querySelectorAll('[data-i18n]')
+      .forEach(function (element) {
+
+        const key = element.getAttribute('data-i18n');
+
+        if (translations[lang][key] !== undefined) {
+          element.textContent = translations[lang][key];
+        }
+
+      });
+
+    // DEFINIR IDIOMA DO DOCUMENTO
+    document.documentElement.lang = lang;
+
+    // SALVAR IDIOMA
+    localStorage.setItem('mf_language', lang);
+  }
+
+  // RECUPERAR PREFERÊNCIAS
+  const savedTheme =
+    localStorage.getItem('mf_theme') || 'light';
+
+  const savedLanguage =
+    localStorage.getItem('mf_language') || 'pt';
+
+  themeSelect.value = savedTheme;
+  languageSelect.value = savedLanguage;
+
+  // APLICAR TEMA SALVO
+  document.body.classList.toggle(
+    'dark-mode',
+    savedTheme === 'dark'
+  );
+
+  // APLICAR IDIOMA SALVO
+  applyLanguage(savedLanguage);
+
+  // ABRIR CONFIGURAÇÕES
+  openBtn.addEventListener('click', function () {
+    modal.style.display = 'flex';
+  });
+
+  // FECHAR CONFIGURAÇÕES
+  closeBtn.addEventListener('click', function () {
+    modal.style.display = 'none';
+  });
+
+  // FECHAR AO CLICAR FORA
+  modal.addEventListener('click', function (event) {
+    if (event.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+
+  // SALVAR PREFERÊNCIAS
+  saveBtn.addEventListener('click', function () {
+
+    const theme = themeSelect.value;
+    const language = languageSelect.value;
+
+    localStorage.setItem('mf_theme', theme);
+
+    document.body.classList.toggle(
+      'dark-mode',
+      theme === 'dark'
+    );
+
+    applyLanguage(language);
+
+    modal.style.display = 'none';
+
+    alert(translations[language].saved);
+
+  });
+
+})();
+</script>
+
+<script src="./idiomas.js"></script>
+  
+<script>
+(function () {
+  if (!('serviceWorker' in navigator)) return;
+
+  const hadController = !!navigator.serviceWorker.controller;
+
+  navigator.serviceWorker.register('./service-worker.js')
+    .then(registration => {
+
+      console.log('Service Worker registrado 🚂');
+
+      // Verificar atualização ao abrir o site
+      registration.update();
+
+      // Verificar atualizações periodicamente
+      setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          registration.update();
+        }
+      }, 60000);
+
+      // Verificar ao retornar para o site
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          registration.update();
+        }
+      });
+
+    })
+    .catch(error => {
+      console.error('Erro no Service Worker:', error);
+    });
+
+})();
+</script>
+  
+</body></html>
