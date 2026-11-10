@@ -21,7 +21,7 @@
   }
 
   if (!auth || !db) {
-    console.error('Firebase Auth ou Firestore não inicializado.');
+    console.error(t('Firebase Auth ou Firestore não inicializado.'));
     return;
   }
 
@@ -36,6 +36,11 @@
         "'": '&#39;'
       }[char];
     });
+  }
+
+  // TRADUZIR E PROTEGER TEXTOS FIXOS
+  function textoHTML(text) {
+    return escapeHTML(t(text));
   }
 
   // ORDENAÇÃO POR DATA
@@ -124,7 +129,7 @@
 
       if (snapshot.empty) {
         articlesContainer.innerHTML =
-          '<div class="empty">Ainda não existem artigos publicados na Enciclopédia.</div>';
+          `<div class="empty">${textoHTML('Ainda não existem artigos publicados na Enciclopédia.')}</div>`;
         return;
       }
 
@@ -144,12 +149,12 @@
       articlesContainer.innerHTML = artigos.map(function (artigo) {
         return `
           <div class="card">
-            <span class="tag">${escapeHTML(artigo.category)}</span>
+            <span class="tag">${escapeHTML(t(artigo.category))}</span>
             <h3>${escapeHTML(artigo.title)}</h3>
             <p>${escapeHTML(artigo.summary)}</p>
 
             <details>
-              <summary class="btn">Ler artigo completo</summary>
+              <summary class="btn">${textoHTML('Ler artigo completo')}</summary>
 
               <div style="margin-top:15px; white-space:pre-wrap;">
                 ${escapeHTML(artigo.content)}
@@ -157,27 +162,27 @@
 
               ${artigo.source ? `
                 <p class="muted" style="margin-top:15px">
-                  Fonte: ${escapeHTML(artigo.source)}
+                  ${textoHTML('Fonte:')} ${escapeHTML(artigo.source)}
                 </p>
               ` : ''}
             </details>
 
             <p class="muted" style="margin-top:12px">
-              Contribuição: ${escapeHTML(artigo.author_name || 'Comunidade ferroviária')}
+              ${textoHTML('Contribuição:')} ${escapeHTML(artigo.author_name || t('Comunidade ferroviária'))}
             </p>
 
             ${auth.currentUser && auth.currentUser.uid === ADMIN_UID ? `
               <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
                 <button type="button"
                   class="btn btn-secondary"
-                  data-edit-article="${artigo.id}">
-                  ✏️ Editar
+                  data-edit-article="${escapeHTML(artigo.id)}">
+                  ✏️ ${textoHTML('Editar')}
                 </button>
 
                 <button type="button"
                   class="btn btn-danger"
-                  data-delete-article="${artigo.id}">
-                  🗑️ Excluir
+                  data-delete-article="${escapeHTML(artigo.id)}">
+                  🗑️ ${textoHTML('Excluir')}
                 </button>
               </div>
             ` : ''}
@@ -189,7 +194,7 @@
       console.error('Erro ao carregar artigos:', error);
 
       articlesContainer.innerHTML =
-        '<div class="empty">Não foi possível carregar os artigos.</div>';
+        `<div class="empty">${textoHTML('Não foi possível carregar os artigos.')}</div>`;
     }
   }
 
@@ -199,8 +204,14 @@
 
   if (articlesContainer) {
     articlesContainer.addEventListener('click', async function (event) {
-      const editButton = event.target.closest('[data-edit-article]');
-      const deleteButton = event.target.closest('[data-delete-article]');
+      const target = event.target.closest
+        ? event.target
+        : event.target.parentElement;
+
+      if (!target || !target.closest) return;
+
+      const editButton = target.closest('[data-edit-article]');
+      const deleteButton = target.closest('[data-delete-article]');
 
       if (!editButton && !deleteButton) return;
 
@@ -309,7 +320,7 @@
     if (!pendingContainer || auth.currentUser?.uid !== ADMIN_UID) return;
 
     pendingContainer.innerHTML =
-      '<div class="empty">Carregando sugestões...</div>';
+      `<div class="empty">${textoHTML('Carregando sugestões...')}</div>`;
 
     try {
       const snapshot = await db.collection('encyclopedia_suggestions')
@@ -318,7 +329,7 @@
 
       if (snapshot.empty) {
         pendingContainer.innerHTML =
-          '<div class="empty">Não existem sugestões pendentes no momento.</div>';
+          `<div class="empty">${textoHTML('Não existem sugestões pendentes no momento.')}</div>`;
         return;
       }
 
@@ -339,19 +350,19 @@
         return `
           <div class="card" style="margin-top:15px">
 
-            <span class="tag">PENDENTE DE APROVAÇÃO</span>
+            <span class="tag">${textoHTML('PENDENTE DE APROVAÇÃO')}</span>
 
             <h3>${escapeHTML(item.title)}</h3>
 
-            <p><strong>Categoria:</strong> ${escapeHTML(item.category)}</p>
+            <p><strong>${textoHTML('Categoria:')}</strong> ${escapeHTML(t(item.category))}</p>
 
-            <p><strong>Autor:</strong> ${escapeHTML(item.author_name)}</p>
+            <p><strong>${textoHTML('Autor:')}</strong> ${escapeHTML(item.author_name || '')}</p>
 
-            <p><strong>Resumo:</strong></p>
+            <p><strong>${textoHTML('Resumo:')}</strong></p>
             <p>${escapeHTML(item.summary)}</p>
 
             <details style="margin-top:12px">
-              <summary class="btn">Visualizar conteúdo completo</summary>
+              <summary class="btn">${textoHTML('Visualizar conteúdo completo')}</summary>
 
               <div style="margin-top:12px; white-space:pre-wrap;">
                 ${escapeHTML(item.content)}
@@ -359,7 +370,7 @@
 
               ${item.source ? `
                 <p class="muted" style="margin-top:12px">
-                  Fonte: ${escapeHTML(item.source)}
+                  ${textoHTML('Fonte:')} ${escapeHTML(item.source)}
                 </p>
               ` : ''}
             </details>
@@ -371,7 +382,7 @@
                 type="button"
                 data-action="approve"
                 data-id="${escapeHTML(item.id)}">
-                Aprovar e publicar
+                ${textoHTML('Aprovar e publicar')}
               </button>
 
               <button
@@ -379,7 +390,7 @@
                 type="button"
                 data-action="reject"
                 data-id="${escapeHTML(item.id)}">
-                Rejeitar
+                ${textoHTML('Rejeitar')}
               </button>
 
             </div>
@@ -392,7 +403,7 @@
       console.error('Erro ao carregar sugestões:', error);
 
       pendingContainer.innerHTML =
-        '<div class="empty">Erro ao carregar sugestões. Verifique as permissões.</div>';
+        `<div class="empty">${textoHTML('Erro ao carregar sugestões. Verifique as permissões.')}</div>`;
     }
   }
 
@@ -497,7 +508,13 @@
 
   if (pendingContainer) {
     pendingContainer.addEventListener('click', async function (event) {
-      const button = event.target.closest('button[data-action]');
+      const target = event.target.closest
+        ? event.target
+        : event.target.parentElement;
+
+      if (!target || !target.closest) return;
+
+      const button = target.closest('button[data-action]');
 
       if (!button || !pendingContainer.contains(button)) return;
 
@@ -533,7 +550,8 @@
 
     if (form) {
       const submitButton = form.querySelector('button[type="submit"]');
-      if (submitButton) {
+
+      if (submitButton && !submitButton.disabled) {
         submitButton.textContent = t('Enviar sugestão para aprovação');
       }
     }
