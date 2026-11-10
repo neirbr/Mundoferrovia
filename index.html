@@ -2890,8 +2890,12 @@ window.addEventListener('load', function () {
 
     // SALVAR IDIOMA
     localStorage.setItem('mf_language', lang);
-  }
 
+    // SINCRONIZAR COM O SISTEMA CENTRAL DE IDIOMAS
+    if (window.MF_SET_LANGUAGE) {
+      window.MF_SET_LANGUAGE(lang);
+    }
+  }
   // RECUPERAR PREFERÊNCIAS
   const savedTheme =
     localStorage.getItem('mf_theme') || 'light';
