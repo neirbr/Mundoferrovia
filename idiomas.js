@@ -201,13 +201,24 @@ quiz_ad_description: "La publicidad ayuda a mantener el contenido gratuito.",
     }
   };
 
-  function applyPageTranslations() {
-    const language =
-      document.documentElement.lang ||
+  
+  
+  function applyPageTranslations(language) {
+    const rawLanguage =
+      language ||
       localStorage.getItem("mf_language") ||
+      document.documentElement.lang ||
       "pt";
 
-    const dictionary = pageTranslations[language] || pageTranslations.pt;
+    const normalized = String(rawLanguage).toLowerCase();
+
+    const lang = normalized.startsWith("en")
+      ? "en"
+      : normalized.startsWith("es")
+        ? "es"
+        : "pt";
+
+    const dictionary = pageTranslations[lang] || pageTranslations.pt;
 
     document.querySelectorAll("[data-i18n]").forEach(element => {
       const key = element.getAttribute("data-i18n");
@@ -234,6 +245,24 @@ quiz_ad_description: "La publicidad ayuda a mantener el contenido gratuito.",
     });
   }
 
+  // Disponibilizar a tradução para os outros módulos
+  window.MF_SET_LANGUAGE = function(language) {
+    const lang = ["pt", "en", "es"].includes(language)
+      ? language
+      : "pt";
+
+    localStorage.setItem("mf_language", lang);
+    document.documentElement.lang = lang;
+
+    applyPageTranslations(lang);
+
+    window.dispatchEvent(
+      new CustomEvent("mf-language-changed", {
+        detail: { language: lang }
+      })
+    );
+  };
+
   function startPageTranslations() {
     applyPageTranslations();
 
@@ -254,4 +283,5 @@ quiz_ad_description: "La publicidad ayuda a mantener el contenido gratuito.",
   }
 
 })();
+
 
