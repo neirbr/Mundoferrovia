@@ -3339,9 +3339,9 @@ communityLoadingPosts: "Cargando publicaciones..."
   // APLICAR IDIOMA SALVO
   applyLanguage(savedLanguage);
 
-  
 // ABRIR CONFIGURAÇÕES
 openBtn.addEventListener('click', function () {
+  modal.removeAttribute('style');
   modal.style.display = 'flex';
   modal.style.zIndex = '99999';
   modal.style.visibility = 'visible';
