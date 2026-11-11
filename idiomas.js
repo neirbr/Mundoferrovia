@@ -83,7 +83,23 @@ profileCity: "Cidade",
 profileCityPlaceholder: "Sua cidade",
 profileState: "Estado",
 profileStatePlaceholder: "Ex.: RJ",
-profileSave: "Salvar Perfil"
+profileSave: "Salvar Perfil",
+
+       
+aboutTag: "MUNDO FERROVIÁRIO",
+aboutTitle: "Sobre o Mundo Ferroviário 🚂",
+aboutDescription: "Conhecimento, informação e paixão pelo universo ferroviário.",
+aboutMissionTitle: "Nossa missão",
+aboutMissionText: "Compartilhar conhecimento, valorizar o transporte ferroviário e aproximar pessoas que fazem parte ou admiram esse universo.",
+aboutOfferTitle: "O que oferecemos",
+aboutOfferText: "Um espaço de aprendizado e informação com conteúdos sobre locomotivas, vagões, componentes ferroviários, sinalização, operações, história, notícias, enciclopédia e quizzes.",
+aboutCommunityTitle: "Nossa comunidade",
+aboutCommunityText: "Um ambiente para reunir ferroviários, estudantes e apaixonados por trens, permitindo compartilhar experiências, conhecimentos e contribuições para o crescimento do setor.",
+aboutPurposeTitle: "Nosso propósito",
+aboutPurposeText: "Incentivar o aprendizado, preservar a cultura ferroviária, valorizar os profissionais e manter viva a paixão pelos trilhos.",
+aboutClosingTitle: "Mundo Ferroviário",
+aboutClosingText: "Conhecimento que move trilhos!",
+       
        
     },
 
@@ -165,6 +181,21 @@ profileStatePlaceholder: "E.g.: RJ",
 profileSave: "Save Profile",
 
        
+aboutTag: "RAILWAY WORLD",
+aboutTitle: "About Railway World 🚂",
+aboutDescription: "Knowledge, information and passion for the railway world.",
+aboutMissionTitle: "Our Mission",
+aboutMissionText: "Share knowledge, promote railway transportation and bring together people who are part of or admire this world.",
+aboutOfferTitle: "What We Offer",
+aboutOfferText: "A learning and information space featuring content about locomotives, wagons, railway components, signaling, operations, history, news, encyclopedia articles and quizzes.",
+aboutCommunityTitle: "Our Community",
+aboutCommunityText: "A place to bring together railway workers, students and train enthusiasts, allowing them to share experiences, knowledge and contributions to the growth of the railway sector.",
+aboutPurposeTitle: "Our Purpose",
+aboutPurposeText: "Encourage learning, preserve railway culture, value railway professionals and keep the passion for the rails alive.",
+aboutClosingTitle: "Railway World",
+aboutClosingText: "Knowledge that moves the rails!",
+       
+       
     },
 
     es: {
@@ -242,7 +273,23 @@ profileCity: "Ciudad",
 profileCityPlaceholder: "Tu ciudad",
 profileState: "Estado",
 profileStatePlaceholder: "Ej.: RJ",
-profileSave: "Guardar perfil"
+profileSave: "Guardar perfil",
+
+       
+aboutTag: "MUNDO FERROVIARIO",
+aboutTitle: "Sobre el Mundo Ferroviario 🚂",
+aboutDescription: "Conocimiento, información y pasión por el universo ferroviario.",
+aboutMissionTitle: "Nuestra misión",
+aboutMissionText: "Compartir conocimientos, valorar el transporte ferroviario y acercar a las personas que forman parte de este universo o lo admiran.",
+aboutOfferTitle: "Lo que ofrecemos",
+aboutOfferText: "Un espacio de aprendizaje e información con contenidos sobre locomotoras, vagones, componentes ferroviarios, señalización, operaciones, historia, noticias, enciclopedia y cuestionarios.",
+aboutCommunityTitle: "Nuestra comunidad",
+aboutCommunityText: "Un espacio para reunir a trabajadores ferroviarios, estudiantes y apasionados por los trenes, permitiendo compartir experiencias, conocimientos y contribuciones al crecimiento del sector.",
+aboutPurposeTitle: "Nuestro propósito",
+aboutPurposeText: "Fomentar el aprendizaje, preservar la cultura ferroviaria, valorar a los profesionales y mantener viva la pasión por los rieles.",
+aboutClosingTitle: "Mundo Ferroviario",
+aboutClosingText: "¡Conocimiento que mueve los rieles!",
+       
        
     }
   };
