@@ -1261,8 +1261,108 @@ body.dark-mode .footer {
     </div>
   </div>
 
+
+<!-- COMUNIDADE FERROVIÁRIA -->
+<section id="comunidade" class="page">
+
+  <div class="section-head">
+    <div>
+      <span class="tag" data-i18n="communityTag">MUNDO FERROVIÁRIO</span>
+      <h2 data-i18n="communityTitle">Comunidade Ferroviária 🚂</h2>
+      <p class="muted" data-i18n="communityDescription">
+        Compartilhe sua paixão pelos trilhos!
+        Publique fotos, curta e converse com outros ferroviários.
+      </p>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="card">
+    <h3 data-i18n="communityLoginTitle">Entre na comunidade</h3>
+
+    <label for="communityEmail" data-i18n="communityEmail">E-mail</label>
+    <input id="communityEmail" type="email"
+      placeholder="Seu e-mail"
+      data-i18n-placeholder="communityEmailPlaceholder">
+
+    <label for="communityPassword" data-i18n="communityPassword">Senha</label>
+    <input id="communityPassword" type="password"
+      placeholder="Sua senha"
+      data-i18n-placeholder="communityPasswordPlaceholder">
+
+    <div class="hero-actions">
+      <button type="button" class="btn" id="communityLogin"
+        data-i18n="communityEnter">
+        Entrar
+      </button>
+
+      <button type="button" class="btn outline" id="communitySignup"
+        data-i18n="communitySignup">
+        Criar conta
+      </button>
+    </div>
+
+    <p id="communityAuthMsg" class="muted"
+      aria-live="polite"></p>
+  </div>
+
+  <!-- NOVA PUBLICAÇÃO -->
+  <div class="card" style="margin-top:18px">
+
+    <h3 data-i18n="communityShareTitle">Compartilhe sua publicação 📸</h3>
+
+    <form id="communityPostForm">
+
+      <label for="communityText" data-i18n="communityShareQuestion">
+        O que você gostaria de compartilhar?
+      </label>
+
+      <textarea id="communityText"
+        placeholder="Conte uma novidade, experiência ou curiosidade ferroviária..."
+        data-i18n-placeholder="communityTextPlaceholder"
+        maxlength="1000" required></textarea>
+
+      <label for="communityPhoto" data-i18n="communityAddPhoto">
+        Adicionar fotografia
+      </label>
+
+      <input id="communityPhoto"
+        type="file"
+        accept="image/jpeg,image/png,image/webp">
+
+      <label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px">
+        <input id="communityRights"
+          type="checkbox" required>
+        <span data-i18n="communityImageRights">
+          Confirmo que sou proprietário da imagem
+          ou tenho autorização para publicá-la.
+        </span>
+      </label>
+
+      <button class="btn" type="submit"
+        id="communityPublish"
+        data-i18n="communityPublish">
+        Publicar
+      </button>
+
+      <p id="communityPostMsg"
+        class="muted" aria-live="polite"></p>
+
+    </form>
+  </div>
+
+  <!-- MEMBROS DA COMUNIDADE -->
+  <div class="section-head" style="margin-top:28px">
+    <div>
+      <h2 data-i18n="communityMembersTitle">Nossos Ferroviários 👥</h2>
+      <p class="muted" data-i18n="communityMembersDescription">
+        Conheça os membros do Mundo Ferroviário.
+      </p>
+    </div>
+  </div>
+
   <div id="communityMembers" class="grid">
-    <div class="empty">
+    <div class="empty" data-i18n="communityLoadingMembers">
       Carregando membros...
     </div>
   </div>
@@ -1271,34 +1371,33 @@ body.dark-mode .footer {
   <div id="publicProfile" class="card"
     style="display:none;margin-top:18px">
     <button type="button" class="btn outline"
-      id="closePublicProfile">
+      id="closePublicProfile"
+      data-i18n="communityBackMembers">
       ← Voltar aos membros
     </button>
 
     <div id="publicProfileContent"></div>
   </div>
-  
+
   <div class="section-head" style="margin-top:28px">
     <div>
-      <h2>Publicações dos ferroviários</h2>
-      <p class="muted">
+      <h2 data-i18n="communityPostsTitle">Publicações dos ferroviários</h2>
+      <p class="muted" data-i18n="communityPostsDescription">
         Veja o que a nossa comunidade está compartilhando.
       </p>
     </div>
   </div>
 
   <div id="communityFeed" class="grid">
-    <div class="empty">
+    <div class="empty" data-i18n="communityLoadingPosts">
       Carregando publicações...
     </div>
   </div>
 
 </section>
 <!-- FIM DA COMUNIDADE -->
-<section id="sobre" class="page"><div class="section-head"><div><span class="tag">NOSSA MISSÃO</span><h2>Sobre o Mundo Ferroviário</h2></div></div><div class="card"><h3>Conhecimento que move trilhos.</h3><p>O Mundo Ferroviário nasce para aproximar pessoas do universo das ferrovias, valorizar a cultura ferroviária e facilitar o acesso a conteúdos educativos.</p><p>Queremos reunir curiosidades, materiais de estudo, glossário, histórias, oportunidades e uma comunidade de pessoas que compartilham essa paixão.</p><h3>Nosso compromisso</h3><ul class="content-list"><li>Conteúdo acessível para iniciantes e entusiastas.</li><li>Respeito à diversidade de profissionais e empresas do setor.</li><li>Informações técnicas apresentadas com contexto e responsabilidade.</li><li>Plataforma gratuita, sustentada por publicidade e parcerias.</li></ul><div class="notice"><strong>Transparência:</strong> esta versão é um protótipo demonstrativo. Os espaços publicitários ainda não exibem anúncios reais. A galeria permite envio de fotos por usuários cadastrados, com análise da equipe antes da publicação. A plataforma ainda depende da configuração do Firebase, Cloudinary e da hospedagem.</div></div></section>
-</main><footer class="footer"><strong>MUNDO FERROVIÁRIO</strong><br>Conhecimento que move trilhos. <br><small>Versão 2.1 • 2026 • Plataforma independente</small><br><small><a href="admin.html" style="color:#f0b323">Painel administrativo (protótipo local)</a></small></footer>
-<script>
 
+  <script>
 const termsByLanguage = {
   pt: [
     ['AMV / aparelho de mudança de via','Conjunto de componentes que permite encaminhar veículos ferroviários de uma via para outra, conforme o projeto e as regras locais.'],
@@ -2834,8 +2933,32 @@ rankingInitialDescription: 'O ranking será atualizado após a integração com 
 rankingHowToParticipate: '🚂 Como participar?',
 rankingHowToParticipateText: 'Entre na sua conta, participe do Quiz Ferroviário, responda às perguntas e acumule pontos para conquistar seu lugar entre os melhores!',
 rankingAdSpace: 'ESPAÇO PUBLICITÁRIO',
-rankingAdText: 'Publicidade ajuda a manter o conteúdo gratuito.'
-   
+rankingAdText: 'Publicidade ajuda a manter o conteúdo gratuito.',
+
+communityTag: "MUNDO FERROVIÁRIO",
+communityTitle: "Comunidade Ferroviária 🚂",
+communityDescription: "Compartilhe sua paixão pelos trilhos! Publique fotos, curta e converse com outros ferroviários.",
+communityLoginTitle: "Entre na comunidade",
+communityEmail: "E-mail",
+communityEmailPlaceholder: "Seu e-mail",
+communityPassword: "Senha",
+communityPasswordPlaceholder: "Sua senha",
+communityEnter: "Entrar",
+communitySignup: "Criar conta",
+communityShareTitle: "Compartilhe sua publicação 📸",
+communityShareQuestion: "O que você gostaria de compartilhar?",
+communityTextPlaceholder: "Conte uma novidade, experiência ou curiosidade ferroviária...",
+communityAddPhoto: "Adicionar fotografia",
+communityImageRights: "Confirmo que sou proprietário da imagem ou tenho autorização para publicá-la.",
+communityPublish: "Publicar",
+communityMembersTitle: "Nossos Ferroviários 👥",
+communityMembersDescription: "Conheça os membros do Mundo Ferroviário.",
+communityLoadingMembers: "Carregando membros...",
+communityBackMembers: "← Voltar aos membros",
+communityPostsTitle: "Publicações dos ferroviários",
+communityPostsDescription: "Veja o que a nossa comunidade está compartilhando.",
+communityLoadingPosts: "Carregando publicações..."
+     
       },
 
     en: {
@@ -2953,7 +3076,31 @@ rankingInitialDescription: 'The ranking will be updated after integration with t
 rankingHowToParticipate: '🚂 How to participate?',
 rankingHowToParticipateText: 'Sign in to your account, take part in the Railway Quiz, answer the questions and earn points to secure your place among the best!',
 rankingAdSpace: 'ADVERTISING SPACE',
-rankingAdText: 'Advertising helps keep the content free.'
+rankingAdText: 'Advertising helps keep the content free.',
+
+communityTag: "RAILWAY WORLD",
+communityTitle: "Railway Community 🚂",
+communityDescription: "Share your passion for railways! Post photos, like and chat with other railway enthusiasts.",
+communityLoginTitle: "Join the community",
+communityEmail: "Email",
+communityEmailPlaceholder: "Your email",
+communityPassword: "Password",
+communityPasswordPlaceholder: "Your password",
+communityEnter: "Log in",
+communitySignup: "Create account",
+communityShareTitle: "Share your post 📸",
+communityShareQuestion: "What would you like to share?",
+communityTextPlaceholder: "Share railway news, experiences or interesting facts...",
+communityAddPhoto: "Add photo",
+communityImageRights: "I confirm that I own this image or have permission to publish it.",
+communityPublish: "Publish",
+communityMembersTitle: "Our Railway Community 👥",
+communityMembersDescription: "Meet the members of Railway World.",
+communityLoadingMembers: "Loading members...",
+communityBackMembers: "← Back to members",
+communityPostsTitle: "Railway community posts",
+communityPostsDescription: "See what our community is sharing.",
+communityLoadingPosts: "Loading posts..."
       
     },
 
@@ -3073,8 +3220,32 @@ rankingInitialDescription: 'La clasificación se actualizará después de la int
 rankingHowToParticipate: '🚂 ¿Cómo participar?',
 rankingHowToParticipateText: 'Inicia sesión, participa en el Quiz Ferroviario, responde las preguntas y acumula puntos para conseguir tu lugar entre los mejores.',
 rankingAdSpace: 'ESPACIO PUBLICITARIO',
-rankingAdText: 'La publicidad ayuda a mantener el contenido gratuito.'
-  
+rankingAdText: 'La publicidad ayuda a mantener el contenido gratuito.',
+
+communityTag: "MUNDO FERROVIARIO",
+communityTitle: "Comunidad Ferroviaria 🚂",
+communityDescription: "¡Comparte tu pasión por los ferrocarriles! Publica fotos, dale me gusta y conversa con otros ferroviarios.",
+communityLoginTitle: "Únete a la comunidad",
+communityEmail: "Correo electrónico",
+communityEmailPlaceholder: "Tu correo electrónico",
+communityPassword: "Contraseña",
+communityPasswordPlaceholder: "Tu contraseña",
+communityEnter: "Entrar",
+communitySignup: "Crear cuenta",
+communityShareTitle: "Comparte tu publicación 📸",
+communityShareQuestion: "¿Qué te gustaría compartir?",
+communityTextPlaceholder: "Comparte noticias, experiencias o curiosidades ferroviarias...",
+communityAddPhoto: "Agregar fotografía",
+communityImageRights: "Confirmo que soy propietario de la imagen o que tengo autorización para publicarla.",
+communityPublish: "Publicar",
+communityMembersTitle: "Nuestros Ferroviarios 👥",
+communityMembersDescription: "Conoce a los miembros de Mundo Ferroviario.",
+communityLoadingMembers: "Cargando miembros...",
+communityBackMembers: "← Volver a los miembros",
+communityPostsTitle: "Publicaciones de los ferroviarios",
+communityPostsDescription: "Mira lo que nuestra comunidad está compartiendo.",
+communityLoadingPosts: "Cargando publicaciones..."
+    
     }
 
   };
