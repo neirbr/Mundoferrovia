@@ -1328,15 +1328,24 @@ const glossaryMessages = {
   es: 'No se encontraron términos.'
 };
 
-function renderTerms(q = '') {
-  const lang = document.documentElement.lang ||
-    localStorage.getItem('mf_language') || 'pt';
 
-  const language = termsByLanguage[lang] ? lang : 'pt';
+function renderTerms(q = '') {
+  const savedLanguage = localStorage.getItem('mf_language') || 'pt';
+  const htmlLanguage = document.documentElement.lang || '';
+
+  const rawLanguage = savedLanguage || htmlLanguage;
+  const normalizedLanguage = String(rawLanguage).toLowerCase();
+
+  const language = normalizedLanguage.startsWith('en')
+    ? 'en'
+    : normalizedLanguage.startsWith('es')
+      ? 'es'
+      : 'pt';
+
   const terms = termsByLanguage[language];
   const termsContainer = document.getElementById('terms');
 
-  if (!termsContainer) return;
+  if (!termsContainer || !terms) return;
 
   const list = terms.filter(t =>
     (t[0] + ' ' + t[1]).toLowerCase().includes(q.toLowerCase())
@@ -1351,6 +1360,7 @@ function renderTerms(q = '') {
       `).join('')
     : `<div class="empty">${glossaryMessages[language]}</div>`;
 }
+
 
 const glossSearch = document.getElementById('glossSearch');
 
