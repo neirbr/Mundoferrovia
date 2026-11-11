@@ -1167,38 +1167,42 @@ body.dark-mode .footer {
 <!-- FIM DO PERFIL -->
   
   <!-- COMUNIDADE FERROVIÁRIA -->
+
 <section id="comunidade" class="page">
 
   <div class="section-head">
     <div>
-      <span class="tag">MUNDO FERROVIÁRIO</span>
-      <h2>Comunidade Ferroviária 🚂</h2>
-      <p class="muted">
+      <span class="tag" data-i18n="communityTag">MUNDO FERROVIÁRIO</span>
+      <h2 data-i18n="communityTitle">Comunidade Ferroviária 🚂</h2>
+      <p class="muted" data-i18n="communityDescription">
         Compartilhe sua paixão pelos trilhos!
         Publique fotos, curta e converse com outros ferroviários.
       </p>
     </div>
   </div>
 
-
   <!-- LOGIN -->
   <div class="card">
-    <h3>Entre na comunidade</h3>
+    <h3 data-i18n="communityLoginTitle">Entre na comunidade</h3>
 
-    <label for="communityEmail">E-mail</label>
+    <label for="communityEmail" data-i18n="communityEmail">E-mail</label>
     <input id="communityEmail" type="email"
-      placeholder="Seu e-mail">
+      placeholder="Seu e-mail"
+      data-i18n-placeholder="communityEmailPlaceholder">
 
-    <label for="communityPassword">Senha</label>
+    <label for="communityPassword" data-i18n="communityPassword">Senha</label>
     <input id="communityPassword" type="password"
-      placeholder="Sua senha">
+      placeholder="Sua senha"
+      data-i18n-placeholder="communityPasswordPlaceholder">
 
     <div class="hero-actions">
-      <button type="button" class="btn" id="communityLogin">
+      <button type="button" class="btn" id="communityLogin"
+        data-i18n="communityEnter">
         Entrar
       </button>
 
-      <button type="button" class="btn outline" id="communitySignup">
+      <button type="button" class="btn outline" id="communitySignup"
+        data-i18n="communitySignup">
         Criar conta
       </button>
     </div>
@@ -1210,19 +1214,22 @@ body.dark-mode .footer {
   <!-- NOVA PUBLICAÇÃO -->
   <div class="card" style="margin-top:18px">
 
-    <h3>Compartilhe sua publicação 📸</h3>
+    <h3 data-i18n="communityShareTitle">
+      Compartilhe sua publicação 📸
+    </h3>
 
     <form id="communityPostForm">
 
-      <label for="communityText">
+      <label for="communityText" data-i18n="communityShareQuestion">
         O que você gostaria de compartilhar?
       </label>
 
       <textarea id="communityText"
         placeholder="Conte uma novidade, experiência ou curiosidade ferroviária..."
+        data-i18n-placeholder="communityTextPlaceholder"
         maxlength="1000" required></textarea>
 
-      <label for="communityPhoto">
+      <label for="communityPhoto" data-i18n="communityAddPhoto">
         Adicionar fotografia
       </label>
 
@@ -1233,13 +1240,15 @@ body.dark-mode .footer {
       <label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px">
         <input id="communityRights"
           type="checkbox" required>
-        Confirmo que sou proprietário da imagem
-        ou tenho autorização para publicá-la.
+        <span data-i18n="communityImageRights">
+          Confirmo que sou proprietário da imagem
+          ou tenho autorização para publicá-la.
+        </span>
       </label>
 
-
       <button class="btn" type="submit"
-        id="communityPublish">
+        id="communityPublish"
+        data-i18n="communityPublish">
         Publicar
       </button>
 
@@ -1249,15 +1258,19 @@ body.dark-mode .footer {
     </form>
   </div>
 
-  <!-- PUBLICAÇÕES -->
-  
- <!-- MEMBROS DA COMUNIDADE -->
+  <!-- MEMBROS DA COMUNIDADE -->
   <div class="section-head" style="margin-top:28px">
     <div>
-      <h2>Nossos Ferroviários 👥</h2>
-      <p class="muted">
+      <h2 data-i18n="communityMembersTitle">Nossos Ferroviários 👥</h2>
+      <p class="muted" data-i18n="communityMembersDescription">
         Conheça os membros do Mundo Ferroviário.
       </p>
+    </div>
+  </div>
+
+  <div id="communityMembers" class="grid">
+    <div class="empty" data-i18n="communityLoadingMembers">
+      Carregando membros...
     </div>
   </div>
 
