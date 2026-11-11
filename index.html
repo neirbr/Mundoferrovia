@@ -943,121 +943,131 @@ body.dark-mode .footer {
 </div>
 
 
-  <!-- PAINEL ADMINISTRATIVO DA ENCICLOPÉDIA -->
-  <div id="encyclopediaAdminPanel" class="card"
-       style="display:none; margin-top:20px;">
 
-    <h3>⚙️ Administração da Enciclopédia</h3>
+<!-- PAINEL ADMINISTRATIVO DA ENCICLOPÉDIA -->
+<div id="encyclopediaAdminPanel" class="card"
+     style="display:none; margin-top:20px;">
 
-    <p class="muted">
-      Gerencie as sugestões enviadas pelos membros da comunidade.
-    </p>
+  <h3>
+    <span>⚙️</span>
+    <span data-i18n="encyclopediaAdmin">Administração da Enciclopédia</span>
+  </h3>
 
-    <div id="encyclopediaPendingSuggestions">
-      <div class="empty">
-        Carregando sugestões...
-      </div>
-    </div>
-
-  </div>
-
-  <div class="card" style="margin-top:18px">
-    <h3>Compartilhe seu conhecimento</h3>
-    <p class="muted">Você poderá sugerir artigos para a Enciclopédia. As sugestões serão analisadas pela administração antes da publicação.</p>
-    <button class="btn" type="button" onclick="document.getElementById('encyclopediaSuggestion').scrollIntoView({behavior:'smooth'})">Sugerir um artigo</button>
-    
-<div id="encyclopediaSuggestion">
-  <form id="encyclopediaSuggestionForm" style="margin-top:18px">
-
-    <div class="form-group">
-      <label for="encyclopediaTitle">Título do artigo</label>
-      <input
-        id="encyclopediaTitle"
-        type="text"
-        maxlength="120"
-        placeholder="Ex: Locomotiva GE AC44i"
-        required>
-    </div>
-
-    <div class="form-group">
-      <label for="encyclopediaCategory">Categoria</label>
-      <select id="encyclopediaCategory" required>
-        <option value="">Selecione uma categoria</option>
-        <option value="Locomotivas">Locomotivas</option>
-        <option value="Vagões">Vagões</option>
-        <option value="Componentes ferroviários">Componentes ferroviários</option>
-        <option value="Sinalização">Sinalização</option>
-        <option value="Operações ferroviárias">Operações ferroviárias</option>
-        <option value="História ferroviária">História ferroviária</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="encyclopediaSummary">Resumo do artigo</label>
-      <textarea
-        id="encyclopediaSummary"
-        maxlength="500"
-        rows="3"
-        placeholder="Faça um breve resumo do conteúdo..."
-        required></textarea>
-    </div>
-
-    <div class="form-group">
-      <label for="encyclopediaContent">Conteúdo do artigo</label>
-      <textarea
-        id="encyclopediaContent"
-        maxlength="15000"
-        rows="8"
-        placeholder="Escreva aqui o conteúdo completo do artigo..."
-        required></textarea>
-    </div>
-
-    <div class="form-group">
-      <label for="encyclopediaSource">Fonte ou referência (opcional)</label>
-      <input
-        id="encyclopediaSource"
-        type="text"
-        maxlength="500"
-        placeholder="Ex: Manual técnico, livro ou site">
-    </div>
-
-    <button class="btn" type="submit">
-      Enviar sugestão para aprovação
-    </button>
-
-    <p class="muted" style="margin-top:10px">
-      Sua sugestão será analisada pela administração antes de ser publicada.
-    </p>
-
-  </form>
-</div>
-
-    <!-- PAINEL ADMINISTRATIVO DA ENCICLOPÉDIA -->
-
-<div id="encyclopediaAdminPanel"
-     class="card"
-     style="display:none; margin-top:20px">
-
-  <h3>🛠️ Administração da Enciclopédia</h3>
-
-  <p class="muted">
-    Analise as sugestões enviadas pelos usuários.
-    Você poderá aprovar, editar ou rejeitar os artigos.
+  <p class="muted" data-i18n="encyclopediaAdminDescription">
+    Gerencie as sugestões enviadas pelos membros da comunidade.
   </p>
 
   <div id="encyclopediaPendingSuggestions">
-
-    <div class="empty">
-      Carregando sugestões pendentes...
+    <div class="empty" data-i18n="encyclopediaLoading">
+      Carregando sugestões...
     </div>
-
   </div>
 
 </div>
 
-<!-- FIM DO PAINEL ADMINISTRATIVO -->
+<div class="card" style="margin-top:18px">
 
+  <h3 data-i18n="encyclopediaShare">Compartilhe seu conhecimento</h3>
+
+  <p class="muted" data-i18n="encyclopediaShareDescription">
+    Você poderá sugerir artigos para a Enciclopédia. As sugestões serão analisadas pela administração antes da publicação.
+  </p>
+
+  <button class="btn" type="button"
+    onclick="document.getElementById('encyclopediaSuggestion').scrollIntoView({behavior:'smooth'})"
+    data-i18n="encyclopediaSuggest">
+    Sugerir um artigo
+  </button>
+
+  <div id="encyclopediaSuggestion">
+
+    <form id="encyclopediaSuggestionForm" style="margin-top:18px">
+
+      <div class="form-group">
+        <label for="encyclopediaTitle" data-i18n="encyclopediaArticleTitle">
+          Título do artigo
+        </label>
+
+        <input
+          id="encyclopediaTitle"
+          type="text"
+          maxlength="120"
+          placeholder="Ex: Locomotiva GE AC44i"
+          data-i18n-placeholder="encyclopediaTitlePlaceholder"
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="encyclopediaCategory" data-i18n="encyclopediaCategory">
+          Categoria
+        </label>
+
+        <select id="encyclopediaCategory" required>
+          <option value="" data-i18n="encyclopediaSelect">Selecione uma categoria</option>
+          <option value="Locomotivas" data-i18n="encyclopediaLocomotives">Locomotivas</option>
+          <option value="Vagões" data-i18n="encyclopediaWagons">Vagões</option>
+          <option value="Componentes ferroviários" data-i18n="encyclopediaComponents">Componentes ferroviários</option>
+          <option value="Sinalização" data-i18n="encyclopediaSignaling">Sinalização</option>
+          <option value="Operações ferroviárias" data-i18n="encyclopediaOperations">Operações ferroviárias</option>
+          <option value="História ferroviária" data-i18n="encyclopediaHistory">História ferroviária</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="encyclopediaSummary" data-i18n="encyclopediaSummary">
+          Resumo do artigo
+        </label>
+
+        <textarea
+          id="encyclopediaSummary"
+          maxlength="500"
+          rows="3"
+          placeholder="Faça um breve resumo do conteúdo..."
+          data-i18n-placeholder="encyclopediaSummaryPlaceholder"
+          required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="encyclopediaContent" data-i18n="encyclopediaContent">
+          Conteúdo do artigo
+        </label>
+
+        <textarea
+          id="encyclopediaContent"
+          maxlength="15000"
+          rows="8"
+          placeholder="Escreva aqui o conteúdo completo do artigo..."
+          data-i18n-placeholder="encyclopediaContentPlaceholder"
+          required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="encyclopediaSource" data-i18n="encyclopediaSource">
+          Fonte ou referência (opcional)
+        </label>
+
+        <input
+          id="encyclopediaSource"
+          type="text"
+          maxlength="500"
+          placeholder="Ex: Manual técnico, livro ou site"
+          data-i18n-placeholder="encyclopediaSourcePlaceholder">
+      </div>
+
+      <button class="btn" type="submit" data-i18n="encyclopediaSubmit">
+        Enviar sugestão para aprovação
+      </button>
+
+      <p class="muted" style="margin-top:10px"
+         data-i18n="encyclopediaReview">
+        Sua sugestão será analisada pela administração antes de ser publicada.
+      </p>
+
+    </form>
   </div>
+</div>
+
+
 </section>
 
 <section id="galeria" class="page">
@@ -3042,6 +3052,18 @@ window.addEventListener('load', function () {
           element.textContent = translations[lang][key];
         }
 
+       });
+
+        // TRADUZIR PLACEHOLDERS
+    document.querySelectorAll('[data-i18n-placeholder]')
+      .forEach(function (element) {
+
+        const key = element.getAttribute('data-i18n-placeholder');
+
+        if (translations[lang][key] !== undefined) {
+          element.setAttribute('placeholder', translations[lang][key]);
+        }
+
       });
 
     // DEFINIR IDIOMA DO DOCUMENTO
@@ -3113,6 +3135,7 @@ window.addEventListener('load', function () {
   });
 
 })();
+  
 </script>
 
 <script src="./idiomas.js"></script>
