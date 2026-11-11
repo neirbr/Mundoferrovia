@@ -1,16 +1,90 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#102b3f"><title>Admin | Mundo Ferroviário</title><style>
+
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102b3f">
+<title>Admin | Mundo Ferroviário</title>
+<style>
 :root{--n:#102b3f;--b:#174a67;--g:#f0b323;--bg:#f2f5f7;--line:#dce5ea;--muted:#637783}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,Arial;color:#172b38}.top{background:var(--n);color:white;padding:17px 24px;font-weight:900}.top span{color:var(--g)}main{max-width:1050px;margin:30px auto;padding:0 16px}.card{background:white;border:1px solid var(--line);border-radius:15px;padding:20px;margin:15px 0}.hidden{display:none!important}.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.tabs{display:flex;gap:7px;flex-wrap:wrap}.tabs button,.btn{border:0;border-radius:9px;padding:10px 14px;background:var(--n);color:white;font-weight:750;cursor:pointer}.tabs button.active,.btn.gold{background:var(--g);color:#172b38}.btn.light{background:#eaf0f3;color:var(--n)}input,textarea,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;font:inherit}textarea{min-height:95px}label{display:block;font-size:13px;font-weight:750;margin:12px 0 5px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid .full{grid-column:1/-1}.muted{color:var(--muted);font-size:13px}.notice{background:#fff4d5;border:1px solid #ecd48c;padding:12px;border-radius:10px;font-size:13px;line-height:1.5}.item{border-bottom:1px solid var(--line);padding:12px 0;display:flex;justify-content:space-between;gap:12px}.item:last-child{border:0}table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:10px;border-bottom:1px solid var(--line);font-size:13px}.status{font-size:12px;color:#276b49;font-weight:800}@media(max-width:600px){.grid{grid-template-columns:1fr}.grid .full{grid-column:auto}main{margin:18px auto}}
-</style></head><body><header class="top">🚂 MUNDO <span>FERROVIÁRIO</span> — ADMIN</header><main>
-<section id="login" class="card"><h2>Acesso administrativo</h2><p class="muted">Entre com o usuário criado no Firebase Authentication.</p><label>E-mail</label><input id="email" type="email" autocomplete="username" placeholder="administrador@exemplo.com"><label>Senha</label><input id="password" type="password" autocomplete="current-password"><p><button class="btn gold" id="loginBtn">Entrar</button></p><div id="loginMsg" class="muted"></div></section>
-<section id="app" class="hidden"><div class="row" style="justify-content:space-between"><div><h2>Painel administrativo</h2><div class="muted" id="who"></div></div><button class="btn light" id="logoutBtn">Sair</button></div>
-<div class="notice">Conteúdo publicado em estado “Publicado” ficará disponível para leitura no site. O acesso administrativo é restrito ao UID autorizado no firebase-config.js e nas regras do Firestore.</div>
-<div class="card"><div class="tabs" id="tabs"><button class="active" data-tab="articles">Notícias</button><button data-tab="locomotives">Locomotivas</button><button data-tab="wagons">Vagões</button><button data-tab="glossary">Glossário</button><button data-tab="ads">Anúncios</button><button data-tab="gallery">Moderar galeria</button></div></div>
-<div class="card"><h3 id="sectionTitle">Notícias e artigos</h3><form id="editor"><input type="hidden" id="recordId"><div id="fields" class="grid"></div><div class="row" style="margin-top:14px"><button class="btn gold" type="submit">Salvar</button><button class="btn light" type="button" id="cancelBtn">Limpar formulário</button></div><div id="formMsg" class="muted"></div></form></div>
-<div class="card"><h3>Conteúdos cadastrados</h3><div id="records" class="muted">Carregando...</div></div>
+</style>
+</head>
+<body>
+<header class="top">🚂 MUNDO <span>FERROVIÁRIO</span> — ADMIN</header>
+<main>
+
+<section id="login" class="card">
+<h2>Acesso administrativo</h2>
+<p class="muted">Entre com o usuário criado no Firebase Authentication.</p>
+<label>E-mail</label>
+<input id="email" type="email" autocomplete="username" placeholder="administrador@exemplo.com">
+<label>Senha</label>
+<input id="password" type="password" autocomplete="current-password">
+<p><button class="btn gold" id="loginBtn">Entrar</button></p>
+<div id="loginMsg" class="muted"></div>
 </section>
-<div class="muted" style="text-align:center;padding:15px">Mundo Ferroviário • Conhecimento que move trilhos.</div></main>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script><script src="firebase-config.js"></script><script src="firebase-init.js"></script><script>
+
+<section id="app" class="hidden">
+<div class="row" style="justify-content:space-between">
+  <div>
+    <h2>Painel administrativo</h2>
+    <div class="muted" id="who"></div>
+  </div>
+  <div class="row">
+    <button class="btn gold" type="button"
+      onclick="window.location.href='https://neirbr.github.io/Mundoferrovia/'">
+      ↩️ Voltar ao site
+    </button>
+    <button class="btn light" id="logoutBtn">Sair</button>
+  </div>
+</div>
+
+<div class="notice">Conteúdo publicado em estado “Publicado” ficará disponível para leitura no site. O acesso administrativo é restrito ao UID autorizado no firebase-config.js e nas regras do Firestore.</div>
+
+<div class="card">
+<div class="tabs" id="tabs">
+<button class="active" data-tab="articles">Notícias</button>
+<button data-tab="locomotives">Locomotivas</button>
+<button data-tab="wagons">Vagões</button>
+<button data-tab="glossary">Glossário</button>
+<button data-tab="ads">Anúncios</button>
+<button data-tab="gallery">Moderar galeria</button>
+</div>
+</div>
+
+<div class="card">
+<h3 id="sectionTitle">Notícias e artigos</h3>
+<form id="editor">
+<input type="hidden" id="recordId">
+<div id="fields" class="grid"></div>
+<div class="row" style="margin-top:14px">
+<button class="btn gold" type="submit">Salvar</button>
+<button class="btn light" type="button" id="cancelBtn">Limpar formulário</button>
+</div>
+<div id="formMsg" class="muted"></div>
+</form>
+</div>
+
+<div class="card">
+<h3>Conteúdos cadastrados</h3>
+<div id="records" class="muted">Carregando...</div>
+</div>
+</section>
+
+<div class="muted" style="text-align:center;padding:15px">
+Mundo Ferroviário • Conhecimento que move trilhos.
+</div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="firebase-init.js"></script>
+<script>
 let tab='articles',rows=[],currentUser=null;const defs={
+
  
 articles:{title:'Notícias e artigos',table:'articles',fields:[
 ['title','Título','text',true],
