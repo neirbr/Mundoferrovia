@@ -69,7 +69,22 @@
       quiz_restart: "Refazer nível",
       quiz_change_level: "Escolher outro nível",
       quiz_ad_title: "ESPAÇO PUBLICITÁRIO",
-      quiz_ad_description: "Publicidade ajuda a manter o conteúdo gratuito."
+      quiz_ad_description: "Publicidade ajuda a manter o conteúdo gratuito.",
+
+ profileTag: "MUNDO FERROVIÁRIO",
+profileTitle: "Meu Perfil 🚂",
+profileDescription: "Personalize seu perfil e compartilhe sua história ferroviária.",
+profilePhoto: "Foto de perfil",
+profileName: "Nome do ferroviário",
+profileNamePlaceholder: "Seu nome",
+profileBio: "Biografia",
+profileBioPlaceholder: "Conte um pouco sobre você e sua paixão pelas ferrovias...",
+profileCity: "Cidade",
+profileCityPlaceholder: "Sua cidade",
+profileState: "Estado",
+profileStatePlaceholder: "Ex.: RJ",
+profileSave: "Salvar Perfil"
+       
     },
 
     en: {
@@ -133,7 +148,23 @@ quiz_next: "Next question",
 quiz_restart: "Restart level",
 quiz_change_level: "Choose another level",
 quiz_ad_title: "ADVERTISING SPACE",
-quiz_ad_description: "Advertising helps keep the content free."
+quiz_ad_description: "Advertising helps keep the content free.",
+
+       profileTag: "RAILWAY WORLD",
+profileTitle: "My Profile 🚂",
+profileDescription: "Customize your profile and share your railway story.",
+profilePhoto: "Profile photo",
+profileName: "Railway enthusiast's name",
+profileNamePlaceholder: "Your name",
+profileBio: "Biography",
+profileBioPlaceholder: "Tell us a little about yourself and your passion for railways...",
+profileCity: "City",
+profileCityPlaceholder: "Your city",
+profileState: "State",
+profileStatePlaceholder: "E.g.: RJ",
+profileSave: "Save Profile",
+
+       
     },
 
     es: {
@@ -198,12 +229,26 @@ quiz_restart: "Repetir nivel",
 quiz_change_level: "Elegir otro nivel",
 quiz_ad_title: "ESPACIO PUBLICITARIO",
 quiz_ad_description: "La publicidad ayuda a mantener el contenido gratuito.",
+
+profileTag: "MUNDO FERROVIARIO",
+profileTitle: "Mi Perfil 🚂",
+profileDescription: "Personaliza tu perfil y comparte tu historia ferroviaria.",
+profilePhoto: "Foto de perfil",
+profileName: "Nombre del ferroviario",
+profileNamePlaceholder: "Tu nombre",
+profileBio: "Biografía",
+profileBioPlaceholder: "Cuéntanos un poco sobre ti y tu pasión por los ferrocarriles...",
+profileCity: "Ciudad",
+profileCityPlaceholder: "Tu ciudad",
+profileState: "Estado",
+profileStatePlaceholder: "Ej.: RJ",
+profileSave: "Guardar perfil"
+       
     }
   };
 
   
-  
-  function applyPageTranslations(language) {
+    function applyPageTranslations(language) {
     const rawLanguage =
       language ||
       localStorage.getItem("mf_language") ||
