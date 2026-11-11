@@ -876,11 +876,22 @@ body.dark-mode .footer {
     </div>
   </div>
 
-  <div class="card">
-    <h3>Explore a Enciclopédia</h3>
-    <p class="muted">Selecione uma categoria para começar sua pesquisa.</p>
-    <input id="encyclopediaSearch" class="search" type="search" placeholder="Pesquisar artigos, modelos ou fabricantes...">
-  </div>
+
+<div class="card">
+  <h3 data-i18n="encyclopediaExplore">Explore a Enciclopédia</h3>
+
+  <p class="muted" data-i18n="encyclopediaSelectCategory">
+    Selecione uma categoria para começar sua pesquisa.
+  </p>
+
+  <input
+    id="encyclopediaSearch"
+    class="search"
+    type="search"
+    placeholder="Pesquisar artigos, modelos ou fabricantes..."
+    data-i18n-placeholder="encyclopediaSearch"
+  >
+</div>
 
   <div class="grid" id="encyclopediaCategories">
     <article class="card">
