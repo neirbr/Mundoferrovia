@@ -2488,6 +2488,28 @@ function nextQuestion() {
 <script src="enciclopedia.js?v=2026111002"></script>
 <script src="ranking.js?v=2026110701"></script>
   <script>
+
+
+(function () {
+  const botao = document.getElementById('adminAccessButton');
+
+  if (!botao || !window.MF_AUTH ||
+      typeof window.MF_IS_ADMIN !== 'function') {
+    return;
+  }
+
+  botao.style.display = 'none';
+
+  window.MF_AUTH.onAuthStateChanged(function (user) {
+    if (user && window.MF_IS_ADMIN(user.uid)) {
+      botao.style.display = 'inline-block';
+    } else {
+      botao.style.display = 'none';
+    }
+  });
+})();
+    
+    
 window.addEventListener('load', async()=>{
   const box=document.getElementById('publishedNews');
   if(!box) return;
