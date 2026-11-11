@@ -1100,14 +1100,15 @@ body.dark-mode .footer {
  <div id="galleryGrid" class="grid"><div class="empty">As publicações da comunidade aparecerão aqui. </div></div>
 </section>
   
+
 <!-- PERFIL DO FERROVIÁRIO -->
 <section id="perfil" class="page">
 
   <div class="section-head">
     <div>
-      <span class="tag">MUNDO FERROVIÁRIO</span>
-      <h2>Meu Perfil 🚂</h2>
-      <p class="muted">
+      <span class="tag" data-i18n="profileTag">MUNDO FERROVIÁRIO</span>
+      <h2 data-i18n="profileTitle">Meu Perfil 🚂</h2>
+      <p class="muted" data-i18n="profileDescription">
         Personalize seu perfil e compartilhe sua história ferroviária.
       </p>
     </div>
@@ -1127,33 +1128,48 @@ body.dark-mode .footer {
 
     <form id="profileForm">
 
-      <label for="profilePhoto">Foto de perfil</label>
+      <label for="profilePhoto" data-i18n="profilePhoto">
+        Foto de perfil
+      </label>
       <input type="file" id="profilePhoto"
         accept="image/jpeg,image/png,image/webp">
 
-      <label for="profileName">Nome do ferroviário</label>
+      <label for="profileName" data-i18n="profileName">
+        Nome do ferroviário
+      </label>
       <input type="text" id="profileName"
         maxlength="60" required
-        placeholder="Seu nome">
+        placeholder="Seu nome"
+        data-i18n-placeholder="profileNamePlaceholder">
 
-      <label for="profileBio">Biografia</label>
+      <label for="profileBio" data-i18n="profileBio">
+        Biografia
+      </label>
       <textarea id="profileBio"
         maxlength="300" rows="4"
-        placeholder="Conte um pouco sobre você e sua paixão pelas ferrovias..."></textarea>
+        placeholder="Conte um pouco sobre você e sua paixão pelas ferrovias..."
+        data-i18n-placeholder="profileBioPlaceholder"></textarea>
 
-      <label for="profileCity">Cidade</label>
+      <label for="profileCity" data-i18n="profileCity">
+        Cidade
+      </label>
       <input type="text" id="profileCity"
         maxlength="60"
-        placeholder="Sua cidade">
+        placeholder="Sua cidade"
+        data-i18n-placeholder="profileCityPlaceholder">
 
-      <label for="profileState">Estado</label>
+      <label for="profileState" data-i18n="profileState">
+        Estado
+      </label>
       <input type="text" id="profileState"
         maxlength="2"
-        placeholder="Ex.: RJ">
+        placeholder="Ex.: RJ"
+        data-i18n-placeholder="profileStatePlaceholder">
 
       <button type="submit" class="btn"
         id="profileSave"
-        style="margin-top:18px">
+        style="margin-top:18px"
+        data-i18n="profileSave">
         Salvar Perfil
       </button>
 
@@ -1165,6 +1181,7 @@ body.dark-mode .footer {
 
 </section>
 <!-- FIM DO PERFIL -->
+
 
 <!-- COMUNIDADE FERROVIÁRIA -->
 <section id="comunidade" class="page">
