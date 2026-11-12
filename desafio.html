@@ -1,1 +1,464 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#102b3f">
+
+  <title>Desafio Ferroviário | Mundo Ferroviário</title>
+
+  <style>
+    :root {
+      --navy: #102b3f;
+      --blue: #174a67;
+      --gold: #f0b323;
+      --white: #ffffff;
+      --background: #f3f6f8;
+      --text: #243746;
+      --muted: #687985;
+      --green: #238653;
+      --red: #c94343;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--background);
+      color: var(--text);
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      color: var(--white);
+      padding: 25px 16px 35px;
+      text-align: center;
+      border-bottom: 5px solid var(--gold);
+    }
+
+    .back-link {
+      display: inline-block;
+      color: var(--white);
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,.45);
+      padding: 9px 15px;
+      border-radius: 8px;
+      margin-bottom: 22px;
+      font-size: 14px;
+    }
+
+    .back-link:hover {
+      background: rgba(255,255,255,.12);
+    }
+
+    header h1 {
+      margin: 5px 0 10px;
+      font-size: clamp(27px, 6vw, 38px);
+    }
+
+    header p {
+      margin: 0;
+      color: #e3edf3;
+      font-size: 15px;
+    }
+
+    main {
+      width: min(100% - 28px, 900px);
+      margin: 25px auto 45px;
+    }
+
+    .intro,
+    .level-card,
+    .game-panel,
+    .result-panel {
+      background: var(--white);
+      border-radius: 15px;
+      padding: 22px;
+      box-shadow: 0 4px 16px rgba(16,43,63,.08);
+      margin-bottom: 20px;
+    }
+
+    .intro {
+      text-align: center;
+    }
+
+    .intro h2 {
+      color: var(--navy);
+      margin-top: 0;
+    }
+
+    .intro p {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .section-title {
+      color: var(--navy);
+      text-align: center;
+      margin: 30px 0 18px;
+    }
+
+    .levels {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    .level-card {
+      text-align: center;
+      border-top: 5px solid var(--gold);
+    }
+
+    .level-icon {
+      font-size: 38px;
+      margin-bottom: 8px;
+    }
+
+    .level-card h3 {
+      color: var(--navy);
+      margin: 8px 0;
+    }
+
+    .level-card p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 42px;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .primary-button {
+      border: none;
+      background: var(--gold);
+      color: var(--navy);
+      font-weight: bold;
+      padding: 12px 20px;
+      border-radius: 9px;
+      font-size: 15px;
+      transition: .2s;
+    }
+
+    .primary-button:hover {
+      filter: brightness(.95);
+      transform: translateY(-1px);
+    }
+
+    .game-panel,
+    .result-panel {
+      display: none;
+    }
+
+    .game-panel h2,
+    .result-panel h2 {
+      color: var(--navy);
+      margin-top: 0;
+    }
+
+    .game-top {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .progress-track {
+      height: 11px;
+      background: #e2e9ed;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: var(--gold);
+      transition: width .3s;
+    }
+
+    .scenario-image {
+      width: 100%;
+      min-height: 170px;
+      max-height: 360px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #e8eef2;
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    .scenario-text {
+      line-height: 1.7;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .options {
+      display: grid;
+      gap: 11px;
+    }
+
+    .option-button {
+      width: 100%;
+      text-align: left;
+      padding: 15px;
+      border: 2px solid #dce4e9;
+      background: #fff;
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.5;
+      transition: .2s;
+    }
+
+    .option-button:hover:not(:disabled) {
+      border-color: var(--gold);
+      background: #fffaf0;
+    }
+
+    .option-button:disabled {
+      cursor: default;
+      opacity: 1;
+    }
+
+    .option-button.correct {
+      border-color: var(--green);
+      background: #e8f6ee;
+    }
+
+    .option-button.incorrect {
+      border-color: var(--red);
+      background: #fff0f0;
+    }
+
+    .feedback {
+      display: none;
+      padding: 17px;
+      border-radius: 10px;
+      margin-top: 18px;
+      line-height: 1.6;
+    }
+
+    .feedback.correct {
+      display: block;
+      background: #e8f6ee;
+      border-left: 5px solid var(--green);
+    }
+
+    .feedback.incorrect {
+      display: block;
+      background: #fff0f0;
+      border-left: 5px solid var(--red);
+    }
+
+    .feedback strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .game-actions {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .secondary-button {
+      border: 1px solid var(--blue);
+      color: var(--blue);
+      background: white;
+      padding: 11px 17px;
+      border-radius: 9px;
+      font-weight: bold;
+    }
+
+    .result-panel {
+      text-align: center;
+    }
+
+    .result-score {
+      font-size: 42px;
+      font-weight: bold;
+      color: var(--navy);
+      margin: 15px 0;
+    }
+
+    .result-message {
+      line-height: 1.6;
+      color: var(--muted);
+      margin-bottom: 22px;
+    }
+
+    .notice {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.5;
+      margin-top: 25px;
+    }
+
+    @media (max-width: 520px) {
+      .intro,
+      .level-card,
+      .game-panel,
+      .result-panel {
+        padding: 17px;
+      }
+
+      .game-actions button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <a class="back-link" href="Index.html">← Voltar ao Mundo Ferroviário</a>
+
+    <h1>🚂 Desafio Ferroviário</h1>
+
+    <p>Sua decisão move os trilhos!</p>
+  </header>
+
+  <main>
+
+    <section class="intro" id="challengeIntro">
+      <h2>Você está preparado para o desafio?</h2>
+
+      <p>
+        Enfrente situações do universo ferroviário, analise cada cenário
+        e escolha a alternativa mais adequada. Aprenda com as consequências
+        de cada decisão e avance pelos níveis.
+      </p>
+
+      <p><strong>São 10 desafios em cada nível!</strong></p>
+    </section>
+
+    <h2 class="section-title" id="levelTitle">
+      Escolha seu nível
+    </h2>
+
+    <section class="levels" id="challengeLevels">
+
+      <article class="level-card">
+        <div class="level-icon">🚦</div>
+        <h3>Básico</h3>
+        <p>
+          Conhecimentos fundamentais e situações iniciais
+          do universo ferroviário.
+        </p>
+        <button class="primary-button" data-level="basico">
+          Começar desafio
+        </button>
+      </article>
+
+      <article class="level-card">
+        <div class="level-icon">🚂</div>
+        <h3>Médio</h3>
+        <p>
+          Situações que exigem atenção, análise e conhecimento
+          ferroviário.
+        </p>
+        <button class="primary-button" data-level="medio">
+          Começar desafio
+        </button>
+      </article>
+
+      <article class="level-card">
+        <div class="level-icon">🏆</div>
+        <h3>Avançado</h3>
+        <p>
+          Cenários mais complexos para testar seus conhecimentos.
+        </p>
+        <button class="primary-button" data-level="avancado">
+          Começar desafio
+        </button>
+      </article>
+
+    </section>
+
+    <section class="game-panel" id="challengeGame">
+
+      <div class="game-top">
+        <span id="currentLevel">Nível Básico</span>
+        <span id="questionCounter">Desafio 1 de 10</span>
+        <span id="currentScore">Pontos: 0</span>
+      </div>
+
+      <div class="progress-track">
+        <div class="progress-bar" id="challengeProgress"></div>
+      </div>
+
+      <img
+        class="scenario-image"
+        id="scenarioImage"
+        src=""
+        alt="Imagem ilustrativa do cenário ferroviário"
+        hidden
+      >
+
+      <h2 id="scenarioTitle">Título do cenário</h2>
+
+      <div class="scenario-text" id="scenarioDescription"></div>
+
+      <div class="options" id="scenarioOptions"></div>
+
+      <div class="feedback" id="scenarioFeedback" role="status"></div>
+
+      <div class="game-actions">
+        <button class="secondary-button" id="exitChallenge">
+          Sair do desafio
+        </button>
+
+        <button class="primary-button" id="nextChallenge" hidden>
+          Próximo desafio →
+        </button>
+      </div>
+
+    </section>
+
+    <section class="result-panel" id="challengeResult">
+
+      <h2>🏆 Desafio concluído!</h2>
+
+      <p id="resultLevel">Nível Básico</p>
+
+      <div class="result-score" id="finalScore">0 pontos</div>
+
+      <p class="result-message" id="resultMessage"></p>
+
+      <button class="primary-button" id="restartChallenge">
+        Jogar novamente
+      </button>
+
+      <button class="secondary-button" id="backToLevels">
+        Escolher outro nível
+      </button>
+
+    </section>
+
+    <p class="notice">
+      Conteúdo educativo. Os cenários não substituem os procedimentos,
+      treinamentos, normas ou orientações oficiais da ferrovia.
+    </p>
+
+  </main>
+
+  <script src="desafio.js" defer></script>
+
+</body>
+</html>
