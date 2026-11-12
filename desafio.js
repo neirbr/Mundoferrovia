@@ -622,3 +622,67 @@ backToLevels.addEventListener("click", voltarNiveis);
 
 
 
+
+
+// ============================================
+// CONTROLE DE ACESSO - SOMENTE ADMINISTRADOR
+// ============================================
+
+(function protegerDesafio() {
+  const painelAcesso = document.getElementById("accessPanel");
+  const conteudoDesafio = document.getElementById("challengeContent");
+
+  function mostrarMensagem(titulo, mensagem, mostrarLogin) {
+    painelAcesso.innerHTML = `
+      <h2>${titulo}</h2>
+      <p>${mensagem}</p>
+      ${mostrarLogin ? '<a class="primary-button" href="Index.html" style="display:inline-block;text-decoration:none;">Ir para o login</a>' : ""}
+    `;
+    painelAcesso.hidden = false;
+    conteudoDesafio.hidden = true;
+  }
+
+  if (!window.MF_AUTH || typeof window.MF_IS_ADMIN !== "function") {
+    mostrarMensagem(
+      "Não foi possível verificar o acesso",
+      "A configuração de autenticação não foi carregada. Volte ao Mundo Ferroviário e tente novamente.",
+      true
+    );
+    return;
+  }
+
+  window.MF_AUTH.onAuthStateChanged(function(user) {
+    if (!user) {
+      mostrarMensagem(
+        "🔐 Acesso restrito",
+        "Entre na sua conta do Mundo Ferroviário como administrador e depois retorne a esta página.",
+        true
+      );
+      return;
+    }
+
+    if (!window.MF_IS_ADMIN(user.uid)) {
+      mostrarMensagem(
+        "⛔ Acesso não autorizado",
+        "Sua conta está autenticada, mas não possui permissão para acessar o Desafio Ferroviário.",
+        false
+      );
+      return;
+    }
+
+    painelAcesso.hidden = true;
+    conteudoDesafio.hidden = false;
+
+  }, function(error) {
+    console.error("Erro ao verificar acesso ao Desafio Ferroviário:", error);
+
+    mostrarMensagem(
+      "Falha na verificação",
+      "Não foi possível confirmar sua autorização. Atualize a página ou tente novamente mais tarde.",
+      true
+    );
+  });
+})();
+
+
+
