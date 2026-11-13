@@ -1385,6 +1385,7 @@ body.dark-mode .footer {
 <!-- FIM DA COMUNIDADE -->
 
   <script>
+
 const termsByLanguage = {
   pt: [
     ['AMV / aparelho de mudança de via','Conjunto de componentes que permite encaminhar veículos ferroviários de uma via para outra, conforme o projeto e as regras locais.'],
@@ -1401,7 +1402,28 @@ const termsByLanguage = {
     ['Sinalização ferroviária','Conjunto de indicações e sistemas que contribuem para a circulação segura, conforme regras operacionais.'],
     ['Trilho','Perfil metálico que forma a superfície de rolamento e guia as rodas dos veículos ferroviários.'],
     ['Vagão','Veículo ferroviário destinado principalmente ao transporte de cargas.'],
-    ['Via permanente','Conjunto de elementos físicos que compõem a via ferroviária, incluindo trilhos, dormentes, fixações e lastro, quando aplicável.']
+    ['Via permanente','Conjunto de elementos físicos que compõem a via ferroviária, incluindo trilhos, dormentes, fixações e lastro, quando aplicável.'],
+
+    ['Acoplamento de veículos','Operação de unir dois veículos ferroviários por meio de seus dispositivos de engate.'],
+    ['Desacoplamento','Operação de separar veículos ferroviários previamente unidos.'],
+    ['Recuo','Movimento de uma composição ou veículo ferroviário no sentido contrário ao deslocamento anterior, conforme a orientação operacional.'],
+    ['Puxada','Movimento no qual a locomotiva traciona os veículos ferroviários à sua frente.'],
+    ['Empurrada','Movimento em que a locomotiva desloca os veículos posicionados à sua frente, transmitindo esforço de compressão.'],
+    ['Formação de composição','Processo de organizar locomotivas e vagões de acordo com critérios operacionais e necessidades do transporte.'],
+    ['Aparelho de choque e tração','Dispositivo destinado a absorver impactos e transmitir esforços de tração e compressão entre veículos ferroviários.'],
+    ['Caixa de rolamento','Componente que aloja os rolamentos do eixo ferroviário, permitindo a rotação do rodeiro com menor atrito.'],
+    ['Rodeiro','Conjunto constituído por um eixo ferroviário e duas rodas fixadas a ele.'],
+    ['Truque ferroviário','Estrutura que suporta parte do peso do veículo, reunindo rodas, eixos, suspensão e outros componentes.'],
+    ['Sapata de freio','Elemento que atua por atrito sobre a superfície de frenagem da roda ou disco, contribuindo para reduzir a velocidade do veículo.'],
+    ['Longarina','Elemento estrutural longitudinal que participa da sustentação e distribuição de esforços no chassi ou estrutura de um veículo ferroviário.'],
+    ['Jacaré ferroviário','Componente do AMV localizado na região de cruzamento dos trilhos, permitindo a passagem das rodas por diferentes trajetórias.'],
+    ['Contra-trilho','Trilho auxiliar instalado próximo a outro trilho para orientar as rodas e contribuir para a segurança em determinadas regiões da via.'],
+    ['Sublastro','Camada de material situada entre o lastro e a plataforma ferroviária, contribuindo para a distribuição de cargas e a proteção da infraestrutura.'],
+    ['Plataforma ferroviária','Base preparada para receber as camadas da via permanente e transmitir os esforços ao terreno.'],
+    ['Encanamento geral','Tubulação pneumática que percorre a composição ferroviária e participa do funcionamento do sistema de freio automático.'],
+    ['Torneira angular','Dispositivo instalado nas extremidades dos veículos ferroviários para controlar a passagem de ar no encanamento geral.'],
+    ['Circuito de via','Sistema de sinalização que utiliza os trilhos como parte de um circuito elétrico para detectar a ocupação de determinado trecho.'],
+    ['Intertravamento','Sistema que estabelece condições de segurança para impedir comandos incompatíveis em elementos como sinais e aparelhos de mudança de via.']
   ],
 
   en: [
@@ -1419,7 +1441,28 @@ const termsByLanguage = {
     ['Railway signaling','Set of indications and systems that help ensure safe railway operations, according to operating rules.'],
     ['Rail','Metal profile that forms the running surface and guides the wheels of railway vehicles.'],
     ['Freight wagon','Railway vehicle primarily designed to transport goods.'],
-    ['Permanent way / track','Physical components that make up a railway track, including rails, sleepers, fastenings and ballast, where applicable.']
+    ['Permanent way / track','Physical components that make up a railway track, including rails, sleepers, fastenings and ballast, where applicable.'],
+
+    ['Vehicle coupling','Operation of joining two railway vehicles using their coupling devices.'],
+    ['Uncoupling','Operation of separating previously connected railway vehicles.'],
+    ['Reverse movement','Movement of a train or railway vehicle in the opposite direction to its previous movement, according to operating instructions.'],
+    ['Pulling movement','Movement in which the locomotive hauls the railway vehicles ahead of it.'],
+    ['Pushing movement','Movement in which the locomotive moves vehicles positioned ahead of it, transmitting compressive force.'],
+    ['Train consist formation','Process of arranging locomotives and wagons according to operating criteria and transportation needs.'],
+    ['Draft gear and buffing system','Device designed to absorb impacts and transmit tensile and compressive forces between railway vehicles.'],
+    ['Axlebox','Component housing the axle bearings, allowing the wheelset to rotate with reduced friction.'],
+    ['Wheelset','Assembly consisting of a railway axle and two wheels mounted on it.'],
+    ['Railway bogie','Structure supporting part of a vehicle’s weight and containing wheels, axles, suspension and other components.'],
+    ['Brake shoe','Element that applies friction to a wheel or disc braking surface to help reduce vehicle speed.'],
+    ['Side sill / longitudinal beam','Longitudinal structural element that contributes to supporting and distributing loads in a railway vehicle frame.'],
+    ['Frog','Turnout component located at the rail crossing area, allowing wheels to pass along different routes.'],
+    ['Check rail','Auxiliary rail installed near another rail to guide wheels and improve safety in certain track areas.'],
+    ['Subballast','Layer between ballast and the railway formation, helping distribute loads and protect the infrastructure.'],
+    ['Railway formation','Prepared base that supports the track layers and transfers loads to the ground.'],
+    ['Trainline / general air pipe','Pneumatic pipe running through the train consist and participating in the operation of the automatic air brake.'],
+    ['Angle cock','Device installed at the ends of railway vehicles to control airflow through the trainline.'],
+    ['Track circuit','Signaling system using the rails as part of an electrical circuit to detect occupancy of a section of track.'],
+    ['Interlocking','System that establishes safety conditions to prevent incompatible commands involving signals and turnouts.']
   ],
 
   es: [
@@ -1437,7 +1480,28 @@ const termsByLanguage = {
     ['Señalización ferroviaria','Conjunto de indicaciones y sistemas que contribuyen a la circulación segura, según las normas operativas.'],
     ['Riel','Perfil metálico que forma la superficie de rodadura y guía las ruedas de los vehículos ferroviarios.'],
     ['Vagón','Vehículo ferroviario destinado principalmente al transporte de cargas.'],
-    ['Vía permanente','Conjunto de elementos físicos que componen la vía ferroviaria, incluidos rieles, traviesas, fijaciones y balasto, cuando corresponda.']
+    ['Vía permanente','Conjunto de elementos físicos que componen la vía ferroviaria, incluidos rieles, traviesas, fijaciones y balasto, cuando corresponda.'],
+
+    ['Acoplamiento de vehículos','Operación de unir dos vehículos ferroviarios mediante sus dispositivos de enganche.'],
+    ['Desacoplamiento','Operación de separar vehículos ferroviarios previamente unidos.'],
+    ['Movimiento de retroceso','Movimiento de una composición o vehículo ferroviario en sentido contrario al desplazamiento anterior, según las instrucciones operativas.'],
+    ['Movimiento de tracción','Movimiento en el que la locomotora arrastra los vehículos ferroviarios situados delante de ella.'],
+    ['Movimiento de empuje','Movimiento en el que la locomotora desplaza los vehículos situados delante de ella, transmitiendo esfuerzo de compresión.'],
+    ['Formación de composición','Proceso de organizar locomotoras y vagones según criterios operativos y necesidades del transporte.'],
+    ['Aparato de choque y tracción','Dispositivo destinado a absorber impactos y transmitir esfuerzos de tracción y compresión entre vehículos ferroviarios.'],
+    ['Caja de grasa / caja de rodamientos','Componente que aloja los rodamientos del eje ferroviario, permitiendo la rotación del conjunto de ruedas con menor fricción.'],
+    ['Juego de ruedas','Conjunto formado por un eje ferroviario y dos ruedas fijadas a él.'],
+    ['Bogie ferroviario','Estructura que soporta parte del peso del vehículo y reúne ruedas, ejes, suspensión y otros componentes.'],
+    ['Zapata de freno','Elemento que actúa por fricción sobre la superficie de frenado de la rueda o disco, contribuyendo a reducir la velocidad del vehículo.'],
+    ['Larguero','Elemento estructural longitudinal que participa en el soporte y distribución de esfuerzos en el bastidor de un vehículo ferroviario.'],
+    ['Corazón de cruzamiento','Componente del desvío situado en la zona de cruce de los rieles, que permite el paso de las ruedas por diferentes trayectorias.'],
+    ['Contracarril','Riel auxiliar instalado cerca de otro riel para guiar las ruedas y contribuir a la seguridad en determinadas zonas de la vía.'],
+    ['Subbalasto','Capa de material situada entre el balasto y la plataforma ferroviaria, que contribuye a distribuir las cargas y proteger la infraestructura.'],
+    ['Plataforma ferroviaria','Base preparada para recibir las capas de la vía permanente y transmitir los esfuerzos al terreno.'],
+    ['Tubería general de freno','Tubería neumática que recorre la composición ferroviaria y participa en el funcionamiento del freno automático.'],
+    ['Llave angular','Dispositivo instalado en los extremos de los vehículos ferroviarios para controlar el paso de aire por la tubería general.'],
+    ['Circuito de vía','Sistema de señalización que utiliza los rieles como parte de un circuito eléctrico para detectar la ocupación de un tramo.'],
+    ['Enclavamiento','Sistema que establece condiciones de seguridad para impedir órdenes incompatibles entre señales y aparatos de vía.']
   ]
 };
 
