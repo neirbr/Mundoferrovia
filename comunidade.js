@@ -749,6 +749,31 @@ $('profileForm')?.addEventListener('submit', async event => {
       }
     });
 
+ // SAIR DA CONTA DO USUÁRIO
+    $('profileLogout')?.addEventListener('click', async () => {
+
+      if (!currentUser) {
+        msg('profileMessage', 'Você não está conectado.');
+        return;
+      }
+
+      if (!confirm('Deseja realmente sair da sua conta?')) {
+        return;
+      }
+
+      try {
+        await MF_AUTH.signOut();
+        window.location.reload();
+
+      } catch (error) {
+        console.error('Erro ao sair da conta:', error);
+
+        msg('profileMessage',
+          'Não foi possível sair da conta. Tente novamente.');
+      }
+
+    });
+    // FIM DO BOTÃO SAIR
 
     // =====================================
     // MEMBROS DA COMUNIDADE + PERFIL PÚBLICO
