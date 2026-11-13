@@ -161,8 +161,120 @@ function renderFields(){
   }).join('');
 }
 
-async function loadTab(){renderFields();el('records').textContent='Carregando...';if(tab==='gallery')return loadGalleryModeration();if(tab==='ads')return loadAds();try{const snap=await MF_DB.collection(defs[tab].table).orderBy('created_at','desc').get();rows=snap.docs.map(d=>({id:d.id,...d.data()}));el('records').innerHTML=rows.length?rows.map(r=>`<div class="item"><div><strong>${safe(r.title)}</strong><div class="muted">${safe((r.summary||r.description||r.category||'').slice(0,150))} ${r.published===true?' • <span class="status">Publicado</span>':''}</div></div><div class="row"><button class="btn light" onclick="editRecord('${r.id}')">Editar</button><button class="btn light" onclick="removeRecord('${r.id}')">Excluir</button></div></div>`).join(''):'Nenhum registro cadastrado.'}catch(e){el('records').textContent='Erro ao carregar. Confira as regras e o índice do Firestore.'}}
-el('editor').onsubmit=async e=>{e.preventDefault();if(!MF_IS_ADMIN(currentUser?.uid))return;let d=defs[tab],obj={};for(let [k] of d.fields){let i=e.target.elements[k];obj[k]=i.type==='checkbox'?i.checked:i.value.trim()}let id=el('recordId').value;try{if(id)await MF_DB.collection(d.table).doc(id).update(obj);else await MF_DB.collection(d.table).add({...obj,created_at:firebase.firestore.FieldValue.serverTimestamp()});msg('formMsg','Salvo com sucesso.');e.target.reset();el('recordId').value='';await loadTab()}catch(err){msg('formMsg','Erro ao salvar. Confira as regras do Firestore.')}};
+async function loadTab(){
+  renderFields();
+  el('records').textContent='Carregando...';
+
+  if(tab==='gallery')return loadGalleryModeration();
+  if(tab==='ads')return loadAds();
+
+  try{
+    let snap;
+
+    if(tab==='encyclopedia'){
+      snap=await MF_DB.collection('encyclopedia_articles')
+        .where('status','==','published')
+        .get();
+
+      rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+
+      rows.sort((a,b)=>{
+        const ta=a.published_at?.toMillis?.()||0;
+        const tb=b.published_at?.toMillis?.()||0;
+        return tb-ta;
+      });
+
+    }else{
+      snap=await MF_DB.collection(defs[tab].table)
+        .orderBy('created_at','desc').get();
+
+      rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+    }
+
+    el('records').innerHTML=rows.length
+      ?rows.map(r=>`
+        <div class="item">
+          <div>
+            <strong>${safe(r.title)}</strong>
+            <div class="muted">
+              ${safe((r.summary||r.description||r.category||'').slice(0,150))}
+              ${r.status==='published'||r.published===true?' • <span class="status">Publicado</span>':''}
+            </div>
+          </div>
+          <div class="row">
+            <button class="btn light" onclick="editRecord('${r.id}')">Editar</button>
+            <button class="btn light" onclick="removeRecord('${r.id}')">Excluir</button>
+          </div>
+        </div>
+      `).join('')
+      :'Nenhum registro cadastrado.';
+
+  }catch(e){
+    console.error('Erro ao carregar:',e);
+    el('records').textContent='Erro ao carregar. Confira as regras do Firestore.';
+  }
+}
+  
+  el('editor').onsubmit=async e=>{
+  e.preventDefault();
+
+  if(!MF_IS_ADMIN(currentUser?.uid))return;
+
+  let d=defs[tab];
+  let obj={};
+
+  for(let [k] of d.fields){
+    let i=e.target.elements[k];
+    obj[k]=i.type==='checkbox'?i.checked:i.value.trim();
+  }
+
+  let id=el('recordId').value;
+
+  try{
+    if(tab==='encyclopedia'){
+
+      if(id){
+        await MF_DB.collection('encyclopedia_articles')
+          .doc(id)
+          .update({
+            ...obj,
+            updated_at:firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+      }else{
+        await MF_DB.collection('encyclopedia_articles').add({
+          ...obj,
+          status:'published',
+          author_uid:currentUser.uid,
+          author_name:currentUser.displayName||currentUser.email||'Administrador',
+          created_at:firebase.firestore.FieldValue.serverTimestamp(),
+          published_at:firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }
+
+    }else{
+
+      if(id){
+        await MF_DB.collection(d.table).doc(id).update(obj);
+      }else{
+        await MF_DB.collection(d.table).add({
+          ...obj,
+          created_at:firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }
+    }
+
+    msg('formMsg','Salvo com sucesso.');
+    e.target.reset();
+    el('recordId').value='';
+    await loadTab();
+
+  }catch(err){
+    console.error('Erro ao salvar:',err);
+    msg('formMsg','Erro ao salvar. Confira as regras do Firestore.');
+  }
+};
+  
 window.editRecord=id=>{let r=rows.find(x=>x.id===id);if(!r)return;el('recordId').value=id;defs[tab].fields.forEach(([k])=>{let i=el('editor').elements[k];if(i.type==='checkbox')i.checked=!!r[k];else i.value=r[k]||''});window.scrollTo({top:0,behavior:'smooth'})};
 window.removeRecord=async id=>{if(!confirm('Excluir este conteúdo?'))return;try{await MF_DB.collection(defs[tab].table).doc(id).delete();loadTab()}catch(e){alert('Não foi possível excluir.')}};
 el('cancelBtn').onclick=()=>{el('editor').reset();el('recordId').value='';msg('formMsg','')};
