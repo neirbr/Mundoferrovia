@@ -71,6 +71,22 @@
 <h3>Conteúdos cadastrados</h3>
 <div id="records" class="muted">Carregando...</div>
 </div>
+
+<div class="card hidden" id="encyclopediaSuggestionsCard">
+
+  <h3>Sugestões enviadas pelos usuários</h3>
+
+  <p class="muted">
+    Analise as contribuições recebidas pela comunidade
+    antes de publicá-las na Enciclopédia Ferroviária.
+  </p>
+
+  <div id="encyclopediaSuggestionsList">
+    Carregando sugestões...
+  </div>
+
+</div>
+  
 </section>
 
 <div class="muted" style="text-align:center;padding:15px">
@@ -161,8 +177,15 @@ function renderFields(){
   }).join('');
 }
 
-async function loadTab(){
+  async function loadTab(){
   renderFields();
+
+  const suggestionsCard=el('encyclopediaSuggestionsCard');
+
+  if(suggestionsCard){
+    suggestionsCard.classList.toggle('hidden',tab!=='encyclopedia');
+  }
+
   el('records').textContent='Carregando...';
 
   if(tab==='gallery')return loadGalleryModeration();
@@ -209,12 +232,170 @@ async function loadTab(){
       `).join('')
       :'Nenhum registro cadastrado.';
 
+    if(tab==='encyclopedia'){
+      await loadEncyclopediaSuggestions();
+    }
+
   }catch(e){
     console.error('Erro ao carregar:',e);
     el('records').textContent='Erro ao carregar. Confira as regras do Firestore.';
   }
 }
   
+async function loadEncyclopediaSuggestions(){
+  const list=el('encyclopediaSuggestionsList');
+
+  if(!list)return;
+
+  list.textContent='Carregando sugestões...';
+
+  try{
+    const snap=await MF_DB.collection('encyclopedia_suggestions')
+      .where('status','==','pending')
+      .get();
+
+    const suggestions=snap.docs.map(d=>({
+      id:d.id,
+      ...d.data()
+    }));
+
+    suggestions.sort((a,b)=>{
+      const ta=a.created_at?.toMillis?.()||0;
+      const tb=b.created_at?.toMillis?.()||0;
+      return tb-ta;
+    });
+
+    if(!suggestions.length){
+      list.innerHTML='<p class="muted">Nenhuma sugestão pendente no momento.</p>';
+      return;
+    }
+
+    list.innerHTML=suggestions.map(s=>`
+      <div class="item">
+        <div>
+          <strong>${safe(s.title||'Sem título')}</strong>
+          <div class="muted">
+            Categoria: ${safe(s.category||'Não informada')}
+          </div>
+          <p>${safe(s.summary||'')}</p>
+          <details>
+            <summary>Ver conteúdo completo</summary>
+            <p>${safe(s.content||'')}</p>
+            ${s.source?`<p>Fonte: ${safe(s.source)}</p>`:''}
+            <p>Autor: ${safe(s.author_name||'Usuário')}</p>
+          </details>
+        </div>
+        <div class="row">
+          <button class="btn" onclick="approveSuggestion('${s.id}')">
+            Aprovar
+          </button>
+          <button class="btn light" onclick="rejectSuggestion('${s.id}')">
+            Rejeitar
+          </button>
+        </div>
+      </div>
+    `).join('');
+
+  }catch(e){
+    console.error('Erro ao carregar sugestões:',e);
+    list.textContent='Erro ao carregar sugestões. Confira as regras do Firestore.';
+  }
+}
+
+window.approveSuggestion=async id=>{
+  if(!MF_IS_ADMIN(currentUser?.uid))return;
+
+  if(!confirm('Deseja aprovar e publicar esta sugestão na Enciclopédia?'))return;
+
+  try{
+    const suggestionRef=MF_DB.collection('encyclopedia_suggestions').doc(id);
+    const suggestionDoc=await suggestionRef.get();
+
+    if(!suggestionDoc.exists){
+      alert('Sugestão não encontrada.');
+      return;
+    }
+
+    const s=suggestionDoc.data();
+
+    if(s.status!=='pending'){
+      alert('Esta sugestão já foi analisada.');
+      await loadEncyclopediaSuggestions();
+      return;
+    }
+
+    const articleRef=MF_DB.collection('encyclopedia_articles').doc();
+
+    const batch=MF_DB.batch();
+
+    batch.set(articleRef,{
+      title:s.title||'',
+      category:s.category||'',
+      summary:s.summary||'',
+      content:s.content||'',
+      source:s.source||'',
+      author_uid:s.author_uid||'',
+      author_name:s.author_name||'Usuário',
+      status:'published',
+      suggestion_id:id,
+      created_at:firebase.firestore.FieldValue.serverTimestamp(),
+      published_at:firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    batch.update(suggestionRef,{
+      status:'approved',
+      article_id:articleRef.id,
+      reviewed_at:firebase.firestore.FieldValue.serverTimestamp(),
+      reviewed_by:currentUser.uid
+    });
+
+    await batch.commit();
+
+    alert('Sugestão aprovada e artigo publicado com sucesso!');
+    await loadTab();
+
+  }catch(e){
+    console.error('Erro ao aprovar sugestão:',e);
+    alert('Não foi possível aprovar. Confira as regras do Firestore.');
+  }
+};
+
+
+window.rejectSuggestion=async id=>{
+  if(!MF_IS_ADMIN(currentUser?.uid))return;
+
+  if(!confirm('Deseja realmente rejeitar esta sugestão?'))return;
+
+  try{
+    const ref=MF_DB.collection('encyclopedia_suggestions').doc(id);
+    const doc=await ref.get();
+
+    if(!doc.exists){
+      alert('Sugestão não encontrada.');
+      return;
+    }
+
+    if(doc.data().status!=='pending'){
+      alert('Esta sugestão já foi analisada.');
+      await loadEncyclopediaSuggestions();
+      return;
+    }
+
+    await ref.update({
+      status:'rejected',
+      reviewed_at:firebase.firestore.FieldValue.serverTimestamp(),
+      reviewed_by:currentUser.uid
+    });
+
+    alert('Sugestão rejeitada com sucesso!');
+    await loadTab();
+
+  }catch(e){
+    console.error('Erro ao rejeitar sugestão:',e);
+    alert('Não foi possível rejeitar. Confira as regras do Firestore.');
+  }
+};
+   
   el('editor').onsubmit=async e=>{
   e.preventDefault();
 
