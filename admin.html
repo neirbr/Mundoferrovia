@@ -99,7 +99,19 @@ articles:{title:'Notícias e artigos',table:'articles',fields:[
 
  locomotives:{title:'Locomotivas',table:'locomotives',fields:[['title','Modelo ou nome','text',true],['maker','Fabricante','text'],['traction','Tipo de tração','text'],['description','Descrição','textarea']]},
  wagons:{title:'Vagões',table:'wagons',fields:[['title','Tipo de vagão','text',true],['cargo','Carga / aplicação','text'],['description','Descrição','textarea']]},
- glossary:{title:'Glossário',table:'glossary',fields:[['title','Termo','text',true],['description','Definição','textarea',true]]}
+ glossary:{title:'Glossário',table:'glossary',fields:[['title','Termo','text',true],['description','Definição','textarea',true]]},
+
+encyclopedia:{
+  title:'Enciclopédia Ferroviária',
+  table:'encyclopedia_articles',
+  fields:[
+    ['title','Título do artigo','text',true],
+    ['category','Categoria','select',true],
+    ['summary','Resumo','textarea',true],
+    ['content','Conteúdo completo','textarea',true],
+    ['source','Fonte / referência','text']
+  ] 
+}  
 };
 function el(id){return document.getElementById(id)}function msg(id,t){el(id).textContent=t}function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function date(v){return v?.toDate?v.toDate().toLocaleString('pt-BR'):''}
@@ -108,7 +120,47 @@ MF_AUTH.onAuthStateChanged(user=>{if(user&&MF_IS_ADMIN(user.uid))showApp(user);e
 el('loginBtn').onclick=async()=>{msg('loginMsg','Verificando acesso...');try{const c=await MF_AUTH.signInWithEmailAndPassword(el('email').value.trim(),el('password').value);if(!MF_IS_ADMIN(c.user.uid)){await MF_AUTH.signOut();msg('loginMsg','Acesso negado: usuário não autorizado como administrador.');return}showApp(c.user)}catch(e){msg('loginMsg','Não foi possível entrar. Confira e-mail e senha.')}};
 el('logoutBtn').onclick=()=>MF_AUTH.signOut().then(()=>{el('app').classList.add('hidden');el('login').classList.remove('hidden')});
 el('tabs').onclick=e=>{let b=e.target.closest('button[data-tab]');if(!b)return;tab=b.dataset.tab;document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('active',x===b));loadTab()};
-function renderFields(){if(tab==='gallery'||tab==='ads'){el('sectionTitle').textContent=tab==='gallery'?'Moderação da galeria':'Espaços publicitários';el('editor').classList.add('hidden');return}el('editor').classList.remove('hidden');let d=defs[tab];el('sectionTitle').textContent=d.title;el('fields').innerHTML=d.fields.map(([k,l,t,req])=>`<div class="${t==='textarea'?'full':''}"><label>${l}${req?' *':''}</label>${t==='textarea'?`<textarea name="${k}" ${req?'required':''}></textarea>`:t==='checkbox'?`<input type="checkbox" name="${k}" style="width:auto" checked>`:`<input name="${k}" ${req?'required':''}>`}</div>`).join('')}
+function renderFields(){
+  if(tab==='gallery'||tab==='ads'){
+    el('sectionTitle').textContent=tab==='gallery'?'Moderação da galeria':'Espaços publicitários';
+    el('editor').classList.add('hidden');
+    return;
+  }
+
+  el('editor').classList.remove('hidden');
+
+  let d=defs[tab];
+  el('sectionTitle').textContent=d.title;
+
+  el('fields').innerHTML=d.fields.map(([k,l,t,req])=>{
+    let field='';
+
+    if(t==='textarea'){
+      field=`<textarea name="${k}" ${req?'required':''}></textarea>`;
+    }else if(t==='select'&&k==='category'){
+      field=`
+        <select name="${k}" ${req?'required':''}>
+          <option value="">Selecione uma categoria</option>
+          <option value="Locomotivas">Locomotivas</option>
+          <option value="Vagões">Vagões</option>
+          <option value="Componentes ferroviários">Componentes ferroviários</option>
+          <option value="Sinalização">Sinalização</option>
+          <option value="Operações ferroviárias">Operações ferroviárias</option>
+          <option value="História ferroviária">História ferroviária</option>
+        </select>`;
+    }else if(t==='checkbox'){
+      field=`<input type="checkbox" name="${k}" style="width:auto" checked>`;
+    }else{
+      field=`<input name="${k}" ${req?'required':''}>`;
+    }
+
+    return `<div class="${t==='textarea'?'full':''}">
+      <label>${l}${req?' *':''}</label>
+      ${field}
+    </div>`;
+  }).join('');
+}
+
 async function loadTab(){renderFields();el('records').textContent='Carregando...';if(tab==='gallery')return loadGalleryModeration();if(tab==='ads')return loadAds();try{const snap=await MF_DB.collection(defs[tab].table).orderBy('created_at','desc').get();rows=snap.docs.map(d=>({id:d.id,...d.data()}));el('records').innerHTML=rows.length?rows.map(r=>`<div class="item"><div><strong>${safe(r.title)}</strong><div class="muted">${safe((r.summary||r.description||r.category||'').slice(0,150))} ${r.published===true?' • <span class="status">Publicado</span>':''}</div></div><div class="row"><button class="btn light" onclick="editRecord('${r.id}')">Editar</button><button class="btn light" onclick="removeRecord('${r.id}')">Excluir</button></div></div>`).join(''):'Nenhum registro cadastrado.'}catch(e){el('records').textContent='Erro ao carregar. Confira as regras e o índice do Firestore.'}}
 el('editor').onsubmit=async e=>{e.preventDefault();if(!MF_IS_ADMIN(currentUser?.uid))return;let d=defs[tab],obj={};for(let [k] of d.fields){let i=e.target.elements[k];obj[k]=i.type==='checkbox'?i.checked:i.value.trim()}let id=el('recordId').value;try{if(id)await MF_DB.collection(d.table).doc(id).update(obj);else await MF_DB.collection(d.table).add({...obj,created_at:firebase.firestore.FieldValue.serverTimestamp()});msg('formMsg','Salvo com sucesso.');e.target.reset();el('recordId').value='';await loadTab()}catch(err){msg('formMsg','Erro ao salvar. Confira as regras do Firestore.')}};
 window.editRecord=id=>{let r=rows.find(x=>x.id===id);if(!r)return;el('recordId').value=id;defs[tab].fields.forEach(([k])=>{let i=el('editor').elements[k];if(i.type==='checkbox')i.checked=!!r[k];else i.value=r[k]||''});window.scrollTo({top:0,behavior:'smooth'})};
