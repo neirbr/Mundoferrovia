@@ -720,17 +720,24 @@ function moveTrain() {
 
   
   function animate() {
-  // ACELERAÇÃO PROGRESSIVA
-  trainSpeed = Math.min(trainSpeed + 0.00008, 0.003);
+  // ACELERAÇÃO INICIAL
+  if (trainProgress < 0.30) {
+    trainSpeed = Math.min(trainSpeed + 0.00012, 0.004);
+  }
 
-  // FRENAGEM PRÓXIMO AO FINAL DO PERCURSO
-  if (trainProgress >= 0.91) {
-    trainSpeed = Math.max(trainSpeed - 0.00005, 0);
+  // VELOCIDADE DE CRUZEIRO
+  else if (trainProgress < 0.70) {
+    trainSpeed = Math.min(trainSpeed + 0.00002, 0.004);
+  }
+
+  // FRENAGEM PROGRESSIVA
+  else {
+    trainSpeed = Math.max(trainSpeed - 0.00004, 0.0005);
   }
 
   trainProgress += trainSpeed;
 
-  if (trainProgress >= 1 || (trainProgress >= 0.995 && trainSpeed === 0)) {
+  if (trainProgress >= 1) {
     trainProgress = 1;
     trainSpeed = 0;
     moving = false;
@@ -746,10 +753,6 @@ function moveTrain() {
 
   drawGame();
   animationId = requestAnimationFrame(animate);
-}
-
-animate();
-
 }
 
 function resetGame() {
