@@ -720,7 +720,40 @@ function drawSignal() {
   ctx.textAlign = 'center';
   ctx.fillText('SINAL', x, y - 57);
 }
-  
+
+  // MOVIMENTO DO SEGUNDO TREM
+function moveOtherTrain() {
+  if (!otherTrainMoving) return;
+
+  otherTrainProgress += otherTrainSpeed;
+
+  if (otherTrainProgress >= 1) {
+    otherTrainProgress = 1;
+    otherTrainSpeed = 0;
+    otherTrainMoving = false;
+    otherTrainCleared = true;
+  }
+}
+
+// ANIMAÇÃO INDEPENDENTE DO SEGUNDO TREM
+function animateOtherTrain() {
+  if (!otherTrainMoving) return;
+
+  moveOtherTrain();
+  drawGame();
+
+  if (otherTrainMoving) {
+    requestAnimationFrame(animateOtherTrain);
+  } else {
+    otherTrainCleared = true;
+    resumeButton.disabled = false;
+
+    feedback.textContent =
+      '🟢 Segundo trem passou completamente. ' +
+      'Você pode retomar a circulação.';
+  }
+}
+
   
 function drawGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -857,7 +890,7 @@ if (
   brakePressed = false;
 
   brakeButton.disabled = true;
-  resumeButton.disabled = false;
+  resumeButton.disabled = true;
 
   feedback.textContent =
     '🛑 Trem parado antes do sinal vermelho. Aguarde a passagem do outro trem.';
