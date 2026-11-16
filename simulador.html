@@ -238,7 +238,10 @@ const feedback = document.getElementById('feedback');
 const route1Button = document.getElementById('route1');
 const route2Button = document.getElementById('route2');
 const moveButton = document.getElementById('moveTrain');
+const brakeButton = document.getElementById('brakeTrain');
+const resumeButton = document.getElementById('resumeTrain');
 
+ 
 let selectedRoute = null;
 let trainProgress = 0;
 let trainSpeed = 0;
@@ -246,6 +249,12 @@ let moving = false;
 let finished = false;
 let animationId = null;
 
+// NOVOS CONTROLES DA SIMULAÇÃO
+let brakePressed = false;
+let stoppedAtSignal = false;
+let otherTrainCleared = false;
+
+  
 const startX = 65;
 const switchX = 270;
 const endX = 670;
