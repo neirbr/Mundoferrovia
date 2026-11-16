@@ -861,10 +861,12 @@ function getOtherTrainPosition(progress) {
 
   return { x, y };
 }
+    
+// DESENHAR SINAL FERROVIÁRIO
+function drawSignal() {
   
-  
-// posição do segundo trem 
-function getOtherTrainPosition()
+  const x = 650;
+  const y = 210;
 
   // Poste do sinal
   ctx.fillStyle = '#343a40';
@@ -878,7 +880,7 @@ function getOtherTrainPosition()
   ctx.lineWidth = 2;
   ctx.strokeRect(x - 17, y - 48, 34, 48);
 
-  // Luz vermelha
+  // Luz do sinal
   ctx.beginPath();
   ctx.arc(x, y - 35, 10, 0, Math.PI * 2);
   ctx.fillStyle = signalGreen ? '#28c76f' : '#ed3434';
