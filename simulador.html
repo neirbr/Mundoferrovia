@@ -564,7 +564,50 @@ function drawTrain(x, y) {
 
   ctx.restore();
 }
+  
+function drawWagon(x, y) {
+  ctx.save();
+  ctx.translate(x, y);
 
+  // CORPO DO VAGÃO
+  ctx.fillStyle = '#59666d';
+  ctx.fillRect(-27, -12, 54, 24);
+
+  // CONTORNO METÁLICO
+  ctx.strokeStyle = '#cbd3d8';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(-27, -12, 54, 24);
+
+  // REFORÇOS LATERAIS
+  ctx.strokeStyle = '#aeb8be';
+  ctx.lineWidth = 2;
+
+  for (let i = -18; i <= 18; i += 12) {
+    ctx.beginPath();
+    ctx.moveTo(i, -10);
+    ctx.lineTo(i, 10);
+    ctx.stroke();
+  }
+
+  // RODAS
+  ctx.fillStyle = '#171717';
+
+  for (let i of [-18, 18]) {
+    ctx.beginPath();
+    ctx.arc(i, -13, 5, 0, Math.PI * 2);
+    ctx.arc(i, 13, 5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // IDENTIFICAÇÃO
+  ctx.fillStyle = '#f0b323';
+  ctx.font = 'bold 7px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('MF', 0, 3);
+
+  ctx.restore();
+}
+  
 function getTrainPosition(progress) {
   if (progress <= 0.35) {
     const x = startX + (switchX - startX) *
@@ -609,11 +652,18 @@ function drawGame() {
 
   drawRails();
 
-  // Locomotiva
-  const position = getTrainPosition(trainProgress);
-  drawTrain(position.x, position.y);
-}
+// POSIÇÃO DOS VAGÕES
+const wagon1 = getTrainPosition(trainProgress - 0.08);
+const wagon2 = getTrainPosition(trainProgress - 0.16);
 
+// DESENHAR OS VAGÕES
+drawWagon(wagon2.x, wagon2.y);
+drawWagon(wagon1.x, wagon1.y);
+
+// DESENHAR A LOCOMOTIVA
+const position = getTrainPosition(trainProgress);
+drawTrain(position.x, position.y);
+ 
 function selectRoute(route) {
   if (moving || finished) return;
 
