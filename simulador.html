@@ -961,25 +961,27 @@ function drawGame() {
 // DESENHAR O SEGUNDO TREM
 if (otherTrainMoving) {
   const otherPosition =
+    
     getOtherTrainPosition(otherTrainProgress);
 
   drawWagon(otherPosition.x + 110, otherPosition.y);
   drawWagon(otherPosition.x + 55, otherPosition.y);
-
   drawTrain(otherPosition.x, otherPosition.y);
 }
 
   
-// POSIÇÃO DOS VAGÕES
-const wagon1 = getTrainPosition(trainProgress - 0.08);
-const wagon2 = getTrainPosition(trainProgress - 0.16);
-const wagon3 = getTrainPosition(trainProgress - 0.24);
+// POSIÇÃO DOS VAGÕES COM DISTÂNCIA CONSTANTE
+const wagon1 = getTrainPositionBehind(trainProgress, 60);
+const wagon2 = getTrainPositionBehind(trainProgress, 120);
+const wagon3 = getTrainPositionBehind(trainProgress, 180);
 
+  
 // DESENHAR OS VAGÕES
 drawWagon(wagon3.x, wagon3.y);
 drawWagon(wagon2.x, wagon2.y);
 drawWagon(wagon1.x, wagon1.y);
 
+  
 // DESENHAR A LOCOMOTIVA
 const position = getTrainPosition(trainProgress);
 drawTrain(position.x, position.y);
