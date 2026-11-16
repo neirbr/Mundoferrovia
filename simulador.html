@@ -747,14 +747,12 @@ function moveTrain() {
       '🏆 MISSÃO CONCLUÍDA! ' +
       'Você direcionou corretamente o trem para a Linha 2.';
 
-    drawGame();
-    return;
-  }
-
-  drawGame();
+      drawGame();
   animationId = requestAnimationFrame(animate);
 }
+animate();
 
+}
 function resetGame() {
   if (animationId) {
     cancelAnimationFrame(animationId);
