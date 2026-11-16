@@ -248,10 +248,12 @@ let trainSpeed = 0;
 let moving = false;
 let finished = false;
 let animationId = null;
+let otherTrainAnimationId = null;
 
 // NOVOS CONTROLES DA SIMULAÇÃO
 let brakePressed = false;
 let stoppedAtSignal = false;
+let signalGreen = false;
 let otherTrainCleared = false;
   
 // SEGUNDO TREM
@@ -707,7 +709,7 @@ function drawSignal() {
   // Luz vermelha
   ctx.beginPath();
   ctx.arc(x, y - 35, 10, 0, Math.PI * 2);
-  ctx.fillStyle = '#ed3434';
+  ctx.fillStyle = signalGreen ? '#28c76f' : '#ed3434';
   ctx.fill();
 
   ctx.strokeStyle = '#ffffff';
@@ -747,6 +749,7 @@ function animateOtherTrain() {
   } else {
     otherTrainCleared = true;
     resumeButton.disabled = false;
+    signalGreen = true;
 
     feedback.textContent =
       '🟢 Segundo trem passou completamente. ' +
@@ -865,7 +868,7 @@ else {
 const currentPosition = getTrainPosition(trainProgress);
 
 // AVANÇO DE SINAL
-if (currentPosition.x >= 490) {
+if (currentPosition.x >= 490 && !signalGreen) {
   trainSpeed = 0;
   moving = false;
   finished = true;
@@ -895,7 +898,15 @@ if (
   feedback.textContent =
     '🛑 Trem parado antes do sinal vermelho. Aguarde a passagem do outro trem.';
 
+  
+// INICIAR SEGUNDO TREM
+otherTrainProgress = 0;
+otherTrainSpeed = 0.0025;
+otherTrainMoving = true;
+otherTrainCleared = false;
+  
   drawGame();
+  animateOtherTrain();
   return;
 }   
 
@@ -933,6 +944,18 @@ function resetGame() {
   moving = false;
   finished = false;
 
+  brakePressed = false;
+  stoppedAtSignal = false;
+  signalGreen = false;
+
+  otherTrainProgress = 0;
+  otherTrainSpeed = 0;
+  otherTrainMoving = false;
+  otherTrainCleared = false;
+
+  resumeButton.disabled = true;
+  brakeButton.disabled = true;
+
   route1Button.classList.remove('selected');
   route2Button.classList.remove('selected');
 
@@ -954,6 +977,18 @@ route2Button.addEventListener('click', () => {
 
 moveButton.addEventListener('click', moveTrain);
 
+  resumeButton.addEventListener('click', () => {
+  if (!stoppedAtSignal || !otherTrainCleared) return;
+
+  stoppedAtSignal = false;
+  brakePressed = false;
+
+  resumeButton.disabled = true;
+  brakeButton.disabled = false;
+
+  moveTrain();
+});
+  
 
 // CONTROLE DO FREIO MANUAL
 brakeButton.addEventListener('pointerdown', () => {
