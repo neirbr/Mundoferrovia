@@ -690,7 +690,7 @@ function selectRoute(route) {
 
   drawGame();
 }
-
+ 
 function moveTrain() {
   if (moving || finished) return;
 
@@ -718,40 +718,47 @@ function moveTrain() {
   feedback.textContent =
     '✅ Rota correta! A locomotiva está entrando na Linha 2.';
 
-  
   function animate() {
-  // ACELERAÇÃO INICIAL
-  if (trainProgress < 0.30) {
-    trainSpeed = Math.min(trainSpeed + 0.00012, 0.004);
-  }
 
-  // VELOCIDADE DE CRUZEIRO
-  else if (trainProgress < 0.70) {
-    trainSpeed = Math.min(trainSpeed + 0.00002, 0.004);
-  }
+    // ACELERAÇÃO INICIAL
+    if (trainProgress < 0.30) {
+      trainSpeed = Math.min(trainSpeed + 0.00012, 0.004);
+    }
 
-  // FRENAGEM PROGRESSIVA
-  else {
-    trainSpeed = Math.max(trainSpeed - 0.00004, 0.0005);
-  }
+    // VELOCIDADE DE CRUZEIRO
+    else if (trainProgress < 0.70) {
+      trainSpeed = Math.min(trainSpeed + 0.00002, 0.004);
+    }
 
-  trainProgress += trainSpeed;
+    // FRENAGEM PROGRESSIVA
+    else {
+      trainSpeed = Math.max(trainSpeed - 0.00004, 0.0005);
+    }
 
-  if (trainProgress >= 1) {
-    trainProgress = 1;
-    trainSpeed = 0;
-    moving = false;
-    finished = true;
+    trainProgress += trainSpeed;
 
-    feedback.textContent =
-      '🏆 MISSÃO CONCLUÍDA! ' +
-      'Você direcionou corretamente o trem para a Linha 2.';
+    // CONCLUSÃO DA MISSÃO
+    if (trainProgress >= 1) {
+      trainProgress = 1;
+      trainSpeed = 0;
+      moving = false;
+      finished = true;
+
+      feedback.textContent =
+        '🏆 MISSÃO CONCLUÍDA! ' +
+        'Você direcionou corretamente o trem para a Linha 2.';
 
       drawGame();
-  animationId = requestAnimationFrame(animate);
-}
-animate();
+      return;
+    }
 
+    // ATUALIZAR DESENHO E CONTINUAR ANIMAÇÃO
+    drawGame();
+    animationId = requestAnimationFrame(animate);
+  }
+
+  animate();
+  
 }
 function resetGame() {
   if (animationId) {
