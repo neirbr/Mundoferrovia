@@ -240,17 +240,22 @@ function drawTrackPath(route, color = '#d8d8d8') {
 }
 
 function drawRails() {
-  ctx.lineCap = 'round';
-
-  // Linha de chegada
-  ctx.strokeStyle = '#222222';
-  ctx.lineWidth = 14;
+  // LINHA DE CHEGADA
+  ctx.strokeStyle = '#292929';
+  ctx.lineWidth = 18;
   ctx.beginPath();
   ctx.moveTo(startX, 200);
   ctx.lineTo(switchX, 200);
   ctx.stroke();
 
-  ctx.strokeStyle = '#cccccc';
+  // TRAVESSAS DA LINHA X
+  for (let x = startX; x < switchX; x += 20) {
+    ctx.fillStyle = '#68452e';
+    ctx.fillRect(x - 3, 184, 6, 32);
+  }
+
+  // TRILHOS METÁLICOS DA LINHA X
+  ctx.strokeStyle = '#bfc8ce';
   ctx.lineWidth = 3;
 
   ctx.beginPath();
@@ -260,47 +265,71 @@ function drawRails() {
   ctx.lineTo(switchX, 208);
   ctx.stroke();
 
-  // Travessas da linha de chegada
-  for (let x = startX; x < switchX; x += 20) {
-    ctx.strokeStyle = '#5b3823';
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(x, 186);
-    ctx.lineTo(x, 214);
-    ctx.stroke();
-  }
-
-  // Ramais
+  // RAMAIS DO PÁTIO
   for (let route = 1; route <= 2; route++) {
-    const color =
-      selectedRoute === route
-        ? '#f0b323'
-        : '#222222';
 
-    drawTrackPath(route, color);
+    const controlY = route === 1 ? 100 : 300;
+    const targetY = route === 1 ? 120 : 280;
 
-    ctx.strokeStyle = '#cccccc';
+    // LASTRO / BASE DO TRILHO
+    ctx.strokeStyle = '#292929';
+    ctx.lineWidth = 18;
+
+    ctx.beginPath();
+    ctx.moveTo(switchX, 200);
+    ctx.quadraticCurveTo(440, controlY, endX, targetY);
+    ctx.stroke();
+
+    // TRAVESSAS CURVAS
+    for (let t = 0; t <= 1; t += 0.07) {
+
+      const x =
+        (1 - t) * (1 - t) * switchX +
+        2 * (1 - t) * t * 440 +
+        t * t * endX;
+
+      const y =
+        (1 - t) * (1 - t) * 200 +
+        2 * (1 - t) * t * controlY +
+        t * t * targetY;
+
+      const dx =
+        2 * (1 - t) * (440 - switchX) +
+        2 * t * (endX - 440);
+
+      const dy =
+        2 * (1 - t) * (controlY - 200) +
+        2 * t * (targetY - controlY);
+
+      const angle = Math.atan2(dy, dx);
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle + Math.PI / 2);
+
+      ctx.fillStyle = '#68452e';
+      ctx.fillRect(-16, -3, 32, 6);
+
+      ctx.restore();
+    }
+
+    // TRILHOS METÁLICOS
+    ctx.strokeStyle =
+      selectedRoute === route ? '#f0b323' : '#c6cdd2';
+
     ctx.lineWidth = 3;
 
     ctx.beginPath();
 
-    if (route === 1) {
-      ctx.moveTo(switchX, 192);
-      ctx.quadraticCurveTo(440, 92, endX, 112);
+    ctx.moveTo(switchX, 192);
+    ctx.quadraticCurveTo(440, controlY - 8, endX, targetY - 8);
 
-      ctx.moveTo(switchX, 208);
-      ctx.quadraticCurveTo(440, 108, endX, 128);
-    } else {
-      ctx.moveTo(switchX, 192);
-      ctx.quadraticCurveTo(440, 292, endX, 272);
-
-      ctx.moveTo(switchX, 208);
-      ctx.quadraticCurveTo(440, 308, endX, 288);
-    }
+    ctx.moveTo(switchX, 208);
+    ctx.quadraticCurveTo(440, controlY + 8, endX, targetY + 8);
 
     ctx.stroke();
 
-    // Identificação das linhas
+    // IDENTIFICAÇÃO DAS LINHAS
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 16px Arial';
 
@@ -311,17 +340,15 @@ function drawRails() {
     );
   }
 
-  // Identificação da Linha X
+  // IDENTIFICAÇÃO DA LINHA X
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 16px Arial';
   ctx.fillText('LINHA X', 80, 170);
 
-  // Posição visual do AMV
-  ctx.strokeStyle = selectedRoute === 2
-    ? '#f0b323'
-    : '#ffffff';
-
+  // AMV - HASTE DE MUDANÇA
+  ctx.strokeStyle = '#f0b323';
   ctx.lineWidth = 7;
+
   ctx.beginPath();
   ctx.moveTo(switchX, 200);
 
@@ -335,46 +362,72 @@ function drawRails() {
 
   ctx.stroke();
 
-  // Ponto de mudança de via
+  // PONTO CENTRAL DO AMV
   ctx.fillStyle = '#f0b323';
   ctx.beginPath();
-  ctx.arc(switchX, 200, 8, 0, Math.PI * 2);
+  ctx.arc(switchX, 200, 9, 0, Math.PI * 2);
   ctx.fill();
+
+  ctx.strokeStyle = '#292929';
+  ctx.lineWidth = 3;
+  ctx.stroke();
 }
+  
 
 function drawTrain(x, y) {
   ctx.save();
 
   ctx.translate(x, y);
 
-  // Corpo da locomotiva
+  // CORPO PRINCIPAL
   ctx.fillStyle = '#102b3f';
-  ctx.fillRect(-30, -13, 60, 26);
+  ctx.fillRect(-32, -15, 64, 30);
 
-  // Contorno dourado
+  // CONTORNO DOURADO
   ctx.strokeStyle = '#f0b323';
   ctx.lineWidth = 3;
-  ctx.strokeRect(-30, -13, 60, 26);
+  ctx.strokeRect(-32, -15, 64, 30);
 
-  // Cabine
-  ctx.fillStyle = '#f0b323';
-  ctx.fillRect(-8, -9, 17, 18);
+  // CABINE
+  ctx.fillStyle = '#d99b16';
+  ctx.fillRect(-12, -11, 22, 22);
 
-  // Farol
-  ctx.fillStyle = '#ffffff';
+  // JANELAS DA CABINE
+  ctx.fillStyle = '#8cc7dc';
+  ctx.fillRect(-8, -8, 6, 7);
+  ctx.fillRect(1, -8, 6, 7);
+  ctx.fillRect(-8, 2, 6, 7);
+  ctx.fillRect(1, 2, 6, 7);
+
+  // CAPÔ FRONTAL
+  ctx.fillStyle = '#174a67';
+  ctx.fillRect(12, -10, 15, 20);
+
+  // FAROL FRONTAL
+  ctx.fillStyle = '#fff7bd';
   ctx.beginPath();
-  ctx.arc(27, 0, 4, 0, Math.PI * 2);
+  ctx.arc(29, 0, 5, 0, Math.PI * 2);
   ctx.fill();
 
-  // Rodas
-  ctx.fillStyle = '#222222';
+  // RODAS
+  ctx.fillStyle = '#171717';
 
-  for (let i = -20; i <= 20; i += 20) {
+  for (let i = -23; i <= 23; i += 23) {
     ctx.beginPath();
-    ctx.arc(i, -14, 4, 0, Math.PI * 2);
-    ctx.arc(i, 14, 4, 0, Math.PI * 2);
+    ctx.arc(i, -15, 5, 0, Math.PI * 2);
+    ctx.arc(i, 15, 5, 0, Math.PI * 2);
     ctx.fill();
   }
+
+  // DETALHE SUPERIOR
+  ctx.fillStyle = '#f0b323';
+  ctx.fillRect(-28, -3, 10, 6);
+
+  // IDENTIFICAÇÃO DA LOCOMOTIVA
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 8px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('MF', -22, 3);
 
   ctx.restore();
 }
