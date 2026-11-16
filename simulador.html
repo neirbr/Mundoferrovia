@@ -745,7 +745,7 @@ function animateOtherTrain() {
   drawGame();
 
   if (otherTrainMoving) {
-    requestAnimationFrame(animateOtherTrain);
+    otherTrainAnimationId = requestAnimationFrame(animateOtherTrain);
   } else {
     otherTrainCleared = true;
     resumeButton.disabled = false;
@@ -756,7 +756,6 @@ function animateOtherTrain() {
       'Você pode retomar a circulação.';
   }
 }
-
   
 function drawGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -938,6 +937,10 @@ function resetGame() {
     cancelAnimationFrame(animationId);
   }
 
+if (otherTrainAnimationId) {
+  cancelAnimationFrame(otherTrainAnimationId);
+}
+  
   selectedRoute = null;
   trainProgress = 0;
   trainSpeed = 0;
