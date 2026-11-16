@@ -253,6 +253,11 @@ let animationId = null;
 let brakePressed = false;
 let stoppedAtSignal = false;
 let otherTrainCleared = false;
+  
+// SEGUNDO TREM
+let otherTrainProgress = 0;
+let otherTrainSpeed = 0;
+let otherTrainMoving = false;
 
   
 const startX = 65;
@@ -657,7 +662,7 @@ function getTrainPosition(progress) {
 
     return { x, y: 200 };
   }
-
+  
   const t = (progress - 0.35) / 0.65;
 
   const targetY = selectedRoute === 1 ? 120 : 280;
@@ -672,6 +677,15 @@ function getTrainPosition(progress) {
     t * t * targetY;
 
   return { x, y };
+}
+
+
+// POSIÇÃO DO SEGUNDO TREM
+function getOtherTrainPosition(progress) {
+  return {
+    x: 650 - (progress * 700),
+    y: 180
+  };
 }
 
 function drawSignal() {
