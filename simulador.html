@@ -655,8 +655,10 @@ function drawGame() {
 // POSIÇÃO DOS VAGÕES
 const wagon1 = getTrainPosition(trainProgress - 0.08);
 const wagon2 = getTrainPosition(trainProgress - 0.16);
+const wagon3 = getTrainPosition(trainProgress - 0.24);
 
 // DESENHAR OS VAGÕES
+drawWagon(wagon3.x, wagon3.y);
 drawWagon(wagon2.x, wagon2.y);
 drawWagon(wagon1.x, wagon1.y);
 
