@@ -487,6 +487,52 @@ function drawRails() {
   ctx.lineTo(switchX, 206);
   ctx.stroke();
 
+
+  // NOVA LINHA CENTRAL DO SEGUNDO TREM
+
+  // Base de lastro
+  ctx.strokeStyle = '#292929';
+  ctx.lineWidth = 25;
+  ctx.beginPath();
+  ctx.moveTo(switchX, 200);
+  ctx.lineTo(endX, 200);
+  ctx.stroke();
+
+  // Travessas
+  for (let x = switchX + 10; x <= endX; x += 17) {
+    ctx.fillStyle = '#422b20';
+    ctx.fillRect(x - 10, 184, 22, 32);
+
+    ctx.fillStyle = '#805638';
+    ctx.fillRect(x - 9, 186, 20, 28);
+  }
+
+  // Trilhos
+  ctx.strokeStyle = '#687780';
+  ctx.lineWidth = 7;
+  ctx.beginPath();
+  ctx.moveTo(switchX, 192);
+  ctx.lineTo(endX, 192);
+  ctx.moveTo(switchX, 208);
+  ctx.lineTo(endX, 208);
+  ctx.stroke();
+
+  ctx.strokeStyle = '#cbd3d8';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(switchX, 190);
+  ctx.lineTo(endX, 190);
+  ctx.moveTo(switchX, 206);
+  ctx.lineTo(endX, 206);
+  ctx.stroke();
+
+  // Identificação
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 16px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('LINHA CENTRAL', 650, 170);
+  
+
   // RAMAIS DO PÁTIO
   for (let route = 1; route <= 2; route++) {
     const controlY = route === 1 ? 100 : 300;
@@ -808,18 +854,17 @@ function getTrainPosition(progress) {
   return { x, y };
 }
 
-
 // POSIÇÃO DO SEGUNDO TREM
 function getOtherTrainPosition(progress) {
-  return {
-    x: 950 - (progress * 1050),
-    y: 200
-  };
-}
+  const x = endX - (endX - startX) * progress;
+  const y = 200;
 
-function drawSignal() {
-  const x = 490;
-  const y = 250;
+  return { x, y };
+}
+  
+  
+// posição do segundo trem 
+function getOtherTrainPosition()
 
   // Poste do sinal
   ctx.fillStyle = '#343a40';
@@ -873,16 +918,20 @@ function animateOtherTrain() {
 
   if (otherTrainMoving) {
     otherTrainAnimationId = requestAnimationFrame(animateOtherTrain);
-  } else {
-    otherTrainCleared = true;
-    resumeButton.disabled = false;
-    signalGreen = true;
+  
+} else {
+  otherTrainCleared = true;
+  resumeButton.disabled = false;
+  signalGreen = true;
 
-    feedback.textContent =
-      '🟢 Segundo trem passou completamente. ' +
-      'Você pode retomar a circulação.';
+  drawGame();
+
+  feedback.textContent =
+    '🟢 Segundo trem passou completamente. ' +
+    'Você pode retomar a circulação.';
   }
 }
+
   
 function drawGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
