@@ -36,7 +36,7 @@ header p {
 }
 
 .container {
-  max-width: 850px;
+  max-width: 1100px;
   margin: auto;
   padding: 15px;
 }
@@ -57,10 +57,19 @@ header p {
   margin-top: 0;
 }
 
+.yard-viewport {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+
 canvas {
   display: block;
-  width: 100%;
-  background: #315d43;
+  width: 1000px;
+  height: 400px;
+  max-width: none;
+  background: #687780;
   border-radius: 10px;
   border: 2px solid #f0b323;
 }
@@ -178,7 +187,9 @@ button:disabled {
   </div>
 
   <div class="card">
-    <canvas id="game" width="720" height="400"></canvas>
+<div class="yard-viewport">
+  <canvas id="game" width="1000" height="400"></canvas>
+</div>
 
     <p class="info">
       Escolha a rota desejada. O AMV mudará visualmente
@@ -264,8 +275,8 @@ let otherTrainMoving = false;
   
 const startX = 65;
 const switchX = 270;
-const endX = 670;
-
+const endX = 950;
+  
 function drawTrackPath(route, color = '#d8d8d8') {
   ctx.strokeStyle = color;
   ctx.lineWidth = 5;
@@ -685,8 +696,8 @@ function getTrainPosition(progress) {
 // POSIÇÃO DO SEGUNDO TREM
 function getOtherTrainPosition(progress) {
   return {
-    x: 650 - (progress * 700),
-    y: 180
+    x: 950 - (progress * 1050),
+    y: 200
   };
 }
 
@@ -778,6 +789,18 @@ function drawGame() {
   drawRails();
   drawSignal();
 
+// DESENHAR O SEGUNDO TREM
+if (otherTrainMoving) {
+  const otherPosition =
+    getOtherTrainPosition(otherTrainProgress);
+
+  drawWagon(otherPosition.x + 110, otherPosition.y);
+  drawWagon(otherPosition.x + 55, otherPosition.y);
+
+  drawTrain(otherPosition.x, otherPosition.y);
+}
+
+  
 // POSIÇÃO DOS VAGÕES
 const wagon1 = getTrainPosition(trainProgress - 0.08);
 const wagon2 = getTrainPosition(trainProgress - 0.16);
