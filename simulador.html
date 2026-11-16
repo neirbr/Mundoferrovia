@@ -1,0 +1,541 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Manobras | Mundo Ferroviário</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #102b3f;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 18px;
+  text-align: center;
+  background: #174a67;
+  border-bottom: 3px solid #f0b323;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+header p {
+  margin: 8px 0 0;
+  font-size: 13px;
+}
+
+.container {
+  max-width: 850px;
+  margin: auto;
+  padding: 15px;
+}
+
+.card {
+  background: #ffffff;
+  color: #102b3f;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.mission {
+  border-left: 5px solid #f0b323;
+}
+
+.mission h2 {
+  margin-top: 0;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  background: #315d43;
+  border-radius: 10px;
+  border: 2px solid #f0b323;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+button {
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.route-btn {
+  background: #174a67;
+  color: white;
+}
+
+.route-btn.selected {
+  background: #f0b323;
+  color: #102b3f;
+  outline: 3px solid #102b3f;
+}
+
+.action-btn {
+  background: #168447;
+  color: white;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.reset-btn {
+  background: #a83232;
+  color: white;
+  width: 100%;
+  margin-top: 10px;
+}
+
+#feedback {
+  font-weight: bold;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+.info {
+  font-size: 13px;
+  color: #526575;
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 19px;
+  }
+
+  button {
+    font-size: 13px;
+    padding: 12px 8px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🚂 Mundo Ferroviário</h1>
+  <p>Simulador de Manobras 2D</p>
+</header>
+
+<div class="container">
+
+  <div class="card mission">
+    <h2>🎯 Missão 01 — Entrada no Pátio</h2>
+
+    <p>
+      Um trem está chegando pela Linha X.
+      Seu destino é a Linha 2, que está livre.
+    </p>
+
+    <p>
+      <strong>Objetivo:</strong>
+      Posicionar o AMV corretamente e direcionar
+      a locomotiva para a Linha 2.
+    </p>
+  </div>
+
+  <div class="card">
+    <canvas id="game" width="720" height="400"></canvas>
+
+    <p class="info">
+      Escolha a rota desejada. O AMV mudará visualmente
+      de posição.
+    </p>
+
+    <div class="buttons">
+      <button class="route-btn" id="route1">
+        AMV → Linha 1
+      </button>
+
+      <button class="route-btn" id="route2">
+        AMV → Linha 2
+      </button>
+    </div>
+
+    <button class="action-btn" id="moveTrain">
+      ▶ Movimentar Locomotiva
+    </button>
+
+    <button class="reset-btn" id="resetGame">
+      ↻ Reiniciar Missão
+    </button>
+
+    <div id="feedback" aria-live="polite">
+      Escolha uma rota para começar.
+    </div>
+  </div>
+
+  <div class="card info">
+    <strong>📚 Aprendizado ferroviário</strong>
+    <p>
+      Este jogo é uma simulação educativa.
+      As decisões e consequências são fictícias e
+      não substituem procedimentos operacionais,
+      regras de segurança ou treinamento oficial.
+    </p>
+  </div>
+
+</div>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+const feedback = document.getElementById('feedback');
+const route1Button = document.getElementById('route1');
+const route2Button = document.getElementById('route2');
+const moveButton = document.getElementById('moveTrain');
+
+let selectedRoute = null;
+let trainProgress = 0;
+let moving = false;
+let finished = false;
+let animationId = null;
+
+const startX = 65;
+const switchX = 270;
+const endX = 670;
+
+function drawTrackPath(route, color = '#d8d8d8') {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 5;
+
+  ctx.beginPath();
+
+  if (route === 0) {
+    ctx.moveTo(startX, 200);
+    ctx.lineTo(switchX, 200);
+  } else {
+    ctx.moveTo(switchX, 200);
+    ctx.quadraticCurveTo(
+      440,
+      route === 1 ? 100 : 300,
+      endX,
+      route === 1 ? 120 : 280
+    );
+  }
+
+  ctx.stroke();
+}
+
+function drawRails() {
+  ctx.lineCap = 'round';
+
+  // Linha de chegada
+  ctx.strokeStyle = '#222222';
+  ctx.lineWidth = 14;
+  ctx.beginPath();
+  ctx.moveTo(startX, 200);
+  ctx.lineTo(switchX, 200);
+  ctx.stroke();
+
+  ctx.strokeStyle = '#cccccc';
+  ctx.lineWidth = 3;
+
+  ctx.beginPath();
+  ctx.moveTo(startX, 192);
+  ctx.lineTo(switchX, 192);
+  ctx.moveTo(startX, 208);
+  ctx.lineTo(switchX, 208);
+  ctx.stroke();
+
+  // Travessas da linha de chegada
+  for (let x = startX; x < switchX; x += 20) {
+    ctx.strokeStyle = '#5b3823';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(x, 186);
+    ctx.lineTo(x, 214);
+    ctx.stroke();
+  }
+
+  // Ramais
+  for (let route = 1; route <= 2; route++) {
+    const color =
+      selectedRoute === route
+        ? '#f0b323'
+        : '#222222';
+
+    drawTrackPath(route, color);
+
+    ctx.strokeStyle = '#cccccc';
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+
+    if (route === 1) {
+      ctx.moveTo(switchX, 192);
+      ctx.quadraticCurveTo(440, 92, endX, 112);
+
+      ctx.moveTo(switchX, 208);
+      ctx.quadraticCurveTo(440, 108, endX, 128);
+    } else {
+      ctx.moveTo(switchX, 192);
+      ctx.quadraticCurveTo(440, 292, endX, 272);
+
+      ctx.moveTo(switchX, 208);
+      ctx.quadraticCurveTo(440, 308, endX, 288);
+    }
+
+    ctx.stroke();
+
+    // Identificação das linhas
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 16px Arial';
+
+    ctx.fillText(
+      route === 1 ? 'LINHA 1' : 'LINHA 2',
+      590,
+      route === 1 ? 90 : 330
+    );
+  }
+
+  // Identificação da Linha X
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 16px Arial';
+  ctx.fillText('LINHA X', 80, 170);
+
+  // Posição visual do AMV
+  ctx.strokeStyle = selectedRoute === 2
+    ? '#f0b323'
+    : '#ffffff';
+
+  ctx.lineWidth = 7;
+  ctx.beginPath();
+  ctx.moveTo(switchX, 200);
+
+  if (selectedRoute === 1) {
+    ctx.lineTo(340, 165);
+  } else if (selectedRoute === 2) {
+    ctx.lineTo(340, 235);
+  } else {
+    ctx.lineTo(320, 200);
+  }
+
+  ctx.stroke();
+
+  // Ponto de mudança de via
+  ctx.fillStyle = '#f0b323';
+  ctx.beginPath();
+  ctx.arc(switchX, 200, 8, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawTrain(x, y) {
+  ctx.save();
+
+  ctx.translate(x, y);
+
+  // Corpo da locomotiva
+  ctx.fillStyle = '#102b3f';
+  ctx.fillRect(-30, -13, 60, 26);
+
+  // Contorno dourado
+  ctx.strokeStyle = '#f0b323';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(-30, -13, 60, 26);
+
+  // Cabine
+  ctx.fillStyle = '#f0b323';
+  ctx.fillRect(-8, -9, 17, 18);
+
+  // Farol
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(27, 0, 4, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Rodas
+  ctx.fillStyle = '#222222';
+
+  for (let i = -20; i <= 20; i += 20) {
+    ctx.beginPath();
+    ctx.arc(i, -14, 4, 0, Math.PI * 2);
+    ctx.arc(i, 14, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+function getTrainPosition(progress) {
+  if (progress <= 0.35) {
+    const x = startX + (switchX - startX) *
+      (progress / 0.35);
+
+    return { x, y: 200 };
+  }
+
+  const t = (progress - 0.35) / 0.65;
+
+  const targetY = selectedRoute === 1 ? 120 : 280;
+  const controlY = selectedRoute === 1 ? 100 : 300;
+
+  const x = (1 - t) * (1 - t) * switchX +
+    2 * (1 - t) * t * 440 +
+    t * t * endX;
+
+  const y = (1 - t) * (1 - t) * 200 +
+    2 * (1 - t) * t * controlY +
+    t * t * targetY;
+
+  return { x, y };
+}
+
+function drawGame() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Fundo do pátio
+  ctx.fillStyle = '#315d43';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Linhas decorativas do terreno
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+
+  for (let y = 0; y < 400; y += 30) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(720, y);
+    ctx.stroke();
+  }
+
+  drawRails();
+
+  // Locomotiva
+  const position = getTrainPosition(trainProgress);
+  drawTrain(position.x, position.y);
+}
+
+function selectRoute(route) {
+  if (moving || finished) return;
+
+  selectedRoute = route;
+
+  route1Button.classList.toggle(
+    'selected',
+    route === 1
+  );
+
+  route2Button.classList.toggle(
+    'selected',
+    route === 2
+  );
+
+  feedback.textContent =
+    'AMV selecionado para a Linha ' + route +
+    '. Agora você pode movimentar a locomotiva.';
+
+  drawGame();
+}
+
+function moveTrain() {
+  if (moving || finished) return;
+
+  if (!selectedRoute) {
+    feedback.textContent =
+      '⚠️ Primeiro escolha a posição do AMV.';
+    return;
+  }
+
+  if (selectedRoute === 1) {
+    finished = true;
+
+    feedback.textContent =
+      '❌ Consequência: o trem foi direcionado ' +
+      'para a Linha 1, diferente do destino planejado. ' +
+      'Revise a rota e reinicie a missão.';
+
+    moveButton.disabled = true;
+    return;
+  }
+
+  moving = true;
+  moveButton.disabled = true;
+
+  feedback.textContent =
+    '✅ Rota correta! A locomotiva está entrando na Linha 2.';
+
+  function animate() {
+    trainProgress += 0.003;
+
+    if (trainProgress >= 1) {
+      trainProgress = 1;
+      moving = false;
+      finished = true;
+
+      feedback.textContent =
+        '🏆 MISSÃO CONCLUÍDA! ' +
+        'Você direcionou corretamente o trem para a Linha 2.';
+
+      drawGame();
+      return;
+    }
+
+    drawGame();
+    animationId = requestAnimationFrame(animate);
+  }
+
+  animate();
+}
+
+function resetGame() {
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+  }
+
+  selectedRoute = null;
+  trainProgress = 0;
+  moving = false;
+  finished = false;
+
+  route1Button.classList.remove('selected');
+  route2Button.classList.remove('selected');
+
+  moveButton.disabled = false;
+
+  feedback.textContent =
+    'Escolha uma rota para começar.';
+
+  drawGame();
+}
+
+route1Button.addEventListener('click', () => {
+  selectRoute(1);
+});
+
+route2Button.addEventListener('click', () => {
+  selectRoute(2);
+});
+
+moveButton.addEventListener('click', moveTrain);
+
+document.getElementById('resetGame')
+  .addEventListener('click', resetGame);
+
+drawGame();
+</script>
+
+</body>
+</html>
