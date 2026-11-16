@@ -242,6 +242,45 @@ button:disabled {
 </div>
 
 <script>
+// ORIENTAÇÃO AUTOMÁTICA HORIZONTAL
+let modoPaisagemAtivado = false;
+
+async function ativarModoPaisagem() {
+  if (modoPaisagemAtivado) return;
+
+  modoPaisagemAtivado = true;
+
+  // Solicitar tela cheia
+  try {
+    if (!document.fullscreenElement &&
+        document.documentElement.requestFullscreen) {
+      await document.documentElement.requestFullscreen();
+    }
+  } catch (erro) {
+    console.log('Tela cheia não disponível.');
+  }
+
+  // Solicitar orientação horizontal
+  try {
+    if (screen.orientation &&
+        screen.orientation.lock) {
+      await screen.orientation.lock('landscape');
+    }
+  } catch (erro) {
+    console.log('Bloqueio horizontal não disponível.');
+  }
+}
+
+// Ativar na primeira interação com os controles
+document.querySelectorAll('button').forEach(botao => {
+  botao.addEventListener(
+    'pointerdown',
+    ativarModoPaisagem,
+    { once: true }
+  );
+});
+
+  
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 
