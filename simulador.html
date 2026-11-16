@@ -209,6 +209,7 @@ const moveButton = document.getElementById('moveTrain');
 
 let selectedRoute = null;
 let trainProgress = 0;
+let trainSpeed = 0;
 let moving = false;
 let finished = false;
 let animationId = null;
@@ -717,27 +718,38 @@ function moveTrain() {
   feedback.textContent =
     '✅ Rota correta! A locomotiva está entrando na Linha 2.';
 
+  
   function animate() {
-    trainProgress += 0.003;
+  // ACELERAÇÃO PROGRESSIVA
+  trainSpeed = Math.min(trainSpeed + 0.00008, 0.003);
 
-    if (trainProgress >= 1) {
-      trainProgress = 1;
-      moving = false;
-      finished = true;
-
-      feedback.textContent =
-        '🏆 MISSÃO CONCLUÍDA! ' +
-        'Você direcionou corretamente o trem para a Linha 2.';
-
-      drawGame();
-      return;
-    }
-
-    drawGame();
-    animationId = requestAnimationFrame(animate);
+  // FRENAGEM PRÓXIMO AO FINAL DO PERCURSO
+  if (trainProgress >= 0.91) {
+    trainSpeed = Math.max(trainSpeed - 0.00005, 0);
   }
 
-  animate();
+  trainProgress += trainSpeed;
+
+  if (trainProgress >= 1 || (trainProgress >= 0.995 && trainSpeed === 0)) {
+    trainProgress = 1;
+    trainSpeed = 0;
+    moving = false;
+    finished = true;
+
+    feedback.textContent =
+      '🏆 MISSÃO CONCLUÍDA! ' +
+      'Você direcionou corretamente o trem para a Linha 2.';
+
+    drawGame();
+    return;
+  }
+
+  drawGame();
+  animationId = requestAnimationFrame(animate);
+}
+
+animate();
+
 }
 
 function resetGame() {
@@ -747,6 +759,7 @@ function resetGame() {
 
   selectedRoute = null;
   trainProgress = 0;
+  trainSpeed = 0;
   moving = false;
   finished = false;
 
