@@ -419,6 +419,8 @@ function drawRails() {
   const railColor = '#cbd3d8';
   const railDark = '#687780';
 
+  
+
   // Calcula pontos e direção das curvas
   function getPoint(t, controlY, targetY) {
     const x = (1-t)*(1-t)*switchX +
@@ -1057,7 +1059,7 @@ else {
 const currentPosition = getTrainPosition(trainProgress);
 
 // AVANÇO DE SINAL
-if (currentPosition.x >= 490 && !signalGreen) {
+if (currentPosition.x >= 650 && !signalGreen) {
   trainSpeed = 0;
   moving = false;
   finished = true;
@@ -1072,7 +1074,7 @@ if (currentPosition.x >= 490 && !signalGreen) {
 
 // PARADA ANTES DO SINAL
 if (
-  currentPosition.x >= 475 &&
+  currentPosition.x >= 580 &&
   brakePressed &&
   trainSpeed <= 0.0005
 ) {
