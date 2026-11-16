@@ -790,28 +790,67 @@ function moveTrain() {
 
   moving = true;
   moveButton.disabled = true;
+  brakeButton.disabled = false;
+
 
   feedback.textContent =
     '✅ Rota correta! A locomotiva está entrando na Linha 2.';
 
   function animate() {
 
-    // ACELERAÇÃO INICIAL
-    if (trainProgress < 0.30) {
-      trainSpeed = Math.min(trainSpeed + 0.00012, 0.004);
-    }
+    // FREIO MANUAL
+if (brakePressed) {
+  trainSpeed = Math.max(trainSpeed - 0.00008, 0);
+}
 
-    // VELOCIDADE DE CRUZEIRO
-    else if (trainProgress < 0.70) {
-      trainSpeed = Math.min(trainSpeed + 0.00002, 0.004);
-    }
+// ACELERAÇÃO E VELOCIDADE DE CRUZEIRO
+else if (trainProgress < 0.30) {
+  trainSpeed = Math.min(trainSpeed + 0.00012, 0.004);
+}
+else {
+  trainSpeed = Math.min(trainSpeed + 0.00002, 0.004);
+}
 
-    // FRENAGEM PROGRESSIVA
-    else {
-      trainSpeed = Math.max(trainSpeed - 0.00004, 0.0005);
-    }
-
+    
     trainProgress += trainSpeed;
+
+// VERIFICAR DISTÂNCIA ATÉ O SINAL
+const currentPosition = getTrainPosition(trainProgress);
+
+// AVANÇO DE SINAL
+if (currentPosition.x >= 490) {
+  trainSpeed = 0;
+  moving = false;
+  finished = true;
+  brakeButton.disabled = true;
+
+  feedback.textContent =
+    '🚨 AVANÇO DE SINAL! Você ultrapassou o sinal vermelho. Reinicie a missão.';
+
+  drawGame();
+  return;
+}
+
+// PARADA ANTES DO SINAL
+if (
+  currentPosition.x >= 475 &&
+  brakePressed &&
+  trainSpeed <= 0.0005
+) {
+  trainSpeed = 0;
+  moving = false;
+  stoppedAtSignal = true;
+  brakePressed = false;
+
+  brakeButton.disabled = true;
+  resumeButton.disabled = false;
+
+  feedback.textContent =
+    '🛑 Trem parado antes do sinal vermelho. Aguarde a passagem do outro trem.';
+
+  drawGame();
+  return;
+}   
 
     // CONCLUSÃO DA MISSÃO
     if (trainProgress >= 1) {
@@ -868,6 +907,26 @@ route2Button.addEventListener('click', () => {
 
 moveButton.addEventListener('click', moveTrain);
 
+
+// CONTROLE DO FREIO MANUAL
+brakeButton.addEventListener('pointerdown', () => {
+  if (!moving || stoppedAtSignal) return;
+  brakePressed = true;
+});
+
+brakeButton.addEventListener('pointerup', () => {
+  brakePressed = false;
+});
+
+brakeButton.addEventListener('pointerleave', () => {
+  brakePressed = false;
+});
+
+brakeButton.addEventListener('pointercancel', () => {
+  brakePressed = false;
+});
+
+  
 document.getElementById('resetGame')
   .addEventListener('click', resetGame);
 
