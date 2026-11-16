@@ -665,6 +665,40 @@ function getTrainPosition(progress) {
   return { x, y };
 }
 
+function drawSignal() {
+  const x = 490;
+  const y = 250;
+
+  // Poste do sinal
+  ctx.fillStyle = '#343a40';
+  ctx.fillRect(x - 4, y - 5, 8, 75);
+
+  // Caixa do sinal
+  ctx.fillStyle = '#20272b';
+  ctx.fillRect(x - 17, y - 48, 34, 48);
+
+  ctx.strokeStyle = '#d5dce0';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x - 17, y - 48, 34, 48);
+
+  // Luz vermelha
+  ctx.beginPath();
+  ctx.arc(x, y - 35, 10, 0, Math.PI * 2);
+  ctx.fillStyle = '#ed3434';
+  ctx.fill();
+
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Identificação
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 11px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('SINAL', x, y - 57);
+}
+  
+  
 function drawGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -684,6 +718,7 @@ function drawGame() {
   }
 
   drawRails();
+  drawSignal();
 
 // POSIÇÃO DOS VAGÕES
 const wagon1 = getTrainPosition(trainProgress - 0.08);
