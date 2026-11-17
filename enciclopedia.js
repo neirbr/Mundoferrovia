@@ -747,9 +747,98 @@
   const encyclopediaCategories = document.getElementById('encyclopediaCategories');
   const encyclopediaLibrary = document.getElementById('encyclopediaLibrary');
 
-  const encyclopediaTopics = {
-    vagoes: [
-      {
+const encyclopediaTopics = {
+  locomotivas: [
+    {
+      title: 'Modelos de locomotivas',
+      description: 'Conheça os principais modelos e tipos de locomotivas ferroviárias.',
+      content: `
+        <h3>Modelos de locomotivas ferroviárias</h3>
+
+        <p>As locomotivas são veículos ferroviários motorizados responsáveis por fornecer a força necessária para movimentar trens de passageiros, cargas e composições de serviço.</p>
+
+        <p>Existem diferentes modelos de locomotivas, desenvolvidos de acordo com as necessidades de transporte, características da ferrovia e condições de operação.</p>
+
+        <ul>
+          <li><strong>Diesel-elétricas:</strong> utilizam um motor diesel para acionar um gerador ou alternador, que fornece energia aos motores elétricos de tração.</li>
+          <li><strong>Diesel-hidráulicas:</strong> utilizam transmissão hidráulica para transferir a potência do motor diesel às rodas.</li>
+          <li><strong>Elétricas:</strong> recebem energia de uma fonte externa, como rede aérea ou terceiro trilho, para alimentar os motores de tração.</li>
+          <li><strong>Diesel-mecânicas:</strong> utilizam sistemas mecânicos de transmissão de potência.</li>
+          <li><strong>Locomotivas de manobra:</strong> projetadas para movimentar vagões, formar composições e realizar operações em pátios ferroviários.</li>
+          <li><strong>Locomotivas de linha:</strong> destinadas principalmente à condução de trens em percursos ferroviários.</li>
+        </ul>
+
+        <p>Os modelos podem apresentar diferentes configurações de truques, quantidade de eixos, potência e capacidade de tração.</p>
+      `
+    },
+    {
+      title: 'Fabricantes de locomotivas',
+      description: 'Conheça empresas que desenvolveram e fabricam locomotivas ferroviárias.',
+      content: `
+        <h3>Fabricantes de locomotivas</h3>
+
+        <p>A indústria ferroviária possui fabricantes especializados no desenvolvimento e produção de locomotivas para diferentes aplicações, tecnologias e mercados.</p>
+
+        <p>Entre os fabricantes historicamente importantes e presentes no setor ferroviário estão:</p>
+
+        <ul>
+          <li><strong>Wabtec:</strong> empresa que reúne tecnologias e linhas de produtos ferroviários, incluindo locomotivas e sistemas de controle.</li>
+          <li><strong>Progress Rail:</strong> fabricante e fornecedora de soluções ferroviárias, incluindo locomotivas e equipamentos de manutenção.</li>
+          <li><strong>Alstom:</strong> empresa com atuação internacional no desenvolvimento de tecnologias e equipamentos ferroviários.</li>
+          <li><strong>Siemens Mobility:</strong> desenvolve locomotivas, sistemas de sinalização e soluções para transporte ferroviário.</li>
+          <li><strong>CRRC:</strong> grupo industrial chinês com ampla atuação na fabricação de locomotivas e outros veículos ferroviários.</li>
+        </ul>
+
+        <p>Os fabricantes desenvolvem equipamentos considerando fatores como potência, eficiência energética, capacidade de tração, confiabilidade, segurança e condições de operação.</p>
+      `
+    },
+    {
+      title: 'Tecnologias das locomotivas',
+      description: 'Entenda os sistemas e recursos tecnológicos utilizados nas locomotivas.',
+      content: `
+        <h3>Tecnologias das locomotivas</h3>
+
+        <p>As locomotivas modernas utilizam diferentes tecnologias para produzir, transmitir e controlar a força de tração necessária à movimentação dos trens.</p>
+
+        <ul>
+          <li><strong>Tração diesel-elétrica:</strong> utiliza a energia produzida pelo conjunto motor diesel e gerador ou alternador para alimentar os motores de tração.</li>
+          <li><strong>Tração elétrica:</strong> utiliza energia elétrica fornecida por uma fonte externa.</li>
+          <li><strong>Controle eletrônico:</strong> monitora e gerencia parâmetros de funcionamento dos equipamentos da locomotiva.</li>
+          <li><strong>Inversores de frequência:</strong> controlam a alimentação dos motores de tração em sistemas elétricos compatíveis.</li>
+          <li><strong>Sistemas de diagnóstico:</strong> auxiliam na identificação de falhas e no acompanhamento das condições dos equipamentos.</li>
+          <li><strong>Frenagem dinâmica:</strong> utiliza os motores de tração como geradores para produzir esforço de frenagem, dissipando ou recuperando energia conforme o sistema.</li>
+        </ul>
+
+        <p>A evolução tecnológica busca melhorar o desempenho operacional, a eficiência energética, a confiabilidade e a segurança ferroviária.</p>
+      `
+    },
+    {
+      title: 'Características das locomotivas',
+      description: 'Conheça os principais parâmetros técnicos e características construtivas.',
+      content: `
+        <h3>Características das locomotivas</h3>
+
+        <p>As locomotivas apresentam características técnicas que determinam sua capacidade de operação e desempenho nas ferrovias.</p>
+
+        <ul>
+          <li><strong>Potência:</strong> capacidade de produção de energia mecânica pelo conjunto de propulsão.</li>
+          <li><strong>Força de tração:</strong> esforço que a locomotiva pode desenvolver para movimentar uma composição ferroviária.</li>
+          <li><strong>Peso:</strong> massa total da locomotiva, importante para determinar a carga por eixo.</li>
+          <li><strong>Velocidade máxima:</strong> limite de velocidade previsto no projeto e nas condições de operação.</li>
+          <li><strong>Configuração de eixos:</strong> disposição dos eixos e rodas nos truques da locomotiva.</li>
+          <li><strong>Truques:</strong> conjuntos mecânicos responsáveis pelo apoio, orientação e deslocamento da locomotiva sobre os trilhos.</li>
+          <li><strong>Motor:</strong> equipamento responsável pela produção de energia utilizada no sistema de tração.</li>
+          <li><strong>Sistema de freio:</strong> conjunto de equipamentos utilizado para controlar a velocidade e realizar a frenagem.</li>
+        </ul>
+         <p>Essas características variam conforme o fabricante, o modelo, a finalidade e as condições de utilização da locomotiva.</p>
+      `
+      }
+    ]
+  ],
+
+      vagões: 
+       {
+
         title: 'Tipos de vagões',
         description: 'Conheça os principais modelos de vagões ferroviários.',
         content: `
@@ -765,8 +854,9 @@
           </ul>
           <p>Os modelos e suas configurações podem variar conforme o projeto, a carga transportada e a ferrovia.</p>
         `
-      },
+       },
       {
+  
         title: 'Aplicações dos vagões',
         description: 'Entenda como cada modelo atende a diferentes tipos de carga.',
         content: `
