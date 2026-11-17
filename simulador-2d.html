@@ -153,22 +153,21 @@ function signal(){
 
 /* NOVO SINAL DE CHAMADA - LINHA 2 */
 
+
 function callSignal() {
-  if (!selected) return;
-
   const blink = Math.floor(Date.now() / 450) % 2 === 0;
-  const signalX = STOP_X + 45;
+  const signalX = train.x + train.width + 18;
 
-  // Poste do sinal
+  // Poste
   ctx.fillStyle = "#292c2d";
   ctx.fillRect(signalX - 5, Y2 - 43, 10, 36);
 
-  // Caixa do sinal
+  // Caixa
   ctx.fillStyle = "#161b20";
   ctx.fillRect(signalX - 12, Y2 - 48, 24, 35);
 
-  // Luz vermelha piscante
-  if (blink) {
+  // Luz vermelha
+  if (selected && blink) {
     ctx.shadowColor = "#ff0000";
     ctx.shadowBlur = 18;
     ctx.fillStyle = "#ff2929";
@@ -189,6 +188,7 @@ function callSignal() {
   ctx.arc(signalX, Y2 - 22, 6, 0, Math.PI * 2);
   ctx.fill();
 }
+
     
 function draw(){ctx.clearRect(0,0,W,H);background();tracks();parkedWagons();signal();callSignal();opposingTrain();playerTrain();}
 function changeSwitch(){if(!started||finished)return;if(trainD>0||speed>0){say("A chave só pode ser alterada com a composição parada na posição inicial.");return;}selected=!selected;route=selected?upper:middle;switchBtn.textContent=selected?"↔ ROTA L2 SELECIONADA":"↔ SELECIONAR L2";switchBtn.style.background=selected?"#278c4c":"#a47b27";say(selected?"Rota L2 selecionada. Você pode iniciar a operação.":"Rota retornou para L1. Selecione L2 para realizar a missão.");draw();}
