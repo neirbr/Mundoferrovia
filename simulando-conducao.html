@@ -1,166 +1,211 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#102b3f">
+
   <title>Simulando uma Condução | Mundo Ferroviário</title>
+
   <link rel="stylesheet" href="simulando-conducao.css">
+
+  <style>
+    #orientationMessage {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #102b3f;
+      color: white;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 25px;
+    }
+
+    #orientationMessage .orientation-content {
+      max-width: 400px;
+    }
+
+    #orientationMessage .rotate-icon {
+      font-size: 65px;
+      margin-bottom: 20px;
+    }
+
+    @media (orientation: portrait) {
+      body.simulator-active #orientationMessage {
+        display: flex;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-  <header class="page-header">
-    <a class="back-button" href="index.html">← Voltar</a>
-    <div>
-      <h1>Simulando uma Condução</h1>
-      <p>Uma experiência de operação ferroviária</p>
-    </div>
-  </header>
-
-  <main class="simulation">
-
-    <section class="mission-intro" id="missionIntro">
-      <h2>Missão ferroviária</h2>
+  <div id="orientationMessage">
+    <div class="orientation-content">
+      <div class="rotate-icon">📱 ↻</div>
+      <h2>Gire seu aparelho</h2>
       <p>
-        Conduza uma composição formada por uma locomotiva e quatro vagões.
-        Respeite os sinais, as passagens em nível e os procedimentos
-        operacionais até chegar à estação de destino.
+        Para iniciar a condução ferroviária,
+        coloque seu celular na posição horizontal.
       </p>
-      <button id="startMissionButton" class="primary-button">
-        Iniciar missão
-      </button>
-    </section>
+    </div>
+  </div>
 
-    <section id="gameArea" class="game-area" hidden>
+  <main class="conducao-container">
 
-      <div class="status-panel">
-        <div class="status-item">
-          <span>Velocidade</span>
-          <strong><span id="speedDisplay">0</span> <small>km/h</small></strong>
-        </div>
-        <div class="status-item">
-          <span>Aceleração</span>
-          <strong id="throttleDisplay">N</strong>
-        </div>
-        <div class="status-item">
-          <span>Direção</span>
-          <strong id="directionDisplay">Neutro</strong>
-        </div>
-        <div class="status-item">
-          <span>Pressão do freio</span>
-          <strong><span id="pressureDisplay">0</span> <small>PSI</small></strong>
-        </div>
-      </div>
+    <header class="conducao-header">
+      <a href="Index.html" class="back-button">← Voltar</a>
+      <h1>Simulando uma Condução</h1>
+      <span class="header-tag">MUNDO FERROVIÁRIO</span>
+    </header>
 
-      <div class="railway-view">
-        <canvas id="conducaoCanvas">
-          Seu navegador não suporta a visualização do simulador.
-        </canvas>
-        <div class="scene-caption" id="sceneCaption">
-          Preparação para iniciar a condução
-        </div>
-      </div>
+    
+    <section class="game-section">
 
-      <div class="mission-message" id="missionMessage" aria-live="polite">
-        Acione a buzina e o sino antes de movimentar o trem.
-      </div>
+      <div id="missionStart" class="mission-start">
+        <h2>Missão ferroviária</h2>
+        <p>Conduza o trem até a estação de destino.</p>
 
-      <section class="controls-panel" aria-label="Controles da locomotiva">
-
-        <div class="control-buttons">
-
-          <div class="control-group">
-            <span class="control-title">Direção</span>
-            <button id="directionButton" class="round-control direction-control"
-                    type="button" aria-label="Alterar direção">
-              <span class="direction-up">↑</span>
-              <strong id="directionLever">N</strong>
-              <span class="direction-down">↓</span>
-            </button>
-          </div>
-
-          <div class="control-group">
-            <span class="control-title">Aceleração</span>
-            <button id="throttleButton" class="round-control throttle-control"
-                    type="button" aria-label="Aumentar aceleração">
-              <span class="throttle-up">↑</span>
-              <strong id="throttleLever">N</strong>
-              <span class="throttle-down">↓</span>
-            </button>
-          </div>
-
-          <div class="control-group">
-            <span class="control-title">Buzina</span>
-            <button id="hornButton" class="round-control icon-control"
-                    type="button" aria-label="Acionar buzina">
-              <span aria-hidden="true">📢</span>
-            </button>
-          </div>
-
-          <div class="control-group">
-            <span class="control-title">Sino</span>
-            <button id="bellButton" class="round-control icon-control"
-                    type="button" aria-label="Acionar sino">
-              <span aria-hidden="true">🔔</span>
-            </button>
-          </div>
-
-          <div class="control-group">
-            <span class="control-title">Emergência</span>
-            <button id="emergencyBrake" class="round-control emergency-control"
-                    type="button" aria-label="Acionar freio de emergência">
-              <span aria-hidden="true">⚠️</span>
-            </button>
-          </div>
-
+        <div class="mission-info">
+          <span>🚂 1 locomotiva</span>
+          <span>🚃 4 vagões</span>
+          <span>🛤️ Rota com desvios e curvas</span>
         </div>
 
-        <div class="brake-control">
-          <div class="brake-heading">
-            <label for="serviceBrake">Freio de serviço</label>
-            <strong><span id="brakePressureLabel">0</span> PSI</strong>
-          </div>
-          <input
-            type="range"
-            id="serviceBrake"
-            min="0"
-            max="90"
-            step="1"
-            value="0"
-            aria-label="Selecionar pressão do freio de serviço"
-          >
-          <div class="brake-scale">
-            <span>0 — Liberado</span>
-            <span>90 — Aplicação total</span>
-          </div>
-        </div>
-
-      </section>
-
-      <section id="penaltyPanel" class="penalty-panel" hidden>
-        <h3>Recuperação do sistema</h3>
-        <p id="penaltyMessage" aria-live="polite"></p>
-        <button id="removePenaltyButton" class="primary-button" type="button" hidden>
-          Iniciar recuperação
+        <button id="startMissionButton" class="primary-button">
+          Iniciar missão
         </button>
-      </section>
+      </div>
 
-      <section class="objectives-panel">
-        <h3>Objetivos da missão</h3>
-        <ul>
-          <li id="objectiveHorn">Acionar a buzina</li>
-          <li id="objectiveBell">Acionar o sino</li>
-          <li id="objectiveDrive">Iniciar a condução</li>
-          <li id="objectiveCrossings">Respeitar as duas passagens em nível</li>
-          <li id="objectiveStation">Parar na estação de destino</li>
-          <li id="objectiveSwitch">Restabelecer a chave na posição normal (L1)</li>
-        </ul>
-      </section>
+      <div id="gameArea" class="game-area" hidden>
 
+        <div class="route-header">
+          <span id="missionStatus">Aguardando autorização</span>
+          <span id="routeDistance">Distância: 0 m</span>
+        </div>
+
+        <div class="railway-view">
+          <canvas id="conducaoCanvas"></canvas>
+        </div>
+
+        <div class="indicators-panel">
+
+          <div class="indicator">
+            <span>Velocidade</span>
+            <strong id="speedDisplay">0 km/h</strong>
+          </div>
+
+          <div class="indicator">
+            <span>Manete</span>
+            <strong id="throttleDisplay">N</strong>
+          </div>
+
+          <div class="indicator">
+            <span>Reversor</span>
+            <strong id="directionDisplay">Neutro</strong>
+          </div>
+
+          <div class="indicator">
+            <span>Freio</span>
+            <strong id="brakeDisplay">0 PSI</strong>
+          </div>
+
+        </div>
+
+        <div class="controls-panel">
+
+          <div class="control-group">
+            <h3>Sinalização sonora</h3>
+            <button id="hornButton" class="control-button">
+              📢 Buzina
+            </button>
+            <button id="bellButton" class="control-button">
+              🔔 Sino
+            </button>
+          </div>
+
+          <div class="control-group">
+            <h3>Reversor</h3>
+            <button id="directionButton" class="control-button">
+              Frente
+            </button>
+          </div>
+
+          <div class="control-group">
+            <h3>Manete de tração</h3>
+            <button id="throttleButton" class="control-button">
+              N
+            </button>
+          </div>
+
+          <div class="control-group">
+            <h3>Freio independente</h3>
+            <label for="brakeSlider">
+              Pressão: <span id="brakeValue">0</span> PSI
+            </label>
+            <input
+              type="range"
+              id="brakeSlider"
+              min="0"
+              max="90"
+              value="0"
+            >
+          </div>
+
+          <div class="control-group emergency-group">
+            <h3>Emergência</h3>
+            <button id="emergencyBrakeButton" class="emergency-button">
+              ⚠️ FREIO DE EMERGÊNCIA
+            </button>
+          </div>
+
+        </div>
+
+        <div id="penaltyPanel" class="penalty-panel" hidden>
+          <p id="penaltyMessage"></p>
+          <button id="removePenaltyButton" class="primary-button">
+            Iniciar recomposição
+          </button>
+        </div>
+
+      </div>
     </section>
+
+
+    <footer class="conducao-footer">
+      <p>© Mundo Ferroviário — Conhecimento que move trilhos.</p>
+    </footer>
+
   </main>
 
   <script src="simulando-conducao.js"></script>
+
+  <script>
+    // Solicita orientação horizontal quando disponível
+    async function solicitarTelaHorizontal() {
+      try {
+        if (screen.orientation &&
+            screen.orientation.lock) {
+          await screen.orientation.lock("landscape");
+        }
+      } catch (erro) {
+        console.log("Orientação automática não disponível.");
+      }
+    }
+
+    const inicio = document.getElementById("startMissionButton");
+
+    inicio.addEventListener("click", solicitarTelaHorizontal);
+  </script>
+
 </body>
 </html>
+
+
+
+
+
+    
+    
