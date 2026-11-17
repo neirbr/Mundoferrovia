@@ -1,166 +1,409 @@
+:root {
+  --navy: #102b3f;
+  --blue: #174a67;
+  --gold: #f0b323;
+  --light: #f3f6f8;
+  --white: #ffffff;
+  --green: #24834c;
+  --red: #c62828;
+  --text: #183344;
+}
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#102b3f">
-  <title>Simulando uma Condução | Mundo Ferroviário</title>
-  <link rel="stylesheet" href="simulando-conducao.css">
-</head>
-<body>
+* {
+  box-sizing: border-box;
+}
 
-  <header class="page-header">
-    <a class="back-button" href="index.html">← Voltar</a>
-    <div>
-      <h1>Simulando uma Condução</h1>
-      <p>Uma experiência de operação ferroviária</p>
-    </div>
-  </header>
+body {
+  margin: 0;
+  background: #e9eef1;
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
 
-  <main class="simulation">
+button,
+input {
+  font: inherit;
+}
 
-    <section class="mission-intro" id="missionIntro">
-      <h2>Missão ferroviária</h2>
-      <p>
-        Conduza uma composição formada por uma locomotiva e quatro vagões.
-        Respeite os sinais, as passagens em nível e os procedimentos
-        operacionais até chegar à estação de destino.
-      </p>
-      <button id="startMissionButton" class="primary-button">
-        Iniciar missão
-      </button>
-    </section>
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  color: var(--white);
+  background: var(--navy);
+  border-bottom: 3px solid var(--gold);
+}
 
-    <section id="gameArea" class="game-area" hidden>
+.page-header h1 {
+  margin: 0;
+  font-size: 21px;
+}
 
-      <div class="status-panel">
-        <div class="status-item">
-          <span>Velocidade</span>
-          <strong><span id="speedDisplay">0</span> <small>km/h</small></strong>
-        </div>
-        <div class="status-item">
-          <span>Aceleração</span>
-          <strong id="throttleDisplay">N</strong>
-        </div>
-        <div class="status-item">
-          <span>Direção</span>
-          <strong id="directionDisplay">Neutro</strong>
-        </div>
-        <div class="status-item">
-          <span>Pressão do freio</span>
-          <strong><span id="pressureDisplay">0</span> <small>PSI</small></strong>
-        </div>
-      </div>
+.page-header p {
+  margin: 4px 0 0;
+  color: #d5e0e7;
+  font-size: 12px;
+}
 
-      <div class="railway-view">
-        <canvas id="conducaoCanvas">
-          Seu navegador não suporta a visualização do simulador.
-        </canvas>
-        <div class="scene-caption" id="sceneCaption">
-          Preparação para iniciar a condução
-        </div>
-      </div>
+.back-button {
+  flex-shrink: 0;
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: bold;
+}
 
-      <div class="mission-message" id="missionMessage" aria-live="polite">
-        Acione a buzina e o sino antes de movimentar o trem.
-      </div>
+.simulation {
+  width: min(100%, 1100px);
+  margin: 0 auto;
+  padding: 12px;
+}
 
-      <section class="controls-panel" aria-label="Controles da locomotiva">
+.mission-intro,
+.objectives-panel,
+.penalty-panel {
+  padding: 16px;
+  margin-bottom: 12px;
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #102b3f12;
+}
 
-        <div class="control-buttons">
+.mission-intro h2,
+.objectives-panel h3,
+.penalty-panel h3 {
+  margin: 0 0 9px;
+  color: var(--navy);
+}
 
-          <div class="control-group">
-            <span class="control-title">Direção</span>
-            <button id="directionButton" class="round-control direction-control"
-                    type="button" aria-label="Alterar direção">
-              <span class="direction-up">↑</span>
-              <strong id="directionLever">N</strong>
-              <span class="direction-down">↓</span>
-            </button>
-          </div>
+.mission-intro p,
+.penalty-panel p {
+  font-size: 14px;
+  line-height: 1.5;
+}
 
-          <div class="control-group">
-            <span class="control-title">Aceleração</span>
-            <button id="throttleButton" class="round-control throttle-control"
-                    type="button" aria-label="Aumentar aceleração">
-              <span class="throttle-up">↑</span>
-              <strong id="throttleLever">N</strong>
-              <span class="throttle-down">↓</span>
-            </button>
-          </div>
+.primary-button {
+  padding: 11px 20px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--gold);
+  color: var(--navy);
+  font-weight: bold;
+  cursor: pointer;
+}
 
-          <div class="control-group">
-            <span class="control-title">Buzina</span>
-            <button id="hornButton" class="round-control icon-control"
-                    type="button" aria-label="Acionar buzina">
-              <span aria-hidden="true">📢</span>
-            </button>
-          </div>
+.primary-button:active {
+  transform: scale(.98);
+}
 
-          <div class="control-group">
-            <span class="control-title">Sino</span>
-            <button id="bellButton" class="round-control icon-control"
-                    type="button" aria-label="Acionar sino">
-              <span aria-hidden="true">🔔</span>
-            </button>
-          </div>
+.game-area {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
 
-          <div class="control-group">
-            <span class="control-title">Emergência</span>
-            <button id="emergencyBrake" class="round-control emergency-control"
-                    type="button" aria-label="Acionar freio de emergência">
-              <span aria-hidden="true">⚠️</span>
-            </button>
-          </div>
+[hidden] {
+  display: none !important;
+}
 
-        </div>
+/* Indicadores permanentes */
 
-        <div class="brake-control">
-          <div class="brake-heading">
-            <label for="serviceBrake">Freio de serviço</label>
-            <strong><span id="brakePressureLabel">0</span> PSI</strong>
-          </div>
-          <input
-            type="range"
-            id="serviceBrake"
-            min="0"
-            max="90"
-            step="1"
-            value="0"
-            aria-label="Selecionar pressão do freio de serviço"
-          >
-          <div class="brake-scale">
-            <span>0 — Liberado</span>
-            <span>90 — Aplicação total</span>
-          </div>
-        </div>
+.status-panel {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
 
-      </section>
+.status-item {
+  min-width: 0;
+  padding: 8px 5px;
+  text-align: center;
+  background: var(--navy);
+  color: var(--white);
+  border-radius: 8px;
+}
 
-      <section id="penaltyPanel" class="penalty-panel" hidden>
-        <h3>Recuperação do sistema</h3>
-        <p id="penaltyMessage" aria-live="polite"></p>
-        <button id="removePenaltyButton" class="primary-button" type="button" hidden>
-          Iniciar recuperação
-        </button>
-      </section>
+.status-item span {
+  display: block;
+  color: #cbd9e2;
+  font-size: 10px;
+}
 
-      <section class="objectives-panel">
-        <h3>Objetivos da missão</h3>
-        <ul>
-          <li id="objectiveHorn">Acionar a buzina</li>
-          <li id="objectiveBell">Acionar o sino</li>
-          <li id="objectiveDrive">Iniciar a condução</li>
-          <li id="objectiveCrossings">Respeitar as duas passagens em nível</li>
-          <li id="objectiveStation">Parar na estação de destino</li>
-          <li id="objectiveSwitch">Restabelecer a chave na posição normal (L1)</li>
-        </ul>
-      </section>
+.status-item strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--gold);
+  font-size: 17px;
+  white-space: nowrap;
+}
 
-    </section>
-  </main>
+.status-item strong small {
+  display: inline;
+  color: #e1e9ee;
+  font-size: 10px;
+}
 
-  <script src="simulando-conducao.js"></script>
-</body>
-</html>
+/* Cenário horizontal em vista superior */
+
+.railway-view {
+  position: relative;
+  width: 100%;
+  height: clamp(230px, 48vh, 430px);
+  overflow: hidden;
+  background: #6a9a55;
+  border: 3px solid var(--navy);
+  border-radius: 10px;
+}
+
+#conducaoCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.scene-caption {
+  position: absolute;
+  left: 8px;
+  bottom: 7px;
+  max-width: calc(100% - 16px);
+  padding: 5px 9px;
+  color: white;
+  background: #102b3fce;
+  border-radius: 5px;
+  font-size: 11px;
+  pointer-events: none;
+}
+
+/* Mensagem operacional */
+
+.mission-message {
+  min-height: 34px;
+  padding: 9px 11px;
+  background: #fff8df;
+  border-left: 4px solid var(--gold);
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Controles compactos */
+
+.controls-panel {
+  padding: 9px;
+  background: var(--navy);
+  border-radius: 10px;
+  color: white;
+}
+
+.control-buttons {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+.control-group {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.control-title {
+  min-height: 12px;
+  color: #dce6ec;
+  font-size: 9px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.round-control {
+  width: clamp(43px, 11vw, 58px);
+  height: clamp(43px, 11vw, 58px);
+  padding: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #8ba5b5;
+  border-radius: 50%;
+  background: #f3f6f8;
+  color: var(--navy);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.round-control:active {
+  transform: scale(.94);
+}
+
+.round-control:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.direction-control,
+.throttle-control {
+  line-height: 1;
+}
+
+.direction-control strong,
+.throttle-control strong {
+  font-size: 15px;
+}
+
+.direction-up,
+.direction-down,
+.throttle-up,
+.throttle-down {
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.icon-control {
+  font-size: 21px;
+}
+
+.emergency-control {
+  border: 2px solid #ffcf35;
+  background: #c62828;
+  color: #ffdf45;
+  font-size: 22px;
+}
+
+/* Barra de pressão do freio */
+
+.brake-control {
+  margin-top: 9px;
+  padding: 8px 9px 5px;
+  background: #1a4057;
+  border-radius: 7px;
+}
+
+.brake-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.brake-heading strong {
+  color: var(--gold);
+}
+
+#serviceBrake {
+  display: block;
+  width: 100%;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--gold);
+  cursor: pointer;
+  touch-action: pan-y;
+}
+
+#serviceBrake:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.brake-scale {
+  display: flex;
+  justify-content: space-between;
+  color: #cbd9e2;
+  font-size: 9px;
+}
+
+/* Penalidade e objetivos */
+
+.penalty-panel {
+  border: 2px solid var(--red);
+}
+
+.penalty-panel h3 {
+  color: var(--red);
+}
+
+.objectives-panel ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.objectives-panel li {
+  margin: 7px 0;
+  font-size: 13px;
+}
+
+.objectives-panel li.completed {
+  color: var(--green);
+  text-decoration: line-through;
+}
+
+/* Telas maiores */
+
+@media (min-width: 760px) {
+  .simulation {
+    padding: 18px;
+  }
+
+  .railway-view {
+    height: min(55vh, 480px);
+  }
+
+  .controls-panel {
+    padding: 12px 18px;
+  }
+
+  .control-buttons {
+    justify-content: center;
+    gap: 28px;
+  }
+
+  .control-title {
+    font-size: 11px;
+  }
+
+  .round-control {
+    width: 56px;
+    height: 56px;
+  }
+
+  .mission-message {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .simulation {
+    padding: 7px;
+  }
+
+  .status-item {
+    padding: 7px 2px;
+  }
+
+  .status-item span {
+    font-size: 9px;
+  }
+
+  .status-item strong {
+    font-size: 15px;
+  }
+
+  .control-buttons {
+    gap: 2px;
+  }
+
+  .round-control {
+    width: 41px;
+    height: 41px;
+  }
+
+  .control-title {
+    font-size: 8px;
+  }
+}
