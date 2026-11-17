@@ -1358,10 +1358,104 @@ const encyclopediaTopics = {
         <p>As operações devem seguir os procedimentos de segurança e as orientações técnicas aplicáveis ao terminal e à ferrovia.</p>
       `
     }
-  ]
+  ],
+
+
+  historia: [
+    {
+      title: 'O surgimento das primeiras ferrovias',
+      description: 'Conheça a origem das ferrovias e o início da utilização dos trens no transporte.',
+      content: `
+        <h3>O surgimento das primeiras ferrovias</h3>
+        <p>A história das ferrovias está diretamente ligada à Revolução Industrial e à necessidade de transportar matérias-primas, mercadorias e passageiros com maior eficiência.</p>
+        <p>Antes das locomotivas a vapor, já existiam caminhos de trilhos utilizados para movimentar vagões puxados por animais ou pela força humana.</p>
+        <p>Em 1825, foi inaugurada na Inglaterra a ferrovia Stockton and Darlington, um marco na utilização de locomotivas a vapor em uma ferrovia pública.</p>
+        <p>Em 1830, a ferrovia Liverpool and Manchester iniciou uma nova etapa do transporte ferroviário, demonstrando o potencial dos trens para transportar passageiros e mercadorias entre cidades.</p>
+        <ul>
+          <li><strong>Inglaterra:</strong> berço de importantes avanços da ferrovia moderna.</li>
+          <li><strong>Máquina a vapor:</strong> possibilitou maior capacidade de tração e transporte.</li>
+          <li><strong>Expansão:</strong> as ferrovias começaram a conectar regiões industriais e comerciais.</li>
+          <li><strong>Impacto:</strong> redução dos tempos de deslocamento e transformação da logística.</li>
+        </ul>
+        <p>O desenvolvimento ferroviário modificou profundamente a economia, a indústria e a organização das cidades, tornando-se um dos principais símbolos da industrialização.</p>
+      `
+    },
+    {
+      title: 'A chegada das ferrovias ao Brasil',
+      description: 'Conheça o início do transporte ferroviário brasileiro no século XIX.',
+      content: `
+        <h3>A chegada das ferrovias ao Brasil</h3>
+        <p>A implantação das ferrovias brasileiras ocorreu durante o século XIX, em um período de crescimento da produção agrícola e de necessidade de melhorar o transporte de mercadorias até os portos.</p>
+        <p>Um dos principais responsáveis por impulsionar a construção ferroviária no país foi Irineu Evangelista de Sousa, conhecido como Barão de Mauá.</p>
+        <p>Em 30 de abril de 1854, foi inaugurada a Estrada de Ferro Mauá, considerada a primeira ferrovia do Brasil. O trecho inicial possuía aproximadamente 14,5 quilômetros, ligando o Porto de Mauá, na Baía de Guanabara, à região de Fragoso, no atual município de Magé, no Rio de Janeiro.</p>
+        <ul>
+          <li><strong>1854:</strong> inauguração da primeira ferrovia brasileira.</li>
+          <li><strong>Barão de Mauá:</strong> empresário e empreendedor ligado à implantação da ferrovia.</li>
+          <li><strong>Locomotiva Baronesa:</strong> marco histórico da tração a vapor no Brasil.</li>
+          <li><strong>Objetivo:</strong> facilitar o transporte de pessoas e mercadorias.</li>
+        </ul>
+        <p>A chegada das ferrovias representou uma transformação importante na infraestrutura brasileira e abriu caminho para a expansão do transporte ferroviário em diferentes regiões do país.</p>
+      `
+    },
+    {
+      title: 'A Estrada de Ferro Mauá e seu pioneirismo',
+      description: 'Conheça a importância da primeira ferrovia brasileira para a história nacional.',
+      content: `
+        <h3>A Estrada de Ferro Mauá e seu pioneirismo</h3>
+        <p>A Estrada de Ferro Mauá ocupa um lugar especial na história do transporte brasileiro por representar o início da operação ferroviária no país.</p>
+        <p>Sua inauguração aconteceu em 1854, por iniciativa de Irineu Evangelista de Sousa, o Barão de Mauá, que acreditava no potencial das ferrovias para modernizar a economia e facilitar o transporte.</p>
+        <p>A linha conectava o Porto de Mauá à região de Fragoso, permitindo a integração entre o transporte marítimo e o ferroviário.</p>
+        <ul>
+          <li><strong>Localização:</strong> província do Rio de Janeiro, atual estado do Rio de Janeiro.</li>
+          <li><strong>Extensão inicial:</strong> aproximadamente 14,5 quilômetros.</li>
+          <li><strong>Inauguração:</strong> 30 de abril de 1854.</li>
+          <li><strong>Tração:</strong> locomotivas a vapor.</li>
+          <li><strong>Importância:</strong> início da implantação ferroviária brasileira.</li>
+        </ul>
+        <p>A locomotiva Baronesa tornou-se um dos principais símbolos desse período pioneiro e permanece como referência histórica da ferrovia nacional.</p>
+        <p>A Estrada de Ferro Mauá demonstrou que o transporte ferroviário poderia desempenhar um papel estratégico no desenvolvimento da infraestrutura brasileira.</p>
+      `
+    },
+    {
+      title: 'A expansão ferroviária no Brasil',
+      description: 'Entenda como as ferrovias se desenvolveram e passaram a conectar diferentes regiões brasileiras.',
+      content: `
+        <h3>A expansão ferroviária no Brasil</h3>
+        <p>Após a inauguração da Estrada de Ferro Mauá, a construção de novas linhas ferroviárias ganhou importância no desenvolvimento econômico brasileiro.</p>
+        <p>Durante a segunda metade do século XIX e o início do século XX, diversas ferrovias foram construídas para atender principalmente ao transporte de produtos agrícolas, especialmente o café, além de passageiros e outras mercadorias.</p>
+        <p>Entre os empreendimentos históricos de destaque está a São Paulo Railway, inaugurada em 1867, que estabeleceu uma ligação ferroviária entre Santos e Jundiaí, passando pela região da Serra do Mar.</p>
+        <ul>
+          <li><strong>Transporte agrícola:</strong> as ferrovias facilitaram o escoamento da produção até os portos.</li>
+          <li><strong>Integração regional:</strong> novas linhas conectaram cidades e regiões produtoras.</li>
+          <li><strong>Desenvolvimento urbano:</strong> estações ferroviárias estimularam o crescimento de diversas localidades.</li>
+          <li><strong>Comércio:</strong> o transporte ferroviário ampliou a capacidade de movimentação de mercadorias.</li>
+        </ul>
+        <p>Ao longo do século XX, ocorreram mudanças na administração e organização das ferrovias brasileiras. Em 1957, foi criada a Rede Ferroviária Federal S.A. (RFFSA), reunindo diversas estradas de ferro sob uma administração federal.</p>
+        <p>Esse processo marcou uma etapa importante da organização do sistema ferroviário nacional.</p>
+      `
+    },
+    {
+      title: 'A evolução das locomotivas e do transporte ferroviário',
+      description: 'Conheça a transformação tecnológica das locomotivas e dos sistemas ferroviários ao longo do tempo.',
+      content: `
+        <h3>A evolução das locomotivas e do transporte ferroviário</h3>
+        <p>Desde o surgimento das primeiras locomotivas a vapor, o transporte ferroviário passou por grandes transformações tecnológicas. Os avanços permitiram aumentar a capacidade de transporte, melhorar o desempenho dos trens e ampliar a eficiência operacional.</p>
+        <ul>
+          <li><strong>Locomotivas a vapor:</strong> utilizavam a energia produzida pela queima de combustível para gerar vapor e movimentar os mecanismos de tração.</li>
+          <li><strong>Locomotivas diesel:</strong> representaram uma evolução importante, utilizando motores a combustão para produzir potência de tração.</li>
+          <li><strong>Locomotivas elétricas:</strong> utilizam energia elétrica para movimentar motores de tração.</li>
+          <li><strong>Sistemas de sinalização:</strong> evoluíram para proporcionar maior controle e segurança na circulação ferroviária.</li>
+          <li><strong>Vagões modernos:</strong> passaram a apresentar projetos específicos para diferentes tipos de cargas e operações.</li>
+        </ul>
+        <p>Além da evolução das locomotivas, ocorreram melhorias nos trilhos, dormentes, sistemas de frenagem, engates, telecomunicações e equipamentos de controle.</p>
+        <p>Atualmente, as ferrovias desempenham um papel fundamental no transporte de grandes volumes de cargas e no deslocamento de passageiros em diversas partes do mundo.</p>
+        <p>A modernização tecnológica continua transformando o setor, com investimentos em automação, eficiência energética, monitoramento e sistemas avançados de controle ferroviário.</p>
+      `
+    }
+  ],
 };
 
-  function abrirBibliotecaFerroviaria(categoria) {
+function abrirBibliotecaFerroviaria(categoria) {
     if (!encyclopediaCategories || !encyclopediaLibrary) return;
 
     const nomes = {
