@@ -1,299 +1,166 @@
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#102b3f">
+  <title>Simulando uma Condução | Mundo Ferroviário</title>
+  <link rel="stylesheet" href="simulando-conducao.css">
+</head>
+<body>
 
-body {
-  font-family: Arial, sans-serif;
-  background: #102b3f;
-  color: #f3f6f8;
-  min-height: 100vh;
-}
+  <header class="page-header">
+    <a class="back-button" href="index.html">← Voltar</a>
+    <div>
+      <h1>Simulando uma Condução</h1>
+      <p>Uma experiência de operação ferroviária</p>
+    </div>
+  </header>
 
-.top-header {
-  background: #0a1e2c;
-  padding: 18px 12px;
-  text-align: center;
-  border-bottom: 3px solid #f0b323;
-}
+  <main class="simulation">
 
-.top-header h1 {
-  color: #f0b323;
-  font-size: 24px;
-}
+    <section class="mission-intro" id="missionIntro">
+      <h2>Missão ferroviária</h2>
+      <p>
+        Conduza uma composição formada por uma locomotiva e quatro vagões.
+        Respeite os sinais, as passagens em nível e os procedimentos
+        operacionais até chegar à estação de destino.
+      </p>
+      <button id="startMissionButton" class="primary-button">
+        Iniciar missão
+      </button>
+    </section>
 
-.top-header p {
-  margin-top: 6px;
-  color: #dce6ec;
-  font-size: 13px;
-}
+    <section id="gameArea" class="game-area" hidden>
 
-main {
-  width: 100%;
-  max-width: 1200px;
-  margin: auto;
-  padding: 14px;
-}
+      <div class="status-panel">
+        <div class="status-item">
+          <span>Velocidade</span>
+          <strong><span id="speedDisplay">0</span> <small>km/h</small></strong>
+        </div>
+        <div class="status-item">
+          <span>Aceleração</span>
+          <strong id="throttleDisplay">N</strong>
+        </div>
+        <div class="status-item">
+          <span>Direção</span>
+          <strong id="directionDisplay">Neutro</strong>
+        </div>
+        <div class="status-item">
+          <span>Pressão do freio</span>
+          <strong><span id="pressureDisplay">0</span> <small>PSI</small></strong>
+        </div>
+      </div>
 
-.mission-intro {
-  background: #174a67;
-  border: 1px solid #39718e;
-  border-radius: 12px;
-  padding: 22px;
-  margin: 25px auto;
-  max-width: 650px;
-  text-align: center;
-}
+      <div class="railway-view">
+        <canvas id="conducaoCanvas">
+          Seu navegador não suporta a visualização do simulador.
+        </canvas>
+        <div class="scene-caption" id="sceneCaption">
+          Preparação para iniciar a condução
+        </div>
+      </div>
 
-.mission-intro h2 {
-  color: #f0b323;
-  margin-bottom: 14px;
-}
+      <div class="mission-message" id="missionMessage" aria-live="polite">
+        Acione a buzina e o sino antes de movimentar o trem.
+      </div>
 
-.mission-intro p {
-  line-height: 1.6;
-}
+      <section class="controls-panel" aria-label="Controles da locomotiva">
 
-.mission-details {
-  background: #102b3f;
-  border-radius: 8px;
-  padding: 14px;
-  margin: 18px 0;
-  text-align: left;
-}
+        <div class="control-buttons">
 
-.mission-details p {
-  margin: 8px 0;
-  font-size: 14px;
-}
+          <div class="control-group">
+            <span class="control-title">Direção</span>
+            <button id="directionButton" class="round-control direction-control"
+                    type="button" aria-label="Alterar direção">
+              <span class="direction-up">↑</span>
+              <strong id="directionLever">N</strong>
+              <span class="direction-down">↓</span>
+            </button>
+          </div>
 
-button {
-  border: none;
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  touch-action: manipulation;
-}
+          <div class="control-group">
+            <span class="control-title">Aceleração</span>
+            <button id="throttleButton" class="round-control throttle-control"
+                    type="button" aria-label="Aumentar aceleração">
+              <span class="throttle-up">↑</span>
+              <strong id="throttleLever">N</strong>
+              <span class="throttle-down">↓</span>
+            </button>
+          </div>
 
-button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
+          <div class="control-group">
+            <span class="control-title">Buzina</span>
+            <button id="hornButton" class="round-control icon-control"
+                    type="button" aria-label="Acionar buzina">
+              <span aria-hidden="true">📢</span>
+            </button>
+          </div>
 
-#startMissionButton {
-  background: #f0b323;
-  color: #102b3f;
-  min-width: 180px;
-  margin-top: 8px;
-}
+          <div class="control-group">
+            <span class="control-title">Sino</span>
+            <button id="bellButton" class="round-control icon-control"
+                    type="button" aria-label="Acionar sino">
+              <span aria-hidden="true">🔔</span>
+            </button>
+          </div>
 
-.game-area {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
+          <div class="control-group">
+            <span class="control-title">Emergência</span>
+            <button id="emergencyBrake" class="round-control emergency-control"
+                    type="button" aria-label="Acionar freio de emergência">
+              <span aria-hidden="true">⚠️</span>
+            </button>
+          </div>
 
-.status-panel {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
+        </div>
 
-.status-panel > div {
-  background: #174a67;
-  border: 1px solid #39718e;
-  border-radius: 8px;
-  padding: 12px 5px;
-  text-align: center;
-}
+        <div class="brake-control">
+          <div class="brake-heading">
+            <label for="serviceBrake">Freio de serviço</label>
+            <strong><span id="brakePressureLabel">0</span> PSI</strong>
+          </div>
+          <input
+            type="range"
+            id="serviceBrake"
+            min="0"
+            max="90"
+            step="1"
+            value="0"
+            aria-label="Selecionar pressão do freio de serviço"
+          >
+          <div class="brake-scale">
+            <span>0 — Liberado</span>
+            <span>90 — Aplicação total</span>
+          </div>
+        </div>
 
-.status-panel span {
-  display: block;
-  font-size: 11px;
-  color: #dce6ec;
-  margin-bottom: 7px;
-}
+      </section>
 
-.status-panel strong {
-  color: #f0b323;
-  font-size: 17px;
-}
+      <section id="penaltyPanel" class="penalty-panel" hidden>
+        <h3>Recuperação do sistema</h3>
+        <p id="penaltyMessage" aria-live="polite"></p>
+        <button id="removePenaltyButton" class="primary-button" type="button" hidden>
+          Iniciar recuperação
+        </button>
+      </section>
 
-.railway-view {
-  width: 100%;
-  height: 340px;
-  background: #c6d6df;
-  border: 3px solid #f0b323;
-  border-radius: 10px;
-  overflow: hidden;
-}
+      <section class="objectives-panel">
+        <h3>Objetivos da missão</h3>
+        <ul>
+          <li id="objectiveHorn">Acionar a buzina</li>
+          <li id="objectiveBell">Acionar o sino</li>
+          <li id="objectiveDrive">Iniciar a condução</li>
+          <li id="objectiveCrossings">Respeitar as duas passagens em nível</li>
+          <li id="objectiveStation">Parar na estação de destino</li>
+          <li id="objectiveSwitch">Restabelecer a chave na posição normal (L1)</li>
+        </ul>
+      </section>
 
-#conducaoCanvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
+    </section>
+  </main>
 
-.mission-message {
-  background: #0a1e2c;
-  border-left: 4px solid #f0b323;
-  border-radius: 6px;
-  padding: 13px;
-  line-height: 1.5;
-  font-size: 14px;
-}
-
-.controls-panel {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.control-group {
-  background: #174a67;
-  border: 1px solid #39718e;
-  border-radius: 10px;
-  padding: 14px 8px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-}
-
-.control-group h3 {
-  color: #f0b323;
-  font-size: 14px;
-  margin-bottom: 5px;
-}
-
-.control-group button {
-  background: #dce6ec;
-  color: #102b3f;
-  width: 100%;
-  max-width: 150px;
-}
-
-#directionLever,
-#throttleLever {
-  background: #0a1e2c;
-  border: 2px solid #f0b323;
-  border-radius: 8px;
-  padding: 12px;
-  width: 100%;
-  max-width: 150px;
-  font-weight: bold;
-  color: #f0b323;
-}
-
-.brake-group input {
-  width: 100%;
-  accent-color: #42a5f5;
-  cursor: pointer;
-}
-
-#brakePressureLabel {
-  color: #75c5ff;
-  font-size: 20px;
-}
-
-.emergency-group button {
-  background: #c62828;
-  color: white;
-  min-height: 55px;
-}
-
-.penalty-panel {
-  background: #3b1717;
-  border: 1px solid #e04b4b;
-  border-radius: 10px;
-  padding: 16px;
-  text-align: center;
-}
-
-.penalty-panel h3 {
-  color: #ff7777;
-  margin-bottom: 10px;
-}
-
-.penalty-panel p {
-  line-height: 1.5;
-  margin-bottom: 12px;
-}
-
-#removePenaltyButton {
-  background: #f0b323;
-  color: #102b3f;
-}
-
-.mission-objectives {
-  background: #174a67;
-  border: 1px solid #39718e;
-  border-radius: 10px;
-  padding: 16px;
-}
-
-.mission-objectives h3 {
-  color: #f0b323;
-  margin-bottom: 12px;
-}
-
-.mission-objectives ul {
-  padding-left: 22px;
-}
-
-.mission-objectives li {
-  margin: 9px 0;
-  font-size: 14px;
-}
-
-[hidden] {
-  display: none !important;
-}
-
-@media (max-width: 700px) {
-  main {
-    padding: 9px;
-  }
-
-  .top-header h1 {
-    font-size: 20px;
-  }
-
-  .status-panel {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .railway-view {
-    height: 260px;
-  }
-
-  .controls-panel {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .control-group {
-    min-height: 155px;
-  }
-}
-
-@media (max-width: 360px) {
-  .status-panel strong {
-    font-size: 15px;
-  }
-
-  .control-group h3 {
-    font-size: 12px;
-  }
-
-  button {
-    font-size: 13px;
-    padding: 10px 8px;
-  }
-}
-
+  <script src="simulando-conducao.js"></script>
+</body>
+</html>
