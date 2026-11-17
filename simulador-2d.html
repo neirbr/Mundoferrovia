@@ -153,20 +153,16 @@ function signal(){
 
 /* NOVO SINAL DE CHAMADA - LINHA 2 */
 
-
 function callSignal() {
   const blink = Math.floor(Date.now() / 450) % 2 === 0;
-  const signalX = train.x + train.width + 18;
+  const signalX = STOP_X + 25;
 
-  // Poste
   ctx.fillStyle = "#292c2d";
   ctx.fillRect(signalX - 5, Y2 - 43, 10, 36);
 
-  // Caixa
   ctx.fillStyle = "#161b20";
   ctx.fillRect(signalX - 12, Y2 - 48, 24, 35);
 
-  // Luz vermelha
   if (selected && blink) {
     ctx.shadowColor = "#ff0000";
     ctx.shadowBlur = 18;
@@ -182,7 +178,6 @@ function callSignal() {
 
   ctx.shadowBlur = 0;
 
-  // Luz inferior apagada
   ctx.fillStyle = "#194d2a";
   ctx.beginPath();
   ctx.arc(signalX, Y2 - 22, 6, 0, Math.PI * 2);
