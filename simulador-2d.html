@@ -50,7 +50,17 @@ h1{font-size:clamp(23px,5vw,34px);color:#f0b323;margin-bottom:8px}
 .restart-phase{border:1px solid #dcae3c;background:#203e52;color:white;border-radius:7px;padding:8px;font-size:12px}
 #yardContainer{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#72776f;overflow:hidden}
 #gameCanvas{width:100%;height:100%;object-fit:contain;touch-action:none}
-#controls{position:absolute;left:12px;bottom:12px;display:flex;gap:9px;align-items:center}
+
+#controls {
+  position: absolute;
+  left: 12px;
+  bottom: calc(75px + env(safe-area-inset-bottom));
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  z-index: 9999;
+}
+    
 .round-control{width:58px;height:58px;border:3px solid white;border-radius:50%;font-weight:bold;font-size:18px;color:white;box-shadow:0 3px 8px #0008;touch-action:none}
 .accelerate{background:#287db0}.brake{background:#b83e36}.resume{background:#27884c;font-size:14px}
 .switch-button{position:absolute;right:12px;top:12px;padding:11px 13px;border:2px solid white;border-radius:8px;background:#a47b27;color:white;font-weight:bold;font-size:12px}
