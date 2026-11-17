@@ -1009,9 +1009,97 @@ const encyclopediaTopics = {
         `
       },
       
+    ],
+
+  componentes: [
+    {
+      title: 'Rodeiros, rodas e eixos',
+      description: 'Conheça os componentes responsáveis pelo contato e deslocamento dos veículos ferroviários.',
+      content: `
+        <h3>Rodeiros, rodas e eixos ferroviários</h3>
+
+        <p>Os rodeiros são conjuntos fundamentais dos veículos ferroviários, responsáveis pelo apoio e deslocamento sobre os trilhos.</p>
+
+        <p>Um rodeiro convencional é composto principalmente por dois rodeiros? Não: por duas rodas ferroviárias montadas rigidamente em um eixo comum, formando um conjunto integrado.</p>
+
+        <ul>
+          <li><strong>Rodas:</strong> componentes que estabelecem contato com os trilhos e orientam o deslocamento do veículo.</li>
+          <li><strong>Eixos:</strong> elementos que conectam as rodas e transmitem os esforços mecânicos.</li>
+          <li><strong>Frisos:</strong> partes laterais das rodas que auxiliam na orientação do veículo sobre a via.</li>
+          <li><strong>Rolamentos:</strong> componentes que permitem a rotação dos eixos com redução do atrito.</li>
+          <li><strong>Caixas de rolamento:</strong> alojamentos que protegem e sustentam os conjuntos de rolamentos.</li>
+        </ul>
+
+        <p>As condições das rodas e dos eixos devem ser acompanhadas por inspeções e procedimentos técnicos específicos.</p>
+      `
+    },
+    {
+      title: 'Engates e aparelhos de choque e tração',
+      description: 'Entenda os dispositivos utilizados na conexão dos veículos ferroviários.',
+      content: `
+        <h3>Engates e aparelhos de choque e tração</h3>
+
+        <p>Os engates são dispositivos utilizados para conectar locomotivas e vagões, permitindo a formação de composições ferroviárias.</p>
+
+        <p>Esses equipamentos transmitem esforços de tração e compressão durante a movimentação dos trens.</p>
+
+        <ul>
+          <li><strong>Engate:</strong> dispositivo responsável pela conexão entre veículos ferroviários.</li>
+          <li><strong>Aparelho de choque e tração:</strong> conjunto destinado a absorver e transmitir esforços longitudinais.</li>
+          <li><strong>Mandíbula:</strong> componente presente em determinados modelos de engates automáticos, responsável pelo acoplamento.</li>
+          <li><strong>Pino de articulação:</strong> elemento utilizado em determinados conjuntos de engate.</li>
+          <li><strong>Aparelho de choque:</strong> mecanismo que absorve parte dos impactos e esforços de compressão.</li>
+        </ul>
+
+        <p>A inspeção desses componentes é importante para a segurança da formação e movimentação dos trens.</p>
+      `
+    },
+    {
+      title: 'Sistemas de freio ferroviário',
+      description: 'Conheça os principais equipamentos e princípios de funcionamento da frenagem.',
+      content: `
+        <h3>Sistemas de freio ferroviário</h3>
+
+        <p>Os sistemas de freio ferroviário são responsáveis por controlar a velocidade, reduzir o movimento e permitir a parada dos veículos e composições.</p>
+
+        <p>Nos sistemas pneumáticos utilizados em muitos veículos ferroviários, o ar comprimido é empregado para comandar a aplicação e o alívio dos freios.</p>
+
+        <ul>
+          <li><strong>Compressor:</strong> equipamento responsável pela produção de ar comprimido.</li>
+          <li><strong>Reservatórios:</strong> armazenam o ar utilizado no sistema de frenagem.</li>
+          <li><strong>Válvula de controle:</strong> controla o funcionamento do sistema conforme as variações de pressão.</li>
+          <li><strong>Cilindro de freio:</strong> transforma a pressão do ar em força mecânica.</li>
+          <li><strong>Timoneira:</strong> conjunto de alavancas e articulações que transmite a força de frenagem.</li>
+          <li><strong>Sapatas de freio:</strong> componentes que atuam por atrito contra as superfícies de frenagem das rodas, nos sistemas que utilizam essa configuração.</li>
+        </ul>
+
+        <p>Existem diferentes tecnologias de frenagem, incluindo freio pneumático, dinâmico e eletropneumático.</p>
+
+        <p>A manutenção e a inspeção devem seguir as especificações técnicas e os procedimentos operacionais aplicáveis.</p>
+      `
+    },
+    {
+      title: 'Trilhos, dormentes e fixações',
+      description: 'Conheça os principais elementos que formam a estrutura da via permanente.',
+      content: `
+        <h3>Trilhos, dormentes e fixações ferroviárias</h3>
+
+        <p>A via permanente é formada por elementos estruturais que sustentam e orientam os veículos ferroviários durante sua circulação.</p>
+
+        <ul>
+          <li><strong>Trilhos:</strong> perfis metálicos que formam a superfície de rolamento das rodas e conduzem os veículos.</li>
+          <li><strong>Dormentes:</strong> elementos que sustentam os trilhos e ajudam a manter a bitola da via.</li>
+          <li><strong>Fixações:</strong> componentes responsáveis pela fixação dos trilhos aos dormentes.</li>
+          <li><strong>Placas de apoio:</strong> elementos utilizados em determinadas configurações para distribuir esforços e apoiar os trilhos.</li>
+          <li><strong>Lastro:</strong> camada de material granular que proporciona apoio, estabilidade e distribuição das cargas da via.</li>
+          <li><strong>Juntas ferroviárias:</strong> dispositivos utilizados para unir segmentos de trilhos em determinadas configurações de via.</li>
+        </ul>
+
+        <p>A conservação desses elementos é essencial para a estabilidade, geometria e segurança da infraestrutura ferroviária.</p>
+      `  
     ]
-  
   };
+
 
   function abrirBibliotecaFerroviaria(categoria) {
     if (!encyclopediaCategories || !encyclopediaLibrary) return;
