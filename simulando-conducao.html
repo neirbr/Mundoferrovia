@@ -1,1 +1,164 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#102b3f">
+
+  <title>Simulando uma Condução | Mundo Ferroviário</title>
+
+  <link rel="stylesheet" href="simulando-conducao.css">
+</head>
+
+<body>
+
+  <header class="top-header">
+    <h1>🚂 Simulando uma Condução</h1>
+    <p>Mundo Ferroviário</p>
+  </header>
+
+  <main id="conducaoApp">
+
+    <section id="missionIntro" class="mission-intro">
+      <h2>Missão ferroviária</h2>
+
+      <p>
+        Prepare a locomotiva, verifique os equipamentos
+        e conduza o trem com segurança até a estação de destino.
+      </p>
+
+      <div class="mission-details">
+        <p><strong>Composição:</strong> 1 locomotiva + 4 vagões</p>
+        <p><strong>Percurso:</strong> Estação inicial até estação de destino</p>
+        <p><strong>Objetivo:</strong> Conduzir o trem respeitando os procedimentos operacionais.</p>
+      </div>
+
+      <button id="startMissionButton" type="button">
+        Iniciar missão
+      </button>
+    </section>
+
+    <section id="gameArea" class="game-area" hidden>
+
+      <div class="status-panel">
+        <div>
+          <span>Velocidade</span>
+          <strong id="speedDisplay">0 km/h</strong>
+        </div>
+
+        <div>
+          <span>Manete</span>
+          <strong id="throttleDisplay">N</strong>
+        </div>
+
+        <div>
+          <span>Sentido</span>
+          <strong id="directionDisplay">Neutro</strong>
+        </div>
+
+        <div>
+          <span>Pressão do freio</span>
+          <strong id="pressureDisplay">0 PSI</strong>
+        </div>
+      </div>
+
+      <div class="railway-view">
+        <canvas id="conducaoCanvas">
+          Seu navegador não suporta o elemento Canvas.
+        </canvas>
+      </div>
+
+      <div class="mission-message" id="missionMessage">
+        Aguarde as instruções para iniciar a condução.
+      </div>
+
+      <section class="controls-panel">
+
+        <div class="control-group">
+          <h3>Seletor de sentido</h3>
+
+          <button id="directionForward" type="button">
+            ▲
+          </button>
+
+          <div id="directionLever">NEUTRO</div>
+
+          <button id="directionReverse" type="button">
+            ▼
+          </button>
+        </div>
+
+        <div class="control-group">
+          <h3>Manete de aceleração</h3>
+
+          <button id="throttleUp" type="button">
+            ▲ Aumentar
+          </button>
+
+          <div id="throttleLever">N</div>
+
+          <button id="throttleDown" type="button">
+            ▼ Diminuir
+          </button>
+        </div>
+
+        <div class="control-group brake-group">
+          <h3>Freio de serviço</h3>
+
+          <input
+            type="range"
+            id="serviceBrake"
+            min="0"
+            max="90"
+            value="0"
+            step="1"
+          >
+
+          <strong id="brakePressureLabel">0 PSI</strong>
+        </div>
+
+        <div class="control-group emergency-group">
+          <h3>Freio de emergência</h3>
+
+          <button id="emergencyBrake" type="button">
+            EMERGÊNCIA
+          </button>
+        </div>
+
+      </section>
+
+      <section id="penaltyPanel" class="penalty-panel" hidden>
+        <h3>Recuperação do sistema</h3>
+
+        <p id="penaltyMessage">
+          Sistema aguardando recuperação.
+        </p>
+
+        <button id="removePenaltyButton" type="button" hidden>
+          Retirar penalidade
+        </button>
+      </section>
+
+      <section class="mission-objectives">
+        <h3>Objetivos da missão</h3>
+
+        <ul id="objectivesList">
+          <li id="objectiveHorn">Acionar a buzina</li>
+          <li id="objectiveBell">Acionar a campainha</li>
+          <li id="objectiveDrive">Conduzir o trem</li>
+          <li id="objectiveCrossings">Respeitar as passagens em nível</li>
+          <li id="objectiveStation">Chegar à estação de destino</li>
+          <li id="objectiveSwitch">Normalizar a chave de mudança de via</li>
+        </ul>
+      </section>
+
+    </section>
+
+  </main>
+
+  <script src="simulando-conducao.js"></script>
+
+</body>
+</html>
+
