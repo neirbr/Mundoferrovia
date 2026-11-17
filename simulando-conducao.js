@@ -1,4 +1,12 @@
 
+// ==========================================
+// MUNDO FERROVIÁRIO
+// SIMULANDO UMA CONDUÇÃO
+// VISÃO SUPERIOR 2D
+// ==========================================
+
+// ELEMENTOS PRINCIPAIS
+
 const canvas = document.getElementById("conducaoCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -11,6 +19,7 @@ const throttleDisplay = document.getElementById("throttleDisplay");
 const directionDisplay = document.getElementById("directionDisplay");
 const pressureDisplay = document.getElementById("pressureDisplay");
 const brakePressureLabel = document.getElementById("brakePressureLabel");
+
 const directionLever = document.getElementById("directionLever");
 const throttleLever = document.getElementById("throttleLever");
 const missionMessage = document.getElementById("missionMessage");
@@ -19,6 +28,7 @@ const directionForward = document.getElementById("directionForward");
 const directionReverse = document.getElementById("directionReverse");
 const throttleUp = document.getElementById("throttleUp");
 const throttleDown = document.getElementById("throttleDown");
+
 const serviceBrake = document.getElementById("serviceBrake");
 const emergencyBrake = document.getElementById("emergencyBrake");
 
@@ -29,7 +39,13 @@ const removePenaltyButton = document.getElementById("removePenaltyButton");
 const objectiveHorn = document.getElementById("objectiveHorn");
 const objectiveBell = document.getElementById("objectiveBell");
 
+
+// ==========================================
+// ESTADO DA MISSÃO
+// ==========================================
+
 let missionStarted = false;
+
 let direction = 0;
 let throttle = 0;
 let speed = 0;
@@ -54,6 +70,11 @@ const TRAIN = {
   wagonCount: 4
 };
 
+
+// ==========================================
+// DIMENSIONAMENTO DO CENÁRIO
+// ==========================================
+
 function resizeCanvas() {
   const rect = canvas.getBoundingClientRect();
 
@@ -72,8 +93,14 @@ function resizeCanvas() {
 
 window.addEventListener("resize", resizeCanvas);
 
+
+// ==========================================
+// PAINEL DE INFORMAÇÕES
+// ==========================================
+
 function updateDisplays() {
-  speedDisplay.textContent = Math.round(speed) + " km/h";
+  speedDisplay.textContent =
+    Math.round(speed) + " km/h";
 
   throttleDisplay.textContent =
     throttle === 0 ? "N" : throttle;
@@ -100,28 +127,36 @@ function setMessage(message) {
   missionMessage.textContent = message;
 }
 
+
+// ==========================================
+// BLOQUEIO E LIBERAÇÃO DOS CONTROLES
+// ==========================================
+
 function updateControls() {
   const locked =
-    emergencyActive ||
-    penaltyRecoveryStage > 0;
+    emergencyActive || penaltyRecoveryStage > 0;
 
   directionForward.disabled = locked;
   directionReverse.disabled = locked;
+
   throttleUp.disabled = locked;
   throttleDown.disabled = locked;
+
   serviceBrake.disabled = locked;
 
-  emergencyBrake.disabled =
-    emergencyActive || penaltyRecoveryStage > 0;
+  emergencyBrake.disabled = locked;
 
+  // Durante a etapa de recomposição,
+  // o freio continua liberado.
   if (penaltyRecoveryStage === 3) {
     serviceBrake.disabled = false;
-    directionForward.disabled = true;
-    directionReverse.disabled = true;
-    throttleUp.disabled = true;
-    throttleDown.disabled = true;
   }
 }
+
+
+// ==========================================
+// INICIAR MISSÃO
+// ==========================================
 
 function startMission() {
   if (missionStarted) return;
@@ -132,18 +167,22 @@ function startMission() {
   gameArea.hidden = false;
 
   resizeCanvas();
+
   updateDisplays();
+  createSoundButtons();
+  updateControls();
 
   setMessage(
     "Missão iniciada. Antes de movimentar o trem, acione a buzina e a campainha."
   );
 
-  createSoundButtons();
-
-  updateControls();
-
   requestAnimationFrame(gameLoop);
 }
+
+
+// ==========================================
+// BUZINA E CAMPAINHA
+// ==========================================
 
 function createSoundButtons() {
   const controlsPanel =
@@ -210,9 +249,17 @@ function checkPreparation() {
   }
 }
 
+
+// ==========================================
+// SELETOR DE SENTIDO
+// ==========================================
+
 function selectDirection(value) {
-  if (!missionStarted || emergencyActive ||
-      penaltyRecoveryStage > 0) return;
+  if (
+    !missionStarted ||
+    emergencyActive ||
+    penaltyRecoveryStage > 0
+  ) return;
 
   direction = value;
 
@@ -229,9 +276,17 @@ function selectDirection(value) {
   }
 }
 
+
+// ==========================================
+// MANETE DE ACELERAÇÃO
+// ==========================================
+
 function changeThrottle(change) {
-  if (!missionStarted || emergencyActive ||
-      penaltyRecoveryStage > 0) return;
+  if (
+    !missionStarted ||
+    emergencyActive ||
+    penaltyRecoveryStage > 0
+  ) return;
 
   throttle = Math.max(
     0,
@@ -255,22 +310,37 @@ function changeThrottle(change) {
   }
 }
 
+
+// ==========================================
+// FREIO DE SERVIÇO
+// ==========================================
+
 function applyServiceBrake() {
-  if (emergencyActive ||
-      penaltyRecoveryStage > 0) return;
+  if (
+    emergencyActive ||
+    penaltyRecoveryStage > 0
+  ) return;
 
   brakePressure = Number(serviceBrake.value);
 
   updateDisplays();
 }
 
+
+// ==========================================
+// FREIO DE EMERGÊNCIA
+// ==========================================
+
 function activateEmergency() {
-  if (!missionStarted || emergencyActive ||
-      penaltyRecoveryStage > 0) return;
+  if (
+    !missionStarted ||
+    emergencyActive ||
+    penaltyRecoveryStage > 0
+  ) return;
 
   emergencyActive = true;
-  brakePressure = 90;
 
+  brakePressure = 90;
   serviceBrake.value = 90;
 
   penaltyPanel.hidden = false;
@@ -289,10 +359,19 @@ function activateEmergency() {
   updateControls();
 }
 
-function beginPenaltyRecovery() {
-  if (!emergencyActive || speed > 0.1) return;
 
-  penaltyRecoveryStage = 1;
+// ==========================================
+// RECUPERAÇÃO DA PENALIDADE
+// ==========================================
+
+function beginPenaltyRecovery() {
+  if (
+    !emergencyActive ||
+    speed > 0.1 ||
+    penaltyRecoveryStage !== 1
+  ) return;
+
+  penaltyRecoveryStage = 2;
   recoveryTimer = 10;
 
   removePenaltyButton.hidden = true;
@@ -312,10 +391,10 @@ function beginPenaltyRecovery() {
 
       penaltyRecoveryStage = 2;
 
+      serviceBrake.disabled = false;
+
       penaltyMessage.textContent =
         "Agora mova manualmente o freio de 90 PSI até 0 PSI.";
-
-      serviceBrake.disabled = false;
     }
   }, 1000);
 }
@@ -329,7 +408,10 @@ function handleRecoveryBrake() {
 
   if (brakePressure === 0) {
     penaltyRecoveryStage = 3;
+
     recoveryTimer = 10;
+
+    serviceBrake.disabled = false;
 
     penaltyMessage.textContent =
       "Freio zerado. Aguarde 10 segundos para a recomposição do sistema.";
@@ -366,6 +448,11 @@ function handleRecoveryBrake() {
   }
 }
 
+
+// ==========================================
+// FÍSICA DE MOVIMENTAÇÃO E FRENAGEM
+// ==========================================
+
 function calculatePhysics(delta) {
   const dt = Math.min(delta / 1000, 0.05);
 
@@ -381,6 +468,7 @@ function calculatePhysics(delta) {
       3,
       5 + speed * 0.13
     );
+
   } else if (brakePressure > 0) {
     const brakeFactor = brakePressure / 90;
 
@@ -391,139 +479,261 @@ function calculatePhysics(delta) {
       speed <= 25 ? 1.7 :
       speed <= 45 ? 1.15 : 0.8;
 
-    acceleration = -brakingPower * inertiaFactor;
+    acceleration =
+      -brakingPower * inertiaFactor;
+
   } else if (targetSpeed > speed) {
     acceleration = 2.2;
+
   } else if (targetSpeed < speed) {
     acceleration = -0.45;
   }
 
   speed += acceleration * dt;
 
-  if (!emergencyActive && brakePressure === 0) {
-    if (targetSpeed > 0 && speed < targetSpeed) {
-      speed = Math.min(speed, targetSpeed);
-    }
+  if (
+    !emergencyActive &&
+    brakePressure === 0 &&
+    targetSpeed > 0 &&
+    speed > targetSpeed
+  ) {
+    speed = Math.max(
+      targetSpeed,
+      speed - 0.45 * dt
+    );
   }
 
-  speed = Math.max(0, Math.min(100, speed));
+  speed = Math.max(
+    0,
+    Math.min(100, speed)
+  );
 
   if (speed < 0.05) {
     speed = 0;
   }
 }
 
-function drawRailway() {
-  const width = canvas.width /
-    (window.devicePixelRatio || 1);
 
-  const height = canvas.height /
-    (window.devicePixelRatio || 1);
+// ==========================================
+// CENÁRIO FERROVIÁRIO VISTO DE CIMA
+// ==========================================
+
+function drawRailway() {
+  const ratio = window.devicePixelRatio || 1;
+
+  const width = canvas.width / ratio;
+  const height = canvas.height / ratio;
 
   ctx.clearRect(0, 0, width, height);
 
-  ctx.fillStyle = "#a8d3ed";
-  ctx.fillRect(0, 0, width, height * 0.58);
+  // Terreno e vegetação
+  ctx.fillStyle = "#83b96b";
+  ctx.fillRect(0, 0, width, height);
 
-  ctx.fillStyle = "#78a65b";
-  ctx.fillRect(0, height * 0.58, width, height * 0.42);
+  // Faixa de terreno ao redor da ferrovia
+  ctx.fillStyle = "#b6a17b";
 
-  ctx.fillStyle = "#d9c69a";
-  ctx.fillRect(0, height * 0.69, width, height * 0.12);
-
-  const trackY = height * 0.77;
-
-  ctx.fillStyle = "#666666";
-  ctx.fillRect(0, trackY, width, 8);
-
-  ctx.fillStyle = "#333333";
-  ctx.fillRect(0, trackY + 18, width, 8);
-
-  ctx.fillStyle = "#777777";
-
-  for (let x = 0; x < width; x += 22) {
-    ctx.fillRect(x, trackY + 5, 9, 18);
-  }
-
-  drawTrain(width, height, trackY);
-}
-
-function drawTrain(width, height, trackY) {
-  const wagonWidth = TRAIN.wagonLength;
-  const locomotiveWidth = TRAIN.locomotiveLength;
-
-  const totalWidth =
-    locomotiveWidth +
-    TRAIN.wagonCount * wagonWidth;
-
-  const trainX = Math.max(
-    10,
-    Math.min(width - totalWidth - 10, width * 0.12)
+  ctx.fillRect(
+    width * 0.25,
+    0,
+    width * 0.5,
+    height
   );
 
-  const trainY = trackY - 43;
+  // Lastro ferroviário
+  ctx.fillStyle = "#777777";
 
+  ctx.fillRect(
+    width * 0.40,
+    0,
+    width * 0.20,
+    height
+  );
+
+  // Dormentes
+  ctx.fillStyle = "#493b30";
+
+  for (let y = -10; y < height + 20; y += 20) {
+    ctx.fillRect(
+      width * 0.40,
+      y,
+      width * 0.20,
+      7
+    );
+  }
+
+  // Trilhos
+  ctx.fillStyle = "#c7cdd0";
+
+  ctx.fillRect(
+    width * 0.44,
+    0,
+    5,
+    height
+  );
+
+  ctx.fillRect(
+    width * 0.54,
+    0,
+    5,
+    height
+  );
+
+  // Árvores
+  drawTrees(width, height);
+
+  // Composição ferroviária
+  drawTrain(width, height);
+}
+
+
+// ==========================================
+// ÁRVORES VISTAS DE CIMA
+// ==========================================
+
+function drawTrees(width, height) {
+  const positions = [
+    [0.10, 0.15],
+    [0.18, 0.35],
+    [0.09, 0.58],
+    [0.20, 0.82],
+    [0.80, 0.18],
+    [0.90, 0.40],
+    [0.78, 0.65],
+    [0.90, 0.85]
+  ];
+
+  positions.forEach(([x, y]) => {
+    // Copa da árvore
+    ctx.fillStyle = "#285b35";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      width * x,
+      height * y,
+      13,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+    // Centro da copa
+    ctx.fillStyle = "#397b43";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      width * x - 3,
+      height * y - 3,
+      6,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+  });
+}
+
+
+// ==========================================
+// LOCOMOTIVA E QUATRO VAGÕES
+// VISTA SUPERIOR
+// ==========================================
+
+function drawTrain(width, height) {
+  const centerX = width / 2;
+
+  const wagonWidth = 34;
+  const locomotiveHeight = 48;
+  const wagonHeight = 40;
+  const spacing = 3;
+
+  const totalHeight =
+    locomotiveHeight +
+    TRAIN.wagonCount * (wagonHeight + spacing);
+
+  let y = height / 2 - totalHeight / 2;
+
+  // Locomotiva
   ctx.fillStyle = "#173e58";
 
   ctx.fillRect(
-    trainX,
-    trainY,
-    locomotiveWidth,
-    38
+    centerX - wagonWidth / 2,
+    y,
+    wagonWidth,
+    locomotiveHeight
   );
 
+  // Frente da locomotiva
   ctx.fillStyle = "#f0b323";
 
   ctx.fillRect(
-    trainX + 9,
-    trainY + 8,
-    18,
-    13
+    centerX - 12,
+    y + 4,
+    24,
+    8
   );
 
-  ctx.fillStyle = "#d9e5eb";
+  // Cabine
+  ctx.fillStyle = "#dce6ec";
 
   ctx.fillRect(
-    trainX + 29,
-    trainY + 8,
-    11,
-    13
+    centerX - 11,
+    y + 17,
+    22,
+    18
   );
 
+  // Faróis
+  ctx.fillStyle = "#fff5b5";
+
+  ctx.fillRect(
+    centerX - 13,
+    y + 2,
+    5,
+    4
+  );
+
+  ctx.fillRect(
+    centerX + 8,
+    y + 2,
+    5,
+    4
+  );
+
+  // Vagões
+  y += locomotiveHeight + spacing;
+
   for (let i = 0; i < TRAIN.wagonCount; i++) {
-    const x =
-      trainX + locomotiveWidth + i * wagonWidth;
-
-    ctx.fillStyle = "#7b858b";
+    ctx.fillStyle = "#687b86";
 
     ctx.fillRect(
-      x,
-      trainY + 7,
-      wagonWidth - 4,
-      31
+      centerX - wagonWidth / 2,
+      y,
+      wagonWidth,
+      wagonHeight
     );
 
-    ctx.fillStyle = "#dce6ec";
+    ctx.strokeStyle = "#dce6ec";
+    ctx.lineWidth = 2;
 
-    ctx.fillRect(
-      x + 5,
-      trainY + 12,
-      wagonWidth - 15,
-      5
+    ctx.strokeRect(
+      centerX - wagonWidth / 2 + 4,
+      y + 4,
+      wagonWidth - 8,
+      wagonHeight - 8
     );
-  }
 
-  ctx.fillStyle = "#222222";
-
-  for (let i = 0; i < TRAIN.wagonCount + 1; i++) {
-    const x =
-      trainX + i * wagonWidth;
-
-    ctx.beginPath();
-    ctx.arc(x + 8, trainY + 39, 5, 0, Math.PI * 2);
-    ctx.fill();
+    y += wagonHeight + spacing;
   }
 }
+
+
+// ==========================================
+// CICLO PRINCIPAL DO SIMULADOR
+// ==========================================
 
 function gameLoop(timestamp) {
   if (!missionStarted) return;
@@ -534,13 +744,19 @@ function gameLoop(timestamp) {
 
   lastFrame = timestamp;
 
-  if (penaltyRecoveryStage !== 2 &&
-      penaltyRecoveryStage !== 3) {
+  if (
+    penaltyRecoveryStage !== 2 &&
+    penaltyRecoveryStage !== 3
+  ) {
     calculatePhysics(delta);
   }
 
-  if (emergencyActive && speed === 0 &&
-      penaltyRecoveryStage === 1) {
+  // Liberação da recuperação após parada
+  if (
+    emergencyActive &&
+    speed === 0 &&
+    penaltyRecoveryStage === 1
+  ) {
     penaltyMessage.textContent =
       "Trem parado. Você pode solicitar a retirada da penalidade.";
 
@@ -548,43 +764,66 @@ function gameLoop(timestamp) {
   }
 
   updateDisplays();
+
   drawRailway();
 
   requestAnimationFrame(gameLoop);
 }
 
-startButton.addEventListener("click", startMission);
 
-directionForward.addEventListener("click", () => {
-  selectDirection(1);
-});
+// ==========================================
+// EVENTOS DOS CONTROLES
+// ==========================================
 
-directionReverse.addEventListener("click", () => {
-  selectDirection(-1);
-});
+startButton.addEventListener(
+  "click",
+  startMission
+);
 
-throttleUp.addEventListener("click", () => {
-  changeThrottle(1);
-});
+directionForward.addEventListener(
+  "click",
+  () => selectDirection(1)
+);
 
-throttleDown.addEventListener("click", () => {
-  changeThrottle(-1);
-});
+directionReverse.addEventListener(
+  "click",
+  () => selectDirection(-1)
+);
 
-serviceBrake.addEventListener("input", () => {
-  if (penaltyRecoveryStage === 2) {
-    handleRecoveryBrake();
-  } else {
-    applyServiceBrake();
+throttleUp.addEventListener(
+  "click",
+  () => changeThrottle(1)
+);
+
+throttleDown.addEventListener(
+  "click",
+  () => changeThrottle(-1)
+);
+
+serviceBrake.addEventListener(
+  "input",
+  () => {
+    if (penaltyRecoveryStage === 2) {
+      handleRecoveryBrake();
+    } else {
+      applyServiceBrake();
+    }
   }
-});
+);
 
-emergencyBrake.addEventListener("click", activateEmergency);
+emergencyBrake.addEventListener(
+  "click",
+  activateEmergency
+);
 
 removePenaltyButton.addEventListener(
   "click",
   beginPenaltyRecovery
 );
 
+
+// ==========================================
+// ESTADO INICIAL
+// ==========================================
+
 updateDisplays();
-  
