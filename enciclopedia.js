@@ -851,8 +851,76 @@
           <p>Conforme os procedimentos aplicáveis, podem ser verificados elementos como rodas, truques, engates, estrutura, sistema de freio e condições gerais do veículo.</p>
           <p>Vagões com anormalidades devem receber o tratamento previsto nas normas e procedimentos da ferrovia responsável.</p>
         `
-      }
+       },
+      {
+       title: 'Vagão Gôndola',
+        description: 'Características, aplicações, estrutura e funcionamento do vagão gôndola.',
+        content: `
+          <h3>Vagão Gôndola — Características, Aplicações e Funcionamento</h3>
+
+          <h4>1. O que é um vagão gôndola?</h4>
+          <p>O vagão gôndola é um veículo ferroviário destinado principalmente ao transporte de cargas sólidas. Sua característica mais marcante é possuir estrutura aberta na parte superior, com piso e laterais para acomodação dos materiais transportados.</p>
+          <p>É bastante utilizado em operações de mineração, siderurgia e transporte de materiais a granel.</p>
+
+          <h4>2. Principais aplicações</h4>
+          <p>Entre os materiais transportados estão:</p>
+          <ul>
+            <li>Minério de ferro;</li>
+            <li>Carvão mineral;</li>
+            <li>Coque;</li>
+            <li>Brita e materiais de construção;</li>
+            <li>Sucata metálica;</li>
+            <li>Produtos siderúrgicos.</li>
+          </ul>
+
+          <h4>3. Características construtivas</h4>
+          <ul>
+            <li><strong>Estrutura metálica:</strong> suporta os esforços da operação e o peso da carga.</li>
+            <li><strong>Piso:</strong> superfície de apoio da carga.</li>
+            <li><strong>Laterais:</strong> delimitam o espaço destinado ao carregamento.</li>
+            <li><strong>Cabeceiras:</strong> estruturas localizadas nas extremidades do vagão.</li>
+            <li><strong>Truques:</strong> conjuntos responsáveis pelo apoio e deslocamento.</li>
+            <li><strong>Engates:</strong> permitem a conexão entre os veículos ferroviários.</li>
+            <li><strong>Sistema de freio:</strong> responsável pela frenagem do vagão.</li>
+          </ul>
+
+          <h4>4. Carregamento e descarregamento</h4>
+          <p>O carregamento pode ser realizado por correias transportadoras, carregadores, escavadeiras e outros equipamentos.</p>
+          <p>A descarga depende do projeto do vagão e da instalação utilizada. Muitos modelos necessitam de equipamentos externos para retirada da carga. Nem todo vagão gôndola possui descarga automática.</p>
+
+          <h4>5. Vantagens</h4>
+          <ul>
+            <li>Versatilidade no transporte de cargas sólidas;</li>
+            <li>Possibilidade de transportar grandes volumes;</li>
+            <li>Compatibilidade com diferentes sistemas de carregamento;</li>
+            <li>Ampla utilização em operações industriais e minerais.</li>
+          </ul>
+
+          <h4>6. Limitações e cuidados</h4>
+          <p>Por possuir estrutura aberta, a carga pode ficar exposta às condições climáticas. Dependendo do material, podem ser necessários cuidados para evitar perdas, dispersão ou contaminação.</p>
+          <p>O carregamento deve respeitar os limites de peso, a distribuição adequada da carga e as especificações técnicas do veículo.</p>
+
+          <h4>7. Inspeção e conservação</h4>
+          <p>Nas inspeções previstas pelos procedimentos ferroviários, podem ser verificados:</p>
+          <ul>
+            <li>Rodas e eixos;</li>
+            <li>Truques e suspensão;</li>
+            <li>Engates e aparelhos de choque e tração;</li>
+            <li>Estrutura, piso e laterais;</li>
+            <li>Componentes do sistema de freio;</li>
+            <li>Condições gerais de conservação.</li>
+          </ul>
+          <p>Qualquer anormalidade deve receber o tratamento previsto nos procedimentos de segurança e manutenção da ferrovia responsável.</p>
+
+          <h4>8. Importância para o transporte ferroviário</h4>
+          <p>O vagão gôndola possui grande importância no transporte de produtos minerais e industriais. Sua estrutura permite movimentar grandes quantidades de materiais sólidos, contribuindo para a eficiência logística ferroviária.</p>
+
+          <p><strong>Resumo:</strong> o vagão gôndola é um dos principais modelos utilizados no transporte ferroviário de cargas sólidas, destacando-se pela estrutura aberta, versatilidade e capacidade de atender diferentes necessidades logísticas.</p>
+        `
+      },
+      
     ]
+  
   };
 
   function abrirBibliotecaFerroviaria(categoria) {
