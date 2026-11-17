@@ -6,11 +6,29 @@
 <meta name="theme-color" content="#102b3f">
 <title>Simulador Ferroviário 2D | Mundo Ferroviário</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#102b3f;color:#fff;overflow:hidden}
+*{box-sizing:border-box;margin:0;padding:0} body{
+  font-family:Arial,sans-serif;
+  background:#102b3f;
+  color:#fff;
+  overflow-x:hidden;
+  overflow-y:auto;
+}}
+  
 .hidden{display:none!important}
 .screen{width:100%;min-height:100vh}
-#introScreen{display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto;background:linear-gradient(145deg,#102b3f,#174a67)}
+  
+##introScreen{
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:18px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  min-height:100vh;
+  height:100dvh;
+  background:linear-gradient(145deg,#102b3f,#174a67);
+}2b3f,#174a67)}
+ 
 .intro-content{width:100%;max-width:750px;padding:24px;background:#142f43;border:2px solid #dcae3c;border-radius:16px;text-align:center}
 h1{font-size:clamp(23px,5vw,34px);color:#f0b323;margin-bottom:8px}
 .intro-content h2{font-size:20px;margin-bottom:15px}
