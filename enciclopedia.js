@@ -739,6 +739,240 @@
     }
   });
 
+
+  // ==========================================
+  // BIBLIOTECA FIXA DA ENCICLOPÉDIA FERROVIÁRIA
+  // ==========================================
+
+  const encyclopediaCategories = document.getElementById('encyclopediaCategories');
+  const encyclopediaLibrary = document.getElementById('encyclopediaLibrary');
+
+  const encyclopediaTopics = {
+    vagoes: [
+      {
+        title: 'Tipos de vagões',
+        description: 'Conheça os principais modelos de vagões ferroviários.',
+        content: `
+          <h3>Tipos de vagões ferroviários</h3>
+          <p>Os vagões ferroviários são veículos destinados principalmente ao transporte de cargas. Existem diferentes modelos, desenvolvidos de acordo com as características da mercadoria e as necessidades da operação.</p>
+          <ul>
+            <li><strong>Gôndola:</strong> utilizada no transporte de cargas a granel, como minério, carvão e outros materiais.</li>
+            <li><strong>Hopper:</strong> projetado para transportar granéis, com estrutura que permite a descarga por gravidade.</li>
+            <li><strong>Fechado:</strong> utilizado para cargas que precisam de proteção contra intempéries e exposição externa.</li>
+            <li><strong>Plataforma:</strong> destinado a contêineres, produtos siderúrgicos, madeira e cargas especiais.</li>
+            <li><strong>Tanque:</strong> utilizado para transportar líquidos e determinados produtos a granel.</li>
+            <li><strong>Prancha:</strong> empregado no transporte de cargas especiais, pesadas ou de grandes dimensões.</li>
+          </ul>
+          <p>Os modelos e suas configurações podem variar conforme o projeto, a carga transportada e a ferrovia.</p>
+        `
+      },
+      {
+        title: 'Aplicações dos vagões',
+        description: 'Entenda como cada modelo atende a diferentes tipos de carga.',
+        content: `
+          <h3>Aplicações dos vagões</h3>
+          <p>A escolha do vagão depende das características da carga, do método de carregamento e descarregamento e das condições da infraestrutura ferroviária.</p>
+          <ul>
+            <li>Minérios e carvão: vagões gôndola e hopper, conforme o sistema de descarga.</li>
+            <li>Grãos: vagões hopper específicos para produtos agrícolas.</li>
+            <li>Contêineres: vagões plataforma e modelos intermodais.</li>
+            <li>Combustíveis e líquidos: vagões tanque adequados ao produto transportado.</li>
+            <li>Produtos industrializados: vagões fechados, plataformas ou modelos especiais.</li>
+            <li>Cargas de grandes dimensões: vagões prancha e equipamentos especiais.</li>
+          </ul>
+        `
+      },
+      {
+        title: 'Características construtivas',
+        description: 'Conheça os principais elementos que compõem um vagão.',
+        content: `
+          <h3>Características construtivas dos vagões</h3>
+          <p>Os vagões possuem diferentes características construtivas, determinadas pela finalidade e pela carga para a qual foram projetados.</p>
+          <ul>
+            <li><strong>Estrutura:</strong> conjunto estrutural que suporta os esforços e a carga transportada.</li>
+            <li><strong>Truques:</strong> conjuntos que sustentam o vagão e permitem sua movimentação sobre os trilhos.</li>
+            <li><strong>Rodas e eixos:</strong> componentes responsáveis pelo contato com a via e pelo deslocamento.</li>
+            <li><strong>Engates:</strong> dispositivos utilizados para conectar os veículos ferroviários.</li>
+            <li><strong>Sistema de freio:</strong> conjunto de componentes responsável pela frenagem do vagão.</li>
+            <li><strong>Caixa ou estrutura de carga:</strong> espaço destinado ao acondicionamento da mercadoria.</li>
+          </ul>
+        `
+      },
+      {
+        title: 'Identificação e numeração',
+        description: 'Saiba como os vagões são identificados e classificados.',
+        content: `
+          <h3>Identificação e numeração dos vagões</h3>
+          <p>Os vagões possuem identificações que permitem seu reconhecimento e controle operacional.</p>
+          <p>As inscrições podem apresentar informações como numeração, proprietário, capacidade, tara, lotação e características específicas do veículo.</p>
+          <p>Os padrões de identificação podem variar conforme o sistema ferroviário e as normas adotadas.</p>
+        `
+      },
+      {
+        title: 'Tara, lotação e capacidade',
+        description: 'Entenda os conceitos de peso e capacidade dos vagões.',
+        content: `
+          <h3>Tara, lotação e capacidade</h3>
+          <ul>
+            <li><strong>Tara:</strong> peso do vagão vazio.</li>
+            <li><strong>Lotação:</strong> capacidade de carga indicada para o vagão, conforme suas especificações.</li>
+            <li><strong>Peso bruto:</strong> soma da tara com o peso da carga transportada.</li>
+            <li><strong>Capacidade volumétrica:</strong> volume disponível para acondicionamento da carga.</li>
+          </ul>
+          <p>O carregamento deve respeitar os limites técnicos do vagão e as restrições aplicáveis à operação ferroviária.</p>
+        `
+      },
+      {
+        title: 'Truques e componentes',
+        description: 'Conheça os conjuntos responsáveis pelo apoio e deslocamento.',
+        content: `
+          <h3>Truques e componentes dos vagões</h3>
+          <p>O truque é um conjunto mecânico instalado sob o vagão. Ele sustenta parte da estrutura e permite a inscrição do veículo nas curvas da ferrovia.</p>
+          <p>Entre seus componentes estão rodas, eixos, rolamentos, caixas de rolamento, suspensão e estrutura do truque.</p>
+          <p>O projeto e a configuração desses componentes variam conforme o modelo do vagão.</p>
+        `
+      },
+      {
+        title: 'Sistemas de freio',
+        description: 'Conheça os principais elementos do sistema de frenagem.',
+        content: `
+          <h3>Sistemas de freio dos vagões</h3>
+          <p>O sistema de freio é fundamental para controlar a velocidade e permitir a parada dos veículos ferroviários.</p>
+          <p>Em muitos vagões de carga são utilizados sistemas de freio pneumático, compostos por elementos como reservatório de ar, válvula de controle, cilindro de freio e componentes de transmissão da força às sapatas ou outros dispositivos de frenagem.</p>
+          <p>Os equipamentos e procedimentos de inspeção dependem do projeto do vagão e das regras operacionais da ferrovia.</p>
+        `
+      },
+      {
+        title: 'Inspeção e conservação',
+        description: 'Entenda a importância da conservação dos vagões.',
+        content: `
+          <h3>Inspeção e conservação dos vagões</h3>
+          <p>A inspeção dos vagões contribui para a segurança e a confiabilidade do transporte ferroviário.</p>
+          <p>Conforme os procedimentos aplicáveis, podem ser verificados elementos como rodas, truques, engates, estrutura, sistema de freio e condições gerais do veículo.</p>
+          <p>Vagões com anormalidades devem receber o tratamento previsto nas normas e procedimentos da ferrovia responsável.</p>
+        `
+      }
+    ]
+  };
+
+  function abrirBibliotecaFerroviaria(categoria) {
+    if (!encyclopediaCategories || !encyclopediaLibrary) return;
+
+    const nomes = {
+      locomotivas: 'Locomotivas',
+      vagoes: 'Vagões',
+      componentes: 'Componentes ferroviários',
+      sinalizacao: 'Sinalização',
+      operacoes: 'Operações ferroviárias',
+      historia: 'História ferroviária'
+    };
+
+    const nomeCategoria = nomes[categoria] || 'Enciclopédia Ferroviária';
+    const topicos = encyclopediaTopics[categoria];
+
+    encyclopediaCategories.style.display = 'none';
+
+    const artigosPublicados = document.getElementById('encyclopediaArticles');
+    if (artigosPublicados) {
+      const cardArtigos = artigosPublicados.closest('.card');
+      if (cardArtigos) cardArtigos.style.display = 'none';
+    }
+
+    let conteudo = `
+      <button type="button" id="encyclopediaBackButton" class="btn">
+        ← Voltar às categorias
+      </button>
+      <h2 style="margin-top:20px;">${nomeCategoria}</h2>
+    `;
+
+    if (topicos && topicos.length) {
+      conteudo += `
+        <p>Explore os assuntos disponíveis nesta categoria:</p>
+        <div class="encyclopedia-topic-list">
+      `;
+
+      topicos.forEach((topico, indice) => {
+        conteudo += `
+          <article class="card" style="margin:12px 0; padding:16px;">
+            <h3>${topico.title}</h3>
+            <p>${topico.description}</p>
+            <button type="button"
+              class="btn"
+              data-library-topic="${indice}">
+              Acessar conteúdo
+            </button>
+          </article>
+        `;
+      });
+
+      conteudo += '</div>';
+    } else {
+      conteudo += `
+        <p>O conteúdo desta categoria está em preparação. Em breve, novos materiais serão disponibilizados.</p>
+      `;
+    }
+
+    encyclopediaLibrary.innerHTML = conteudo;
+    encyclopediaLibrary.style.display = 'block';
+
+    document.getElementById('encyclopediaBackButton')
+      .addEventListener('click', fecharBibliotecaFerroviaria);
+
+    encyclopediaLibrary.querySelectorAll('[data-library-topic]')
+      .forEach(botao => {
+        botao.addEventListener('click', () => {
+          const indice = Number(botao.dataset.libraryTopic);
+          abrirTopicoFerroviario(categoria, indice);
+        });
+      });
+  }
+
+  function abrirTopicoFerroviario(categoria, indice) {
+    const topico = encyclopediaTopics[categoria]?.[indice];
+    if (!topico || !encyclopediaLibrary) return;
+
+    encyclopediaLibrary.innerHTML = `
+      <button type="button" id="encyclopediaBackTopic" class="btn">
+        ← Voltar aos assuntos
+      </button>
+      <h2 style="margin-top:20px;">${topico.title}</h2>
+      <div style="line-height:1.7; margin-top:16px;">
+        ${topico.content}
+      </div>
+    `;
+
+    document.getElementById('encyclopediaBackTopic')
+      .addEventListener('click', () => abrirBibliotecaFerroviaria(categoria));
+  }
+
+  function fecharBibliotecaFerroviaria() {
+    if (!encyclopediaCategories || !encyclopediaLibrary) return;
+
+    encyclopediaLibrary.style.display = 'none';
+    encyclopediaCategories.style.display = '';
+
+    const artigosPublicados = document.getElementById('encyclopediaArticles');
+    if (artigosPublicados) {
+      const cardArtigos = artigosPublicados.closest('.card');
+      if (cardArtigos) cardArtigos.style.display = '';
+    }
+  }
+
+  if (encyclopediaCategories && !encyclopediaCategories.dataset.libraryReady) {
+    encyclopediaCategories.dataset.libraryReady = 'true';
+
+    encyclopediaCategories.addEventListener('click', event => {
+      const cartao = event.target.closest('[data-encyclopedia-category]');
+      if (!cartao) return;
+
+      event.preventDefault();
+
+      abrirBibliotecaFerroviaria(
+        cartao.dataset.encyclopediaCategory
+      );
+    });
+  }
+  
   console.log('ENCICLOPÉDIA.JS INICIADO 🚂');
   
   })();
