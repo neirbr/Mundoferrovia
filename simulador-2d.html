@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#102b3f">
+<title>Simulador Ferroviário 2D | Mundo Ferroviário</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#102b3f;color:#fff;overflow:hidden}
+.hidden{display:none!important}
+.screen{width:100%;min-height:100vh}
+#introScreen{display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto;background:linear-gradient(145deg,#102b3f,#174a67)}
+.intro-content{width:100%;max-width:750px;padding:24px;background:#142f43;border:2px solid #dcae3c;border-radius:16px;text-align:center}
+h1{font-size:clamp(23px,5vw,34px);color:#f0b323;margin-bottom:8px}
+.intro-content h2{font-size:20px;margin-bottom:15px}
+.intro-description{line-height:1.5;margin-bottom:18px;color:#e0e8ed}
+.manual,.mission{background:#203e52;border-radius:10px;padding:15px;margin:12px 0;text-align:left}
+.manual h3,.mission h3{color:#f0b323;margin-bottom:12px}
+.manual-item{display:flex;align-items:center;gap:12px;margin:10px 0;line-height:1.4}
+.control-icon{display:flex;align-items:center;justify-content:center;min-width:40px;height:40px;border-radius:50%;font-weight:bold;background:#2674a0}
+.control-icon.brake{background:#b83e36}.control-icon.resume{background:#27884c}.control-icon.switch{background:#a47b27}.control-icon.restart{background:#596b78}
+.mission ol{padding-left:22px;line-height:1.7}.mission p{margin-top:10px;line-height:1.5}
+.start-button,#retryButton{border:0;border-radius:10px;background:#e3ae35;color:#142b3d;padding:15px 22px;font-weight:bold;font-size:16px;margin-top:12px;cursor:pointer}
+#gameScreen{height:100vh;display:flex;flex-direction:column;background:#102b3f}
+#gameHeader{min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;background:#102b3f}
+.game-title{font-weight:bold;color:#f0b323;font-size:15px}.game-title span{display:block;color:#fff;font-size:11px;margin-top:3px}
+.game-information{display:flex;gap:12px;font-weight:bold;font-size:13px}#speedDisplay{color:#f0b323}
+.restart-phase{border:1px solid #dcae3c;background:#203e52;color:white;border-radius:7px;padding:8px;font-size:12px}
+#yardContainer{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#72776f;overflow:hidden}
+#gameCanvas{width:100%;height:100%;object-fit:contain;touch-action:none}
+#controls{position:absolute;left:12px;bottom:12px;display:flex;gap:9px;align-items:center}
+.round-control{width:58px;height:58px;border:3px solid white;border-radius:50%;font-weight:bold;font-size:18px;color:white;box-shadow:0 3px 8px #0008;touch-action:none}
+.accelerate{background:#287db0}.brake{background:#b83e36}.resume{background:#27884c;font-size:14px}
+.switch-button{position:absolute;right:12px;top:12px;padding:11px 13px;border:2px solid white;border-radius:8px;background:#a47b27;color:white;font-weight:bold;font-size:12px}
+#operationMessage{position:absolute;right:12px;bottom:14px;max-width:45%;padding:9px 12px;border-radius:8px;background:#102b3fe8;color:white;font-size:12px;line-height:1.4;text-align:center}
+#signalInformation{position:absolute;right:12px;top:58px;background:#102b3fe8;padding:8px 11px;border-radius:7px;font-size:12px;font-weight:bold}
+#signalStatus{color:#ff4545}
+.result-screen{position:fixed;inset:0;z-index:10;background:#000b;display:flex;align-items:center;justify-content:center;padding:18px}
+.result-content{width:100%;max-width:430px;background:#17374d;border:2px solid #e0ad37;border-radius:14px;padding:25px;text-align:center}
+.result-content h2{color:#f0b323;margin-bottom:15px}.result-content p{line-height:1.6;margin:12px 0}
+#resultScore{font-size:22px;font-weight:bold;color:#f0b323;margin:18px 0}
+@media(orientation:portrait){#gameHeader{min-height:54px}.game-title{font-size:12px}.game-information{font-size:11px;gap:7px}.round-control{width:49px;height:49px}#operationMessage{max-width:52%;font-size:10px}}
+</style>
+</head>
+<body>
+<section id="introScreen" class="screen">
+<div class="intro-content">
+<h1>🚂 SIMULADOR FERROVIÁRIO 2D</h1><h2>Operação de Cruzamento</h2>
+<p class="intro-description">Assuma o controle de uma composição ferroviária em um pátio com três linhas. Realize a mudança de rota, aguarde a passagem do trem contrário e conclua a operação com segurança.</p>
+<div class="manual">
+<h3>MANUAL DE OPERAÇÃO</h3>
+<div class="manual-item"><span class="control-icon">Ac</span><span><b>ACELERAR:</b> mantenha pressionado para aumentar a velocidade.</span></div>
+<div class="manual-item"><span class="control-icon brake">Fr</span><span><b>FREAR:</b> mantenha pressionado para reduzir a velocidade gradualmente.</span></div>
+<div class="manual-item"><span class="control-icon resume">Rnc</span><span><b>RETOMAR:</b> depois de uma parada completa, pressione para liberar a circulação.</span></div>
+<div class="manual-item"><span class="control-icon switch">↔</span><span><b>CHAVE L2:</b> selecione manualmente a rota superior antes de movimentar o trem.</span></div>
+<div class="manual-item"><span class="control-icon restart">↻</span><span><b>REINICIAR:</b> reinicia a fase desde o início.</span></div>
+</div>
+<div class="mission"><h3>OBJETIVO DA MISSÃO</h3>
+<ol><li>Selecionar manualmente a rota para L2.</li><li>Movimentar sua composição com controle de velocidade.</li><li>Parar antes do sinal vermelho.</li><li>Aguardar o último vagão do trem contrário liberar o trecho.</li><li>Retomar a circulação somente após a liberação do sinal.</li><li>Parar dentro da área de destino.</li></ol>
+<p><b>Atenção:</b> ultrapassar o sinal vermelho, colidir ou passar do destino provoca falha na missão.</p></div>
+<button id="startButton" class="start-button">INICIAR SIMULADOR</button>
+</div></section>
+<section id="gameScreen" class="screen hidden">
+<header id="gameHeader"><div class="game-title">MUNDO FERROVIÁRIO <span>SIMULADOR 2D</span></div>
+<div class="game-information"><span id="speedDisplay">0 km/h</span><span id="statusDisplay">PARADO</span></div>
+<button id="restartPhase" class="restart-phase">↻ Reiniciar</button></header>
+<div id="yardContainer"><canvas id="gameCanvas" width="1000" height="500"></canvas>
+<div id="controls"><button id="accelerateButton" class="round-control accelerate">Ac</button><button id="brakeButton" class="round-control brake">Fr</button><button id="resumeButton" class="round-control resume">Rnc</button></div>
+<button id="switchButton" class="switch-button">↔ SELECIONAR L2</button>
+<div id="operationMessage">Aguardando início da operação.</div>
+<div id="signalInformation">SINAL: <span id="signalStatus">VERMELHO</span></div>
+</div></section>
+<div id="resultScreen" class="result-screen hidden"><div class="result-content">
+<h2 id="resultTitle">RESULTADO DA OPERAÇÃO</h2><p id="resultMessage"></p><div id="resultScore"></div><button id="retryButton">TENTAR NOVAMENTE</button>
+</div></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id),canvas=$("gameCanvas"),ctx=canvas.getContext("2d");
+const intro=$("introScreen"),game=$("gameScreen"),result=$("resultScreen");
+const startBtn=$("startButton"),accBtn=$("accelerateButton"),brakeBtn=$("brakeButton"),resumeBtn=$("resumeButton"),switchBtn=$("switchButton"),restartBtn=$("restartPhase"),retryBtn=$("retryButton");
+const speedDisplay=$("speedDisplay"),statusDisplay=$("statusDisplay"),signalStatus=$("signalStatus"),message=$("operationMessage");
+const W=1000,H=500,Y1=250,Y2=170,Y3=330,SIGNAL_X=720,STOP_X=690,DEST_X=900,SPACING=44,COUNT=5;
+const routeUpper=[{x:300,y:250},{x:350,y:250},{x:385,y:245},{x:415,y:225},{x:440,y:195},{x:470,y:175},{x:500,y:170},{x:960,y:170}],routeMiddle=[{x:300,y:250},{x:960,y:250}];
+function prepareRoute(points){let total=0;return points.map((p,i)=>{if(i)total+=Math.hypot(p.x-points[i-1].x,p.y-points[i-1].y);return {...p,d:total};});}
+const upper=prepareRoute(routeUpper),middle=prepareRoute(routeMiddle);
+function pointAt(route,d){if(d<0){const a=route[0],b=route[1],len=Math.hypot(b.x-a.x,b.y-a.y);return{x:a.x+(b.x-a.x)/len*d,y:a.y+(b.y-a.y)/len*d,angle:Math.atan2(b.y-a.y,b.x-a.x)};}for(let i=1;i<route.length;i++){const a=route[i-1],b=route[i];if(d<=b.d){const f=(d-a.d)/(b.d-a.d);return{x:a.x+(b.x-a.x)*f,y:a.y+(b.y-a.y)*f,angle:Math.atan2(b.y-a.y,b.x-a.x)};}}const p=route[route.length-1];return{x:p.x,y:p.y,angle:0};}
+function distanceAtX(route,x){for(let i=1;i<route.length;i++){const a=route[i-1],b=route[i];if(x>=Math.min(a.x,b.x)&&x<=Math.max(a.x,b.x)){const f=(x-a.x)/(b.x-a.x);return a.d+f*(b.d-a.d);}}return 0;}
+const signalDistance=distanceAtX(upper,STOP_X);
+let route=middle,trainD=0,speed=0,moving=false,accelerating=false,braking=false,locked=false,stoppedAtSignal=false,selected=false,green=false,otherX=950,otherMoving=false,started=false,finished=false,score=100,frame=null;
+const maxSpeed=2.1,accel=.025,brakeForce=.035;
+function say(t){message.textContent=t;}
+function updateSignal(){signalStatus.textContent=green?"VERDE":"VERMELHO";signalStatus.style.color=green?"#39e36c":"#ff4545";}
+function background(){ctx.fillStyle="#85877d";ctx.fillRect(0,0,W,H);ctx.fillStyle="#77786d";ctx.fillRect(0,0,W,90);ctx.fillRect(0,390,W,110);ctx.fillStyle="#6f746c";for(let x=0;x<W;x+=23)for(let y=0;y<H;y+=19)ctx.fillRect(x+(x+y)%5,y+(x*y)%4,2,2);ctx.fillStyle="white";ctx.font="bold 15px Arial";ctx.fillText("L2",15,Y2-22);ctx.fillText("L1",15,Y1-22);ctx.fillText("L3",15,Y3-22);}
+function track(y){ctx.fillStyle="#514b40";for(let x=20;x<W;x+=18)ctx.fillRect(x,y-12,9,24);ctx.fillStyle="#bfc4c2";ctx.fillRect(20,y-8,W-40,4);ctx.fillRect(20,y+4,W-40,4);ctx.fillStyle="#eceee9";ctx.fillRect(20,y-9,W-40,1);}
+function switchTrack(){ctx.strokeStyle="#c2c8c5";ctx.lineWidth=5;ctx.beginPath();upper.forEach((p,i)=>i?ctx.lineTo(p.x,p.y-5):ctx.moveTo(p.x,p.y-5));ctx.stroke();ctx.beginPath();upper.forEach((p,i)=>i?ctx.lineTo(p.x,p.y+5):ctx.moveTo(p.x,p.y+5));ctx.stroke();ctx.fillStyle=selected?"#36d66b":"#e2ad35";ctx.beginPath();ctx.arc(350,250,7,0,Math.PI*2);ctx.fill();}
+function tracks(){track(Y2);track(Y1);track(Y3);switchTrack();ctx.strokeStyle="#e8df4a";ctx.lineWidth=3;ctx.setLineDash([7,5]);ctx.beginPath();ctx.moveTo(STOP_X,135);ctx.lineTo(STOP_X,205);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="white";ctx.font="bold 11px Arial";ctx.fillText("PARADA",STOP_X-25,120);ctx.fillStyle="#25b45930";ctx.fillRect(855,130,75,80);ctx.strokeStyle="#36c76b";ctx.lineWidth=2;ctx.strokeRect(855,130,75,80);ctx.fillText("DESTINO",863,122);}
+function vehicle(x,y,angle,type,color){ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.fillStyle="#0006";ctx.fillRect(-17,-7,40,20);ctx.fillStyle=color;ctx.fillRect(-20,-9,40,18);ctx.fillStyle="#252c30";ctx.fillRect(-15,-11,30,3);ctx.fillRect(-15,8,30,3);if(type==="locomotive"){ctx.fillStyle="#d4ad45";ctx.fillRect(-5,-8,13,16);ctx.fillStyle="#e6e7e1";ctx.fillRect(12,-7,7,14);ctx.fillStyle="#fff5b5";ctx.beginPath();ctx.arc(18,0,2.5,0,Math.PI*2);ctx.fill();ctx.fillStyle="#23394a";ctx.fillRect(-17,-6,10,12);}else{ctx.fillStyle="#687078";ctx.fillRect(-12,-6,24,12);ctx.strokeStyle="#c0c5c5";ctx.lineWidth=1;ctx.strokeRect(-12,-6,24,12);}ctx.fillStyle="#202426";ctx.fillRect(-23,-2,5,4);ctx.fillRect(19,-2,5,4);ctx.restore();}
+function playerTrain(){for(let i=COUNT-1;i>=0;i--){const p=pointAt(route,trainD-i*SPACING);vehicle(p.x,p.y,p.angle,i===0?"locomotive":"wagon",i===0?"#173e59":"#9a3531");}}
+function opposingTrain(){for(let i=COUNT-1;i>=0;i--)vehicle(otherX+i*SPACING,Y1,Math.PI,i===0?"locomotive":"wagon",i===0?"#284b37":"#4c6475");}
+function parkedWagons(){for(let i=0;i<5;i++)vehicle(180+i*105,Y3,0,"wagon","#65666b");}
+function signal(){ctx.fillStyle="#292c2d";ctx.fillRect(SIGNAL_X-5,Y2-43,10,36);ctx.fillStyle="#161b20";ctx.fillRect(SIGNAL_X-12,Y2-48,24,35);ctx.fillStyle=green?"#572020":"#ff2929";ctx.beginPath();ctx.arc(SIGNAL_X,Y2-39,6,0,Math.PI*2);ctx.fill();ctx.fillStyle=green?"#32ef66":"#194d2a";ctx.beginPath();ctx.arc(SIGNAL_X,Y2-22,6,0,Math.PI*2);ctx.fill();}
+function draw(){ctx.clearRect(0,0,W,H);background();tracks();parkedWagons();signal();opposingTrain();playerTrain();}
+function changeSwitch(){if(!started||finished)return;if(trainD>0||speed>0){say("A chave só pode ser alterada com a composição parada na posição inicial.");return;}selected=!selected;route=selected?upper:middle;switchBtn.textContent=selected?"↔ ROTA L2 SELECIONADA":"↔ SELECIONAR L2";switchBtn.style.background=selected?"#278c4c":"#a47b27";say(selected?"Rota L2 selecionada. Você pode iniciar a operação.":"Rota retornou para L1. Selecione L2 para realizar a missão.");draw();}
+function startAcceleration(){if(!started||finished)return;if(locked){say("Composição parada. Utilize Rnc para liberar a circulação.");return;}accelerating=true;moving=true;}
+function stopAcceleration(){accelerating=false;}
+function startBraking(){if(!started||finished)return;accelerating=false;braking=true;}
+function stopBraking(){braking=false;}
+function resumeTrain(){if(!started||finished)return;if(speed>0){say("A composição ainda está em movimento.");return;}if(stoppedAtSignal&&!green){say("Aguarde o sinal verde antes de retomar a circulação.");return;}locked=false;stoppedAtSignal=false;moving=false;say("Circulação liberada. Utilize Ac para movimentar.");}
+function stopTrain(){speed=0;moving=false;accelerating=false;braking=false;locked=true;const p=pointAt(route,trainD);stoppedAtSignal=selected&&p.x>=620&&p.x<=STOP_X+5&&!green;checkDestination();}
+function switchCleared(){if(!selected)return false;for(let i=0;i<COUNT;i++){const p=pointAt(upper,trainD-i*SPACING);if(p.x<420||p.y>220)return false;}return true;}
+function checkSignalRelease(){if(!green&&switchCleared()&&otherX<420-4*SPACING){green=true;updateSignal();say("Trecho liberado! Sinal verde. Você pode retomar a circulação.");}}
+function updateOther(){if(!otherMoving)return;otherX-=1.5;checkSignalRelease();if(otherX<-250)otherMoving=false;}
+function collision(){if(selected)return false;for(let i=0;i<COUNT;i++){const p=pointAt(route,trainD-i*SPACING);for(let j=0;j<COUNT;j++){const ox=otherX+j*SPACING;if(Math.abs(p.x-ox)<32&&Math.abs(p.y-Y1)<15)return true;}}return false;}
+function checkDestination(){if(!selected||finished)return;const p=pointAt(route,trainD);if(p.x>=855&&p.x<=930&&speed===0)win();}
+function fail(title,text){if(finished)return;finished=true;speed=0;moving=false;accelerating=false;braking=false;locked=true;$("resultTitle").textContent=title;$("resultMessage").textContent=text;$("resultScore").textContent="Pontuação: 0 / 100";result.classList.remove("hidden");say("Falha operacional.");}
+function win(){if(finished)return;finished=true;speed=0;moving=false;accelerating=false;braking=false;locked=true;$("resultTitle").textContent="MISSÃO CONCLUÍDA!";$("resultMessage").textContent="Parabéns! Você realizou o cruzamento, respeitou a sinalização e parou corretamente no destino final.";$("resultScore").textContent="Pontuação: "+score+" / 100";result.classList.remove("hidden");say("Operação concluída com sucesso.");}
+function updatePlayer(){if(!moving||locked||finished)return;if(accelerating)speed=Math.min(maxSpeed,speed+accel);if(braking){speed=Math.max(0,speed-brakeForce);if(speed===0){stopTrain();return;}}if(!accelerating&&!braking){speed=Math.max(0,speed-.0008);if(speed===0){stopTrain();return;}}const previous=trainD;trainD+=speed;if(collision()){fail("Colisão ferroviária!","A composição entrou na linha de conflito sem realizar a mudança de rota para L2.");return;}const p=pointAt(route,trainD);if(!selected&&p.x>=940){fail("Rota incorreta!","Você não realizou a mudança manual para L2. A missão exige o cruzamento pela linha superior.");return;}if(selected&&!green&&p.x>STOP_X){fail("Sinal vermelho ultrapassado!","Você ultrapassou o limite de parada enquanto o sinal indicava parada obrigatória.");return;}if(selected&&p.x>DEST_X+30){fail("Destino ultrapassado!","A composição passou da área de parada. Controle a velocidade e freie antes do limite.");return;}if(selected&&switchCleared()&&!green)say("Composição na L2. Aguarde a passagem completa do outro trem.");if(previous<signalDistance&&trainD>=signalDistance&&!green)fail("Parada não realizada!","A composição ultrapassou o limite de parada enquanto o sinal estava vermelho.");}
+function updateDisplay(){speedDisplay.textContent=Math.round(speed*15)+" km/h";if(finished)statusDisplay.textContent="FINALIZADO";else if(locked)statusDisplay.textContent="PARADO";else if(braking)statusDisplay.textContent="FREANDO";else if(accelerating)statusDisplay.textContent="ACELERANDO";else if(moving)statusDisplay.textContent="EM MOVIMENTO";else statusDisplay.textContent="AGUARDANDO";updateSignal();}
+function animate(){if(!started)return;updateOther();updatePlayer();draw();updateDisplay();if(!finished)frame=requestAnimationFrame(animate);}
+function startAnimation(){cancelAnimationFrame(frame);frame=requestAnimationFrame(animate);}
+function resetGame(){cancelAnimationFrame(frame);trainD=0;speed=0;moving=false;accelerating=false;braking=false;locked=false;stoppedAtSignal=false;otherX=950;otherMoving=true;green=false;selected=false;route=middle;finished=false;started=true;score=100;switchBtn.textContent="↔ SELECIONAR L2";switchBtn.style.background="#a47b27";result.classList.add("hidden");updateSignal();say("Selecione a chave para L2 e inicie a operação.");draw();updateDisplay();startAnimation();}
+function startSimulator(){intro.style.display="none";game.classList.remove("hidden");started=true;resetGame();if(screen.orientation&&screen.orientation.lock)screen.orientation.lock("landscape").catch(()=>{});}
+startBtn.addEventListener("click",startSimulator);switchBtn.addEventListener("click",changeSwitch);resumeBtn.addEventListener("click",resumeTrain);restartBtn.addEventListener("click",resetGame);retryBtn.addEventListener("click",resetGame);
+accBtn.addEventListener("pointerdown",e=>{e.preventDefault();startAcceleration();});accBtn.addEventListener("pointerup",stopAcceleration);accBtn.addEventListener("pointerleave",stopAcceleration);accBtn.addEventListener("pointercancel",stopAcceleration);
+brakeBtn.addEventListener("pointerdown",e=>{e.preventDefault();startBraking();});brakeBtn.addEventListener("pointerup",stopBraking);brakeBtn.addEventListener("pointerleave",stopBraking);brakeBtn.addEventListener("pointercancel",stopBraking);
+window.addEventListener("pointerup",()=>{accelerating=false;braking=false;});window.addEventListener("blur",()=>{accelerating=false;braking=false;});
+intro.style.display="flex";game.classList.add("hidden");result.classList.add("hidden");updateSignal();draw();
+</script>
+</body>
+</html>
