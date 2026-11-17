@@ -1097,6 +1097,7 @@ const encyclopediaTopics = {
 
         <p>A conservação desses elementos é essencial para a estabilidade, geometria e segurança da infraestrutura ferroviária.</p>
       `  
+      }
     ]
   };
 
