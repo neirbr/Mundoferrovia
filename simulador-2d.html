@@ -120,7 +120,26 @@ function vehicle(x,y,angle,type,color){ctx.save();ctx.translate(x,y);ctx.rotate(
 function playerTrain(){for(let i=COUNT-1;i>=0;i--){const p=pointAt(route,trainD-i*SPACING);vehicle(p.x,p.y,p.angle,i===0?"locomotive":"wagon",i===0?"#173e59":"#9a3531");}}
 function opposingTrain(){for(let i=COUNT-1;i>=0;i--)vehicle(otherX+i*SPACING,Y1,Math.PI,i===0?"locomotive":"wagon",i===0?"#284b37":"#4c6475");}
 function parkedWagons(){for(let i=0;i<5;i++)vehicle(180+i*105,Y3,0,"wagon","#65666b");}
-function signal(){ctx.fillStyle="#292c2d";ctx.fillRect(SIGNAL_X-5,Y2-43,10,36);ctx.fillStyle="#161b20";ctx.fillRect(SIGNAL_X-12,Y2-48,24,35);ctx.fillStyle=green?"#572020":"#ff2929";ctx.beginPath();ctx.arc(SIGNAL_X,Y2-39,6,0,Math.PI*2);ctx.fill();ctx.fillStyle=green?"#32ef66":"#194d2a";ctx.beginPath();ctx.arc(SIGNAL_X,Y2-22,6,0,Math.PI*2);ctx.fill();}
+
+function signal(){
+  ctx.fillStyle="#292c2d";
+  ctx.fillRect(SIGNAL_X-5,Y1-43,10,36);
+
+  ctx.fillStyle="#161b20";
+  ctx.fillRect(SIGNAL_X-12,Y1-48,24,35);
+
+  ctx.fillStyle=green?"#572020":"#ff2929";
+  ctx.beginPath();
+  ctx.arc(SIGNAL_X,Y1-39,6,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle=green?"#32ef66":"#194d2a";
+  ctx.beginPath();
+  ctx.arc(SIGNAL_X,Y1-22,6,0,Math.PI*2);
+  ctx.fill();
+}
+
+
 function draw(){ctx.clearRect(0,0,W,H);background();tracks();parkedWagons();signal();opposingTrain();playerTrain();}
 function changeSwitch(){if(!started||finished)return;if(trainD>0||speed>0){say("A chave só pode ser alterada com a composição parada na posição inicial.");return;}selected=!selected;route=selected?upper:middle;switchBtn.textContent=selected?"↔ ROTA L2 SELECIONADA":"↔ SELECIONAR L2";switchBtn.style.background=selected?"#278c4c":"#a47b27";say(selected?"Rota L2 selecionada. Você pode iniciar a operação.":"Rota retornou para L1. Selecione L2 para realizar a missão.");draw();}
 function startAcceleration(){if(!started||finished)return;if(locked){say("Composição parada. Utilize Rnc para liberar a circulação.");return;}accelerating=true;moving=true;}
@@ -131,19 +150,116 @@ function resumeTrain(){if(!started||finished)return;if(speed>0){say("A composiç
 function stopTrain(){speed=0;moving=false;accelerating=false;braking=false;locked=true;const p=pointAt(route,trainD);stoppedAtSignal=selected&&p.x>=620&&p.x<=STOP_X+5&&!green;checkDestination();}
 function switchCleared(){if(!selected)return false;for(let i=0;i<COUNT;i++){const p=pointAt(upper,trainD-i*SPACING);if(p.x<420||p.y>220)return false;}return true;}
 function checkSignalRelease(){if(!green&&switchCleared()&&otherX<420-4*SPACING){green=true;updateSignal();say("Trecho liberado! Sinal verde. Você pode retomar a circulação.");}}
-function updateOther(){if(!otherMoving)return;otherX-=1.5;checkSignalRelease();if(otherX<-250)otherMoving=false;}
+  
+function updateOther(){
+  if(!otherMoving)return;
+
+  if(!green && otherX<=SIGNAL_X+35){
+    otherX=SIGNAL_X+35;
+    otherMoving=false;
+    return;
+  }
+
+  otherX-=1.5;
+
+  if(otherX<-250){
+    otherMoving=false;
+  }
+}
+
+  
 function collision(){if(selected)return false;for(let i=0;i<COUNT;i++){const p=pointAt(route,trainD-i*SPACING);for(let j=0;j<COUNT;j++){const ox=otherX+j*SPACING;if(Math.abs(p.x-ox)<32&&Math.abs(p.y-Y1)<15)return true;}}return false;}
 function checkDestination(){if(!selected||finished)return;const p=pointAt(route,trainD);if(p.x>=855&&p.x<=930&&speed===0)win();}
 function fail(title,text){if(finished)return;finished=true;speed=0;moving=false;accelerating=false;braking=false;locked=true;$("resultTitle").textContent=title;$("resultMessage").textContent=text;$("resultScore").textContent="Pontuação: 0 / 100";result.classList.remove("hidden");say("Falha operacional.");}
-function win(){if(finished)return;finished=true;speed=0;moving=false;accelerating=false;braking=false;locked=true;$("resultTitle").textContent="MISSÃO CONCLUÍDA!";$("resultMessage").textContent="Parabéns! Você realizou o cruzamento, respeitou a sinalização e parou corretamente no destino final.";$("resultScore").textContent="Pontuação: "+score+" / 100";result.classList.remove("hidden");say("Operação concluída com sucesso.");}
-function updatePlayer(){if(!moving||locked||finished)return;if(accelerating)speed=Math.min(maxSpeed,speed+accel);if(braking){speed=Math.max(0,speed-brakeForce);if(speed===0){stopTrain();return;}}if(!accelerating&&!braking){speed=Math.max(0,speed-.0008);if(speed===0){stopTrain();return;}}const previous=trainD;trainD+=speed;if(collision()){fail("Colisão ferroviária!","A composição entrou na linha de conflito sem realizar a mudança de rota para L2.");return;}const p=pointAt(route,trainD);if(!selected&&p.x>=940){fail("Rota incorreta!","Você não realizou a mudança manual para L2. A missão exige o cruzamento pela linha superior.");return;}if(selected&&!green&&p.x>STOP_X){fail("Sinal vermelho ultrapassado!","Você ultrapassou o limite de parada enquanto o sinal indicava parada obrigatória.");return;}if(selected&&p.x>DEST_X+30){fail("Destino ultrapassado!","A composição passou da área de parada. Controle a velocidade e freie antes do limite.");return;}if(selected&&switchCleared()&&!green)say("Composição na L2. Aguarde a passagem completa do outro trem.");if(previous<signalDistance&&trainD>=signalDistance&&!green)fail("Parada não realizada!","A composição ultrapassou o limite de parada enquanto o sinal estava vermelho.");}
+
+function win(){
+  if(finished)return;
+
+  finished=true;
+  speed=0;
+  moving=false;
+  accelerating=false;
+  braking=false;
+  locked=true;
+
+  green=true;
+  otherMoving=true;
+  updateSignal();
+
+  $("resultTitle").textContent="MISSÃO CONCLUÍDA!";
+  $("resultMessage").textContent="Parabéns! Você realizou o cruzamento, respeitou a sinalização e parou corretamente no destino final.";
+  $("resultScore").textContent="Pontuação: "+score+" / 100";
+
+  result.classList.remove("hidden");
+  say("Operação concluída com sucesso. Sinal liberado para o outro trem.");
+}
+  
+function updatePlayer(){
+  if(!moving||locked||finished)return;
+
+  if(accelerating){
+    speed=Math.min(maxSpeed,speed+accel);
+  }
+
+  if(braking){
+    speed=Math.max(0,speed-brakeForce);
+    if(speed===0){
+      stopTrain();
+      return;
+    }
+  }
+
+  if(!accelerating&&!braking){
+    speed=Math.max(0,speed-.0008);
+    if(speed===0){
+      stopTrain();
+      return;
+    }
+  }
+
+  trainD+=speed;
+
+  if(collision()){
+    fail("Colisão ferroviária!","A composição entrou na linha de conflito sem realizar a mudança de rota para L2.");
+    return;
+  }
+
+  const p=pointAt(route,trainD);
+
+  if(!selected&&p.x>=940){
+    fail("Rota incorreta!","Você não realizou a mudança manual para L2. A missão exige o cruzamento pela linha superior.");
+    return;
+  }
+
+  if(selected&&p.x>DEST_X+30){
+    fail("Destino ultrapassado!","A composição passou da área de parada. Controle a velocidade e freie antes do limite.");
+    return;
+  }
+}
+
 function updateDisplay(){speedDisplay.textContent=Math.round(speed*15)+" km/h";if(finished)statusDisplay.textContent="FINALIZADO";else if(locked)statusDisplay.textContent="PARADO";else if(braking)statusDisplay.textContent="FREANDO";else if(accelerating)statusDisplay.textContent="ACELERANDO";else if(moving)statusDisplay.textContent="EM MOVIMENTO";else statusDisplay.textContent="AGUARDANDO";updateSignal();}
-function animate(){if(!started)return;updateOther();updatePlayer();draw();updateDisplay();if(!finished)frame=requestAnimationFrame(animate);}
+
+function animate(){
+  if(!started)return;
+
+  updateOther();
+  updatePlayer();
+  draw();
+  updateDisplay();
+
+  if(!finished || otherMoving){
+    frame=requestAnimationFrame(animate);
+  }
+}
+
+
 function startAnimation(){cancelAnimationFrame(frame);frame=requestAnimationFrame(animate);}
 function resetGame(){cancelAnimationFrame(frame);trainD=0;speed=0;moving=false;accelerating=false;braking=false;locked=false;stoppedAtSignal=false;otherX=950;otherMoving=true;green=false;selected=false;route=middle;finished=false;started=true;score=100;switchBtn.textContent="↔ SELECIONAR L2";switchBtn.style.background="#a47b27";result.classList.add("hidden");updateSignal();say("Selecione a chave para L2 e inicie a operação.");draw();updateDisplay();startAnimation();}
 function startSimulator(){intro.style.display="none";game.classList.remove("hidden");started=true;resetGame();if(screen.orientation&&screen.orientation.lock)screen.orientation.lock("landscape").catch(()=>{});}
 startBtn.addEventListener("click",startSimulator);switchBtn.addEventListener("click",changeSwitch);resumeBtn.addEventListener("click",resumeTrain);restartBtn.addEventListener("click",resetGame);retryBtn.addEventListener("click",resetGame);
-accBtn.addEventListener("pointerdown",e=>{e.preventDefault();startAcceleration();});accBtn.addEventListener("pointerup",stopAcceleration);accBtn.addEventListener("pointerleave",stopAcceleration);accBtn.addEventListener("pointercancel",stopAcceleration);
+ 
+accBtn.addEventListener("click",startAcceleration);
+  
 brakeBtn.addEventListener("pointerdown",e=>{e.preventDefault();startBraking();});brakeBtn.addEventListener("pointerup",stopBraking);brakeBtn.addEventListener("pointerleave",stopBraking);brakeBtn.addEventListener("pointercancel",stopBraking);
 window.addEventListener("pointerup",()=>{accelerating=false;braking=false;});window.addEventListener("blur",()=>{accelerating=false;braking=false;});
 intro.style.display="flex";game.classList.add("hidden");result.classList.add("hidden");updateSignal();draw();
