@@ -1098,9 +1098,268 @@ const encyclopediaTopics = {
         <p>A conservação desses elementos é essencial para a estabilidade, geometria e segurança da infraestrutura ferroviária.</p>
       `  
       }
-    ]
-  };
+  ],
 
+  sinalizacao: [
+    {
+      title: 'Finalidade da sinalização ferroviária',
+      description: 'Entenda como a sinalização organiza e protege a circulação ferroviária.',
+      content: `
+        <h3>Finalidade da sinalização ferroviária</h3>
+        <p>A sinalização ferroviária reúne sistemas, equipamentos, indicações e procedimentos utilizados para organizar a circulação dos trens e orientar os profissionais envolvidos na operação.</p>
+        <p>Sua principal finalidade é contribuir para a segurança da circulação, controlando movimentos, velocidades, ocupação de trechos e condições de autorização de passagem.</p>
+        <ul>
+          <li><strong>Segurança:</strong> auxilia na prevenção de conflitos entre movimentos ferroviários.</li>
+          <li><strong>Organização:</strong> estabelece condições para a circulação dos trens.</li>
+          <li><strong>Orientação:</strong> transmite informações aos maquinistas e equipes operacionais.</li>
+          <li><strong>Controle:</strong> permite acompanhar e controlar condições de circulação.</li>
+        </ul>
+        <p>Os sistemas e procedimentos específicos variam conforme a ferrovia e suas normas operacionais.</p>
+      `
+    },
+    {
+      title: 'Tipos de sinais ferroviários',
+      description: 'Conheça as principais formas de transmitir indicações na ferrovia.',
+      content: `
+        <h3>Tipos de sinais ferroviários</h3>
+        <p>Os sinais ferroviários podem ser apresentados de diferentes maneiras, de acordo com a tecnologia empregada e as regras de circulação da ferrovia.</p>
+        <ul>
+          <li><strong>Sinais luminosos:</strong> utilizam indicações luminosas para transmitir informações.</li>
+          <li><strong>Sinais fixos:</strong> instalados ao longo da via para orientar os movimentos.</li>
+          <li><strong>Sinais manuais:</strong> utilizados por profissionais autorizados em determinadas situações.</li>
+          <li><strong>Sinalização de cabine:</strong> apresenta informações diretamente no posto de condução.</li>
+          <li><strong>Sinalização por comunicação:</strong> transmite autorizações e orientações por sistemas de comunicação previstos nos procedimentos.</li>
+        </ul>
+        <p>A interpretação de qualquer sinal deve seguir rigorosamente a regulamentação operacional aplicável.</p>
+      `
+    },
+    {
+      title: 'Sinalização luminosa',
+      description: 'Entenda a função dos sinais luminosos utilizados na circulação.',
+      content: `
+        <h3>Sinalização luminosa ferroviária</h3>
+        <p>A sinalização luminosa utiliza focos de luz e indicações visuais para transmitir informações relacionadas às condições de circulação.</p>
+        <p>Esses equipamentos podem ser instalados em locais estratégicos da ferrovia, como aproximações de estações, entradas de pátios, entroncamentos e trechos de bloqueio.</p>
+        <ul>
+          <li><strong>Indicações luminosas:</strong> representam condições ou comandos definidos pelo sistema.</li>
+          <li><strong>Visibilidade:</strong> devem permitir a identificação das indicações nas condições previstas de operação.</li>
+          <li><strong>Posicionamento:</strong> devem estar associados aos locais e movimentos para os quais foram projetados.</li>
+          <li><strong>Confiabilidade:</strong> dependem de manutenção e verificações técnicas.</li>
+        </ul>
+        <p>As cores e seus significados devem ser interpretados conforme o regulamento de sinalização da ferrovia, sem generalizações entre sistemas diferentes.</p>
+      `
+    },
+    {
+      title: 'Placas e sinais fixos',
+      description: 'Conheça os elementos de sinalização instalados ao longo da via.',
+      content: `
+        <h3>Placas e sinais fixos</h3>
+        <p>As placas e os sinais fixos são elementos instalados ao longo da infraestrutura ferroviária para transmitir informações aos profissionais responsáveis pela condução e operação dos trens.</p>
+        <ul>
+          <li><strong>Placas de velocidade:</strong> indicam limites ou condições de velocidade conforme a regulamentação.</li>
+          <li><strong>Placas de localização:</strong> auxiliam na identificação de pontos e referências da ferrovia.</li>
+          <li><strong>Sinais de advertência:</strong> alertam sobre condições ou características da via.</li>
+          <li><strong>Marcos ferroviários:</strong> identificam referências utilizadas na operação e manutenção.</li>
+          <li><strong>Sinalização de pátio:</strong> orienta movimentos e condições específicas das instalações.</li>
+        </ul>
+        <p>A localização, aparência e interpretação desses elementos seguem padrões definidos por cada sistema ferroviário.</p>
+      `
+    },
+    {
+      title: 'Sistemas de sinalização de cabine',
+      description: 'Saiba como as informações operacionais podem ser apresentadas dentro da locomotiva.',
+      content: `
+        <h3>Sistemas de sinalização de cabine</h3>
+        <p>A sinalização de cabine apresenta informações relacionadas à circulação diretamente no ambiente de condução da locomotiva.</p>
+        <p>Dependendo da tecnologia utilizada, o sistema pode informar condições de autorização, limites de velocidade, aproximação de restrições e outras condições operacionais.</p>
+        <ul>
+          <li><strong>Interface de operação:</strong> apresenta informações ao maquinista.</li>
+          <li><strong>Supervisão de velocidade:</strong> pode monitorar a velocidade em relação às condições autorizadas.</li>
+          <li><strong>Comunicação com a infraestrutura:</strong> recebe informações de equipamentos e sistemas externos.</li>
+          <li><strong>Alertas:</strong> informa situações que exigem atenção do operador.</li>
+        </ul>
+        <p>Os recursos disponíveis dependem do sistema instalado e de sua configuração operacional.</p>
+      `
+    },
+    {
+      title: 'Circuitos de via e contadores de eixos',
+      description: 'Entenda como esses equipamentos identificam a ocupação de trechos ferroviários.',
+      content: `
+        <h3>Circuitos de via e contadores de eixos</h3>
+        <p>Os circuitos de via e os contadores de eixos são tecnologias utilizadas para detectar a presença de veículos ferroviários em determinados trechos.</p>
+        <ul>
+          <li><strong>Circuito de via:</strong> utiliza características elétricas do circuito formado pelos trilhos para detectar a ocupação.</li>
+          <li><strong>Contador de eixos:</strong> utiliza sensores instalados na via para registrar a passagem dos eixos.</li>
+          <li><strong>Detecção de ocupação:</strong> fornece informações importantes aos sistemas de sinalização e controle.</li>
+          <li><strong>Liberação de trecho:</strong> ocorre conforme a lógica e os critérios de segurança do sistema.</li>
+        </ul>
+        <p>Esses recursos contribuem para o controle da circulação e para a prevenção de conflitos entre movimentos ferroviários.</p>
+      `
+    },
+    {
+      title: 'Intertravamento ferroviário',
+      description: 'Conheça o sistema que coordena rotas, aparelhos de mudança de via e sinais.',
+      content: `
+        <h3>Intertravamento ferroviário</h3>
+        <p>O intertravamento é um sistema de segurança que coordena os elementos de sinalização e os aparelhos de mudança de via para impedir combinações incompatíveis de movimentos.</p>
+        <ul>
+          <li><strong>Controle de rotas:</strong> verifica as condições necessárias para estabelecer um itinerário.</li>
+          <li><strong>Controle de AMVs:</strong> supervisiona a posição dos aparelhos de mudança de via envolvidos na rota.</li>
+          <li><strong>Proteção de movimentos:</strong> evita a autorização de rotas incompatíveis, conforme a lógica de segurança.</li>
+          <li><strong>Integração:</strong> pode se comunicar com sinais, detectores de ocupação e centros de controle.</li>
+        </ul>
+        <p>O intertravamento é fundamental em regiões com cruzamentos, desvios, pátios e estações.</p>
+      `
+    },
+    {
+      title: 'Falhas e anormalidades na sinalização',
+      description: 'Entenda a importância da identificação e comunicação de falhas nos sistemas.',
+      content: `
+        <h3>Falhas e anormalidades na sinalização</h3>
+        <p>Falhas de sinalização podem comprometer a disponibilidade dos sistemas e alterar as condições normais de circulação ferroviária.</p>
+        <ul>
+          <li><strong>Falha de indicação:</strong> ocorre quando um sinal apresenta informação ausente ou incompatível com o esperado.</li>
+          <li><strong>Falha de detecção:</strong> pode afetar a identificação da ocupação de um trecho.</li>
+          <li><strong>Falha de comunicação:</strong> pode interromper a troca de informações entre equipamentos e centros de controle.</li>
+          <li><strong>Falha de alimentação:</strong> pode comprometer o funcionamento dos dispositivos.</li>
+        </ul>
+        <p>Qualquer anormalidade deve ser comunicada imediatamente pelos canais previstos. A circulação deve seguir as medidas de segurança e os procedimentos oficiais da ferrovia.</p>
+        <p>Nenhum profissional deve presumir uma condição segura ou improvisar uma autorização de movimento diante de uma falha.</p>
+      `
+    }
+  ],
+
+  operacoes: [
+    {
+      title: 'Fundamentos das operações ferroviárias',
+      description: 'Conheça as atividades que permitem o funcionamento do transporte ferroviário.',
+      content: `
+        <h3>Fundamentos das operações ferroviárias</h3>
+        <p>As operações ferroviárias compreendem o conjunto de atividades necessárias para movimentar trens, organizar vagões, atender instalações e garantir o fluxo de cargas e passageiros.</p>
+        <ul>
+          <li><strong>Circulação:</strong> movimentação dos trens entre diferentes pontos da ferrovia.</li>
+          <li><strong>Manobras:</strong> movimentação de locomotivas e vagões em pátios e instalações.</li>
+          <li><strong>Formação:</strong> organização dos veículos que compõem um trem.</li>
+          <li><strong>Inspeção:</strong> verificação das condições operacionais dos veículos e equipamentos.</li>
+          <li><strong>Controle:</strong> acompanhamento e coordenação das atividades ferroviárias.</li>
+        </ul>
+        <p>Essas atividades dependem da integração entre equipes, equipamentos, infraestrutura e procedimentos operacionais.</p>
+      `
+    },
+    {
+      title: 'Circulação e controle de trens',
+      description: 'Entenda como os movimentos ferroviários são organizados e acompanhados.',
+      content: `
+        <h3>Circulação e controle de trens</h3>
+        <p>A circulação ferroviária envolve o deslocamento dos trens em uma malha organizada, respeitando as condições de segurança, capacidade da via e autorizações operacionais.</p>
+        <ul>
+          <li><strong>Planejamento:</strong> organização dos movimentos de acordo com a programação.</li>
+          <li><strong>Licenciamento:</strong> autorização de circulação conforme as regras da ferrovia.</li>
+          <li><strong>Controle de tráfego:</strong> acompanhamento dos trens e dos trechos ocupados.</li>
+          <li><strong>Comunicação:</strong> troca de informações entre maquinistas, controladores e equipes operacionais.</li>
+          <li><strong>Registro:</strong> documentação de eventos e ocorrências relevantes.</li>
+        </ul>
+        <p>O cumprimento das autorizações e dos procedimentos de circulação é indispensável para a segurança ferroviária.</p>
+      `
+    },
+    {
+      title: 'Manobras ferroviárias',
+      description: 'Conheça as atividades de movimentação de locomotivas e vagões em pátios.',
+      content: `
+        <h3>Manobras ferroviárias</h3>
+        <p>Manobras ferroviárias são movimentos realizados para posicionar, retirar, agrupar ou reorganizar veículos ferroviários em pátios, terminais, desvios e outras instalações.</p>
+        <ul>
+          <li><strong>Recuo:</strong> movimento realizado no sentido contrário ao deslocamento habitual da composição.</li>
+          <li><strong>Avanço:</strong> deslocamento para posicionamento ou transferência de veículos.</li>
+          <li><strong>Classificação:</strong> separação e organização de vagões conforme o destino ou a necessidade operacional.</li>
+          <li><strong>Posicionamento:</strong> colocação dos veículos em linhas ou locais determinados.</li>
+          <li><strong>Comunicação:</strong> transmissão de orientações entre os profissionais envolvidos.</li>
+        </ul>
+        <p>As manobras devem ser realizadas por equipes autorizadas, com comunicação clara, atenção às condições da via e cumprimento dos procedimentos locais.</p>
+      `
+    },
+    {
+      title: 'Formação e composição de trens',
+      description: 'Saiba como locomotivas e vagões são organizados para formar um trem.',
+      content: `
+        <h3>Formação e composição de trens</h3>
+        <p>A formação de um trem consiste na organização das locomotivas e dos veículos ferroviários que irão realizar determinado percurso ou serviço.</p>
+        <ul>
+          <li><strong>Locomotivas:</strong> fornecem a força de tração necessária ao deslocamento.</li>
+          <li><strong>Vagões:</strong> transportam cargas e são organizados conforme as características da operação.</li>
+          <li><strong>Distribuição:</strong> considera fatores como massa, comprimento, características dos veículos e requisitos operacionais.</li>
+          <li><strong>Freio:</strong> o sistema deve atender às condições e verificações exigidas para a composição.</li>
+          <li><strong>Documentação:</strong> registra informações necessárias à identificação e à circulação do trem.</li>
+        </ul>
+        <p>A composição final deve respeitar os limites técnicos e operacionais estabelecidos pela ferrovia.</p>
+      `
+    },
+    {
+      title: 'Acoplamento e desacoplamento de vagões',
+      description: 'Conheça os princípios de união e separação dos veículos ferroviários.',
+      content: `
+        <h3>Acoplamento e desacoplamento de vagões</h3>
+        <p>O acoplamento é a união mecânica entre veículos ferroviários, permitindo que sejam movimentados como parte de uma composição. O desacoplamento consiste na separação desses veículos.</p>
+        <ul>
+          <li><strong>Engates:</strong> realizam a conexão mecânica entre os veículos.</li>
+          <li><strong>Conexões pneumáticas:</strong> permitem a continuidade das ligações do sistema de freio quando aplicável.</li>
+          <li><strong>Inspeção:</strong> verifica as condições dos dispositivos de conexão.</li>
+          <li><strong>Comunicação:</strong> coordena as atividades entre os profissionais envolvidos.</li>
+        </ul>
+        <p>Essas atividades exigem procedimentos específicos de segurança, controle dos movimentos e prevenção de exposição a zonas de esmagamento. Devem ser executadas somente por profissionais habilitados e conforme as regras locais.</p>
+      `
+    },
+    {
+      title: 'Inspeção operacional de trens',
+      description: 'Entenda a importância das verificações antes e durante a operação.',
+      content: `
+        <h3>Inspeção operacional de trens</h3>
+        <p>A inspeção operacional busca identificar condições que possam comprometer a segurança, a integridade dos veículos ou a continuidade da operação ferroviária.</p>
+        <ul>
+          <li><strong>Rodeiros e truques:</strong> observação das condições dos conjuntos e de possíveis anormalidades.</li>
+          <li><strong>Engates:</strong> verificação das condições dos dispositivos de acoplamento.</li>
+          <li><strong>Freios:</strong> observação e realização dos testes previstos nos procedimentos.</li>
+          <li><strong>Estrutura:</strong> identificação de danos, deformações ou componentes soltos.</li>
+          <li><strong>Carga:</strong> verificação das condições de acondicionamento e fixação, quando aplicável.</li>
+        </ul>
+        <p>As anormalidades identificadas devem ser registradas e comunicadas. A liberação do veículo ou trem depende dos critérios técnicos e operacionais estabelecidos pela ferrovia.</p>
+      `
+    },
+    {
+      title: 'Operações em pátios ferroviários',
+      description: 'Conheça a organização e as atividades realizadas nos pátios.',
+      content: `
+        <h3>Operações em pátios ferroviários</h3>
+        <p>Os pátios ferroviários são instalações destinadas à recepção, formação, classificação, estacionamento e movimentação de trens e vagões.</p>
+        <ul>
+          <li><strong>Linhas de recepção:</strong> utilizadas para receber composições que chegam ao pátio.</li>
+          <li><strong>Linhas de classificação:</strong> permitem organizar vagões conforme os destinos ou serviços.</li>
+          <li><strong>Linhas de estacionamento:</strong> utilizadas para posicionar veículos que aguardam nova movimentação.</li>
+          <li><strong>Desvios:</strong> possibilitam transferências entre diferentes linhas.</li>
+          <li><strong>Controle operacional:</strong> coordena a ocupação e a utilização das linhas disponíveis.</li>
+        </ul>
+        <p>A organização do pátio deve considerar a circulação segura de pessoas e equipamentos, a identificação das linhas e a comunicação entre as equipes.</p>
+      `
+    },
+    {
+      title: 'Carregamento e descarga de vagões',
+      description: 'Entenda as operações de movimentação de cargas nos terminais ferroviários.',
+      content: `
+        <h3>Carregamento e descarga de vagões</h3>
+        <p>As operações de carregamento e descarga são atividades fundamentais na logística ferroviária, permitindo transferir mercadorias entre os vagões e as instalações dos clientes ou terminais.</p>
+        <ul>
+          <li><strong>Carregamento:</strong> colocação da carga no vagão conforme sua finalidade e capacidade.</li>
+          <li><strong>Distribuição:</strong> organização da carga para evitar concentração inadequada de peso.</li>
+          <li><strong>Fixação:</strong> utilização dos recursos apropriados para impedir deslocamentos da carga.</li>
+          <li><strong>Descarga:</strong> retirada da mercadoria por equipamentos ou sistemas adequados ao produto.</li>
+          <li><strong>Conferência:</strong> verificação das condições do vagão e da operação realizada.</li>
+        </ul>
+        <p>O carregamento deve respeitar a capacidade do vagão, os limites de peso por eixo e as exigências específicas para cada tipo de mercadoria.</p>
+        <p>As operações devem seguir os procedimentos de segurança e as orientações técnicas aplicáveis ao terminal e à ferrovia.</p>
+      `
+    }
+  ]
+};
 
   function abrirBibliotecaFerroviaria(categoria) {
     if (!encyclopediaCategories || !encyclopediaLibrary) return;
