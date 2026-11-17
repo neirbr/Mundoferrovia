@@ -830,16 +830,16 @@ const encyclopediaTopics = {
           <li><strong>Motor:</strong> equipamento responsável pela produção de energia utilizada no sistema de tração.</li>
           <li><strong>Sistema de freio:</strong> conjunto de equipamentos utilizado para controlar a velocidade e realizar a frenagem.</li>
         </ul>
-         <p>Essas características variam conforme o fabricante, o modelo, a finalidade e as condições de utilização da locomotiva.</p>
+         
+        <p>Essas características variam conforme o fabricante, o modelo, a finalidade e as condições de utilização da locomotiva.</p>
       `
-      }
-    ]
+    }
   ],
 
-      vagões: 
-       {
+  vagoes: [
+    {
+      title: 'Tipos de vagões',
 
-        title: 'Tipos de vagões',
         description: 'Conheça os principais modelos de vagões ferroviários.',
         content: `
           <h3>Tipos de vagões ferroviários</h3>
