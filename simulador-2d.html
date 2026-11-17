@@ -109,7 +109,9 @@ function pointAt(route,d){if(d<0){const a=route[0],b=route[1],len=Math.hypot(b.x
 function distanceAtX(route,x){for(let i=1;i<route.length;i++){const a=route[i-1],b=route[i];if(x>=Math.min(a.x,b.x)&&x<=Math.max(a.x,b.x)){const f=(x-a.x)/(b.x-a.x);return a.d+f*(b.d-a.d);}}return 0;}
 const signalDistance=distanceAtX(upper,STOP_X);
 let route=middle,trainD=0,speed=0,moving=false,accelerating=false,braking=false,locked=false,stoppedAtSignal=false,selected=false,green=false,otherX=950,otherMoving=false,started=false,finished=false,score=100,frame=null;
-const maxSpeed=2.1,accel=.025,brakeForce=.035;
+
+const maxSpeed=2.1,accel=.008,brakeForce=.035;
+
 function say(t){message.textContent=t;}
 function updateSignal(){signalStatus.textContent=green?"VERDE":"VERMELHO";signalStatus.style.color=green?"#39e36c":"#ff4545";}
 function background(){ctx.fillStyle="#85877d";ctx.fillRect(0,0,W,H);ctx.fillStyle="#77786d";ctx.fillRect(0,0,W,90);ctx.fillRect(0,390,W,110);ctx.fillStyle="#6f746c";for(let x=0;x<W;x+=23)for(let y=0;y<H;y+=19)ctx.fillRect(x+(x+y)%5,y+(x*y)%4,2,2);ctx.fillStyle="white";ctx.font="bold 15px Arial";ctx.fillText("L2",15,Y2-22);ctx.fillText("L1",15,Y1-22);ctx.fillText("L3",15,Y3-22);}
