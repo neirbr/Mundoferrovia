@@ -20,6 +20,26 @@
 
   const ctx = canvas.getContext('2d');
 
+
+imagem.onload = () => {
+  alert(
+    'Imagem: ' +
+    imagem.naturalWidth +
+    ' x ' +
+    imagem.naturalHeight
+  );
+};
+
+if (imagem.complete && imagem.naturalWidth > 0) {
+  alert(
+    'Imagem: ' +
+    imagem.naturalWidth +
+    ' x ' +
+    imagem.naturalHeight
+  );
+}
+   
+
 console.log('Tamanho original:', imagem.naturalWidth, imagem.naturalHeight);
 
   // ==========================================
