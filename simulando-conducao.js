@@ -177,30 +177,41 @@
   // CANVAS
   // ==========================================
 
-  function prepararCanvas() {
+  
+function prepararCanvas() {
 
-    canvas.width = imagem.naturalWidth;
-    canvas.height = imagem.naturalHeight;
+  canvas.width = imagem.naturalWidth;
+  canvas.height = imagem.naturalHeight;
+
+  const cenario = document.getElementById('cenario');
+
+  if (!cenario) return;
+
+  cenario.style.position = 'relative';
+
+  imagem.style.display = 'block';
+  imagem.style.width = '100%';
+  imagem.style.height = 'auto';
+
+  function ajustarCanvas() {
+
+    const area = cenario.getBoundingClientRect();
+    const foto = imagem.getBoundingClientRect();
 
     canvas.style.position = 'absolute';
-    canvas.style.left = '0';
-    canvas.style.top = '0';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
+    canvas.style.left = `${foto.left - area.left}px`;
+    canvas.style.top = `${foto.top - area.top}px`;
+    canvas.style.width = `${foto.width}px`;
+    canvas.style.height = `${foto.height}px`;
     canvas.style.pointerEvents = 'none';
-
-    const cenario = document.getElementById('cenario');
-
-    if (cenario) {
-      cenario.style.position = 'relative';
-    }
-
-    imagem.style.display = 'block';
-    imagem.style.width = '100%';
-    imagem.style.height = 'auto';
-
-    desenhar();
   }
+
+  ajustarCanvas();
+
+  desenhar();
+
+}
+
 
   // ==========================================
   // DESENHAR LOCOMOTIVA E VAGÕES
