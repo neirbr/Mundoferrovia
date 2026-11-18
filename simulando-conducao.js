@@ -324,38 +324,50 @@ function prepararCanvas() {
   // DESENHAR COMPOSIÇÃO
   // ==========================================
 
-  function desenharComposicao() {
+  
+function desenharComposicao() {
 
-    // A locomotiva começa na estação superior.
-    const locomotiva = obterPosicao(
-      jogo.distancia
-    );
+  // Deslocamento lateral em relação ao centro da trajetória.
+  const ajusteLateral = 10;
+
+  function desenharVeiculoNaLinha(distancia, tipo) {
+
+    const posicao = obterPosicao(distancia);
+
+    const deslocamentoX =
+      -Math.sin(posicao.angulo) * ajusteLateral;
+
+    const deslocamentoY =
+      Math.cos(posicao.angulo) * ajusteLateral;
 
     desenharVeiculo(
-      locomotiva.x,
-      locomotiva.y,
-      locomotiva.angulo,
-      'locomotiva'
+      posicao.x + deslocamentoX,
+      posicao.y + deslocamentoY,
+      posicao.angulo,
+      tipo
     );
-
-    // Quatro vagões seguem a locomotiva.
-    for (let i = 1; i <= 4; i++) {
-
-      const distanciaVagao =
-        jogo.distancia - config.espacamento * i;
-
-      if (distanciaVagao < 0) continue;
-
-      const vagao = obterPosicao(distanciaVagao);
-
-      desenharVeiculo(
-        vagao.x,
-        vagao.y,
-        vagao.angulo,
-        'vagao'
-      );
-    }
   }
+
+  // Locomotiva
+  desenharVeiculoNaLinha(
+    jogo.distancia,
+    'locomotiva'
+  );
+
+  // Quatro vagões
+  for (let i = 1; i <= 4; i++) {
+
+    const distanciaVagao =
+      jogo.distancia - config.espacamento * i;
+
+    if (distanciaVagao < 0) continue;
+
+    desenharVeiculoNaLinha(
+      distanciaVagao,
+      'vagao'
+    );
+  }
+}
 
   // ==========================================
   // DESENHO GERAL
