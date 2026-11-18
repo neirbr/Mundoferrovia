@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
 
   "use strict";
@@ -8,87 +9,102 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================================
 
   const simulator = {
-    initialized: false,
 
-    elements: {
-      scenario: document.getElementById("railwayScenario"),
-      locomotive: document.getElementById("locomotive"),
-      wagon1: document.getElementById("wagon1"),
-      wagon2: document.getElementById("wagon2"),
-      composition: document.getElementById("trainComposition"),
-      line1: document.getElementById("sleepersL1"),
-      line2: document.getElementById("sleepersL2"),
-      switchArea: document.getElementById("switchArea"),
-      crossing: document.getElementById("levelCrossing"),
-      barrier: document.getElementById("barrier"),
-      signals: document.getElementById("signals"),
-      vehicles: document.getElementById("roadVehicles"),
-      vegetation: document.getElementById("vegetation"),
-      lighting: document.getElementById("lighting")
-    },
+    initialized: false,
 
     configuration: {
       view: "top-down",
       fixedScenario: true,
       movementEnabled: false,
       controlsEnabled: false,
-      initialLine: "L1",
       initialSpeed: 0,
       tractionPoint: 0,
       reverser: "N",
-      brakeApplied: true
+      brakeApplied: true,
+      currentStation: 1
+    },
+
+    elements: {
+      scenario: document.getElementById("railwayScenario"),
+
+      railway: document.getElementById("railwayTracks"),
+      railwayRoute: document.getElementById("railRoute"),
+
+      highway: document.getElementById("highway"),
+      roadVehicles: document.getElementById("roadVehicles"),
+
+      station1: document.getElementById("station1"),
+      station2: document.getElementById("station2"),
+
+      locomotive: document.getElementById("locomotive"),
+
+      wagon1: document.getElementById("wagon1"),
+      wagon2: document.getElementById("wagon2"),
+      wagon3: document.getElementById("wagon3"),
+      wagon4: document.getElementById("wagon4"),
+
+      composition: document.getElementById("trainComposition"),
+
+      signals: document.getElementById("signals"),
+      crossing: document.getElementById("levelCrossing"),
+      barrier: document.getElementById("barrier"),
+
+      farm: document.querySelector("#railwayScenario text"),
+      vegetation: document.getElementById("vegetation")
     },
 
     train: {
+
       locomotive: {
-        id: "locomotive",
-        position: {
-          x: 425,
-          y: 215
-        },
+        x: 510,
+        y: 100,
         direction: 0
       },
 
       wagons: [
-        {
-          id: "wagon1",
-          position: {
-            x: 300,
-            y: 215
-          }
-        },
-        {
-          id: "wagon2",
-          position: {
-            x: 190,
-            y: 215
-          }
-        }
+        { id: "wagon1", x: 430, y: 100 },
+        { id: "wagon2", x: 350, y: 100 },
+        { id: "wagon3", x: 270, y: 100 },
+        { id: "wagon4", x: 190, y: 100 }
       ]
+
     }
+
   };
 
   // ==========================================
-  // VERIFICAÇÃO DOS ELEMENTOS
+  // VERIFICAR ELEMENTOS DO CENÁRIO
   // ==========================================
 
-  function checkScenarioElements() {
+  function checkElements() {
 
-    const missingElements = [];
+    const requiredElements = [
+      "scenario",
+      "railway",
+      "railwayRoute",
+      "highway",
+      "station1",
+      "station2",
+      "locomotive",
+      "wagon1",
+      "wagon2",
+      "wagon3",
+      "wagon4",
+      "composition",
+      "signals",
+      "crossing",
+      "barrier"
+    ];
 
-    Object.entries(simulator.elements).forEach(([name, element]) => {
-
-      if (!element) {
-        missingElements.push(name);
-      }
-
+    const missing = requiredElements.filter(name => {
+      return !simulator.elements[name];
     });
 
-    if (missingElements.length > 0) {
+    if (missing.length > 0) {
 
       console.error(
-        "Mundo Ferroviário: elementos não encontrados:",
-        missingElements
+        "Simulador 2.0: elementos não encontrados:",
+        missing
       );
 
       return false;
@@ -98,27 +114,27 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================
-  // PREPARAÇÃO DA COMPOSIÇÃO
+  // PREPARAR COMPOSIÇÃO FERROVIÁRIA
   // ==========================================
 
   function prepareTrain() {
 
-    const train = simulator.train;
-
     const locomotive = simulator.elements.locomotive;
+
+    const position = simulator.train.locomotive;
 
     locomotive.setAttribute(
       "transform",
-      `translate(${train.locomotive.position.x} ${train.locomotive.position.y}) rotate(${train.locomotive.direction})`
+      `translate(${position.x} ${position.y}) rotate(${position.direction})`
     );
 
-    train.wagons.forEach(wagon => {
+    simulator.train.wagons.forEach(wagon => {
 
-      const wagonElement = document.getElementById(wagon.id);
+      const element = document.getElementById(wagon.id);
 
-      wagonElement.setAttribute(
+      element.setAttribute(
         "transform",
-        `translate(${wagon.position.x} ${wagon.position.y})`
+        `translate(${wagon.x} ${wagon.y})`
       );
 
     });
@@ -126,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================
-  // PREPARAÇÃO DO CENÁRIO FIXO
+  // PREPARAR PLANTA FIXA
   // ==========================================
 
   function prepareScenario() {
@@ -134,19 +150,60 @@ document.addEventListener("DOMContentLoaded", () => {
     const scenario = simulator.elements.scenario;
 
     scenario.style.display = "block";
-
     scenario.style.width = "100%";
-
     scenario.style.height = "auto";
-
-    scenario.style.overflow = "visible";
-
     scenario.style.transform = "none";
 
   }
 
   // ==========================================
-  // CONFIGURAÇÃO INICIAL
+  // REGISTRAR PERCURSO FERROVIÁRIO
+  // ==========================================
+
+  function registerRailwayRoute() {
+
+    const route = simulator.elements.railwayRoute;
+
+    simulator.railwayPath = {
+      element: route,
+      length: route.getTotalLength(),
+      startPoint: route.getPointAtLength(0),
+      endPoint: route.getPointAtLength(
+        route.getTotalLength()
+      )
+    };
+
+    console.info(
+      "Percurso ferroviário registrado:",
+      simulator.railwayPath.length,
+      "unidades SVG."
+    );
+
+  }
+
+  // ==========================================
+  // REGISTRAR RODOVIA
+  // ==========================================
+
+  function registerHighway() {
+
+    const highway = simulator.elements.highway;
+
+    simulator.highwayPath = {
+      element: highway,
+      length: highway.getTotalLength()
+    };
+
+    console.info(
+      "Rodovia registrada:",
+      simulator.highwayPath.length,
+      "unidades SVG."
+    );
+
+  }
+
+  // ==========================================
+  // INICIALIZAR SIMULADOR
   // ==========================================
 
   function initializeSimulator() {
@@ -155,14 +212,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const elementsValid = checkScenarioElements();
-
-    if (!elementsValid) {
-
+    if (!checkElements()) {
       console.error(
-        "Mundo Ferroviário: não foi possível inicializar o cenário."
+        "Não foi possível inicializar o Simulador 2.0."
       );
-
       return;
     }
 
@@ -170,28 +223,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
     prepareTrain();
 
+    registerRailwayRoute();
+
+    registerHighway();
+
     simulator.initialized = true;
 
     console.info(
-      "Mundo Ferroviário: Simulador de Condução 2.0 inicializado."
+      "MUNDO FERROVIÁRIO: SIMULADOR 2.0"
+    );
+
+    console.info("Cenário carregado.");
+
+    console.info("Fazenda e áreas urbanas reconhecidas.");
+
+    console.info("Rodovia azul reconhecida.");
+
+    console.info("Traçado ferroviário reconhecido.");
+
+    console.info("Estações 1 e 2 reconhecidas.");
+
+    console.info(
+      "Locomotiva e quatro vagões posicionados."
     );
 
     console.info(
-      "Cenário fixo carregado."
-    );
-
-    console.info(
-      "Locomotiva e vagões posicionados na linha L1."
-    );
-
-    console.info(
-      "Movimentação e controles ainda desativados."
+      "Movimentação e controles permanecem desativados."
     );
 
   }
 
   // ==========================================
-  // INICIALIZAÇÃO
+  // EXECUTAR
   // ==========================================
 
   initializeSimulator();
