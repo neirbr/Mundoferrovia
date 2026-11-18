@@ -31,7 +31,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 15px;
   border-bottom: 4px solid var(--gold);
 }
 
@@ -51,6 +51,7 @@ body {
   color: var(--gold);
   font-size: 17px;
   font-weight: 900;
+  flex-shrink: 0;
 }
 
 .sim-brand h1 {
@@ -79,21 +80,19 @@ body {
   border-radius: 50%;
   background: #46c878;
   box-shadow: 0 0 9px #46c878;
+  flex-shrink: 0;
 }
 
 /* ÁREA PRINCIPAL */
 
 .sim-main {
-  width: min(1500px, 96%);
+  width: min(1100px, 96%);
   margin: 0 auto;
-  padding: 25px 0 35px;
+  padding: 22px 0 35px;
 }
 
 .scenario-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 17px;
+  margin-bottom: 16px;
 }
 
 .scenario-heading h2 {
@@ -135,12 +134,12 @@ body {
   color: var(--gold);
 }
 
-/* VISUALIZAÇÃO DO PÁTIO */
+/* PLANTA FERROVIÁRIA VERTICAL */
 
 .scenario-viewport {
   width: 100%;
   overflow: hidden;
-  background: #638052;
+  background: #56804e;
   line-height: 0;
 }
 
@@ -148,20 +147,21 @@ body {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 1200 / 720;
+  aspect-ratio: 700 / 1000;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 /* LEGENDA */
 
 .scenario-legend {
   min-height: 49px;
-  padding: 12px 18px;
+  padding: 13px 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 12px 25px;
+  gap: 12px 22px;
   background: #f8fafb;
   border-top: 1px solid #dce3e7;
 }
@@ -180,10 +180,15 @@ body {
   width: 13px;
   height: 13px;
   border-radius: 3px;
+  flex-shrink: 0;
 }
 
 .legend-track {
-  background: #929b9d;
+  background: #252b2e;
+}
+
+.legend-road {
+  background: #287fc6;
 }
 
 .legend-locomotive {
@@ -208,7 +213,30 @@ body {
   font-size: 12px;
 }
 
-/* RESPONSIVIDADE */
+/* TABLETS */
+
+@media (min-width: 700px) {
+  .sim-main {
+    padding-top: 30px;
+  }
+
+  .scenario-panel {
+    max-width: 850px;
+    margin: 0 auto;
+  }
+
+  .scenario-heading {
+    max-width: 850px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .scenario-legend {
+    gap: 15px 30px;
+  }
+}
+
+/* CELULARES */
 
 @media (max-width: 650px) {
   .sim-header {
@@ -222,20 +250,47 @@ body {
     font-size: 14px;
   }
 
+  .sim-brand {
+    gap: 9px;
+  }
+
+  .sim-brand h1 {
+    font-size: 16px;
+  }
+
+  .sim-brand p {
+    font-size: 11px;
+  }
+
   .sim-status {
     font-size: 9px;
     letter-spacing: 0;
+    gap: 6px;
+  }
+
+  .status-light {
+    width: 7px;
+    height: 7px;
   }
 
   .sim-main {
     width: 96%;
-    padding-top: 19px;
+    padding-top: 18px;
+  }
+
+  .scenario-heading {
+    margin-bottom: 12px;
+  }
+
+  .scenario-heading p {
+    font-size: 12px;
   }
 
   .scenario-topbar {
     min-height: 38px;
-    padding: 0 11px;
+    padding: 0 10px;
     font-size: 9px;
+    letter-spacing: .5px;
   }
 
   .scenario-panel {
@@ -252,6 +307,8 @@ body {
   }
 }
 
+/* CELULARES ESTREITOS */
+
 @media (max-width: 390px) {
   .sim-header {
     align-items: flex-start;
@@ -262,14 +319,18 @@ body {
   }
 
   .sim-brand h1 {
-    font-size: 16px;
+    font-size: 14px;
   }
 
-  .sim-brand p {
-    font-size: 11px;
+  .scenario-topbar {
+    font-size: 8px;
   }
 
-  .scenario-heading p {
-    font-size: 12px;
+  .scenario-legend {
+    gap: 9px;
+  }
+
+  .scenario-legend span {
+    font-size: 9px;
   }
 }
