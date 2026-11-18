@@ -1,325 +1,269 @@
 
-/* =========================================
-   MUNDO FERROVIÁRIO
+/* ==========================================
    SIMULADOR DE CONDUÇÃO 2.0
-   MOVIMENTAÇÃO DA COMPOSIÇÃO
-   ========================================= */
+   MOVIMENTAÇÃO DA COMPOSIÇÃO FERROVIÁRIA
+========================================== */
 
 (() => {
   "use strict";
 
-  const railwayRoute = document.getElementById("railwayRoute");
-  const locomotive = document.getElementById("locomotive");
+  const route = document.getElementById("railwayRoute");
+  const trainComposition = document.getElementById("trainComposition");
 
-  const wagonIds = [
-    "wagon1",
-    "wagon2",
-    "wagon3",
-    "wagon4"
-  ];
+  const speedDisplay = document.getElementById("speedValue");
+  const tractionDisplay = document.getElementById("tractionValue");
+  const reverserDisplay = document.getElementById("reverserValue");
+  const messageDisplay = document.getElementById("gameMessage");
 
-  const wagons = wagonIds.map(id =>
-    document.getElementById(id)
-  );
-
-  const speedValue = document.getElementById("speedValue");
-  const tractionValue = document.getElementById("tractionValue");
-  const reverserValue = document.getElementById("reverserValue");
-  const gameMessage = document.getElementById("gameMessage");
-
-  if (!railwayRoute || !locomotive || wagons.some(w => !w)) {
-    console.error(
-      "Simulador: não foi possível localizar todos os elementos da composição."
-    );
-
-    if (gameMessage) {
-      gameMessage.textContent =
-        "Erro ao inicializar a composição. Verifique os elementos do simulador.";
-    }
-
+  if (!route || !trainComposition) {
+    console.error("Elementos da ferrovia não encontrados.");
     return;
   }
 
-  /* =========================================
-     CONFIGURAÇÕES INICIAIS
-     ========================================= */
+  // Localiza os veículos dentro da composição.
+  // Isso evita confusão com o símbolo da locomotiva dentro de <defs>.
+  const locomotive = trainComposition.querySelector('use[id="locomotive"]');
 
-  const routeLength = railwayRoute.getTotalLength();
+  const wagons = [
+    trainComposition.querySelector("#wagon1"),
+    trainComposition.querySelector("#wagon2"),
+    trainComposition.querySelector("#wagon3"),
+    trainComposition.querySelector("#wagon4")
+  ];
 
-  let distance = 0;
-  let speed = 0;
-  let traction = 0;
-  let running = false;
-  let lastFrame = 0;
+  if (!locomotive || wagons.some(wagon => !wagon)) {
+    console.error("Não foi possível localizar todos os veículos.");
+    return;
+  }
+
+  // CONFIGURAÇÕES OPERACIONAIS
 
   const MAX_SPEED = 80;
-  const MAX_TRACTION = 8;
-
-  const ACCELERATION = 5;
-  const BRAKING = 9;
-
+  const SPEED_STEP = 5;
   const WAGON_SPACING = 105;
 
-  /* =========================================
-     DIMENSÕES DOS VEÍCULOS
-     ========================================= */
+  let speed = 0;
+  let distance = 0;
+  let routeLength = 0;
+  let lastFrame = 0;
+  let animationStarted = false;
+  let finished = false;
 
-  const vehicleDimensions = {
-    locomotive: {
-      width: 95,
-      height: 45
-    },
-    wagon: {
-      width: 75,
-      height: 35
+  // Inicialização da rota.
+  try {
+    routeLength = route.getTotalLength();
+
+    if (!routeLength || !Number.isFinite(routeLength)) {
+      throw new Error("Comprimento da rota inválido.");
     }
-  };
-
-  /* =========================================
-     POSICIONAMENTO SOBRE OS TRILHOS
-     ========================================= */
-
-  function positionVehicle(element, position, dimensions) {
-    const point = railwayRoute.getPointAtLength(position);
-
-    const nextPosition = Math.min(
-      position + 2,
-      routeLength
-    );
-
-    const nextPoint = railwayRoute.getPointAtLength(nextPosition);
-
-    const angle =
-      Math.atan2(
-        nextPoint.y - point.y,
-        nextPoint.x - point.x
-      ) * 180 / Math.PI;
-
-    const centerX = dimensions.width / 2;
-    const centerY = dimensions.height / 2;
-
-    element.setAttribute(
-      "transform",
-      `translate(${point.x} ${point.y}) rotate(${angle}) translate(${-centerX} ${-centerY})`
-    );
+  } catch (error) {
+    console.error("Erro ao carregar a rota ferroviária:", error);
+    return;
   }
 
-  function updateTrainPosition() {
-    /* Locomotiva à frente */
-    positionVehicle(
-      locomotive,
-      distance,
-      vehicleDimensions.locomotive
-    );
+  // Posicionamento inicial da locomotiva.
+  distance = Math.min(700, routeLength - WAGON_SPACING * 4);
 
-    /* Vagões atrás da locomotiva */
-    wagons.forEach((wagon, index) => {
-      const wagonPosition = Math.max(
-        0,
-        distance - WAGON_SPACING * (index + 1)
-      );
-
-      positionVehicle(
-        wagon,
-        wagonPosition,
-        vehicleDimensions.wagon
-      );
-    });
+  if (distance < 0) {
+    distance = 0;
   }
 
-  /* =========================================
-     ATUALIZAÇÃO DO PAINEL
-     ========================================= */
+  // ATUALIZAÇÃO DO PAINEL
 
-  function updateDashboard() {
-    if (speedValue) {
-      speedValue.textContent =
-        `${Math.round(speed)} km/h`;
+  function updatePanel() {
+    const traction = speed === 0
+      ? 0
+      : Math.min(8, Math.ceil(speed / 10));
+
+    if (speedDisplay) {
+      speedDisplay.textContent = speed;
     }
 
-    if (tractionValue) {
-      tractionValue.textContent = traction;
+    if (tractionDisplay) {
+      tractionDisplay.textContent = traction;
     }
 
-    if (reverserValue) {
-      reverserValue.textContent = "F";
+    if (reverserDisplay) {
+      reverserDisplay.textContent = speed === 0 ? "N" : "F";
     }
   }
 
   function showMessage(message) {
-    if (gameMessage) {
-      gameMessage.textContent = message;
+    if (messageDisplay) {
+      messageDisplay.textContent = message;
     }
   }
 
-  /* =========================================
-     CONTROLE TEMPORÁRIO DE MOVIMENTAÇÃO
-     ========================================= */
+  // POSICIONAMENTO DOS VEÍCULOS NA VIA
+
+  function positionVehicle(vehicle, vehicleDistance) {
+    const safeDistance = Math.max(
+      0,
+      Math.min(routeLength, vehicleDistance)
+    );
+
+    const point = route.getPointAtLength(safeDistance);
+
+    const nextDistance = Math.min(
+      routeLength,
+      safeDistance + 2
+    );
+
+    const nextPoint = route.getPointAtLength(nextDistance);
+
+    const dx = nextPoint.x - point.x;
+    const dy = nextPoint.y - point.y;
+
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+
+    vehicle.setAttribute(
+      "transform",
+      `translate(${point.x} ${point.y}) rotate(${angle})`
+    );
+  }
+
+  // POSICIONA A COMPOSIÇÃO COMPLETA
+
+  function positionTrain() {
+    positionVehicle(locomotive, distance);
+
+    wagons.forEach((wagon, index) => {
+      const wagonDistance = distance - WAGON_SPACING * (index + 1);
+
+      positionVehicle(wagon, wagonDistance);
+    });
+  }
+
+  // CONTROLE DE VELOCIDADE
 
   function increaseSpeed() {
-    if (speed >= MAX_SPEED) {
-      speed = MAX_SPEED;
-      return;
+    if (finished) return;
+
+    if (speed < MAX_SPEED) {
+      speed = Math.min(MAX_SPEED, speed + SPEED_STEP);
+
+      updatePanel();
+
+      showMessage(
+        `Tração aplicada. Velocidade atual: ${speed} km/h.`
+      );
+    } else {
+      showMessage("Velocidade máxima permitida no simulador atingida.");
     }
-
-    speed = Math.min(
-      MAX_SPEED,
-      speed + ACCELERATION
-    );
-
-    traction = Math.min(
-      MAX_TRACTION,
-      Math.ceil(speed / (MAX_SPEED / MAX_TRACTION))
-    );
-
-    running = true;
-
-    showMessage("Composição em movimento. Tração aplicada.");
-    updateDashboard();
   }
 
   function decreaseSpeed() {
-    speed = Math.max(
-      0,
-      speed - BRAKING
-    );
+    if (speed > 0) {
+      speed = Math.max(0, speed - SPEED_STEP);
 
-    traction = Math.max(
-      0,
-      Math.floor(speed / (MAX_SPEED / MAX_TRACTION))
-    );
-
-    if (speed === 0) {
-      running = false;
-      showMessage("Composição parada.");
-    } else {
-      showMessage("Reduzindo a velocidade da composição.");
-    }
-
-    updateDashboard();
-  }
-
-  function toggleMovement() {
-    if (running) {
-      running = false;
-      speed = 0;
-      traction = 0;
-
-      showMessage("Composição parada pelo operador.");
-    } else {
-      running = true;
+      updatePanel();
 
       if (speed === 0) {
-        speed = 10;
-        traction = 1;
+        showMessage("Composição parada. Reversor em neutro.");
+      } else {
+        showMessage(`Reduzindo velocidade: ${speed} km/h.`);
       }
-
-      showMessage("Movimentação retomada.");
     }
-
-    updateDashboard();
   }
 
-  /* =========================================
-     ANIMAÇÃO DA COMPOSIÇÃO
-     ========================================= */
+  function stopTrain() {
+    speed = 0;
+
+    updatePanel();
+
+    showMessage("Freio aplicado. Composição parada.");
+  }
+
+  // ANIMAÇÃO DA COMPOSIÇÃO
 
   function animate(timestamp) {
+    if (!animationStarted) return;
+
     if (!lastFrame) {
       lastFrame = timestamp;
     }
 
-    const deltaTime = Math.min(
-      (timestamp - lastFrame) / 1000,
-      0.05
-    );
-
+    const elapsed = Math.min(timestamp - lastFrame, 50);
     lastFrame = timestamp;
 
-    if (running && speed > 0) {
-      /*
-       * Conversão simplificada de velocidade
-       * para deslocamento no cenário.
-       */
-
-      const movement = speed * deltaTime * 1.5;
+    if (speed > 0 && !finished) {
+      // Conversão da velocidade para deslocamento no cenário.
+      const movement = speed * elapsed * 0.0035;
 
       distance += movement;
-
-      /*
-       * Ao chegar ao final do percurso,
-       * a composição para em segurança.
-       */
 
       if (distance >= routeLength) {
         distance = routeLength;
         speed = 0;
-        traction = 0;
-        running = false;
+        finished = true;
+
+        updatePanel();
 
         showMessage(
-          "Composição chegou ao final do trecho."
+          "A composição chegou ao final do trecho ferroviário."
         );
-
-        updateDashboard();
       }
-
-      updateTrainPosition();
     }
+
+    positionTrain();
 
     requestAnimationFrame(animate);
   }
 
-  /* =========================================
-     TECLADO - CONTROLES TEMPORÁRIOS
-     ========================================= */
+  // INICIA A ANIMAÇÃO
+
+  function startAnimation() {
+    if (animationStarted) return;
+
+    animationStarted = true;
+    lastFrame = 0;
+
+    requestAnimationFrame(animate);
+  }
+
+  // TECLADO
 
   document.addEventListener("keydown", event => {
     if (
       event.target &&
-      ["INPUT", "TEXTAREA", "SELECT"].includes(
-        event.target.tagName
-      )
+      ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName)
     ) {
       return;
     }
 
-    if (event.code === "ArrowUp") {
+    if (
+      event.code === "ArrowUp" ||
+      event.code === "ArrowDown" ||
+      event.code === "Space"
+    ) {
       event.preventDefault();
-      increaseSpeed();
     }
 
-    if (event.code === "ArrowDown") {
-      event.preventDefault();
-      decreaseSpeed();
-    }
+    if (event.repeat) return;
 
-    if (event.code === "Space") {
-      event.preventDefault();
-      toggleMovement();
+    switch (event.code) {
+      case "ArrowUp":
+        increaseSpeed();
+        break;
+
+      case "ArrowDown":
+        decreaseSpeed();
+        break;
+
+      case "Space":
+        stopTrain();
+        break;
     }
   });
 
-  /* =========================================
-     INICIALIZAÇÃO
-     ========================================= */
+  // PREPARAÇÃO INICIAL
 
-  function initializeSimulator() {
-    distance = 0;
-    speed = 0;
-    traction = 0;
-    running = false;
+  positionTrain();
+  updatePanel();
+  startAnimation();
 
-    updateTrainPosition();
-    updateDashboard();
-
-    showMessage(
-      "Simulador pronto. Use as setas do teclado para movimentar a composição."
-    );
-
-    requestAnimationFrame(animate);
-  }
-
-  initializeSimulator();
+  showMessage(
+    "Simulador pronto. Utilize a seta para cima para movimentar a composição."
+  );
 
 })();
