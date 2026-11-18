@@ -179,44 +179,39 @@
 
   
 
+
 function prepararCanvas() {
 
   const cenario = document.getElementById('cenario');
 
-  if (!cenario) return;
+  if (!cenario || !imagem || !canvas) return;
 
   cenario.style.position = 'relative';
 
   imagem.style.display = 'block';
   imagem.style.width = '100%';
   imagem.style.height = 'auto';
-
+  imagem.style.margin = '0';
+  
   canvas.width = imagem.naturalWidth;
   canvas.height = imagem.naturalHeight;
 
   canvas.style.position = 'absolute';
+  canvas.style.left = '0';
+  canvas.style.top = '0';
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
   canvas.style.pointerEvents = 'none';
   canvas.style.zIndex = '10';
 
-  function ajustarCanvas() {
+  desenhar();
 
-    const area = cenario.getBoundingClientRect();
-    const foto = imagem.getBoundingClientRect();
-
-    canvas.style.left = `${foto.left - area.left}px`;
-    canvas.style.top = `${foto.top - area.top}px`;
-
-    canvas.style.width = `${foto.width}px`;
-    canvas.style.height = `${foto.height}px`;
-
+  window.addEventListener('resize', () => {
     desenhar();
-  }
-
-  ajustarCanvas();
-
-  window.addEventListener('resize', ajustarCanvas);
+  });
 
 }
+
 
 
 
