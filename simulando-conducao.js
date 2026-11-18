@@ -20,28 +20,6 @@
 
   const ctx = canvas.getContext('2d');
 
-
-imagem.onload = () => {
-  alert(
-    'Imagem: ' +
-    imagem.naturalWidth +
-    ' x ' +
-    imagem.naturalHeight
-  );
-};
-
-if (imagem.complete && imagem.naturalWidth > 0) {
-  alert(
-    'Imagem: ' +
-    imagem.naturalWidth +
-    ' x ' +
-    imagem.naturalHeight
-  );
-}
-   
-
-console.log('Tamanho original:', imagem.naturalWidth, imagem.naturalHeight);
-
   // ==========================================
   // CONFIGURAÇÕES
   // ==========================================
@@ -199,56 +177,47 @@ console.log('Tamanho original:', imagem.naturalWidth, imagem.naturalHeight);
   // CANVAS
   // ==========================================
 
-  
+  function prepararCanvas() {
 
+    const cenario = document.getElementById('cenario');
 
+    if (!cenario || !imagem || !canvas) return;
 
-function prepararCanvas() {
+    cenario.style.position = 'relative';
 
-  const cenario = document.getElementById('cenario');
+    imagem.style.display = 'block';
+    imagem.style.width = '100%';
+    imagem.style.height = 'auto';
+    imagem.style.objectFit = 'initial';
+    imagem.style.margin = '0';
 
-  if (!cenario || !imagem || !canvas) return;
+    function ajustarCanvas() {
 
-  cenario.style.position = 'relative';
+      const area = cenario.getBoundingClientRect();
+      const foto = imagem.getBoundingClientRect();
 
-  imagem.style.display = 'block';
-  imagem.style.width = '100%';
-  imagem.style.height = 'auto';
-  imagem.style.objectFit = 'initial';
-  imagem.style.margin = '0';
+      canvas.width = imagem.naturalWidth;
+      canvas.height = imagem.naturalHeight;
 
-  function ajustarCanvas() {
+      canvas.style.position = 'absolute';
+      canvas.style.left = `${foto.left - area.left}px`;
+      canvas.style.top = `${foto.top - area.top}px`;
+      canvas.style.width = `${foto.width}px`;
+      canvas.style.height = `${foto.height}px`;
+      canvas.style.pointerEvents = 'none';
+      canvas.style.zIndex = '10';
 
-    const area = cenario.getBoundingClientRect();
-    const foto = imagem.getBoundingClientRect();
+      desenhar();
+    }
 
-    canvas.width = imagem.naturalWidth;
-    canvas.height = imagem.naturalHeight;
+    if (imagem.complete && imagem.naturalWidth > 0) {
+      ajustarCanvas();
+    } else {
+      imagem.addEventListener('load', ajustarCanvas, { once: true });
+    }
 
-    canvas.style.position = 'absolute';
-    canvas.style.left = `${foto.left - area.left}px`;
-    canvas.style.top = `${foto.top - area.top}px`;
-    canvas.style.width = `${foto.width}px`;
-    canvas.style.height = `${foto.height}px`;
-    canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = '10';
-
-    desenhar();
+    window.addEventListener('resize', ajustarCanvas);
   }
-
-  if (imagem.complete && imagem.naturalWidth > 0) {
-    ajustarCanvas();
-  } else {
-    imagem.addEventListener('load', ajustarCanvas, { once: true });
-  }
-
-  window.addEventListener('resize', ajustarCanvas);
-
-}
-
-
-
-
 
   // ==========================================
   // DESENHAR LOCOMOTIVA E VAGÕES
@@ -298,21 +267,17 @@ function prepararCanvas() {
     if (locomotiva) {
 
       ctx.fillStyle = '#d9e2e8';
-
       ctx.fillRect(-3, -8, 12, 16);
 
       ctx.fillStyle = '#f0b323';
-
       ctx.fillRect(12, -9, 5, 18);
 
       ctx.fillStyle = '#fff4a8';
-
       ctx.fillRect(17, -5, 3, 10);
 
     } else {
 
       ctx.fillStyle = '#b58b5a';
-
       ctx.fillRect(-9, -7, 18, 14);
 
     }
@@ -324,80 +289,68 @@ function prepararCanvas() {
   // DESENHAR COMPOSIÇÃO
   // ==========================================
 
-  
-function desenharComposicao() {
+  function desenharComposicao() {
 
-  // Deslocamento lateral em relação ao centro da trajetória.
-  const ajusteLateral = 10;
+    function desenharVeiculoNaLinha(distancia, tipo) {
 
-  function desenharVeiculoNaLinha(distancia, tipo) {
+      const posicao = obterPosicao(distancia);
 
-    const posicao = obterPosicao(distancia);
+      desenharVeiculo(
+        posicao.x,
+        posicao.y,
+        posicao.angulo,
+        tipo
+      );
+    }
 
-    const deslocamentoX =
-      -Math.sin(posicao.angulo) * ajusteLateral;
-
-    const deslocamentoY =
-      Math.cos(posicao.angulo) * ajusteLateral;
-
-    desenharVeiculo(
-      posicao.x + deslocamentoX,
-      posicao.y + deslocamentoY,
-      posicao.angulo,
-      tipo
-    );
-  }
-
-  // Locomotiva
-  desenharVeiculoNaLinha(
-    jogo.distancia,
-    'locomotiva'
-  );
-
-  // Quatro vagões
-  for (let i = 1; i <= 4; i++) {
-
-    const distanciaVagao =
-      jogo.distancia - config.espacamento * i;
-
-    if (distanciaVagao < 0) continue;
-
+    // Locomotiva
     desenharVeiculoNaLinha(
-      distanciaVagao,
-      'vagao'
+      jogo.distancia,
+      'locomotiva'
     );
+
+    // Quatro vagões
+    for (let i = 1; i <= 4; i++) {
+
+      const distanciaVagao =
+        jogo.distancia - config.espacamento * i;
+
+      if (distanciaVagao < 0) continue;
+
+      desenharVeiculoNaLinha(
+        distanciaVagao,
+        'vagao'
+      );
+    }
   }
-}
 
   // ==========================================
   // DESENHO GERAL
   // ==========================================
 
-  
-function desenhar() {
+  function desenhar() {
 
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-  ctx.clearRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
+    ctx.clearRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
 
-  ctx.save();
+    ctx.save();
 
-  // Ajustar coordenadas à resolução original da imagem.
-  ctx.scale(
-    canvas.width / 960,
-    canvas.height / 1425
-  );
+    // Escala baseada nas coordenadas originais 1050x1536
+    ctx.scale(
+      canvas.width / 1050,
+      canvas.height / 1536
+    );
 
-  desenharComposicao();
+    desenharComposicao();
 
-  ctx.restore();
-}
-
+    ctx.restore();
+  }
 
   // ==========================================
   // PAINEL DE CONTROLES
@@ -553,9 +506,7 @@ function desenhar() {
 
     jogo.distancia += jogo.velocidade * dt;
 
-    // Atualização da composição
     desenhar();
-
     atualizarPainel();
 
     // Chegada à estação inferior
