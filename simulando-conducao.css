@@ -1,176 +1,238 @@
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-html {
-  min-height: 100%;
-  background: #0b1e2b;
+:root {
+  --navy: #102b3f;
+  --blue: #174a67;
+  --gold: #f0b323;
+  --background: #071c2a;
+  --panel: #16384e;
+  --text: #f3f6f8;
 }
 
 body {
-  margin: 0;
-  padding: 20px 12px 40px;
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse at top, #193b50 0%, #0b1e2b 70%);
-  color: #f3f6f8;
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--background);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--navy);
+  border-bottom: 2px solid var(--gold);
+}
+
+.topbar h1 {
+  font-size: 19px;
+  color: var(--gold);
+}
+
+.topbar p {
+  font-size: 12px;
+  margin-top: 4px;
+  color: #c5d5df;
+}
+
+.back-button {
+  color: white;
+  text-decoration: none;
+  background: var(--blue);
+  padding: 10px 13px;
+  border-radius: 7px;
+  font-size: 13px;
+  white-space: nowrap;
 }
 
 .simulator {
   width: 100%;
   max-width: 1100px;
-  margin: 0 auto;
+  margin: auto;
+  padding: 10px;
 }
 
-.scene-frame {
-  width: 100%;
+.scene-section {
+  background: var(--panel);
+  border-radius: 10px;
+  padding: 8px;
   overflow: hidden;
-  border: 3px solid #d6a72c;
-  border-radius: 14px;
-  background: #78866b;
-  box-shadow:
-    0 12px 35px rgba(0, 0, 0, .45),
-    0 0 0 5px rgba(214, 167, 44, .12);
 }
 
-#railwayScene {
+.scene-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  font-size: 12px;
+  color: #dce9ef;
+}
+
+#game-world {
+  position: relative;
+  width: 100%;
+  height: min(125vw, 760px);
+  min-height: 420px;
+  overflow: hidden;
+  border: 3px solid #496879;
+  border-radius: 7px;
+  background: #548052;
+}
+
+#railwayCanvas {
   display: block;
   width: 100%;
-  height: auto;
-  background: #879477;
+  height: 100%;
+  image-rendering: pixelated;
 }
 
-/* PAINEL DO SIMULADOR */
-
-.game-section {
-  margin-top: 20px;
-  padding: 22px;
-  border: 1px solid rgba(214, 167, 44, .55);
-  border-radius: 14px;
-  background: linear-gradient(145deg, #18384d, #102838);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .3);
-}
-
-.game-header {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.game-header h2 {
-  margin: 0;
-  color: #f0bd3d;
-  font-size: 25px;
-  font-weight: 800;
-  letter-spacing: .5px;
-}
-
-.game-header p {
-  margin: 7px 0 0;
-  color: #c5d2da;
-  font-size: 14px;
-}
-
-/* INDICADORES */
-
-.game-status {
+.dashboard {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+  margin-top: 10px;
 }
 
-.status-item {
+.instrument {
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 12px 5px;
+  text-align: center;
+  min-width: 0;
+}
+
+.instrument span {
+  display: block;
+  font-size: 12px;
+  color: #c5d5df;
+  margin-bottom: 6px;
+}
+
+.instrument strong {
+  color: var(--gold);
+  font-size: 17px;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 10px;
+  padding: 9px;
+  background: var(--navy);
+  border-radius: 10px;
+}
+
+.control-group {
+  min-width: 0;
+  background: #173b52;
+  border-radius: 8px;
+  padding: 10px 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 85px;
-  padding: 14px 8px;
-  border: 1px solid rgba(255, 255, 255, .12);
-  border-radius: 10px;
-  background: rgba(5, 19, 29, .48);
+  gap: 9px;
+}
+
+.control-group h3 {
+  color: var(--gold);
+  font-size: 12px;
   text-align: center;
+  min-height: 30px;
 }
 
-.status-item span {
-  color: #b8c8d2;
+button {
+  width: 100%;
+  min-height: 43px;
+  padding: 8px 5px;
+  border: 1px solid #52768a;
+  border-radius: 7px;
+  background: var(--blue);
+  color: white;
   font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.status-item strong {
-  margin-top: 8px;
-  color: #f0bd3d;
-  font-size: 25px;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
+button:active {
+  transform: scale(.97);
+  background: #246587;
 }
 
-/* MENSAGEM OPERACIONAL */
-
-.game-message {
-  margin-top: 16px;
-  padding: 14px;
-  border-left: 4px solid #d6a72c;
-  border-radius: 6px;
-  background: rgba(4, 17, 27, .55);
-  color: #f3f6f8;
-  font-size: 14px;
-  line-height: 1.5;
+#emergencyButton {
+  background: #853b42;
+  border-color: #b65b62;
+  font-size: 11px;
 }
 
-.game-instructions {
-  margin: 14px 0 0;
-  color: #c3d0d8;
-  font-size: 13px;
-  line-height: 1.6;
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--gold);
+}
+
+#brakeValue {
+  font-size: 12px;
+  color: white;
+}
+
+footer {
+  padding: 20px 10px;
   text-align: center;
+  color: #a9bdc9;
+  font-size: 12px;
 }
-
-/* ADAPTAÇÃO PARA CELULAR */
 
 @media (max-width: 600px) {
-  body {
-    padding: 10px 6px 25px;
+  .topbar h1 {
+    font-size: 16px;
   }
 
-  .scene-frame {
-    border-width: 2px;
-    border-radius: 8px;
+  .dashboard {
+    grid-template-columns: repeat(4, 1fr);
   }
 
-  .game-section {
-    margin-top: 12px;
-    padding: 15px 10px;
-    border-radius: 10px;
+  .instrument {
+    padding: 10px 3px;
   }
 
-  .game-header h2 {
-    font-size: 20px;
+  .instrument span {
+    font-size: 10px;
   }
 
-  .game-status {
+  .instrument strong {
+    font-size: 15px;
+  }
+
+  .controls {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 5px;
+    padding: 6px;
+  }
+
+  .control-group {
+    padding: 8px 3px;
     gap: 7px;
   }
 
-  .status-item {
-    min-height: 72px;
-    padding: 10px 4px;
+  .control-group h3 {
+    font-size: 10px;
   }
 
-  .status-item span {
+  button {
     font-size: 11px;
+    padding: 7px 2px;
   }
+}
 
-  .status-item strong {
-    font-size: 21px;
-  }
-
-  .game-message {
-    font-size: 13px;
-  }
-
-  .game-instructions {
-    font-size: 12px;
+@media (max-width: 360px) {
+  .controls {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
