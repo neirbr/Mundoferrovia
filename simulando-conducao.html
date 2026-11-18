@@ -10,773 +10,649 @@
 </head>
 
 <body>
-  <header class="sim-header">
-    <a class="back-link" href="Index.html">← Voltar</a>
-    <div class="header-title">
-      <span class="brand-name">MUNDO FERROVIÁRIO</span>
-      <h1>Simulador de Condução 2.0</h1>
-    </div>
-    <span class="sim-version">BETA 2.0</span>
-  </header>
 
-  <main class="sim-main">
+<main class="simulator">
 
-    <section class="scenario-heading">
-      <div>
-        <span class="eyebrow">OPERAÇÃO FERROVIÁRIA</span>
-        <h2>Terminal Ferroviário — Cenário 01</h2>
-        <p>Condução, manobras e circulação ferroviária</p>
-      </div>
-      <div class="scenario-status">
-        <span class="status-light"></span>
-        Cenário carregado
-      </div>
-    </section>
+  <section class="scene-frame">
+    <svg id="railwayScene"
+         viewBox="0 0 1200 1500"
+         xmlns="http://www.w3.org/2000/svg"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         role="img"
+         aria-label="Ambiente ferroviário visto de cima">
 
-    <section class="scenario-frame" aria-label="Cenário ferroviário em vista superior">
-      <div class="scenario-viewport">
-        <svg id="railwayScenario"
-             viewBox="0 0 1200 1500"
-             xmlns="http://www.w3.org/2000/svg"
-             role="img"
-             aria-label="Cenário ferroviário com fazenda, bairros, estações e rodovia">
+      <defs>
 
-          <defs>
-            <linearGradient id="groundGradient" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#789b61"/>
-              <stop offset="0.5" stop-color="#8eaa70"/>
-              <stop offset="1" stop-color="#718e5b"/>
-            </linearGradient>
+        <!-- TERRENO -->
+        <linearGradient id="ground" x2="0.8" y2="1">
+          <stop offset="0" stop-color="#a8b68a"/>
+          <stop offset="0.5" stop-color="#8fa477"/>
+          <stop offset="1" stop-color="#748d68"/>
+        </linearGradient>
 
-            <linearGradient id="roadGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#42484b"/>
-              <stop offset="0.5" stop-color="#303639"/>
-              <stop offset="1" stop-color="#454b4e"/>
-            </linearGradient>
+        <linearGradient id="roadSurface" x2="0" y2="1">
+          <stop offset="0" stop-color="#555b5e"/>
+          <stop offset="0.5" stop-color="#3e4549"/>
+          <stop offset="1" stop-color="#555b5e"/>
+        </linearGradient>
 
-            <linearGradient id="railGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#dce0df"/>
-              <stop offset="0.5" stop-color="#777f80"/>
-              <stop offset="1" stop-color="#e1e4e1"/>
-            </linearGradient>
+        <linearGradient id="roof" x2="0.8" y2="1">
+          <stop offset="0" stop-color="#b86d4d"/>
+          <stop offset="1" stop-color="#713e32"/>
+        </linearGradient>
 
-            <linearGradient id="blueTrainGradient" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#245878"/>
-              <stop offset="0.5" stop-color="#102f49"/>
-              <stop offset="1" stop-color="#081d30"/>
-            </linearGradient>
+        <linearGradient id="metal" x2="0" y2="1">
+          <stop offset="0" stop-color="#d9dfe1"/>
+          <stop offset="0.45" stop-color="#737f84"/>
+          <stop offset="1" stop-color="#343d41"/>
+        </linearGradient>
 
-            <pattern id="grassTexture" width="35" height="35" patternUnits="userSpaceOnUse">
-              <circle cx="6" cy="8" r="1.5" fill="#d4e0a0" opacity=".25"/>
-              <circle cx="25" cy="20" r="2" fill="#526f45" opacity=".2"/>
-              <path d="M12 28l3-5m-3 5l-2-4" stroke="#d5dda2" stroke-width="1" opacity=".2"/>
-            </pattern>
+        <pattern id="grassTexture" width="38" height="38"
+                 patternUnits="userSpaceOnUse">
+          <rect width="38" height="38" fill="#91a77a"/>
+          <path d="M4 8l3 -4 M17 25l4 -5 M30 10l3 3 M9 34l3 -4"
+                stroke="#718d62" stroke-width="1.5" opacity=".55"/>
+          <circle cx="25" cy="29" r="1.5" fill="#bdc18c"/>
+          <circle cx="8" cy="19" r="1" fill="#d1c99b"/>
+        </pattern>
 
-            <pattern id="ballastTexture" width="18" height="18" patternUnits="userSpaceOnUse">
-              <rect width="18" height="18" fill="#77766e"/>
-              <path d="M2 4l4-2 3 3-4 3zM12 11l4-2 2 4-4 3zM4 15l3-2 2 3" fill="#a5a195"/>
-              <circle cx="13" cy="3" r="1.5" fill="#555850"/>
-            </pattern>
+        <pattern id="asphaltTexture" width="35" height="35"
+                 patternUnits="userSpaceOnUse">
+          <rect width="35" height="35" fill="#474d50"/>
+          <circle cx="5" cy="9" r="1" fill="#697174"/>
+          <circle cx="25" cy="27" r="1" fill="#697174"/>
+          <circle cx="16" cy="17" r=".8" fill="#858b8c"/>
+        </pattern>
 
-            <pattern id="fieldRows" width="24" height="24" patternUnits="userSpaceOnUse">
-              <rect width="24" height="24" fill="#b6a45e"/>
-              <path d="M0 0L24 24M-12 0L12 24M12 0L36 24"
-                    stroke="#718348" stroke-width="5"/>
-              <path d="M0 5L24 29" stroke="#d4c27a" stroke-width="1"/>
-            </pattern>
+        <pattern id="ballastTexture" width="24" height="24"
+                 patternUnits="userSpaceOnUse">
+          <rect width="24" height="24" fill="#77766f"/>
+          <path d="M2 5l5 -2 3 4 -4 3z M15 14l5 -3 2 5 -4 4z"
+                fill="#a29d91"/>
+          <path d="M12 2l3 2 -2 3 -4 -2z M2 18l4 -2 3 4 -5 2z"
+                fill="#555a58"/>
+        </pattern>
 
-            <pattern id="pavementPattern" width="30" height="30" patternUnits="userSpaceOnUse">
-              <rect width="30" height="30" fill="#b8b8ae"/>
-              <path d="M0 0H30M0 0V30" stroke="#999c96" stroke-width="1"/>
-            </pattern>
+        <!-- ÁRVORES -->
+        <g id="tree">
+          <ellipse cx="2" cy="5" rx="23" ry="19"
+                   fill="#314b32" opacity=".25"/>
+          <circle cx="0" cy="0" r="19" fill="#355b38"/>
+          <circle cx="-9" cy="-5" r="10" fill="#527c43"/>
+          <circle cx="9" cy="-7" r="11" fill="#648b4d"/>
+          <circle cx="5" cy="8" r="10" fill="#426d3e"/>
+          <circle cx="-3" cy="-2" r="5" fill="#86a35b" opacity=".65"/>
+        </g>
 
-            <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur in="SourceAlpha" stdDeviation="5"/>
-              <feOffset dx="2" dy="4"/>
-              <feComponentTransfer>
-                <feFuncA type="linear" slope=".28"/>
-              </feComponentTransfer>
-              <feMerge>
-                <feMergeNode/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
+        <!-- CASAS -->
+        <g id="house">
+          <rect x="-22" y="-17" width="44" height="37"
+                fill="#d6c9ad" stroke="#786b59" stroke-width="2"/>
+          <path d="M-27 -17L0 -35L27 -17L23 -12L0 -27L-23 -12Z"
+                fill="url(#roof)" stroke="#583c32" stroke-width="2"/>
+          <rect x="-7" y="-4" width="14" height="24" fill="#70584a"/>
+          <rect x="-18" y="-10" width="9" height="9" fill="#a9c4c6"/>
+          <rect x="9" y="-10" width="9" height="9" fill="#a9c4c6"/>
+        </g>
 
-            <g id="tree">
-              <ellipse cx="0" cy="5" rx="19" ry="15" fill="#405b38" opacity=".35"/>
-              <circle cx="-7" cy="-3" r="13" fill="#466c3d"/>
-              <circle cx="7" cy="-5" r="14" fill="#62834a"/>
-              <circle cx="0" cy="-13" r="12" fill="#789653"/>
-              <circle cx="-5" cy="-8" r="4" fill="#91a968" opacity=".7"/>
-            </g>
-
-            <g id="smallTree">
-              <ellipse cx="0" cy="3" rx="11" ry="9" fill="#405b38" opacity=".3"/>
-              <circle cx="0" cy="-4" r="10" fill="#547b43"/>
-              <circle cx="-5" cy="-7" r="6" fill="#789653"/>
-            </g>
-
-            <g id="house">
-              <rect x="-27" y="-20" width="54" height="43" rx="2"
-                    fill="#e4d7b9" stroke="#786d5a" stroke-width="2"/>
-              <path d="M-32 -18L0 -43L32 -18Z"
-                    fill="#914d3d" stroke="#653c32" stroke-width="2"/>
-              <rect x="-8" y="-2" width="16" height="25" fill="#76513c"/>
-              <rect x="-23" y="-11" width="10" height="12" fill="#9ec4d1" stroke="#655c4c"/>
-              <rect x="13" y="-11" width="10" height="12" fill="#9ec4d1" stroke="#655c4c"/>
-            </g>
-
-            <g id="building">
-              <rect x="-34" y="-28" width="68" height="56" fill="#d6d0c0"
-                    stroke="#716e67" stroke-width="2"/>
-              <path d="M-38 -28L0 -44L38 -28" fill="#737c81" stroke="#555e62" stroke-width="2"/>
-              <g fill="#8eb2c0" stroke="#737b7b" stroke-width="1.5">
-                <rect x="-24" y="-19" width="13" height="12"/>
-                <rect x="-5" y="-19" width="13" height="12"/>
-                <rect x="14" y="-19" width="13" height="12"/>
-                <rect x="-24" y="2" width="13" height="12"/>
-                <rect x="-5" y="2" width="13" height="12"/>
-                <rect x="14" y="2" width="13" height="12"/>
-              </g>
-            </g>
-
-            <g id="car">
-              <rect x="-20" y="-10" width="40" height="20" rx="6"
-                    fill="#c5c9c7" stroke="#343c3e" stroke-width="2"/>
-              <rect x="-10" y="-8" width="20" height="16" rx="3" fill="#526d79"/>
-              <rect x="-18" y="-7" width="4" height="5" fill="#f4e5a1"/>
-              <rect x="14" y="-7" width="4" height="5" fill="#f4e5a1"/>
-              <circle cx="-12" cy="10" r="4" fill="#202426"/>
-              <circle cx="12" cy="10" r="4" fill="#202426"/>
-            </g>
-
-            <g id="roadTruck">
-              <rect x="-29" y="-12" width="43" height="24" rx="3"
-                    fill="#e4e0d1" stroke="#343b3d" stroke-width="2"/>
-              <rect x="14" y="-10" width="17" height="20" rx="3"
-                    fill="#b56c39" stroke="#343b3d" stroke-width="2"/>
-              <rect x="18" y="-7" width="9" height="9" fill="#8eb4c2"/>
-              <circle cx="-18" cy="13" r="4" fill="#202426"/>
-              <circle cx="20" cy="13" r="4" fill="#202426"/>
-            </g>
-
-            <g id="railSignal">
-              <rect x="-3" y="-5" width="6" height="42" fill="#444b4c"/>
-              <rect x="-13" y="-20" width="26" height="28" rx="5"
-                    fill="#252b2c" stroke="#aeb5b2" stroke-width="2"/>
-              <circle cx="0" cy="-12" r="5" fill="#d63d35"/>
-              <circle cx="0" cy="0" r="5" fill="#4eaa5b"/>
-              <rect x="-8" y="37" width="16" height="5" fill="#5b6260"/>
-            </g>
-
-            <g id="animalCow">
-              <ellipse cx="0" cy="0" rx="17" ry="10" fill="#eee9dc" stroke="#4d4a43" stroke-width="1.5"/>
-              <circle cx="15" cy="-3" r="7" fill="#eee9dc" stroke="#4d4a43"/>
-              <path d="M-10 -6l8 5-6 5-6-2zM5 -7l6 5-5 4-5-4z" fill="#393b38"/>
-              <path d="M-9 8v8M9 8v8M17 1l6 3" stroke="#4d4a43" stroke-width="2"/>
-            </g>
-
-            <g id="animalHorse">
-              <ellipse cx="0" cy="0" rx="16" ry="9" fill="#916343" stroke="#543d2d" stroke-width="1.5"/>
-              <path d="M10 -4l7-11 7 2-2 13-8 5z" fill="#916343" stroke="#543d2d"/>
-              <path d="M-9 7v9M7 7v9M19 -12l5-5" stroke="#543d2d" stroke-width="2"/>
-              <path d="M-14 -2l-7-6" stroke="#543d2d" stroke-width="2"/>
-            </g>
-
-            <g id="sleeper">
-              <rect x="-6" y="-16" width="12" height="32" rx="2"
-                    fill="#4c4034" stroke="#302b26" stroke-width="1"/>
-              <path d="M-4 -13H4M-4 13H4" stroke="#8d7961" stroke-width="1"/>
-            </g>
-
-          </defs>
-
-          <!-- TERRENO -->
-          <rect width="1200" height="1500" fill="url(#groundGradient)"/>
-          <rect width="1200" height="1500" fill="url(#grassTexture)"/>
-
-          <!-- CAMINHOS RURAIS -->
-          <path d="M720 80 C850 160 810 270 920 350
-                   S1030 540 900 650"
-                fill="none" stroke="#c0b18a" stroke-width="38" opacity=".8"/>
-          <path d="M720 80 C850 160 810 270 920 350
-                   S1030 540 900 650"
-                fill="none" stroke="#ded0a9" stroke-width="27"/>
-
-          <!-- FAZENDA -->
-          <g id="farmArea">
-            <path d="M610 80 Q850 40 1100 150 L1100 630
-                     Q900 710 650 620Z"
-                  fill="#91a96a" stroke="#6e8751" stroke-width="5"/>
-
-            <!-- Plantações -->
-            <path d="M770 120L1060 190L1020 360L730 290Z"
-                  fill="url(#fieldRows)" stroke="#81794e" stroke-width="4"/>
-            <path d="M760 390L1025 440L970 590L700 530Z"
-                  fill="url(#fieldRows)" stroke="#81794e" stroke-width="4"/>
-
-            <text x="900" y="175" font-size="19" fill="#384b31"
-                  font-weight="bold" text-anchor="middle">PLANTAÇÃO</text>
-
-            <!-- Celeiro -->
-            <g transform="translate(700 175)" filter="url(#softShadow)">
-              <rect x="-55" y="-35" width="110" height="75"
-                    fill="#a64e3d" stroke="#653c32" stroke-width="4"/>
-              <path d="M-65 -35L0 -85L65 -35Z"
-                    fill="#65433a" stroke="#49352e" stroke-width="4"/>
-              <rect x="-22" y="-5" width="44" height="45" fill="#71402f"/>
-              <path d="M-22 -5L0 10L22 -5" fill="none" stroke="#d3a17a" stroke-width="4"/>
-              <text x="0" y="62" font-size="17" fill="#273d2b" text-anchor="middle">CELEIRO</text>
-            </g>
-
-            <!-- Casa rural -->
-            <g transform="translate(650 350)" filter="url(#softShadow)">
-              <use href="#house"/>
-              <text x="0" y="52" font-size="16" fill="#263c2b" text-anchor="middle">CASA RURAL</text>
-            </g>
-
-            <!-- Curral -->
-            <g id="animalPaddock">
-              <rect x="820" y="430" width="240" height="155" rx="5"
-                    fill="#a4a276" stroke="#6b5b3c" stroke-width="5"/>
-              <path d="M820 455H1060M820 485H1060M820 515H1060M820 545H1060M820 575H1060"
-                    stroke="#776348" stroke-width="5"/>
-              <path d="M840 430V585M880 430V585M920 430V585M960 430V585M1000 430V585M1040 430V585"
-                    stroke="#776348" stroke-width="4"/>
-              <use href="#animalCow" transform="translate(875 470)"/>
-              <use href="#animalCow" transform="translate(970 480) scale(.9)"/>
-              <use href="#animalHorse" transform="translate(905 540)"/>
-              <text x="940" y="610" font-size="16" fill="#263c2b" text-anchor="middle">PASTAGEM</text>
-            </g>
+        <!-- PRÉDIOS -->
+        <g id="building">
+          <rect x="-30" y="-24" width="60" height="48"
+                fill="#c5c8c3" stroke="#777e7d" stroke-width="2"/>
+          <rect x="-25" y="-19" width="50" height="38" fill="#a8b4b5"/>
+          <g fill="#4f7180">
+            <rect x="-20" y="-15" width="10" height="9"/>
+            <rect x="-4" y="-15" width="10" height="9"/>
+            <rect x="12" y="-15" width="10" height="9"/>
+            <rect x="-20" y="2" width="10" height="9"/>
+            <rect x="-4" y="2" width="10" height="9"/>
+            <rect x="12" y="2" width="10" height="9"/>
           </g>
+        </g>
 
-          <!-- VEGETAÇÃO -->
-          <g id="vegetation">
-            <use href="#tree" transform="translate(590 130)"/>
-            <use href="#tree" transform="translate(560 220)"/>
-            <use href="#tree" transform="translate(1080 270)"/>
-            <use href="#tree" transform="translate(1090 360)"/>
-            <use href="#tree" transform="translate(1080 650)"/>
-            <use href="#tree" transform="translate(680 610)"/>
-            <use href="#tree" transform="translate(540 570)"/>
-            <use href="#tree" transform="translate(550 760)"/>
-            <use href="#tree" transform="translate(1090 820)"/>
-            <use href="#tree" transform="translate(1080 1110)"/>
-            <use href="#tree" transform="translate(100 1280)"/>
-            <use href="#tree" transform="translate(1090 1360)"/>
-            <use href="#smallTree" transform="translate(620 450)"/>
-            <use href="#smallTree" transform="translate(750 650)"/>
-            <use href="#smallTree" transform="translate(500 650)"/>
-            <use href="#smallTree" transform="translate(1100 740)"/>
+        <!-- VEÍCULOS -->
+        <g id="car">
+          <rect x="-19" y="-10" width="38" height="20"
+                rx="6" fill="#b9c1c3" stroke="#343c40" stroke-width="2"/>
+          <rect x="-10" y="-8" width="20" height="16"
+                rx="4" fill="#526e78"/>
+          <rect x="-16" y="-7" width="4" height="5" fill="#f5e5a7"/>
+          <rect x="12" y="-7" width="4" height="5" fill="#f5e5a7"/>
+          <circle cx="-11" cy="10" r="4" fill="#242729"/>
+          <circle cx="11" cy="10" r="4" fill="#242729"/>
+        </g>
+
+        <g id="truck">
+          <rect x="-29" y="-12" width="39" height="24"
+                rx="3" fill="#d6d8d4" stroke="#333b3e" stroke-width="2"/>
+          <rect x="10" y="-10" width="19" height="22"
+                rx="3" fill="#31566b" stroke="#263b48" stroke-width="2"/>
+          <rect x="15" y="-7" width="10" height="8" fill="#9cbac3"/>
+          <circle cx="-18" cy="13" r="5" fill="#202426"/>
+          <circle cx="19" cy="13" r="5" fill="#202426"/>
+        </g>
+
+        <!-- PLANTAÇÃO -->
+        <g id="cropRow">
+          <path d="M0 0V120" stroke="#735e36" stroke-width="3"/>
+          <g fill="#567c3e">
+            <path d="M0 12l-7 -7 2 10z M0 25l8 -8 -2 11z
+                     M0 40l-8 -7 2 11z M0 55l8 -8 -2 11z
+                     M0 70l-8 -7 2 11z M0 85l8 -8 -2 11z
+                     M0 100l-8 -7 2 11z M0 115l8 -8 -2 11z"/>
           </g>
+        </g>
 
-          <!-- BAIRRO SUPERIOR ESQUERDO -->
-          <g id="upperUrbanArea">
-            <path d="M20 70H480V510H20Z" fill="#aaa99a" stroke="#777b70" stroke-width="4"/>
-            <path d="M20 210H480M20 365H480M180 70V510M340 70V510"
-                  stroke="#4b5050" stroke-width="54"/>
-            <path d="M20 210H480M20 365H480M180 70V510M340 70V510"
-                  stroke="#c9c7b9" stroke-width="3" stroke-dasharray="20 18"/>
+        <!-- DORMENTE -->
+        <g id="sleeper">
+          <rect x="-15" y="-4" width="30" height="8"
+                rx="1.5" fill="#51483c"/>
+          <path d="M-13 -2H13" stroke="#857969" stroke-width="1"/>
+        </g>
 
-            <path d="M20 180H480M20 335H480M150 70V510M310 70V510"
-                  stroke="#d4d0c2" stroke-width="9"/>
+        <!-- TRILHO -->
+        <g id="railPair">
+          <path d="M-7 -30V30 M7 -30V30"
+                stroke="#30393d" stroke-width="4"/>
+          <path d="M-7 -30V30 M7 -30V30"
+                stroke="#c2c9c9" stroke-width="1.5"/>
+        </g>
 
-            <use href="#house" transform="translate(90 125)"/>
-            <use href="#house" transform="translate(250 125)"/>
-            <use href="#building" transform="translate(420 125)"/>
-            <use href="#house" transform="translate(90 285)"/>
-            <use href="#building" transform="translate(250 285)"/>
-            <use href="#house" transform="translate(420 285)"/>
-            <use href="#building" transform="translate(90 440)"/>
-            <use href="#house" transform="translate(250 440)"/>
-            <use href="#house" transform="translate(420 440)"/>
+        <!-- SINAL -->
+        <g id="signal">
+          <rect x="-3" y="-3" width="6" height="30" fill="#252a2d"/>
+          <rect x="-10" y="-15" width="20" height="22"
+                rx="4" fill="#202629" stroke="#929b9d" stroke-width="1"/>
+          <circle cx="0" cy="-9" r="4" fill="#e33b32"/>
+          <circle cx="0" cy="1" r="4" fill="#45b76c"/>
+        </g>
 
-            <use href="#tree" transform="translate(45 155) scale(.7)"/>
-            <use href="#tree" transform="translate(470 155) scale(.7)"/>
-            <use href="#tree" transform="translate(45 310) scale(.7)"/>
-            <use href="#tree" transform="translate(470 310) scale(.7)"/>
+        <!-- ANIMAIS VISTOS DE CIMA -->
+        <g id="cow">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#eee9dc"/>
+          <path d="M-8 -5q-5 -5 -8 1l5 5z M5 2q5 -7 9 -2l-4 6z"
+                fill="#34383a"/>
+          <circle cx="14" cy="-2" r="4" fill="#d6c7ae"/>
+          <path d="M-8 7v5 M7 7v5" stroke="#493f35" stroke-width="2"/>
+        </g>
 
-            <use href="#car" transform="translate(130 210) rotate(90)"/>
-            <use href="#car" transform="translate(380 365) rotate(90)"/>
-            <use href="#car" transform="translate(210 365) rotate(90)"/>
+        <g id="horse">
+          <ellipse cx="0" cy="0" rx="13" ry="7" fill="#98603d"/>
+          <path d="M7 -3l8 -8 5 2 -6 9z" fill="#98603d"/>
+          <path d="M-8 5v8 M6 5v8" stroke="#49372c" stroke-width="2"/>
+        </g>
 
-            <text x="250" y="40" font-size="21" fill="#273b31"
-                  font-weight="bold" text-anchor="middle">BAIRRO FERROVIÁRIO</text>
-          </g>
+        <!-- LOCOMOTIVA -->
+        <g id="locomotive">
+          <rect x="-24" y="-48" width="48" height="96"
+                rx="7" fill="#102b3f"
+                stroke="#d7a928" stroke-width="3"/>
+          <rect x="-18" y="-39" width="36" height="22"
+                rx="3" fill="#668b9a" stroke="#d7a928" stroke-width="1.5"/>
+          <rect x="-18" y="20" width="36" height="19"
+                rx="3" fill="#668b9a"/>
+          <rect x="-20" y="-12" width="40" height="25"
+                fill="#174a67" stroke="#d7a928" stroke-width="2"/>
+          <path d="M-18 17H18" stroke="#f0b323" stroke-width="4"/>
+          <rect x="-27" y="-39" width="4" height="12" fill="#25292b"/>
+          <rect x="23" y="-39" width="4" height="12" fill="#25292b"/>
+          <rect x="-27" y="27" width="4" height="12" fill="#25292b"/>
+          <rect x="23" y="27" width="4" height="12" fill="#25292b"/>
+          <circle cx="0" cy="-44" r="5" fill="#f4e6a5"/>
+        </g>
 
-          <!-- BAIRRO INFERIOR -->
-          <g id="lowerUrbanArea">
-            <path d="M30 1060H470V1460H30Z"
-                  fill="#aaa99a" stroke="#777b70" stroke-width="4"/>
+        <!-- VAGÃO -->
+        <g id="wagon">
+          <rect x="-21" y="-43" width="42" height="86"
+                rx="5" fill="#31566b"
+                stroke="#172d3a" stroke-width="3"/>
+          <path d="M-17 -35H17 M-17 35H17"
+                stroke="#9aadb2" stroke-width="2"/>
+          <path d="M-15 -25H15 M-15 25H15"
+                stroke="#52788a" stroke-width="2"/>
+          <rect x="-23" y="-33" width="4" height="13" fill="#24292b"/>
+          <rect x="19" y="-33" width="4" height="13" fill="#24292b"/>
+          <rect x="-23" y="20" width="4" height="13" fill="#24292b"/>
+          <rect x="19" y="20" width="4" height="13" fill="#24292b"/>
+        </g>
 
-            <path d="M30 1190H470M30 1330H470M180 1060V1460M340 1060V1460"
-                  stroke="#4b5050" stroke-width="50"/>
-            <path d="M30 1190H470M30 1330H470M180 1060V1460M340 1060V1460"
-                  stroke="#d4d0c2" stroke-width="3" stroke-dasharray="20 18"/>
+      </defs>
 
-            <use href="#house" transform="translate(95 1120)"/>
-            <use href="#building" transform="translate(255 1120)"/>
-            <use href="#house" transform="translate(415 1120)"/>
-            <use href="#building" transform="translate(95 1260)"/>
-            <use href="#house" transform="translate(255 1260)"/>
-            <use href="#house" transform="translate(415 1260)"/>
-            <use href="#house" transform="translate(95 1400)"/>
-            <use href="#building" transform="translate(255 1400)"/>
-            <use href="#house" transform="translate(415 1400)"/>
+      <!-- TERRENO GERAL -->
+      <rect width="1200" height="1500" fill="url(#ground)"/>
+      <rect width="1200" height="1500" fill="url(#grassTexture)" opacity=".65"/>
 
-            <use href="#tree" transform="translate(45 1150) scale(.7)"/>
-            <use href="#tree" transform="translate(455 1150) scale(.7)"/>
-            <use href="#car" transform="translate(210 1190) rotate(90)"/>
-            <use href="#car" transform="translate(370 1330) rotate(90)"/>
+      <!-- ÁREA RURAL SUPERIOR -->
+      <g id="farm">
 
-            <text x="250" y="1035" font-size="21" fill="#273b31"
-                  font-weight="bold" text-anchor="middle">ÁREA URBANA</text>
-          </g>
+        <path d="M700 20H1180V490H770Z"
+              fill="#91a878" stroke="#71865e" stroke-width="3"/>
 
-          <!-- RODOVIA PRINCIPAL -->
-          <g id="highway">
-            <path d="M0 760
-                     C170 760 250 720 360 730
-                     S550 810 620 880
-                     S700 1030 800 1040
-                     S1030 1020 1200 1070"
-                  fill="none" stroke="#c6c5b8" stroke-width="100"/>
-            <path d="M0 760
-                     C170 760 250 720 360 730
-                     S550 810 620 880
-                     S700 1030 800 1040
-                     S1030 1020 1200 1070"
-                  fill="none" stroke="url(#roadGradient)" stroke-width="86"/>
+        <!-- TALHÕES -->
+        <path d="M790 55L1130 35L1150 160L810 190Z"
+              fill="#9a8755"/>
+        <path d="M800 65L1125 48" stroke="#c6ae72" stroke-width="5"/>
+        <path d="M805 90L1130 73" stroke="#c6ae72" stroke-width="5"/>
+        <path d="M808 116L1135 98" stroke="#c6ae72" stroke-width="5"/>
+        <path d="M812 143L1140 124" stroke="#c6ae72" stroke-width="5"/>
 
-            <path d="M0 760
-                     C170 760 250 720 360 730
-                     S550 810 620 880
-                     S700 1030 800 1040
-                     S1030 1020 1200 1070"
-                  fill="none" stroke="#e5dfb9" stroke-width="3"
-                  stroke-dasharray="28 24"/>
+        <!-- LINHAS DE CULTIVO -->
+        <g transform="translate(820 220) rotate(-5)">
+          <use xlink:href="#cropRow" x="0"/>
+          <use xlink:href="#cropRow" x="25"/>
+          <use xlink:href="#cropRow" x="50"/>
+          <use xlink:href="#cropRow" x="75"/>
+          <use xlink:href="#cropRow" x="100"/>
+          <use xlink:href="#cropRow" x="125"/>
+          <use xlink:href="#cropRow" x="150"/>
+          <use xlink:href="#cropRow" x="175"/>
+          <use xlink:href="#cropRow" x="200"/>
+          <use xlink:href="#cropRow" x="225"/>
+        </g>
 
-            <use href="#car" transform="translate(190 746) rotate(-8)"/>
-            <use href="#roadTruck" transform="translate(420 765) rotate(25)"/>
-            <use href="#car" transform="translate(710 1015) rotate(8)"/>
-            <use href="#car" transform="translate(1020 1040) rotate(-3)"/>
+        <!-- CASA DA FAZENDA -->
+        <g transform="translate(930 380)">
+          <rect x="-48" y="-32" width="100" height="72"
+                fill="#c8b89a" stroke="#665846" stroke-width="3"/>
+          <path d="M-58 -32L0 -70L62 -32L48 -23L0 -56L-46 -23Z"
+                fill="#9b5140" stroke="#603c32" stroke-width="3"/>
+          <rect x="-12" y="-8" width="25" height="48" fill="#614b39"/>
+          <rect x="-39" y="-20" width="17" height="15" fill="#86aeb6"/>
+          <rect x="23" y="-20" width="17" height="15" fill="#86aeb6"/>
+        </g>
 
-            <text x="170" y="820" font-size="19" fill="#ffffff"
-                  font-weight="bold">RODOVIA</text>
-          </g>
+        <!-- GALPÃO -->
+        <g transform="translate(1090 330)">
+          <rect x="-42" y="-24" width="84" height="55"
+                fill="#a8a18b" stroke="#655b4d" stroke-width="3"/>
+          <path d="M-48 -24L0 -55L48 -24L0 -39Z"
+                fill="#7b4a39" stroke="#563b32" stroke-width="3"/>
+          <rect x="-23" y="-8" width="46" height="39" fill="#5c4b3b"/>
+        </g>
 
-          <!-- PAVIMENTO DAS ESTAÇÕES -->
-          <g id="stationGrounds">
-            <rect x="35" y="515" width="390" height="125" rx="8"
-                  fill="url(#pavementPattern)" stroke="#777c77" stroke-width="4"/>
-            <rect x="745" y="1240" width="410" height="130" rx="8"
-                  fill="url(#pavementPattern)" stroke="#777c77" stroke-width="4"/>
-          </g>
+        <!-- PASTO CERCADO -->
+        <rect x="745" y="350" width="165" height="120"
+              rx="8" fill="#8ba36c" stroke="#dfd1a8"
+              stroke-width="5" stroke-dasharray="8 5"/>
+        <use xlink:href="#cow" x="780" y="385"/>
+        <use xlink:href="#cow" x="850" y="425"/>
+        <use xlink:href="#horse" x="810" y="450"/>
 
-          <!-- LASTRO FERROVIÁRIO / VIA PRINCIPAL -->
-          <g id="railwayTracks">
-            <path id="railwayRoute"
-              d="M150 610
-                 C150 690 150 770 190 850
-                 C250 970 370 1010 500 960
-                 C610 920 650 790 650 650
-                 L650 500
-                 C650 400 610 340 520 340
-                 L450 340
-                 C370 340 330 390 330 470
-                 L330 620
-                 C330 730 400 790 500 790
-                 C650 790 760 720 790 600
-                 C830 440 800 300 900 260
-                 C1010 220 1080 330 1080 470
-                 L1080 850
-                 C1080 990 1000 1130 900 1200
-                 C850 1235 820 1270 820 1300"
+        <!-- ÁRVORES DA FAZENDA -->
+        <use xlink:href="#tree" x="740" y="75"/>
+        <use xlink:href="#tree" x="750" y="165"/>
+        <use xlink:href="#tree" x="1150" y="210"/>
+        <use xlink:href="#tree" x="1130" y="450"/>
+        <use xlink:href="#tree" x="960" y="480"/>
+        <use xlink:href="#tree" x="700" y="430"/>
+
+      </g>
+
+      <!-- VEGETAÇÃO ESPALHADA -->
+      <g id="vegetation">
+        <use xlink:href="#tree" x="350" y="100"/>
+        <use xlink:href="#tree" x="410" y="145"/>
+        <use xlink:href="#tree" x="480" y="95"/>
+        <use xlink:href="#tree" x="560" y="160"/>
+        <use xlink:href="#tree" x="690" y="570"/>
+        <use xlink:href="#tree" x="740" y="650"/>
+        <use xlink:href="#tree" x="1120" y="680"/>
+        <use xlink:href="#tree" x="1060" y="750"/>
+        <use xlink:href="#tree" x="170" y="1000"/>
+        <use xlink:href="#tree" x="250" y="1080"/>
+        <use xlink:href="#tree" x="760" y="1200"/>
+        <use xlink:href="#tree" x="820" y="1320"/>
+      </g>
+
+      <!-- ÁREA URBANA SUPERIOR ESQUERDA -->
+      <g id="urbanNorth">
+        <rect x="15" y="20" width="390" height="390"
+              rx="12" fill="#9da58e"/>
+
+        <!-- RUAS -->
+        <path d="M20 170H400 M175 20V405"
+              stroke="#555b5e" stroke-width="65"/>
+        <path d="M20 170H400 M175 20V405"
+              stroke="#e4e0ce" stroke-width="2"
+              stroke-dasharray="18 16"/>
+
+        <!-- CALÇADAS -->
+        <path d="M20 132H400 M20 208H400
+                 M137 20V405 M213 20V405"
+              stroke="#c4c3b8" stroke-width="7"/>
+
+        <!-- QUADRAS E CASAS -->
+        <use xlink:href="#house" x="75" y="75"/>
+        <use xlink:href="#house" x="285" y="75"/>
+        <use xlink:href="#house" x="75" y="275"/>
+        <use xlink:href="#building" x="285" y="280"/>
+        <use xlink:href="#house" x="75" y="355"/>
+        <use xlink:href="#house" x="310" y="355"/>
+
+        <!-- CARROS -->
+        <use xlink:href="#car" x="145" y="120" transform="rotate(90 145 120)"/>
+        <use xlink:href="#car" x="240" y="170"/>
+        <use xlink:href="#car" x="175" y="320" transform="rotate(90 175 320)"/>
+      </g>
+
+      <!-- RODOVIA -->
+      <g id="highway">
+        <path d="M0 510
+                 C220 500 340 545 470 590
+                 C600 640 690 620 790 550
+                 C900 470 1010 500 1200 570"
+              fill="none" stroke="#b8b4a7" stroke-width="92"/>
+
+        <path d="M0 510
+                 C220 500 340 545 470 590
+                 C600 640 690 620 790 550
+                 C900 470 1010 500 1200 570"
+              fill="none" stroke="url(#asphaltTexture)" stroke-width="78"/>
+
+        <path d="M0 510
+                 C220 500 340 545 470 590
+                 C600 640 690 620 790 550
+                 C900 470 1010 500 1200 570"
+              fill="none" stroke="#e7dfc5"
+              stroke-width="2.5" stroke-dasharray="24 22"/>
+
+        <use xlink:href="#car" x="210" y="520" transform="rotate(10 210 520)"/>
+        <use xlink:href="#truck" x="350" y="560" transform="rotate(20 350 560)"/>
+        <use xlink:href="#car" x="890" y="515" transform="rotate(-20 890 515)"/>
+        <use xlink:href="#car" x="1040" y="530" transform="rotate(15 1040 530)"/>
+      </g>
+
+      <!-- ÁREA URBANA INFERIOR -->
+      <g id="urbanSouth">
+        <rect x="20" y="1110" width="650" height="370"
+              rx="12" fill="#9ba58d"/>
+
+        <!-- RUAS -->
+        <path d="M20 1210H670 M20 1390H670
+                 M190 1110V1480 M470 1110V1480"
+              stroke="#555b5e" stroke-width="58"/>
+
+        <path d="M20 1210H670 M20 1390H670
+                 M190 1110V1480 M470 1110V1480"
+              stroke="#e5dfca" stroke-width="2"
+              stroke-dasharray="18 16"/>
+
+        <!-- CALÇADAS -->
+        <path d="M20 1175H670 M20 1245H670
+                 M20 1355H670 M20 1425H670"
+              stroke="#c4c3b8" stroke-width="6"/>
+
+        <!-- CONSTRUÇÕES -->
+        <use xlink:href="#house" x="90" y="1150"/>
+        <use xlink:href="#building" x="300" y="1150"/>
+        <use xlink:href="#house" x="570" y="1150"/>
+        <use xlink:href="#house" x="90" y="1300"/>
+        <use xlink:href="#building" x="300" y="1300"/>
+        <use xlink:href="#house" x="570" y="1300"/>
+        <use xlink:href="#house" x="90" y="1460"/>
+        <use xlink:href="#house" x="570" y="1460"/>
+
+        <!-- VEÍCULOS -->
+        <use xlink:href="#car" x="145" y="1210"/>
+        <use xlink:href="#truck" x="400" y="1390"/>
+        <use xlink:href="#car" x="530" y="1210"/>
+      </g>
+
+      <!-- PÁTIO FERROVIÁRIO E LASTRO -->
+      <g id="railwayInfrastructure">
+
+        <!-- LINHA PRINCIPAL -->
+        <path id="railwayRoute"
+          d="M150 610
+             C150 690 150 770 190 850
+             C250 970 370 1010 500 960
+             C610 920 650 790 650 650
+             L650 500
+             C650 400 610 340 520 340
+             L450 340
+             C370 340 330 390 330 470
+             L330 620
+             C330 730 400 790 500 790
+             C650 790 760 720 790 600
+             C830 440 800 300 900 260
+             C1010 220 1080 300 1050 410
+             C1020 520 950 610 900 700
+             C850 790 850 900 920 980
+             C990 1060 1080 1090 1080 1190"
+          fill="none" stroke="url(#ballastTexture)"
+          stroke-width="45" stroke-linecap="round"
+          stroke-linejoin="round"/>
+
+        <!-- DORMENTES DA LINHA PRINCIPAL -->
+        <path d="M150 610
+             C150 690 150 770 190 850
+             C250 970 370 1010 500 960
+             C610 920 650 790 650 650
+             L650 500
+             C650 400 610 340 520 340
+             L450 340
+             C370 340 330 390 330 470
+             L330 620
+             C330 730 400 790 500 790
+             C650 790 760 720 790 600
+             C830 440 800 300 900 260
+             C1010 220 1080 300 1050 410
+             C1020 520 950 610 900 700
+             C850 790 850 900 920 980
+             C990 1060 1080 1090 1080 1190"
+          fill="none" stroke="#51483c"
+          stroke-width="17" stroke-dasharray="2 13"
+          stroke-linecap="butt"/>
+
+        <!-- TRILHOS PRINCIPAIS -->
+        <path d="M150 610
+             C150 690 150 770 190 850
+             C250 970 370 1010 500 960
+             C610 920 650 790 650 650
+             L650 500
+             C650 400 610 340 520 340
+             L450 340
+             C370 340 330 390 330 470
+             L330 620
+             C330 730 400 790 500 790
+             C650 790 760 720 790 600
+             C830 440 800 300 900 260
+             C1010 220 1080 300 1050 410
+             C1020 520 950 610 900 700
+             C850 790 850 900 920 980
+             C990 1060 1080 1090 1080 1190"
+          fill="none" stroke="#30383b"
+          stroke-width="5"/>
+
+        <path d="M150 610
+             C150 690 150 770 190 850
+             C250 970 370 1010 500 960
+             C610 920 650 790 650 650
+             L650 500
+             C650 400 610 340 520 340
+             L450 340
+             C370 340 330 390 330 470
+             L330 620
+             C330 730 400 790 500 790
+             C650 790 760 720 790 600
+             C830 440 800 300 900 260
+             C1010 220 1080 300 1050 410
+             C1020 520 950 610 900 700
+             C850 790 850 900 920 980
+             C990 1060 1080 1090 1080 1190"
+          fill="none" stroke="#bfc7c7"
+          stroke-width="2"/>
+
+        <!-- LINHA SECUNDÁRIA -->
+        <path d="M650 650
+                 C720 650 760 680 800 740
+                 L900 850
+                 C950 910 1010 930 1080 930"
               fill="none" stroke="url(#ballastTexture)"
-              stroke-width="58" stroke-linecap="round" stroke-linejoin="round"/>
+              stroke-width="40" stroke-linecap="round"/>
 
-            <!-- Dormentes da linha principal -->
-            <path d="M150 610
-                 C150 690 150 770 190 850
-                 C250 970 370 1010 500 960
-                 C610 920 650 790 650 650
-                 L650 500
-                 C650 400 610 340 520 340
-                 L450 340
-                 C370 340 330 390 330 470
-                 L330 620
-                 C330 730 400 790 500 790
-                 C650 790 760 720 790 600
-                 C830 440 800 300 900 260
-                 C1010 220 1080 330 1080 470
-                 L1080 850
-                 C1080 990 1000 1130 900 1200
-                 C850 1235 820 1270 820 1300"
-              fill="none" stroke="#4d4135" stroke-width="38"
-              stroke-dasharray="4 13" stroke-linecap="butt"/>
+        <path d="M650 650
+                 C720 650 760 680 800 740
+                 L900 850
+                 C950 910 1010 930 1080 930"
+              fill="none" stroke="#51483c"
+              stroke-width="16" stroke-dasharray="2 13"/>
 
-            <!-- Trilhos -->
-            <path d="M150 610
-                 C150 690 150 770 190 850
-                 C250 970 370 1010 500 960
-                 C610 920 650 790 650 650
-                 L650 500
-                 C650 400 610 340 520 340
-                 L450 340
-                 C370 340 330 390 330 470
-                 L330 620
-                 C330 730 400 790 500 790
-                 C650 790 760 720 790 600
-                 C830 440 800 300 900 260
+        <path d="M650 650
+                 C720 650 760 680 800 740
+                 L900 850
+                 C950 910 1010 930 1080 930"
+              fill="none" stroke="#30383b"
+              stroke-width="5"/>
 
+        <!-- DESVIOS E AMVs -->
+        <path d="M650 650L710 650L790 600
+                 M790 600L850 620L900 700
+                 M800 740L850 700L900 700
+                 M900 850L950 810L1010 810"
+              fill="none" stroke="#77716f" stroke-width="20"/>
 
-                 C1010 220 1080 300 1050 410
-                 C1020 520 950 610 900 700
-                 C850 790 850 900 920 980
-                 C990 1060 1080 1090 1080 1190"
+        <path d="M650 650L710 650L790 600
+                 M790 600L850 620L900 700
+                 M800 740L850 700L900 700
+                 M900 850L950 810L1010 810"
               fill="none"
-              stroke="#77716a"
-              stroke-width="34"
+              stroke="#d9d5ce"
+              stroke-width="5"
               stroke-linecap="round"
               stroke-linejoin="round"/>
 
-            <!-- Dormentes da linha principal -->
-            <path id="railwayRoute"
-              d="M150 610
-                 C150 690 150 770 190 850
-                 C250 970 370 1010 500 960
-                 C610 920 650 790 650 650
-                 L650 500
-                 C650 400 610 340 520 340
-                 L450 340
-                 C370 340 330 390 330 470
-                 L330 620
-                 C330 730 400 790 500 790
-                 C650 790 760 720 790 600
-                 C830 440 800 300 900 260
-                 C1010 220 1080 300 1050 410
-                 C1020 520 950 610 900 700
-                 C850 790 850 900 920 980
-                 C990 1060 1080 1090 1080 1190"
+        <!-- TRILHOS DOS DESVIOS -->
+        <path d="M650 650L710 650L790 600
+                 M790 600L850 620L900 700
+                 M800 740L850 700L900 700
+                 M900 850L950 810L1010 810"
               fill="none"
-              stroke="#4b4945"
-              stroke-width="24"
-              stroke-dasharray="2 15"
-              stroke-linecap="butt"/>
-
-            <!-- Trilho esquerdo -->
-            <path d="M150 610
-                 C150 690 150 770 190 850
-                 C250 970 370 1010 500 960
-                 C610 920 650 790 650 650
-                 L650 500
-                 C650 400 610 340 520 340
-                 L450 340
-                 C370 340 330 390 330 470
-                 L330 620
-                 C330 730 400 790 500 790
-                 C650 790 760 720 790 600
-                 C830 440 800 300 900 260
-                 C1010 220 1080 300 1050 410
-                 C1020 520 950 610 900 700
-                 C850 790 850 900 920 980
-                 C990 1060 1080 1090 1080 1190"
-              fill="none"
-              stroke="#34383a"
-              stroke-width="5"/>
-
-            <!-- Trilho direito -->
-            <path d="M150 610
-                 C150 690 150 770 190 850
-                 C250 970 370 1010 500 960
-                 C610 920 650 790 650 650
-                 L650 500
-                 C650 400 610 340 520 340
-                 L450 340
-                 C370 340 330 390 330 470
-                 L330 620
-                 C330 730 400 790 500 790
-                 C650 790 760 720 790 600
-                 C830 440 800 300 900 260
-                 C1010 220 1080 300 1050 410
-                 C1020 520 950 610 900 700
-                 C850 790 850 900 920 980
-                 C990 1060 1080 1090 1080 1190"
-              fill="none"
-              stroke="#34383a"
+              stroke="#454545"
               stroke-width="5"
-              transform="translate(0 10)"/>
+              stroke-linecap="round"
+              stroke-linejoin="round"/>
 
-            <!-- Linha secundária do pátio -->
-            <path d="M650 650
-                     C720 650 760 680 800 740
-                     L900 850
-                     C950 910 1010 930 1080 930"
+        <!-- DORMENTES DOS DESVIOS -->
+        <path d="M650 650L710 650L790 600
+                 M790 600L850 620L900 700
+                 M800 740L850 700L900 700
+                 M900 850L950 810L1010 810"
               fill="none"
-              stroke="#77716a"
-              stroke-width="28"/>
+              stroke="#514239"
+              stroke-width="13"
+              stroke-dasharray="3 13"
+              stroke-linecap="round"/>
 
-            <path d="M650 650
-                     C720 650 760 680 800 740
-                     L900 850
-                     C950 910 1010 930 1080 930"
-              fill="none"
-              stroke="#4b4945"
-              stroke-width="20"
-              stroke-dasharray="2 15"/>
+        <!-- ESTAÇÃO 1 -->
+        <g>
+          <rect x="80" y="300" width="190" height="65" rx="5"
+                fill="#c8c0ad" stroke="#665d50" stroke-width="3"/>
+          <rect x="95" y="315" width="160" height="35"
+                fill="#777d80"/>
+          <path d="M80 300L175 270L270 300"
+                fill="#7c5140" stroke="#554034" stroke-width="3"/>
+          <rect x="110" y="320" width="28" height="30" fill="#344e5d"/>
+          <rect x="155" y="320" width="35" height="30" fill="#344e5d"/>
+          <rect x="210" y="320" width="28" height="30" fill="#344e5d"/>
+        </g>
 
-            <path d="M650 650
-                     C720 650 760 680 800 740
-                     L900 850
-                     C950 910 1010 930 1080 930"
-              fill="none"
-              stroke="#34383a"
-              stroke-width="5"/>
+        <!-- PLATAFORMA ESTAÇÃO 1 -->
+        <rect x="65" y="385" width="240" height="28" rx="3"
+              fill="#b9b4a8" stroke="#77716a" stroke-width="2"/>
+        <path d="M75 391H295" stroke="#e9dfc8" stroke-width="3"/>
 
-            <!-- AMV - aparelho de mudança de via -->
-            <g class="track-switch">
-              <path d="M650 650 L720 650 L790 600"
-                    fill="none"
-                    stroke="#34383a"
-                    stroke-width="5"/>
-              <path d="M650 650 L720 650 L790 600"
-                    fill="none"
-                    stroke="#b5aaa0"
-                    stroke-width="2"/>
-            </g>
+        <!-- ESTAÇÃO 2 -->
+        <g>
+          <rect x="920" y="1040" width="190" height="65" rx="5"
+                fill="#c8c0ad" stroke="#665d50" stroke-width="3"/>
+          <rect x="935" y="1055" width="160" height="35"
+                fill="#777d80"/>
+          <path d="M920 1040L1015 1010L1110 1040"
+                fill="#7c5140" stroke="#554034" stroke-width="3"/>
+          <rect x="950" y="1060" width="28" height="30" fill="#344e5d"/>
+          <rect x="995" y="1060" width="35" height="30" fill="#344e5d"/>
+          <rect x="1050" y="1060" width="28" height="30" fill="#344e5d"/>
+        </g>
 
-            <g class="track-switch">
-              <path d="M800 740 L850 700 L900 700"
-                    fill="none"
-                    stroke="#34383a"
-                    stroke-width="5"/>
-            </g>
-          </g>
+        <!-- PLATAFORMA ESTAÇÃO 2 -->
+        <rect x="890" y="1120" width="250" height="28" rx="3"
+              fill="#b9b4a8" stroke="#77716a" stroke-width="2"/>
+        <path d="M900 1126H1130" stroke="#e9dfc8" stroke-width="3"/>
 
-          <!-- ESTAÇÃO 1 -->
-          <g id="stationOne">
-            <rect x="75" y="250" width="210" height="65"
-                  rx="8" fill="#d8d4c8"
-                  stroke="#70695e" stroke-width="3"/>
-            <rect x="90" y="265" width="180" height="35"
-                  rx="4" fill="#31566b"/>
-            <text x="180" y="288"
-                  text-anchor="middle"
-                  fill="#ffffff"
-                  font-size="18"
-                  font-weight="bold">ESTAÇÃO 1</text>
+        <!-- PASSAGEM EM NÍVEL -->
+        <g>
+          <rect x="470" y="790" width="180" height="95"
+                fill="#55585a" opacity=".9"/>
+          <path d="M480 800L510 800M530 800L560 800M580 800L610 800"
+                stroke="#f3f0e7" stroke-width="7"/>
+          <path d="M480 875L510 875M530 875L560 875M580 875L610 875"
+                stroke="#f3f0e7" stroke-width="7"/>
+          <rect x="455" y="770" width="12" height="45" fill="#e6e0d5"/>
+          <rect x="650" y="850" width="12" height="45" fill="#e6e0d5"/>
+          <path d="M461 775L535 775" stroke="#d52d2d" stroke-width="8"/>
+          <path d="M656 855L730 855" stroke="#d52d2d" stroke-width="8"/>
+          <path d="M461 775L535 775" stroke="#fff" stroke-width="3" stroke-dasharray="12 12"/>
+          <path d="M656 855L730 855" stroke="#fff" stroke-width="3" stroke-dasharray="12 12"/>
+        </g>
 
-            <rect x="75" y="325" width="210" height="14"
-                  fill="#b6b0a3"/>
-            <rect x="75" y="340" width="210" height="8"
-                  fill="#77716a"/>
-            <text x="180" y="365"
-                  text-anchor="middle"
-                  font-size="12"
-                  fill="#333">PLATAFORMA</text>
-          </g>
+        <!-- SINAIS FERROVIÁRIOS -->
+        <g>
+          <use xlink:href="#signal" x="330" y="580" width="30" height="55"/>
+          <use xlink:href="#signal" x="730" y="590" width="30" height="55"/>
+          <use xlink:href="#signal" x="850" y="930" width="30" height="55"/>
+          <use xlink:href="#signal" x="500" y="1040" width="30" height="55"/>
+        </g>
 
-          <!-- ESTAÇÃO 2 -->
-          <g id="stationTwo">
-            <rect x="920" y="1210" width="210" height="65"
-                  rx="8" fill="#d8d4c8"
-                  stroke="#70695e" stroke-width="3"/>
-            <rect x="935" y="1225" width="180" height="35"
-                  rx="4" fill="#31566b"/>
-            <text x="1025" y="1248"
-                  text-anchor="middle"
-                  fill="#ffffff"
-                  font-size="18"
-                  font-weight="bold">ESTAÇÃO 2</text>
+        <!-- COMPOSIÇÃO FERROVIÁRIA -->
+        <g id="trainComposition">
+          <use id="wagon4" xlink:href="#wagon" x="0" y="0"/>
+          <use id="wagon3" xlink:href="#wagon" x="0" y="0"/>
+          <use id="wagon2" xlink:href="#wagon" x="0" y="0"/>
+          <use id="wagon1" xlink:href="#wagon" x="0" y="0"/>
+          <use id="locomotive" xlink:href="#locomotive" x="0" y="0"/>
+        </g>
 
-            <rect x="920" y="1190" width="210" height="14"
-                  fill="#b6b0a3"/>
-            <rect x="920" y="1182" width="210" height="8"
-                  fill="#77716a"/>
-            <text x="1025" y="1300"
-                  text-anchor="middle"
-                  font-size="12"
-                  fill="#333">PLATAFORMA</text>
-          </g>
+      </svg>
+    </div>
 
-          <!-- PASSAGEM EM NÍVEL -->
-          <g id="levelCrossing">
-            <rect x="430" y="1030" width="250" height="90"
-                  rx="5" fill="#555b5e"
-                  stroke="#292d2f" stroke-width="3"/>
-
-            <path d="M450 1030 L475 1030 L500 1120
-                     L475 1120 Z"
-                  fill="#f5f1e8"/>
-            <path d="M520 1030 L545 1030 L570 1120
-                     L545 1120 Z"
-                  fill="#f5f1e8"/>
-            <path d="M590 1030 L615 1030 L640 1120
-                     L615 1120 Z"
-                  fill="#f5f1e8"/>
-
-            <!-- Cancela esquerda -->
-            <rect x="405" y="1010" width="12" height="85"
-                  fill="#d6d0c4"/>
-            <path d="M411 1015 L350 985"
-                  stroke="#f0c42b"
-                  stroke-width="9"/>
-            <path d="M411 1015 L350 985"
-                  stroke="#d33b32"
-                  stroke-width="4"
-                  stroke-dasharray="12 12"/>
-
-            <!-- Cancela direita -->
-            <rect x="690" y="1010" width="12" height="85"
-                  fill="#d6d0c4"/>
-            <path d="M696 1015 L755 985"
-                  stroke="#f0c42b"
-                  stroke-width="9"/>
-            <path d="M696 1015 L755 985"
-                  stroke="#d33b32"
-                  stroke-width="4"
-                  stroke-dasharray="12 12"/>
-          </g>
-
-          <!-- SINAIS FERROVIÁRIOS -->
-          <g id="railwaySignals">
-            <use href="#signal" x="590" y="570" width="28" height="65"/>
-            <use href="#signal" x="700" y="730" width="28" height="65"/>
-            <use href="#signal" x="850" y="550" width="28" height="65"/>
-            <use href="#signal" x="970" y="880" width="28" height="65"/>
-          </g>
-
-          <!-- PLACAS E IDENTIFICAÇÃO -->
-          <g id="mapLabels" font-family="Arial, sans-serif">
-            <text x="180" y="220"
-                  text-anchor="middle"
-                  font-size="20"
-                  font-weight="bold"
-                  fill="#34434a">ÁREA URBANA 1</text>
-
-            <text x="970" y="140"
-                  text-anchor="middle"
-                  font-size="20"
-                  font-weight="bold"
-                  fill="#34434a">ÁREA RURAL</text>
-
-            <text x="1020" y="1360"
-                  text-anchor="middle"
-                  font-size="20"
-                  font-weight="bold"
-                  fill="#34434a">ÁREA URBANA 2</text>
-
-            <text x="550" y="1150"
-                  text-anchor="middle"
-                  font-size="13"
-                  font-weight="bold"
-                  fill="#ffffff">PASSAGEM EM NÍVEL</text>
-          </g>
-
-          <!-- COMPOSIÇÃO FERROVIÁRIA -->
-          <g id="trainComposition">
-            <g id="wagon4" class="train-wagon">
-              <rect x="0" y="0" width="75" height="35"
-                    rx="5" fill="#31566b"
-                    stroke="#172d3a" stroke-width="3"/>
-              <rect x="8" y="5" width="59" height="25"
-                    rx="3" fill="#52788a"/>
-              <circle cx="17" cy="37" r="6" fill="#242424"/>
-              <circle cx="58" cy="37" r="6" fill="#242424"/>
-            </g>
-
-            <g id="wagon3" class="train-wagon">
-              <rect x="0" y="0" width="75" height="35"
-                    rx="5" fill="#31566b"
-                    stroke="#172d3a" stroke-width="3"/>
-              <rect x="8" y="5" width="59" height="25"
-                    rx="3" fill="#52788a"/>
-              <circle cx="17" cy="37" r="6" fill="#242424"/>
-              <circle cx="58" cy="37" r="6" fill="#242424"/>
-            </g>
-
-            <g id="wagon2" class="train-wagon">
-              <rect x="0" y="0" width="75" height="35"
-                    rx="5" fill="#31566b"
-                    stroke="#172d3a" stroke-width="3"/>
-              <rect x="8" y="5" width="59" height="25"
-                    rx="3" fill="#52788a"/>
-              <circle cx="17" cy="37" r="6" fill="#242424"/>
-              <circle cx="58" cy="37" r="6" fill="#242424"/>
-            </g>
-
-            <g id="wagon1" class="train-wagon">
-              <rect x="0" y="0" width="75" height="35"
-                    rx="5" fill="#31566b"
-                    stroke="#172d3a" stroke-width="3"/>
-              <rect x="8" y="5" width="59" height="25"
-                    rx="3" fill="#52788a"/>
-              <circle cx="17" cy="37" r="6" fill="#242424"/>
-              <circle cx="58" cy="37" r="6" fill="#242424"/>
-            </g>
-
-            <!-- Locomotiva -->
-            <g id="locomotive">
-              <rect x="0" y="0" width="95" height="45"
-                    rx="7" fill="#102b3f"
-                    stroke="#d9a91b" stroke-width="4"/>
-              <rect x="12" y="6" width="35" height="18"
-                    rx="3" fill="#9bb8c5"/>
-              <rect x="55" y="6" width="25" height="18"
-                    rx="3" fill="#9bb8c5"/>
-              <rect x="8" y="30" width="78" height="6"
-                    fill="#d9a91b"/>
-              <circle cx="20" cy="47" r="7" fill="#242424"/>
-              <circle cx="75" cy="47" r="7" fill="#242424"/>
-            </g>
-          </g>
-
-          <!-- PONTO DE REFERÊNCIA DO SIMULADOR -->
-          <g id="trainStartPosition" opacity="0">
-            <circle cx="150" cy="610" r="5" fill="red"/>
-          </g>
-
-        </svg>
+    <!-- PAINEL DE INFORMAÇÕES -->
+    <section class="game-section">
+      <div class="game-header">
+        <h2>Simulador de Condução 2.0</h2>
+        <p>Operação ferroviária</p>
       </div>
 
-      <!-- ÁREA DE CONTROLES -->
-      <section class="game-section">
-        <div class="game-header">
-          <h2>Simulador de Condução 2.0</h2>
-          <p>Prepare a composição e conduza o trem pela ferrovia.</p>
+      <div class="game-status">
+        <div class="status-item">
+          <span>Velocidade</span>
+          <strong><span id="speedValue">0</span> km/h</strong>
         </div>
 
-        <div class="game-status">
-          <div class="status-item">
-            <span>Velocidade</span>
-            <strong id="speedValue">0 km/h</strong>
-          </div>
-
-          <div class="status-item">
-            <span>Tração</span>
-            <strong id="tractionValue">0</strong>
-          </div>
-
-          <div class="status-item">
-            <span>Reversor</span>
-            <strong id="reverserValue">N</strong>
-          </div>
+        <div class="status-item">
+          <span>Tração</span>
+          <strong id="tractionValue">0</strong>
         </div>
 
-        <div class="game-message" id="gameMessage">
-          Sistema pronto. Aguarde a inicialização dos controles.
+        <div class="status-item">
+          <span>Reversor</span>
+          <strong id="reverserValue">N</strong>
         </div>
+      </div>
 
-        <div class="game-footer">
-          <p>Simulador de Condução 2.0 — Mundo Ferroviário</p>
-        </div>
-      </section>
-    </main>
+      <div class="game-message" id="gameMessage">
+        Utilize a seta para cima para iniciar a movimentação.
+      </div>
 
-    <script src="simulando-conducao.js"></script>
-  </body>
+      <p class="game-instructions">
+        ↑ Aumentar velocidade · ↓ Reduzir velocidade · Espaço: parar
+      </p>
+    </section>
+  </main>
+
+  <script src="simulando-conducao.js"></script>
+</body>
 </html>
 
 
-              
-               
+   
