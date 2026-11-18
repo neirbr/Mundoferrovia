@@ -117,67 +117,255 @@
   window.addEventListener("resize", resizeCanvas);
 
   // ==========================================
-  // GEOMETRIA DA FERROVIA
+  // GEOMETRIA DA FERROVIA - CENÁRIO FIXO
   // ==========================================
 
-  function routeCurve(x) {
-    return (
-      Math.sin(x / 520) * 75 +
-      Math.sin(x / 1150) * 35
-    );
-  }
+  const MAP = {
+    width: 1000,
+    height: 500
+  };
 
-  function routeAngle(x) {
-    const difference =
-      routeCurve(x + 2) - routeCurve(x - 2);
+  let mapScale = 1;
+  let mapOffsetX = 0;
+  let mapOffsetY = 0;
 
-    return Math.atan2(difference, 4);
-  }
+  // Pontos que formam o percurso ferroviário
+  const routePoints = [
+    { x: 55, y: 85 },
+    { x: 170, y: 85 },
+    { x: 280, y: 105 },
+    { x: 370, y: 165 },
+    { x: 455, y: 205 },
+    { x: 555, y: 205 },
+    { x: 650, y: 165 },
+    { x: 745, y: 155 },
+    { x: 825, y: 205 },
+    { x: 890, y: 285 },
+    { x: 900, y: 355 },
+    { x: 850, y: 410 }
+  ];
 
-  function screenX(worldX) {
-    return trainScreenX() + worldX - distance;
-  }
+  // Construção de curvas suaves pelo método Catmull-Rom
+  const routePath = [];
 
-  function screenY(worldX, offset = 0) {
-    return (
-      height * 0.51 +
-      routeCurve(worldX) -
-      routeCurve(distance) +
-      offset
-    );
-  }
+  function buildRoute() {
+    routePath.length = 0;
 
-  // ==========================================
-  // DESENHO DO TERRENO
-  // ==========================================
+    for (let i = 0; i < routePoints.length - 1; i++) {
+      const p0 = routePoints[Math.max(0, i - 1)];
+      const p1 = routePoints[i];
+      const p2 = routePoints[i + 1];
+      const p3 = routePoints[Math.min(routePoints.length - 1, i + 2)];
 
-  function drawGround() {
-    ctx.fillStyle = "#719b58";
-    ctx.fillRect(0, 0, width, height);
+      for (let step = 0; step < 30; step++) {
+        const t = step / 30;
+        const t2 = t * t;
+        const t3 = t2 * t;
 
-    // Vegetação em pequenos grupos
-    for (let x = 0; x < width; x += 75) {
-      const worldX = distance + x - trainScreenX();
+        const x = 0.5 * (
+          2 * p1.x +
+          (-p0.x + p2.x) * t +
+          (2*p0.x - 5*p1.x + 4*p2.x - p3.x) * t2 +
+          (-p0.x + 3*p1.x - 3*p2.x + p3.x) * t3
+        );
 
-      for (let side of [-1, 1]) {
-        const y = screenY(worldX, side * 175);
+        const y = 0.5 * (
+          2 * p1.y +
+          (-p0.y + p2.y) * t +
+          (2*p0.y - 5*p1.y + 4*p2.y - p3.y) * t2 +
+          (-p0.y + 3*p1.y - 3*p2.y + p3.y) * t3
+        );
 
-        ctx.fillStyle =
-          ((Math.floor(worldX / 75) + side) % 2 === 0)
-            ? "#608c49"
-            : "#7fa967";
-
-        ctx.beginPath();
-        ctx.arc(x, y, 22, 0, Math.PI * 2);
-        ctx.fill();
+        routePath.push({ x, y });
       }
     }
 
+    const last = routePoints[routePoints.length - 1];
+    routePath.push({ x: last.x, y: last.y });
+
+    let total = 0;
+
+    routePath[0].distance = 0;
+
+    for (let i = 1; i < routePath.length; i++) {
+      const dx = routePath[i].x - routePath[i - 1].x;
+      const dy = routePath[i].y - routePath[i - 1].y;
+
+      total += Math.hypot(dx, dy);
+      routePath[i].distance = total;
+    }
+
+    return total;
+  }
+
+  const routeLength = buildRoute();
+
+  // Posições dos pontos importantes do percurso
+  ROUTE.crossingOne = routeLength * 0.25;
+  ROUTE.crossingTwo = routeLength * 0.65;
+  ROUTE.signal = routeLength * 0.79;
+  ROUTE.station = routeLength * 0.94;
+  ROUTE.end = routeLength;
+
+  hazardPosition = routeLength * 0.45;
+
+  // Localiza a posição do trem sobre os trilhos
+  function getRoutePointAtDistance(value, offset = 0) {
+    const d = Math.max(0, Math.min(routeLength, value));
+
+    let index = 1;
+
+    while (
+      index < routePath.length - 1 &&
+      routePath[index].distance < d
+    ) {
+      index++;
+    }
+
+    const a = routePath[index - 1];
+    const b = routePath[index];
+
+    const segmentLength = b.distance - a.distance;
+
+    const t = segmentLength > 0
+      ? (d - a.distance) / segmentLength
+      : 0;
+
+    const x = a.x + (b.x - a.x) * t;
+    const y = a.y + (b.y - a.y) * t;
+
+    const angle = Math.atan2(
+      b.y - a.y,
+      b.x - a.x
+    );
+
+    return {
+      x: x - Math.sin(angle) * offset,
+      y: y + Math.cos(angle) * offset,
+      angle
+    };
+  }
+
+  // Desvio gradual para a linha L2
+  function branchOffset(d) {
+    const start = ROUTE.signal - 35;
+    const end = ROUTE.station;
+
+    if (d <= start) return 0;
+    if (d >= end) return 38;
+
+    const t = (d - start) / (end - start);
+
+    return 38 * t * t * (3 - 2 * t);
+  }
+
+  function trainOffset(d) {
+    if (d >= ROUTE.station) return 38;
+
+    if (switchPosition === "L2" && d >= ROUTE.signal - 35) {
+      return branchOffset(d);
+    }
+
+    return 0;
+  }
+
+  // ==========================================
+  // AJUSTE DO MAPA NA TELA
+  // ==========================================
+
+  function updateMapTransform() {
+    mapScale = Math.min(
+      width / MAP.width,
+      height / MAP.height
+    );
+
+    mapOffsetX = (width - MAP.width * mapScale) / 2;
+    mapOffsetY = (height - MAP.height * mapScale) / 2;
+  }
+
+  // ==========================================
+  // ELEMENTOS DO TERRENO
+  // ==========================================
+
+  function drawTree(x, y, size = 15) {
+    ctx.fillStyle = "#63472e";
+    ctx.fillRect(x - 3, y, 6, size);
+
+    ctx.fillStyle = "#326b39";
+    ctx.beginPath();
+    ctx.arc(x, y - 5, size, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#4d8b4b";
+    ctx.beginPath();
+    ctx.arc(x - 5, y - 9, size * 0.55, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawGround() {
+    // Gramado fixo
+    ctx.fillStyle = "#719b58";
+    ctx.fillRect(0, 0, MAP.width, MAP.height);
+
     // Área rural
-    drawFarm();
+    ctx.fillStyle = "#a5a64d";
+    ctx.fillRect(0, 170, 390, 330);
+
+    // Faixas da plantação
+    ctx.strokeStyle = "#c6bd66";
+    ctx.lineWidth = 3;
+
+    for (let x = 15; x < 370; x += 24) {
+      ctx.beginPath();
+      ctx.moveTo(x, 210);
+      ctx.lineTo(x, 470);
+      ctx.stroke();
+    }
 
     // Área urbana
+    ctx.fillStyle = "#858d83";
+    ctx.fillRect(620, 0, 380, 500);
+
+    // Quadras e terrenos
+    ctx.fillStyle = "#a6a99d";
+    ctx.fillRect(650, 15, 320, 110);
+    ctx.fillRect(660, 280, 320, 170);
+
+    // Ruas
+    ctx.fillStyle = "#555c61";
+    ctx.fillRect(600, 20, 400, 35);
+    ctx.fillRect(625, 115, 375, 28);
+    ctx.fillRect(650, 265, 350, 28);
+
+    // Marcas das ruas
+    ctx.strokeStyle = "#e7dfc3";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([14, 12]);
+
+    ctx.beginPath();
+    ctx.moveTo(620, 37);
+    ctx.lineTo(1000, 37);
+    ctx.moveTo(625, 129);
+    ctx.lineTo(1000, 129);
+    ctx.moveTo(650, 279);
+    ctx.lineTo(1000, 279);
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+    // Fazenda e galpão
+    drawFarm();
+
+    // Construções urbanas
     drawTown();
+
+    // Árvores espalhadas
+    [
+      [35, 200], [90, 275], [350, 315],
+      [390, 390], [550, 80], [590, 350],
+      [680, 65], [970, 190], [735, 450],
+      [950, 465], [560, 450]
+    ].forEach(p => drawTree(p[0], p[1], 13));
   }
 
   // ==========================================
@@ -185,70 +373,65 @@
   // ==========================================
 
   function drawFarm() {
-    const x = screenX(950);
-
-    if (x < -300 || x > width + 300) return;
-
-    const y = screenY(950, 185);
-
-    // Plantação
-    ctx.fillStyle = "#a6a84d";
-    ctx.fillRect(x - 125, y - 45, 155, 75);
-
-    ctx.strokeStyle = "#d0c36a";
-    ctx.lineWidth = 3;
-
-    for (let i = 0; i < 6; i++) {
-      ctx.beginPath();
-      ctx.moveTo(x - 115 + i * 25, y - 40);
-      ctx.lineTo(x - 115 + i * 25, y + 25);
-      ctx.stroke();
-    }
-
     // Galpão
     ctx.fillStyle = "#b84b38";
-    ctx.fillRect(x + 35, y - 5, 65, 45);
+    ctx.fillRect(55, 260, 100, 65);
 
     ctx.fillStyle = "#71382c";
     ctx.beginPath();
-    ctx.moveTo(x + 28, y - 5);
-    ctx.lineTo(x + 67, y - 32);
-    ctx.lineTo(x + 108, y - 5);
+    ctx.moveTo(45, 260);
+    ctx.lineTo(105, 225);
+    ctx.lineTo(165, 260);
     ctx.closePath();
     ctx.fill();
 
+    // Portão
+    ctx.fillStyle = "#493a2b";
+    ctx.fillRect(90, 290, 30, 35);
+
     // Trator
     ctx.fillStyle = "#e2a51c";
-    ctx.fillRect(x - 90, y + 50, 48, 25);
+    ctx.fillRect(210, 355, 55, 27);
 
     ctx.fillStyle = "#252525";
     ctx.beginPath();
-    ctx.arc(x - 83, y + 77, 10, 0, Math.PI * 2);
-    ctx.arc(x - 50, y + 77, 10, 0, Math.PI * 2);
+    ctx.arc(220, 387, 11, 0, Math.PI * 2);
+    ctx.arc(255, 387, 11, 0, Math.PI * 2);
     ctx.fill();
 
     // Cerca
     ctx.strokeStyle = "#e1d1a3";
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 4;
 
     ctx.beginPath();
-    ctx.moveTo(x - 150, y + 100);
-    ctx.lineTo(x + 130, y + 100);
-    ctx.moveTo(x - 150, y + 120);
-    ctx.lineTo(x + 130, y + 120);
+    ctx.moveTo(30, 420);
+    ctx.lineTo(340, 420);
+    ctx.moveTo(30, 440);
+    ctx.lineTo(340, 440);
     ctx.stroke();
 
-    for (let i = 0; i < 9; i++) {
-      ctx.fillRect(x - 150 + i * 35, y + 90, 4, 38);
+    for (let x = 30; x <= 340; x += 35) {
+      ctx.fillRect(x, 410, 4, 40);
     }
 
     // Animais
     for (let i = 0; i < 3; i++) {
-      ctx.fillStyle = "#f0e6d2";
+      const x = 90 + i * 75;
+
+      ctx.fillStyle = "#eee2ca";
       ctx.beginPath();
-      ctx.arc(x + i * 45 - 40, y + 145, 12, 0, Math.PI * 2);
+      ctx.ellipse(x, 470, 15, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#8c684b";
+      ctx.beginPath();
+      ctx.arc(x + 12, 466, 6, 0, Math.PI * 2);
       ctx.fill();
     }
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 13px Arial";
+    ctx.fillText("FAZENDA", 65, 245);
   }
 
   // ==========================================
@@ -256,74 +439,75 @@
   // ==========================================
 
   function drawTown() {
-    const x = screenX(2050);
+    const buildings = [
+      { x: 675, y: 65, w: 65, h: 43, color: "#d7c4a6" },
+      { x: 765, y: 65, w: 75, h: 43, color: "#c7d0d4" },
+      { x: 865, y: 65, w: 75, h: 43, color: "#d6b9a5" },
+      { x: 680, y: 320, w: 65, h: 55, color: "#d7c4a6" },
+      { x: 775, y: 320, w: 65, h: 55, color: "#c7d0d4" },
+      { x: 870, y: 320, w: 75, h: 55, color: "#d6b9a5" }
+    ];
 
-    if (x < -350 || x > width + 350) return;
-
-    for (let i = 0; i < 5; i++) {
-      const buildingX = x - 140 + i * 75;
-      const y = screenY(2050 + i * 75, 175);
-
-      ctx.fillStyle =
-        i % 2 === 0 ? "#d6c5a8" : "#c7d0d4";
-
-      ctx.fillRect(buildingX, y - 55, 58, 55);
+    buildings.forEach(b => {
+      ctx.fillStyle = b.color;
+      ctx.fillRect(b.x, b.y, b.w, b.h);
 
       ctx.fillStyle = "#874e3e";
-      ctx.fillRect(buildingX - 5, y - 65, 68, 12);
+      ctx.fillRect(b.x - 4, b.y - 8, b.w + 8, 10);
 
       ctx.fillStyle = "#53748a";
 
-      for (let j = 0; j < 2; j++) {
-        ctx.fillRect(buildingX + 10 + j * 25, y - 43, 12, 14);
+      for (let i = 0; i < 2; i++) {
+        ctx.fillRect(b.x + 12 + i * 28, b.y + 12, 13, 15);
       }
-    }
 
-    // Rua urbana
-    ctx.fillStyle = "#777b80";
-    ctx.fillRect(x - 150, screenY(2050, 260), 400, 48);
+      ctx.fillStyle = "#69513e";
+      ctx.fillRect(b.x + b.w / 2 - 7, b.y + b.h - 20, 14, 20);
+    });
 
-    ctx.strokeStyle = "#e9e3ce";
-    ctx.setLineDash([15, 12]);
-    ctx.beginPath();
-    ctx.moveTo(x - 150, screenY(2050, 284));
-    ctx.lineTo(x + 250, screenY(2050, 284));
-    ctx.stroke();
-    ctx.setLineDash([]);
+    // Pequeno comércio
+    ctx.fillStyle = "#f0b323";
+    ctx.fillRect(900, 205, 65, 35);
+
+    ctx.fillStyle = "#263b4a";
+    ctx.font = "bold 10px Arial";
+    ctx.fillText("LOJA", 915, 227);
   }
 
   // ==========================================
   // TRILHOS E DORMENTES
   // ==========================================
 
-  function drawTrack(offset, main = false) {
-    const spacing = 18;
-    const railWidth = main ? 5 : 4;
+  function drawRailway(start, end, offsetFunction) {
+    const points = [];
+
+    for (let d = start; d <= end; d += 5) {
+      const offset = offsetFunction(d);
+      points.push(getRoutePointAtDistance(d, offset));
+    }
+
+    if (points.length < 2) return;
 
     // Lastro
     ctx.beginPath();
-
-    for (let x = 0; x <= width; x += 8) {
-      const worldX = distance + x - trainScreenX();
-      const y = screenY(worldX, offset);
-
-      if (x === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
+    points.forEach((p, i) => {
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
 
     ctx.strokeStyle = "#a69b83";
     ctx.lineWidth = 31;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
     ctx.stroke();
 
     // Dormentes
-    for (let x = -10; x < width + 20; x += spacing) {
-      const worldX = distance + x - trainScreenX();
-      const y = screenY(worldX, offset);
-      const angle = routeAngle(worldX);
+    for (let d = start; d <= end; d += 18) {
+      const p = getRoutePointAtDistance(d, offsetFunction(d));
 
       ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(angle);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
 
       ctx.fillStyle = "#57483a";
       ctx.fillRect(-5, -16, 10, 32);
@@ -332,38 +516,49 @@
     }
 
     // Trilhos metálicos
-    for (let side of [-1, 1]) {
+    for (const side of [-1, 1]) {
       ctx.beginPath();
 
-      for (let x = 0; x <= width; x += 8) {
-        const worldX = distance + x - trainScreenX();
-        const y = screenY(worldX, offset) + side * 8;
+      points.forEach((p, i) => {
+        const x = p.x - Math.sin(p.angle) * side * 8;
+        const y = p.y + Math.cos(p.angle) * side * 8;
 
-        if (x === 0) ctx.moveTo(x, y);
+        if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
-      }
+      });
 
       ctx.strokeStyle = "#c8d0d4";
-      ctx.lineWidth = railWidth;
+      ctx.lineWidth = 4;
+      ctx.lineJoin = "round";
       ctx.stroke();
     }
   }
 
+  function drawTracks() {
+    // Linha principal L1
+    drawRailway(0, routeLength, () => 0);
+
+    // Linha paralela L2, com desvio gradual
+    drawRailway(
+      ROUTE.signal - 35,
+      ROUTE.station + 45,
+      d => branchOffset(d)
+    );
+  }
+
   // ==========================================
-  // LOCOMOTIVA E QUATRO VAGÕES
+  // LOCOMOTIVA E VAGÕES
   // ==========================================
 
-  function drawVehicle(worldX, type, number) {
-    const x = screenX(worldX);
-    const y = screenY(worldX);
-    const angle = routeAngle(worldX);
+  function drawVehicle(position, type, number) {
+    const offset = trainOffset(position);
+    const p = getRoutePointAtDistance(position, offset);
 
     ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(angle);
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.angle);
 
     const isLocomotive = type === "locomotive";
-
     const vehicleLength = isLocomotive ? 62 : 52;
     const vehicleWidth = isLocomotive ? 29 : 25;
 
@@ -378,7 +573,6 @@
 
     // Corpo
     ctx.fillStyle = isLocomotive ? "#174a67" : "#aeb7bc";
-
     ctx.fillRect(
       -vehicleLength / 2,
       -vehicleWidth / 2,
@@ -386,7 +580,7 @@
       vehicleWidth
     );
 
-    // Faixa superior
+    // Faixa
     ctx.fillStyle = isLocomotive ? "#f0b323" : "#737f86";
     ctx.fillRect(
       -vehicleLength / 2 + 5,
@@ -395,8 +589,8 @@
       5
     );
 
-    // Cabine da locomotiva
     if (isLocomotive) {
+      // Cabine
       ctx.fillStyle = "#18394e";
       ctx.fillRect(-10, -10, 25, 20);
 
@@ -411,7 +605,7 @@
       ctx.fillStyle = "#58656c";
       ctx.fillRect(-8, -7, 16, 14);
 
-      ctx.fillStyle = "#e2e5e7";
+      ctx.fillStyle = "#ffffff";
       ctx.font = "bold 10px Arial";
       ctx.textAlign = "center";
       ctx.fillText(number, 0, 3);
@@ -428,160 +622,164 @@
   function drawTrain() {
     const spacing = 62;
 
-    // Quatro vagões atrás da locomotiva
+    // Quatro vagões
     for (let i = TRAIN.wagons; i >= 1; i--) {
-      drawVehicle(distance - i * spacing, "wagon", i);
+      drawVehicle(
+        distance - i * spacing,
+        "wagon",
+        i
+      );
     }
 
     // Locomotiva
     drawVehicle(distance, "locomotive", 0);
   }
 
-
   // ==========================================
   // PASSAGENS EM NÍVEL
   // ==========================================
 
-  function drawCrossing(worldX, number) {
-    const x = screenX(worldX);
+  function drawCrossing(position, number) {
+    const p = getRoutePointAtDistance(position);
 
-    if (x < -100 || x > width + 100) return;
-
-    const y = screenY(worldX);
-
-    const closed = Math.abs(distance - worldX) < 180 + TRAIN.length;
+    // A passagem fecha na aproximação e enquanto o trem ocupa o cruzamento
+    const closed =
+      distance >= position - 180 &&
+      distance - TRAIN.length <= position + 15;
 
     if (number === 1) crossingOneClosed = closed;
     else crossingTwoClosed = closed;
 
     ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(routeAngle(worldX));
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.angle);
 
-    // Estrada
+    // Estrada perpendicular aos trilhos
     ctx.fillStyle = "#777d80";
-    ctx.fillRect(-75, -95, 150, 190);
+    ctx.fillRect(-48, -105, 96, 210);
 
-    // Marcas da estrada
+    // Faixas da estrada
     ctx.strokeStyle = "#e9e3ce";
     ctx.lineWidth = 3;
     ctx.setLineDash([12, 10]);
 
     ctx.beginPath();
-    ctx.moveTo(0, -95);
-    ctx.lineTo(0, 95);
+    ctx.moveTo(0, -105);
+    ctx.lineTo(0, 105);
     ctx.stroke();
 
     ctx.setLineDash([]);
 
     // Barreira
-    ctx.fillStyle = "#d8d8d8";
-    ctx.fillRect(-5, -85, 10, 65);
+    ctx.fillStyle = "#343434";
+    ctx.fillRect(-7, -78, 14, 12);
 
     ctx.save();
-    ctx.translate(0, -85);
-    ctx.rotate(closed ? -0.9 : 0.15);
+    ctx.translate(0, -72);
+    ctx.rotate(closed ? 0 : -1.35);
 
     ctx.fillStyle = "#f0c323";
-    ctx.fillRect(-5, -5, 100, 10);
+    ctx.fillRect(-65, -5, 130, 10);
 
     ctx.fillStyle = "#c62828";
-    for (let i = 0; i < 5; i++) {
-      ctx.fillRect(8 + i * 18, -5, 9, 10);
+
+    for (let i = 0; i < 6; i++) {
+      ctx.fillRect(-55 + i * 21, -5, 10, 10);
     }
 
     ctx.restore();
 
-    // Sinal vermelho intermitente
+    // Luz vermelha
     const flashing = Math.floor(performance.now() / 450) % 2 === 0;
 
     ctx.fillStyle = closed && flashing ? "#ff2525" : "#721515";
     ctx.beginPath();
-    ctx.arc(-15, -95, 9, 0, Math.PI * 2);
+    ctx.arc(-18, -90, 9, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = "#343434";
-    ctx.fillRect(-20, -108, 10, 12);
+    ctx.fillRect(-25, -105, 14, 12);
 
     ctx.restore();
 
-    // Veículo parado antes da passagem
+    // Carro parado antes da passagem
     if (closed) {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+
       ctx.fillStyle = "#e6e6e6";
-      ctx.fillRect(x + 45, y + 55, 30, 16);
+      ctx.fillRect(18, -125, 32, 18);
+
       ctx.fillStyle = "#273746";
-      ctx.fillRect(x + 50, y + 58, 9, 10);
+      ctx.fillRect(24, -122, 9, 12);
+
+      ctx.restore();
     }
   }
 
   // ==========================================
-  // SINALIZAÇÃO FERROVIÁRIA
+  // SINAL FERROVIÁRIO
   // ==========================================
 
   function drawSignal() {
-    const x = screenX(ROUTE.signal);
-    const y = screenY(ROUTE.signal);
+    const p = getRoutePointAtDistance(ROUTE.signal);
 
-    if (x < -50 || x > width + 50) return;
+    ctx.save();
+    ctx.translate(p.x, p.y);
 
     ctx.fillStyle = "#343434";
-    ctx.fillRect(x - 4, y - 75, 8, 75);
+    ctx.fillRect(-4, -72, 8, 72);
 
     ctx.fillStyle = "#252525";
-    ctx.fillRect(x - 15, y - 105, 30, 38);
+    ctx.fillRect(-15, -108, 30, 38);
 
-    const flashing = Math.floor(performance.now() / 450) % 2 === 0;
-
-    ctx.fillStyle =
-      switchPosition === "L2" && flashing
-        ? "#ff3030"
-        : "#c62828";
-
+    ctx.fillStyle = "#c62828";
     ctx.beginPath();
-    ctx.arc(x, y - 94, 8, 0, Math.PI * 2);
+    ctx.arc(0, -94, 8, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = "#f0b323";
     ctx.font = "bold 11px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("SINAL", x, y - 113);
+    ctx.fillText("SINAL", 0, -116);
+
+    ctx.restore();
   }
 
   // ==========================================
-  // DUAS LINHAS DA ESTAÇÃO
+  // ESTAÇÃO E LINHAS L1 / L2
   // ==========================================
 
   function drawStation() {
-    const stationX = screenX(ROUTE.station);
+    const p = getRoutePointAtDistance(ROUTE.station);
 
-    if (stationX < -400 || stationX > width + 400) return;
+    // Plataforma ao lado das linhas
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.angle);
 
-    // Segunda linha da estação
-    drawTrack(55, false);
-
-    const y = screenY(ROUTE.station, 130);
-
-    // Plataforma
     ctx.fillStyle = "#c6c3b8";
-    ctx.fillRect(stationX - 150, y, 330, 35);
+    ctx.fillRect(-100, 65, 210, 38);
 
     ctx.fillStyle = "#e9dfb6";
-    ctx.fillRect(stationX - 150, y, 330, 5);
+    ctx.fillRect(-100, 65, 210, 5);
 
-    // Cobertura da estação
+    // Cobertura
     ctx.fillStyle = "#174a67";
-    ctx.fillRect(stationX - 45, y - 55, 120, 35);
+    ctx.fillRect(-25, 105, 110, 34);
 
     ctx.fillStyle = "#f0b323";
     ctx.font = "bold 13px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("ESTAÇÃO", stationX + 15, y - 33);
+    ctx.fillText("ESTAÇÃO", 30, 127);
 
-    // Identificação das linhas
     ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 11px Arial";
-    ctx.fillText("L1", stationX - 100, y - 10);
-    ctx.fillText("L2", stationX - 100, y + 55);
+    ctx.font = "bold 12px Arial";
+    ctx.fillText("L1", -65, 55);
+    ctx.fillText("L2", -65, 25);
+
+    ctx.restore();
   }
 
   // ==========================================
@@ -589,27 +787,28 @@
   // ==========================================
 
   function drawSwitch() {
-    const x = screenX(ROUTE.signal + 100);
+    const start = ROUTE.signal - 35;
+    const end = ROUTE.station;
 
-    if (x < -100 || x > width + 150) return;
+    const p1 = getRoutePointAtDistance(start);
+    const p2 = getRoutePointAtDistance(end, 38);
 
-    const y = screenY(ROUTE.signal + 100);
-
-    ctx.strokeStyle = "#c5cdd0";
-    ctx.lineWidth = 4;
+    ctx.strokeStyle = "#f0b323";
+    ctx.lineWidth = 3;
 
     ctx.beginPath();
-    ctx.moveTo(x - 80, y);
-    ctx.lineTo(x + 80, y);
-
-    ctx.moveTo(x - 30, y);
-    ctx.quadraticCurveTo(x + 20, y + 35, x + 80, y + 55);
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
     ctx.stroke();
 
     ctx.fillStyle = "#f0b323";
     ctx.beginPath();
-    ctx.arc(x, y, 7, 0, Math.PI * 2);
+    ctx.arc(p1.x, p1.y, 7, 0, Math.PI * 2);
     ctx.fill();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 11px Arial";
+    ctx.fillText("AMV", p1.x + 12, p1.y - 12);
   }
 
   // ==========================================
@@ -619,13 +818,10 @@
   function drawHazard() {
     if (hazardCleared) return;
 
-    const x = screenX(hazardPosition);
-    const y = screenY(hazardPosition);
-
-    if (x < -50 || x > width + 50) return;
+    const p = getRoutePointAtDistance(hazardPosition, 30);
 
     ctx.save();
-    ctx.translate(x, y - 28);
+    ctx.translate(p.x, p.y);
 
     if (hazardType === "animal") {
       ctx.fillStyle = "#9a6338";
@@ -648,6 +844,7 @@
 
       ctx.strokeStyle = "#263d87";
       ctx.lineWidth = 4;
+
       ctx.beginPath();
       ctx.moveTo(-5, 2);
       ctx.lineTo(-13, 12);
@@ -666,27 +863,40 @@
   function drawScene() {
     if (!ctx || width <= 0 || height <= 0) return;
 
+    updateMapTransform();
+
+    ctx.clearRect(0, 0, width, height);
+
+    ctx.save();
+
+    ctx.translate(mapOffsetX, mapOffsetY);
+    ctx.scale(mapScale, mapScale);
+
+    // Cenário fixo
     drawGround();
 
-    // Linhas paralelas
-    drawTrack(-90, false);
-    drawTrack(0, true);
-    drawTrack(90, false);
+    // Trilhos
+    drawTracks();
 
+    // Elementos ferroviários
     drawCrossing(ROUTE.crossingOne, 1);
     drawCrossing(ROUTE.crossingTwo, 2);
 
     drawSwitch();
     drawStation();
     drawSignal();
+
+    // Obstáculo e composição
     drawHazard();
     drawTrain();
-  }
 
-  // ==========================================
+    ctx.restore();
+      }
+
+// ==========================================
   // ATUALIZAÇÃO DOS INDICADORES
   // ==========================================
-
+  
   function updateIndicators() {
     speedDisplay.textContent = Math.round(speed) + " km/h";
     throttleDisplay.textContent = throttle === 0 ? "N" : throttle;
