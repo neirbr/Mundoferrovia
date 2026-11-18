@@ -4,23 +4,14 @@
 
   // ==================================================
   // MUNDO FERROVIÁRIO
-  // SIMULADOR DE CONDUÇÃO 2D — VISÃO SUPERIOR
+  // SIMULANDO CONDUÇÃO 2D
   // ==================================================
 
   const $ = (id) => document.getElementById(id);
 
-  const scene =
-    $("railwayScene") ||
-    $("railwayCanvas");
-
+  const scene = $("railwayScene");
   const train = $("trainComposition");
-
-  const route =
-    $("railwayRoute") ||
-    document.querySelector("#railwayTracks path[data-route]") ||
-    document.querySelector("#railwayTracks path.railway-route") ||
-    document.querySelector("#railwayTracks path");
-
+  const route = $("railwayRoute");
   const locomotive = $("locomotive");
 
   const wagons = [
@@ -28,17 +19,21 @@
     $("wagon2"),
     $("wagon3"),
     $("wagon4")
-  ].filter(Boolean);
+  ];
 
-  if (!scene || !train || !route || !locomotive) {
-    console.error(
-      "Simulador: confira os elementos railwayScene, trainComposition, railwayRoute e locomotive no HTML."
-    );
+  if (
+    !scene ||
+    !train ||
+    !route ||
+    !locomotive ||
+    wagons.some(wagon => !wagon)
+  ) {
+    console.error("Erro: confira os elementos SVG do simulador.");
     return;
   }
 
   if (typeof route.getTotalLength !== "function") {
-    console.error("A rota ferroviária precisa ser um elemento SVG path.");
+    console.error("A rota precisa ser um SVG path.");
     return;
   }
 
@@ -52,44 +47,52 @@
     freioServico: 7,
     freioEmergencia: 15,
     desaceleracaoNatural: 0.12,
-    distanciaEntreVagoes: 0,
-    fatorVelocidade: 1.5
+    distanciaEntreVagoes: 150,
+    fatorVelocidade: 1.5,
+    distanciaInicial: 700
   };
 
   const routeLength = route.getTotalLength();
 
-  let distance = 0;
+  let distance = Math.min(
+    CONFIG.distanciaInicial,
+    routeLength
+  );
+
   let speed = 0;
   let throttle = 0;
   let brake = 0;
 
+  // 1 = frente | 0 = neutro | -1 = ré
   let direction = 1;
-  let running = true;
+
   let emergency = false;
-  let penalty = false;
+  let running = true;
 
   let previousTime = 0;
   let animationFrame = null;
 
   // ==================================================
-  // ELEMENTOS DA INTERFACE
+  // INTERFACE
   // ==================================================
 
   const ui = {
-    speed: $("speedValue") || $("speed"),
+    speed: $("speed"),
     distance: $("distance"),
-    throttle: $("tractionValue") || $("throttle"),
-    reverser: $("reverserValue") || $("reverser"),
+    throttle: $("throttle"),
+    reverser: $("reverser"),
     brake: $("brakePressure"),
     brakeValue: $("brakeValue"),
-    message: $("gameMessage"),
+
     throttleButton: $("throttleButton"),
     reverseButton: $("reverseButton"),
     brakeControl: $("brakeControl"),
+
     hornButton: $("hornButton"),
     bellButton: $("bellButton"),
     emergencyButton: $("emergencyButton"),
-    removePenaltyButton: $("removePenaltyButton")
+
+    message: $("gameMessage")
   };
 
   // ==================================================
@@ -103,12 +106,14 @@
   }
 
   // ==================================================
-  // ATUALIZAÇÃO DOS INDICADORES
+  // INDICADORES
   // ==================================================
 
   function updateInterface() {
+
     if (ui.speed) {
-      ui.speed.textContent = Math.round(speed) + " km/h";
+      ui.speed.textContent =
+        Math.round(speed) + " km/h";
     }
 
     if (ui.distance) {
@@ -117,12 +122,17 @@
     }
 
     if (ui.throttle) {
-      ui.throttle.textContent = throttle;
+      ui.throttle.textContent =
+        throttle === 0 ? "N" : throttle;
     }
 
     if (ui.reverser) {
       ui.reverser.textContent =
-        direction === 1 ? "FRENTE" : "RÉ";
+        direction === 1
+          ? "FRENTE"
+          : direction === -1
+            ? "RÉ"
+            : "NEUTRO";
     }
 
     if (ui.brake) {
@@ -132,80 +142,142 @@
     if (ui.brakeValue) {
       ui.brakeValue.textContent = brake + "%";
     }
+
+    if (ui.throttleButton) {
+      ui.throttleButton.textContent =
+        throttle === 0
+          ? "Tração 1/8"
+          : "Tração " + throttle + "/8";
+    }
+
+    if (ui.reverseButton) {
+      ui.reverseButton.textContent =
+        direction === 1
+          ? "Frente"
+          : direction === 0
+            ? "Neutro"
+            : "Ré";
+    }
+
+    if (ui.emergencyButton) {
+      ui.emergencyButton.textContent =
+        emergency
+          ? "LIBERAR EMERGÊNCIA"
+          : "⚠️ FREIO DE EMERGÊNCIA";
+    }
   }
 
   // ==================================================
-  // POSICIONAMENTO DA COMPOSIÇÃO
+  // POSIÇÃO NA ROTA
   // ==================================================
 
-  function getPosition(position) {
-    const point = route.getPointAtLength(
-      Math.max(0, Math.min(routeLength, position))
+  function getPosition(position, movementDirection = direction) {
+
+    const safePosition = Math.max(
+      0,
+      Math.min(routeLength, position)
     );
 
-    const nextPosition = Math.min(
-      routeLength,
-      Math.max(0, position + 1)
+    const point = route.getPointAtLength(safePosition);
+
+    const before = route.getPointAtLength(
+      Math.max(0, safePosition - 2)
     );
 
-    const next = route.getPointAtLength(nextPosition);
+    const after = route.getPointAtLength(
+      Math.min(routeLength, safePosition + 2)
+    );
 
     let angle = Math.atan2(
-      next.y - point.y,
-      next.x - point.x
+      after.y - before.y,
+      after.x - before.x
     ) * 180 / Math.PI;
 
-    if (direction === -1) {
+    if (movementDirection === -1) {
       angle += 180;
     }
 
     return {
       x: point.x,
       y: point.y,
-      angle
+      angle: angle + 90
     };
   }
 
-  function drawTrain() {
-    const position = getPosition(distance);
+  // ==================================================
+  // DESENHO DA COMPOSIÇÃO
+  // ==================================================
 
-    train.setAttribute(
+  function drawTrain() {
+
+    // A locomotiva ocupa a posição principal.
+
+    const locomotivePosition = getPosition(distance);
+
+    locomotive.setAttribute(
       "transform",
-      `translate(${position.x} ${position.y}) rotate(${position.angle})`
+      `translate(${locomotivePosition.x} ${locomotivePosition.y}) rotate(${locomotivePosition.angle})`
     );
+
+    // Cada vagão recebe sua própria posição na curva.
+
+    wagons.forEach((wagon, index) => {
+
+      const offset =
+        CONFIG.distanciaEntreVagoes * (index + 1);
+
+      const wagonDistance =
+        distance - direction * offset;
+
+      const position = getPosition(wagonDistance);
+
+      wagon.setAttribute(
+        "transform",
+        `translate(${position.x} ${position.y}) rotate(${position.angle})`
+      );
+
+    });
+
+    // O grupo principal não deve aplicar uma segunda rotação.
+    train.removeAttribute("transform");
   }
 
   // ==================================================
-  // CONTROLE DE TRAÇÃO
+  // TRAÇÃO
   // ==================================================
 
   function increaseThrottle() {
-    if (!running || penalty || emergency) return;
 
-    if (speed > 0 && direction === 0) return;
+    if (emergency) return;
+
+    if (direction === 0) {
+      message("Selecione frente ou ré antes de movimentar.");
+      return;
+    }
+
+    if (brake > 0) {
+      message("Libere o freio antes de aplicar tração.");
+      return;
+    }
 
     throttle = Math.min(8, throttle + 1);
 
-    if (brake > 0) {
-      brake = 0;
-
-      if (ui.brakeControl) {
-        ui.brakeControl.value = 0;
-      }
-    }
-
-    message("Tração ajustada para nível " + throttle);
-
     updateInterface();
+
+    message("Tração ajustada para " + throttle + ".");
   }
 
-  // ==================================================
-  // REDUÇÃO DE TRAÇÃO
-  // ==================================================
-
   function decreaseThrottle() {
+
     throttle = Math.max(0, throttle - 1);
+
     updateInterface();
+
+    message(
+      throttle === 0
+        ? "Tração em neutro."
+        : "Tração reduzida para " + throttle + "."
+    );
   }
 
   // ==================================================
@@ -213,23 +285,33 @@
   // ==================================================
 
   function changeDirection() {
-    if (!running || penalty) return;
+
+    if (emergency) return;
 
     if (speed > 0.5) {
-      message("É necessário parar completamente para inverter o reversor.");
+      message("Pare completamente antes de mudar o reversor.");
       return;
     }
 
-    direction *= -1;
+    if (direction === 1) {
+      direction = 0;
+    } else if (direction === 0) {
+      direction = -1;
+    } else {
+      direction = 1;
+    }
 
-    updateInterface();
+    throttle = 0;
 
     drawTrain();
+    updateInterface();
 
     message(
       direction === 1
-        ? "Reversor em posição de frente."
-        : "Reversor em posição de ré."
+        ? "Reversor em FRENTE."
+        : direction === -1
+          ? "Reversor em RÉ."
+          : "Reversor em NEUTRO."
     );
   }
 
@@ -238,7 +320,8 @@
   // ==================================================
 
   function applyBrake(value) {
-    if (!running) return;
+
+    if (emergency) return;
 
     brake = Math.max(
       0,
@@ -257,65 +340,65 @@
   // ==================================================
 
   function emergencyBrake() {
-    if (!running) return;
 
-    emergency = true;
-    throttle = 0;
-    brake = 100;
+    if (!emergency) {
 
-    if (ui.brakeControl) {
-      ui.brakeControl.value = 100;
+      emergency = true;
+      throttle = 0;
+      brake = 100;
+
+      if (ui.brakeControl) {
+        ui.brakeControl.value = 100;
+      }
+
+      message("ATENÇÃO! FREIO DE EMERGÊNCIA APLICADO.");
+
+    } else {
+
+      if (speed > 0.5) {
+        message("Aguarde a parada completa para liberar a emergência.");
+        return;
+      }
+
+      emergency = false;
+      brake = 0;
+
+      if (ui.brakeControl) {
+        ui.brakeControl.value = 0;
+      }
+
+      message("Freio de emergência liberado.");
     }
-
-    message("FREIO DE EMERGÊNCIA APLICADO!");
 
     updateInterface();
   }
 
   // ==================================================
-  // RETIRADA DE PENALIDADE
-  // ==================================================
-
-  function removePenalty() {
-    if (!penalty) return;
-
-    if (speed > 0.5) {
-      message("Aguarde a parada completa da composição.");
-      return;
-    }
-
-    penalty = false;
-    emergency = false;
-    brake = 0;
-
-    if (ui.brakeControl) {
-      ui.brakeControl.value = 0;
-    }
-
-    updateInterface();
-
-    message("Penalidade retirada. Operação liberada.");
-  }
-
-  // ==================================================
-  // FÍSICA DA COMPOSIÇÃO
+  // FÍSICA FERROVIÁRIA
   // ==================================================
 
   function updatePhysics(delta) {
-    if (!running || penalty) return;
 
     let acceleration = 0;
 
     if (emergency) {
+
       acceleration = -CONFIG.freioEmergencia;
+
     } else if (brake > 0) {
+
       acceleration =
         -(CONFIG.freioServico * brake / 100);
-    } else if (throttle > 0) {
+
+    } else if (direction !== 0 && throttle > 0) {
+
       acceleration =
         CONFIG.aceleracao * throttle / 8;
+
     } else {
+
       acceleration = -CONFIG.desaceleracaoNatural;
+
     }
 
     speed += acceleration * delta;
@@ -325,35 +408,136 @@
       Math.min(CONFIG.velocidadeMaxima, speed)
     );
 
-    const movement =
-      speed * delta * CONFIG.fatorVelocidade;
+    // A composição não se movimenta em neutro.
 
-    distance += movement * direction;
+    if (direction !== 0 && speed > 0) {
 
-    distance = Math.max(
-      0,
-      Math.min(routeLength, distance)
-    );
+      const movement =
+        speed * delta * CONFIG.fatorVelocidade;
 
-    if (
-      (direction === 1 && distance >= routeLength) ||
-      (direction === -1 && distance <= 0)
-    ) {
+      distance += movement * direction;
+
+    }
+
+    // Limites da rota.
+
+    if (distance >= routeLength) {
+
+      distance = routeLength;
       speed = 0;
       throttle = 0;
-      brake = 0;
 
-      message("Composição chegou ao limite da rota.");
+      message("Fim da rota. Composição parada.");
 
-      updateInterface();
+    } else if (distance <= 0) {
+
+      distance = 0;
+      speed = 0;
+      throttle = 0;
+
+      message("Início da rota alcançado.");
+
+    }
+
+    // A velocidade chega a zero naturalmente.
+
+    if (speed < 0.05) {
+      speed = 0;
     }
   }
 
   // ==================================================
-  // ANIMAÇÃO PRINCIPAL
+  // BUZINA
+  // ==================================================
+
+  function horn() {
+    message("Buzina ferroviária acionada.");
+  }
+
+  // ==================================================
+  // SINO
+  // ==================================================
+
+  function bell() {
+    message("Sino ferroviário acionado.");
+  }
+
+  // ==================================================
+  // EVENTOS DOS BOTÕES
+  // ==================================================
+
+  ui.throttleButton?.addEventListener(
+    "click",
+    increaseThrottle
+  );
+
+  ui.reverseButton?.addEventListener(
+    "click",
+    changeDirection
+  );
+
+  ui.brakeControl?.addEventListener(
+    "input",
+    event => applyBrake(event.target.value)
+  );
+
+  ui.emergencyButton?.addEventListener(
+    "click",
+    emergencyBrake
+  );
+
+  ui.hornButton?.addEventListener(
+    "click",
+    horn
+  );
+
+  ui.bellButton?.addEventListener(
+    "click",
+    bell
+  );
+
+  // ==================================================
+  // TECLADO
+  // ==================================================
+
+  document.addEventListener("keydown", event => {
+
+    if (!running) return;
+
+    if (
+      event.target instanceof HTMLInputElement ||
+      event.target instanceof HTMLTextAreaElement
+    ) {
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      increaseThrottle();
+    }
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      decreaseThrottle();
+    }
+
+    if (event.code === "Space") {
+      event.preventDefault();
+      emergencyBrake();
+    }
+
+    if (event.key.toLowerCase() === "r") {
+      changeDirection();
+    }
+
+  });
+
+  // ==================================================
+  // ANIMAÇÃO
   // ==================================================
 
   function gameLoop(timestamp) {
+
     if (!running) return;
 
     if (!previousTime) {
@@ -375,109 +559,16 @@
   }
 
   // ==================================================
-  // BUZINA
-  // ==================================================
-
-  function horn() {
-    if (!running) return;
-
-    message("Buzina acionada.");
-  }
-
-  // ==================================================
-  // SINO
-  // ==================================================
-
-  function bell() {
-    if (!running) return;
-
-    message("Sino acionado.");
-  }
-
-  // ==================================================
-  // EVENTOS DOS CONTROLES
-  // ==================================================
-
-  ui.throttleButton?.addEventListener(
-    "click",
-    increaseThrottle
-  );
-
-  ui.reverseButton?.addEventListener(
-    "click",
-    changeDirection
-  );
-
-  ui.brakeControl?.addEventListener(
-    "input",
-    (event) => applyBrake(event.target.value)
-  );
-
-  ui.emergencyButton?.addEventListener(
-    "click",
-    emergencyBrake
-  );
-
-  ui.removePenaltyButton?.addEventListener(
-    "click",
-    removePenalty
-  );
-
-  ui.hornButton?.addEventListener(
-    "click",
-    horn
-  );
-
-  ui.bellButton?.addEventListener(
-    "click",
-    bell
-  );
-
-  // ==================================================
-  // CONTROLES PELO TECLADO
-  // ==================================================
-
-  document.addEventListener("keydown", (event) => {
-    if (!running) return;
-
-    if (
-      event.target instanceof HTMLInputElement ||
-      event.target instanceof HTMLTextAreaElement
-    ) return;
-
-    if (event.key === "ArrowUp") {
-      event.preventDefault();
-      increaseThrottle();
-    }
-
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      decreaseThrottle();
-    }
-
-    if (event.code === "Space") {
-      event.preventDefault();
-      emergencyBrake();
-    }
-
-    if (event.key.toLowerCase() === "r") {
-      changeDirection();
-    }
-  });
-
-  // ==================================================
   // INICIALIZAÇÃO
   // ==================================================
 
   drawTrain();
   updateInterface();
 
-  previousTime = 0;
-
   animationFrame = requestAnimationFrame(gameLoop);
 
   console.log(
-    "Mundo Ferroviário: Simulador de Condução 2D iniciado."
+    "Mundo Ferroviário: Simulando Condução 2D iniciado."
   );
 
 })();
