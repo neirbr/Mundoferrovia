@@ -6,110 +6,315 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#102b3f">
 
-  <title>Simulador de Condução | Mundo Ferroviário</title>
+  <title>Simulando Condução 2D | Mundo Ferroviário</title>
 
   <link rel="stylesheet" href="simulando-conducao.css">
 </head>
 
 <body>
 
-  <header class="topbar">
-    <a href="index.html" class="back-button">← Voltar</a>
-    <div>
-      <h1>Mundo Ferroviário</h1>
-      <p>Simulador de Condução Ferroviária</p>
+<header class="topbar">
+  <a href="index.html" class="back-button">← Voltar</a>
+  <div>
+    <h1>Mundo Ferroviário</h1>
+    <p>Simulando Condução Ferroviária 2D</p>
+  </div>
+</header>
+
+<main class="simulator">
+
+  <section class="scene-section">
+
+    <div class="scene-header">
+      <span>AMBIENTE FERROVIÁRIO 2D</span>
+      <span id="distance">0 m</span>
     </div>
-  </header>
 
-  <main class="simulator">
+    <div id="game-world">
 
-    <section class="scene-section">
+      <svg
+        id="railwayScene"
+        viewBox="0 0 800 1100"
+        xmlns="http://www.w3.org/2000/svg"
+        role="img"
+        aria-label="Simulador ferroviário com visão superior"
+      >
 
-      <div class="scene-header">
-        <span>AMBIENTE FERROVIÁRIO</span>
-        <span id="distance">Distância: 0 m</span>
-      </div>
+        <defs>
 
-      <div id="game-world">
+          <pattern id="grassPattern" width="90" height="90"
+            patternUnits="userSpaceOnUse">
+            <rect width="90" height="90" fill="#718b5d"/>
+            <circle cx="15" cy="20" r="2" fill="#829d6b"/>
+            <circle cx="65" cy="55" r="3" fill="#5e794d"/>
+            <path d="M35 70 l5 -9 M38 73 l8 -5"
+              stroke="#8fa776" stroke-width="2"/>
+          </pattern>
 
-        <canvas id="railwayCanvas">
-          Seu navegador não suporta Canvas.
-        </canvas>
+          <pattern id="sleepers" width="22" height="22"
+            patternUnits="userSpaceOnUse">
+            <rect x="0" y="0" width="22" height="5"
+              fill="#514334"/>
+          </pattern>
 
-      </div>
+          <linearGradient id="locomotivePaint" x1="0" y1="0"
+            x2="1" y2="1">
+            <stop offset="0%" stop-color="#286b8c"/>
+            <stop offset="50%" stop-color="#102b3f"/>
+            <stop offset="100%" stop-color="#071c2a"/>
+          </linearGradient>
 
-    </section>
+        </defs>
 
-    <section class="dashboard">
+        <!-- TERRENO -->
+        <rect width="800" height="1100"
+          fill="url(#grassPattern)"/>
 
-      <div class="instrument">
-        <span>Velocidade</span>
-        <strong id="speed">0 km/h</strong>
-      </div>
+        <!-- ÁREA DE VEGETAÇÃO -->
+        <g fill="#456b40" opacity=".8">
+          <circle cx="65" cy="120" r="35"/>
+          <circle cx="720" cy="170" r="42"/>
+          <circle cx="75" cy="490" r="38"/>
+          <circle cx="710" cy="620" r="45"/>
+          <circle cx="90" cy="900" r="40"/>
+          <circle cx="720" cy="1000" r="35"/>
+        </g>
 
-      <div class="instrument">
-        <span>Manete</span>
-        <strong id="throttle">N</strong>
-      </div>
+        <g fill="#91a66b">
+          <circle cx="65" cy="120" r="17"/>
+          <circle cx="720" cy="170" r="20"/>
+          <circle cx="75" cy="490" r="18"/>
+          <circle cx="710" cy="620" r="22"/>
+          <circle cx="90" cy="900" r="20"/>
+        </g>
 
-      <div class="instrument">
-        <span>Reversor</span>
-        <strong id="reverser">Neutro</strong>
-      </div>
+        <!-- ROTA FERROVIÁRIA -->
+        <g id="railwayTracks">
 
-      <div class="instrument">
-        <span>Freio</span>
-        <strong id="brakePressure">0 PSI</strong>
-      </div>
+          <path
+            id="railwayRoute"
+            d="
+              M 400 1040
+              C 400 930 400 900 260 850
+              C 130 800 130 710 260 660
+              C 400 610 670 590 670 470
+              C 670 350 500 330 400 290
+              C 300 250 300 180 400 90
+            "
+            fill="none"
+            stroke="#514334"
+            stroke-width="34"
+            stroke-linecap="round"
+            stroke-dasharray="5 5"
+          />
 
-    </section>
+          <path
+            d="
+              M 400 1040
+              C 400 930 400 900 260 850
+              C 130 800 130 710 260 660
+              C 400 610 670 590 670 470
+              C 670 350 500 330 400 290
+              C 300 250 300 180 400 90
+            "
+            fill="none"
+            stroke="#aeb6b8"
+            stroke-width="5"
+          />
 
-    <section class="controls">
+          <path
+            d="
+              M 400 1040
+              C 400 930 400 900 260 850
+              C 130 800 130 710 260 660
+              C 400 610 670 590 670 470
+              C 670 350 500 330 400 290
+              C 300 250 300 180 400 90
+            "
+            fill="none"
+            stroke="#d5dadd"
+            stroke-width="2"
+          />
 
-      <div class="control-group">
-        <h3>Sinalização sonora</h3>
-        <button id="hornButton">📢 Buzina</button>
-        <button id="bellButton">🔔 Sino</button>
-      </div>
+        </g>
 
-      <div class="control-group">
-        <h3>Reversor</h3>
-        <button id="reverseButton">Frente</button>
-      </div>
+        <!-- COMPOSIÇÃO FERROVIÁRIA -->
+        <g id="trainComposition">
 
-      <div class="control-group">
-        <h3>Manete de tração</h3>
-        <button id="throttleButton">N</button>
-      </div>
+          <!-- VAGÃO 4 -->
+          <g id="wagon4" transform="translate(-460 0)">
+            <rect x="-47" y="-65" width="94" height="130"
+              rx="9" fill="#8a653e" stroke="#292929"
+              stroke-width="5"/>
+            <rect x="-35" y="-51" width="70" height="102"
+              fill="#b28a58" stroke="#4d3825" stroke-width="3"/>
+            <circle cx="-34" cy="-48" r="7" fill="#222"/>
+            <circle cx="34" cy="-48" r="7" fill="#222"/>
+            <circle cx="-34" cy="48" r="7" fill="#222"/>
+            <circle cx="34" cy="48" r="7" fill="#222"/>
+          </g>
 
-      <div class="control-group">
-        <h3>Freio independente</h3>
-        <input
-          type="range"
-          id="brakeControl"
-          min="0"
-          max="100"
-          value="0"
-        >
-        <span id="brakeValue">0%</span>
-      </div>
+          <!-- VAGÃO 3 -->
+          <g id="wagon3" transform="translate(-345 0)">
+            <rect x="-47" y="-65" width="94" height="130"
+              rx="9" fill="#8a653e" stroke="#292929"
+              stroke-width="5"/>
+            <rect x="-35" y="-51" width="70" height="102"
+              fill="#b28a58" stroke="#4d3825" stroke-width="3"/>
+            <circle cx="-34" cy="-48" r="7" fill="#222"/>
+            <circle cx="34" cy="-48" r="7" fill="#222"/>
+            <circle cx="-34" cy="48" r="7" fill="#222"/>
+            <circle cx="34" cy="48" r="7" fill="#222"/>
+          </g>
 
-      <div class="control-group">
-        <h3>Emergência</h3>
-        <button id="emergencyButton">
-          ⚠️ FREIO DE EMERGÊNCIA
-        </button>
-      </div>
+          <!-- VAGÃO 2 -->
+          <g id="wagon2" transform="translate(-230 0)">
+            <rect x="-47" y="-65" width="94" height="130"
+              rx="9" fill="#8a653e" stroke="#292929"
+              stroke-width="5"/>
+            <rect x="-35" y="-51" width="70" height="102"
+              fill="#b28a58" stroke="#4d3825" stroke-width="3"/>
+            <circle cx="-34" cy="-48" r="7" fill="#222"/>
+            <circle cx="34" cy="-48" r="7" fill="#222"/>
+            <circle cx="-34" cy="48" r="7" fill="#222"/>
+            <circle cx="34" cy="48" r="7" fill="#222"/>
+          </g>
 
-    </section>
+          <!-- VAGÃO 1 -->
+          <g id="wagon1" transform="translate(-115 0)">
+            <rect x="-47" y="-65" width="94" height="130"
+              rx="9" fill="#8a653e" stroke="#292929"
+              stroke-width="5"/>
+            <rect x="-35" y="-51" width="70" height="102"
+              fill="#b28a58" stroke="#4d3825" stroke-width="3"/>
+            <circle cx="-34" cy="-48" r="7" fill="#222"/>
+            <circle cx="34" cy="-48" r="7" fill="#222"/>
+            <circle cx="-34" cy="48" r="7" fill="#222"/>
+            <circle cx="34" cy="48" r="7" fill="#222"/>
+          </g>
 
-  </main>
+          <!-- LOCOMOTIVA -->
+          <g id="locomotive">
 
-  <footer>
-    Mundo Ferroviário — Conhecimento que move trilhos.
-  </footer>
+            <rect x="-49" y="-82" width="98" height="164"
+              rx="15" fill="url(#locomotivePaint)"
+              stroke="#071c2a" stroke-width="6"/>
 
-  <script src="simulando-conducao.js"></script>
+            <rect x="-35" y="-60" width="70" height="38"
+              rx="6" fill="#9fc3d4" stroke="#f0b323"
+              stroke-width="4"/>
+
+            <rect x="-35" y="-10" width="70" height="50"
+              rx="5" fill="#174a67"/>
+
+            <rect x="-35" y="49" width="70" height="18"
+              rx="4" fill="#f0b323"/>
+
+            <rect x="-55" y="-58" width="12" height="35"
+              fill="#222"/>
+            <rect x="43" y="-58" width="12" height="35"
+              fill="#222"/>
+
+            <circle cx="-20" cy="-77" r="8" fill="#f0b323"/>
+            <circle cx="20" cy="-77" r="8" fill="#f0b323"/>
+
+            <text x="0" y="16"
+              font-size="13"
+              font-weight="bold"
+              text-anchor="middle"
+              fill="white">MF</text>
+
+          </g>
+
+        </g>
+
+        <!-- IDENTIFICAÇÃO DA ROTA -->
+        <text x="400" y="50"
+          text-anchor="middle"
+          fill="white"
+          font-size="22"
+          font-weight="bold">
+          MUNDO FERROVIÁRIO
+        </text>
+
+      </svg>
+
+    </div>
+
+  </section>
+
+  <!-- PAINEL DE INSTRUMENTOS -->
+  <section class="dashboard">
+
+    <div class="instrument">
+      <span>Velocidade</span>
+      <strong id="speed">0 km/h</strong>
+    </div>
+
+    <div class="instrument">
+      <span>Tração</span>
+      <strong id="throttle">0</strong>
+    </div>
+
+    <div class="instrument">
+      <span>Reversor</span>
+      <strong id="reverser">FRENTE</strong>
+    </div>
+
+    <div class="instrument">
+      <span>Freio</span>
+      <strong id="brakePressure">0%</strong>
+    </div>
+
+  </section>
+
+  <!-- CONTROLES -->
+  <section class="controls">
+
+    <div class="control-group">
+      <h3>Sinalização sonora</h3>
+      <button id="hornButton">📢 Buzina</button>
+      <button id="bellButton">🔔 Sino</button>
+    </div>
+
+    <div class="control-group">
+      <h3>Reversor</h3>
+      <button id="reverseButton">Inverter</button>
+    </div>
+
+    <div class="control-group">
+      <h3>Manete de tração</h3>
+      <button id="throttleButton">Aumentar tração</button>
+    </div>
+
+    <div class="control-group">
+      <h3>Freio independente</h3>
+      <input
+        type="range"
+        id="brakeControl"
+        min="0"
+        max="100"
+        value="0"
+      >
+      <span id="brakeValue">0%</span>
+    </div>
+
+    <div class="control-group">
+      <h3>Emergência</h3>
+      <button id="emergencyButton">
+        ⚠️ FREIO DE EMERGÊNCIA
+      </button>
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  Mundo Ferroviário — Conhecimento que move trilhos.
+</footer>
+
+<script src="simulando-conducao.js"></script>
 
 </body>
 </html>
