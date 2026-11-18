@@ -20,6 +20,8 @@
 
   const ctx = canvas.getContext('2d');
 
+console.log('Tamanho original:', imagem.naturalWidth, imagem.naturalHeight);
+
   // ==========================================
   // CONFIGURAÇÕES
   // ==========================================
