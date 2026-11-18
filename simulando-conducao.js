@@ -307,7 +307,7 @@
     let acceleration = 0;
 
     if (emergency) {
-      acceleration = -CONFIG.freiEmergencia;
+      acceleration = -CONFIG.freioEmergencia;
     } else if (brake > 0) {
       acceleration =
         -(CONFIG.freioServico * brake / 100);
