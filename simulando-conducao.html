@@ -5,207 +5,389 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#102b3f">
 
-  <title>Simulando uma Condução | Mundo Ferroviário</title>
+  <title>Simulando Condução 2.0 | Mundo Ferroviário</title>
 
   <link rel="stylesheet" href="simulando-conducao.css">
-
-  <style>
-    #orientationMessage {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: #102b3f;
-      color: white;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 25px;
-    }
-
-    #orientationMessage .orientation-content {
-      max-width: 400px;
-    }
-
-    #orientationMessage .rotate-icon {
-      font-size: 65px;
-      margin-bottom: 20px;
-    }
-
-    @media (orientation: portrait) {
-      body.simulator-active #orientationMessage {
-        display: flex;
-      }
-    }
-  </style>
 </head>
 
 <body>
 
-  <div id="orientationMessage">
-    <div class="orientation-content">
-      <div class="rotate-icon">📱 ↻</div>
-      <h2>Gire seu aparelho</h2>
-      <p>
-        Para iniciar a condução ferroviária,
-        coloque seu celular na posição horizontal.
-      </p>
-    </div>
-  </div>
-
-  <main class="conducao-container">
-
-    <header class="conducao-header">
-      <a href="Index.html" class="back-button">← Voltar</a>
-      <h1>Simulando uma Condução</h1>
-      <span class="header-tag">MUNDO FERROVIÁRIO</span>
-    </header>
-
-    
-    <section class="game-section">
-
-      <div id="missionStart" class="mission-start">
-        <h2>Missão ferroviária</h2>
-        <p>Conduza o trem até a estação de destino.</p>
-
-        <div class="mission-info">
-          <span>🚂 1 locomotiva</span>
-          <span>🚃 4 vagões</span>
-          <span>🛤️ Rota com desvios e curvas</span>
-        </div>
-
-        <button id="startMissionButton" class="primary-button">
-          Iniciar missão
-        </button>
+  <header class="sim-header">
+    <div class="sim-brand">
+      <span class="brand-symbol">MF</span>
+      <div>
+        <h1>Simulando Condução 2.0</h1>
+        <p>Mundo Ferroviário</p>
       </div>
+    </div>
 
-      <div id="gameArea" class="game-area" hidden>
+    <div class="sim-status">
+      <span class="status-light"></span>
+      CENÁRIO DE OPERAÇÃO
+    </div>
+  </header>
 
-        <div class="route-header">
-          <span id="missionStatus">Aguardando autorização</span>
-          <span id="routeDistance">Distância: 0 m</span>
-        </div>
+  <main class="sim-main">
 
-        <div class="railway-view">
-          <canvas id="conducaoCanvas"></canvas>
-        </div>
-
-        <div class="indicators-panel">
-
-          <div class="indicator">
-            <span>Velocidade</span>
-            <strong id="speedDisplay">0 km/h</strong>
-          </div>
-
-          <div class="indicator">
-            <span>Manete</span>
-            <strong id="throttleDisplay">N</strong>
-          </div>
-
-          <div class="indicator">
-            <span>Reversor</span>
-            <strong id="directionDisplay">Neutro</strong>
-          </div>
-
-          <div class="indicator">
-            <span>Freio</span>
-            <strong id="brakeDisplay">0 PSI</strong>
-          </div>
-
-        </div>
-
-        <div class="controls-panel">
-
-          <div class="control-group">
-            <h3>Sinalização sonora</h3>
-            <button id="hornButton" class="control-button">
-              📢 Buzina
-            </button>
-            <button id="bellButton" class="control-button">
-              🔔 Sino
-            </button>
-          </div>
-
-          <div class="control-group">
-            <h3>Reversor</h3>
-            <button id="directionButton" class="control-button">
-              Frente
-            </button>
-          </div>
-
-          <div class="control-group">
-            <h3>Manete de tração</h3>
-            <button id="throttleButton" class="control-button">
-              N
-            </button>
-          </div>
-
-          <div class="control-group">
-            <h3>Freio independente</h3>
-            <label for="brakeSlider">
-              Pressão: <span id="brakeValue">0</span> PSI
-            </label>
-            <input
-              type="range"
-              id="brakeSlider"
-              min="0"
-              max="90"
-              value="0"
-            >
-          </div>
-
-          <div class="control-group emergency-group">
-            <h3>Emergência</h3>
-            <button id="emergencyBrakeButton" class="emergency-button">
-              ⚠️ FREIO DE EMERGÊNCIA
-            </button>
-          </div>
-
-        </div>
-
-        <div id="penaltyPanel" class="penalty-panel" hidden>
-          <p id="penaltyMessage"></p>
-          <button id="removePenaltyButton" class="primary-button">
-            Iniciar recomposição
-          </button>
-        </div>
-
+    <section class="scenario-heading">
+      <div>
+        <h2>Pátio ferroviário</h2>
+        <p>Visão superior • Ambiente de simulação</p>
       </div>
     </section>
 
+    <section class="scenario-panel">
 
-    <footer class="conducao-footer">
-      <p>© Mundo Ferroviário — Conhecimento que move trilhos.</p>
+      <div class="scenario-topbar">
+        <span>ÁREA OPERACIONAL</span>
+        <span>LINHAS L1 E L2</span>
+      </div>
+
+      <div class="scenario-viewport">
+
+        <svg
+          id="railwayScenario"
+          class="railway-scenario"
+          viewBox="0 0 1200 720"
+          xmlns="http://www.w3.org/2000/svg"
+          role="img"
+          aria-label="Pátio ferroviário visto de cima, com duas linhas, desvio, locomotiva, vagões e passagem em nível">
+
+          <defs>
+
+            <pattern id="groundTexture" width="42" height="42" patternUnits="userSpaceOnUse">
+              <rect width="42" height="42" fill="#638052"/>
+              <circle cx="8" cy="10" r="1.5" fill="#829568" opacity=".5"/>
+              <circle cx="29" cy="28" r="1.8" fill="#405f3d" opacity=".5"/>
+              <path d="M4 35l5-2M24 8l4 2" stroke="#9aaa75" opacity=".35"/>
+            </pattern>
+
+            <pattern id="ballastTexture" width="16" height="16" patternUnits="userSpaceOnUse">
+              <rect width="16" height="16" fill="#777a76"/>
+              <circle cx="3" cy="4" r="1.5" fill="#a6a69e"/>
+              <circle cx="11" cy="9" r="1.7" fill="#515653"/>
+              <circle cx="6" cy="14" r="1" fill="#c0bcb0"/>
+            </pattern>
+
+            <pattern id="roadTexture" width="40" height="40" patternUnits="userSpaceOnUse">
+              <rect width="40" height="40" fill="#42494d"/>
+              <circle cx="8" cy="9" r="1" fill="#62696b"/>
+              <circle cx="29" cy="30" r="1" fill="#303638"/>
+            </pattern>
+
+            <g id="tree">
+              <circle cx="0" cy="0" r="19" fill="#315b35"/>
+              <circle cx="-7" cy="-5" r="12" fill="#477a3e"/>
+              <circle cx="8" cy="-7" r="11" fill="#588848"/>
+              <circle cx="3" cy="8" r="12" fill="#3b6b39"/>
+              <circle cx="-5" cy="-8" r="3" fill="#82a65b"/>
+            </g>
+
+            <g id="railTrack">
+              <rect x="-20" y="-27" width="40" height="54" rx="3" fill="url(#ballastTexture)"/>
+              <rect x="-15" y="-25" width="5" height="50" fill="#b8b8ae"/>
+              <rect x="10" y="-25" width="5" height="50" fill="#b8b8ae"/>
+              <rect x="-15" y="-25" width="2" height="50" fill="#e0ded2"/>
+              <rect x="10" y="-25" width="2" height="50" fill="#e0ded2"/>
+            </g>
+
+            <g id="sleeper">
+              <rect x="-30" y="-5" width="60" height="10" rx="2" fill="#493d30"/>
+              <rect x="-28" y="-4" width="56" height="2" fill="#75624a"/>
+            </g>
+
+          </defs>
+
+          <!-- TERRENO -->
+          <rect width="1200" height="720" fill="url(#groundTexture)"/>
+
+          <!-- ÁREA DE PÁTIO -->
+          <rect x="35" y="65" width="1130" height="590" rx="12"
+            fill="#71835c" stroke="#a2a987" stroke-width="3"/>
+
+          <!-- ESTRADA -->
+          <rect x="35" y="475" width="1130" height="105"
+            fill="url(#roadTexture)"/>
+
+          <path d="M35 528H1165" stroke="#e7dba7"
+            stroke-width="3" stroke-dasharray="28 20"/>
+
+          <path d="M35 482H1165 M35 573H1165"
+            stroke="#c3c6bd" stroke-width="3"/>
+
+          <!-- CALÇADAS -->
+          <rect x="35" y="458" width="1130" height="15" fill="#a8a69b"/>
+          <rect x="35" y="582" width="1130" height="15" fill="#a8a69b"/>
+
+          <!-- LASTRO DAS LINHAS -->
+          <path d="M70 170H1130V260H70Z"
+            fill="url(#ballastTexture)" opacity=".95"/>
+
+          <path d="M70 320H1130V410H70Z"
+            fill="url(#ballastTexture)" opacity=".95"/>
+
+          <!-- DORMENTES LINHA L1 -->
+          <g id="sleepersL1">
+            <use href="#sleeper" x="95" y="215"/>
+            <use href="#sleeper" x="145" y="215"/>
+            <use href="#sleeper" x="195" y="215"/>
+            <use href="#sleeper" x="245" y="215"/>
+            <use href="#sleeper" x="295" y="215"/>
+            <use href="#sleeper" x="345" y="215"/>
+            <use href="#sleeper" x="395" y="215"/>
+            <use href="#sleeper" x="445" y="215"/>
+            <use href="#sleeper" x="495" y="215"/>
+            <use href="#sleeper" x="545" y="215"/>
+            <use href="#sleeper" x="595" y="215"/>
+            <use href="#sleeper" x="645" y="215"/>
+            <use href="#sleeper" x="695" y="215"/>
+            <use href="#sleeper" x="745" y="215"/>
+            <use href="#sleeper" x="795" y="215"/>
+            <use href="#sleeper" x="845" y="215"/>
+            <use href="#sleeper" x="895" y="215"/>
+            <use href="#sleeper" x="945" y="215"/>
+            <use href="#sleeper" x="995" y="215"/>
+            <use href="#sleeper" x="1045" y="215"/>
+            <use href="#sleeper" x="1095" y="215"/>
+          </g>
+
+          <!-- DORMENTES LINHA L2 -->
+          <g id="sleepersL2">
+            <use href="#sleeper" x="95" y="365"/>
+            <use href="#sleeper" x="145" y="365"/>
+            <use href="#sleeper" x="195" y="365"/>
+            <use href="#sleeper" x="245" y="365"/>
+            <use href="#sleeper" x="295" y="365"/>
+            <use href="#sleeper" x="345" y="365"/>
+            <use href="#sleeper" x="395" y="365"/>
+            <use href="#sleeper" x="445" y="365"/>
+            <use href="#sleeper" x="495" y="365"/>
+            <use href="#sleeper" x="545" y="365"/>
+            <use href="#sleeper" x="595" y="365"/>
+            <use href="#sleeper" x="645" y="365"/>
+            <use href="#sleeper" x="695" y="365"/>
+            <use href="#sleeper" x="745" y="365"/>
+            <use href="#sleeper" x="795" y="365"/>
+            <use href="#sleeper" x="845" y="365"/>
+            <use href="#sleeper" x="895" y="365"/>
+            <use href="#sleeper" x="945" y="365"/>
+            <use href="#sleeper" x="995" y="365"/>
+            <use href="#sleeper" x="1045" y="365"/>
+            <use href="#sleeper" x="1095" y="365"/>
+          </g>
+
+          <!-- TRILHOS L1 -->
+          <path d="M70 195H1130 M70 235H1130"
+            stroke="#d7d8d2" stroke-width="7"/>
+          <path d="M70 195H1130 M70 235H1130"
+            stroke="#747a7a" stroke-width="2"/>
+
+          <!-- TRILHOS L2 -->
+          <path d="M70 345H1130 M70 385H1130"
+            stroke="#d7d8d2" stroke-width="7"/>
+          <path d="M70 345H1130 M70 385H1130"
+            stroke="#747a7a" stroke-width="2"/>
+
+          <!-- DESVIO ENTRE LINHAS -->
+          <path d="M570 235 C650 235 680 345 770 345"
+            fill="none" stroke="#777a76" stroke-width="42"/>
+          <path d="M570 235 C650 235 680 345 770 345"
+            fill="none" stroke="#d7d8d2" stroke-width="7"/>
+          <path d="M570 195 C650 195 680 305 770 305"
+            fill="none" stroke="#777a76" stroke-width="3"/>
+
+          <!-- AMV -->
+          <g id="switchArea">
+            <path d="M560 195L650 235" stroke="#e0ded2" stroke-width="5"/>
+            <path d="M560 235L650 195" stroke="#777a76" stroke-width="3"/>
+            <circle cx="570" cy="215" r="8" fill="#d5a52c" stroke="#5b4820" stroke-width="2"/>
+            <text x="570" y="178" font-size="14" fill="#fff" text-anchor="middle">AMV 01</text>
+          </g>
+
+          <!-- IDENTIFICAÇÃO DAS LINHAS -->
+          <g fill="#fff" font-size="21" font-weight="bold">
+            <text x="85" y="155">LINHA L1</text>
+            <text x="85" y="305">LINHA L2</text>
+          </g>
+
+          <!-- PASSAGEM EM NÍVEL -->
+          <g id="levelCrossing">
+            <rect x="825" y="455" width="120" height="150"
+              fill="#8b8d83" opacity=".75"/>
+
+            <path d="M825 475H945 M825 580H945"
+              stroke="#f5f0d9" stroke-width="5"/>
+
+            <path d="M835 460L865 475 M865 460L895 475
+              M895 460L925 475"
+              stroke="#d7bd42" stroke-width="9"/>
+
+            <path d="M835 580L865 595 M865 580L895 595
+              M895 580L925 595"
+              stroke="#d7bd42" stroke-width="9"/>
+
+            <text x="885" y="450" text-anchor="middle"
+              font-size="13" fill="#fff" font-weight="bold">PASSAGEM EM NÍVEL</text>
+          </g>
+
+          <!-- CANCELA -->
+          <g id="barrier">
+            <rect x="810" y="440" width="15" height="24" rx="3" fill="#e4b52e"/>
+            <path d="M817 445L790 420" stroke="#eee" stroke-width="7"/>
+            <path d="M817 445L790 420" stroke="#c83b32" stroke-width="3" stroke-dasharray="8 8"/>
+            <rect x="940" y="590" width="15" height="24" rx="3" fill="#e4b52e"/>
+            <path d="M947 602L975 625" stroke="#eee" stroke-width="7"/>
+            <path d="M947 602L975 625" stroke="#c83b32" stroke-width="3" stroke-dasharray="8 8"/>
+          </g>
+
+          <!-- SINALIZAÇÃO -->
+          <g id="signals">
+            <rect x="285" y="125" width="8" height="45" fill="#343b3d"/>
+            <circle cx="289" cy="120" r="12" fill="#242b2d" stroke="#bbb" stroke-width="2"/>
+            <circle cx="289" cy="120" r="6" fill="#35d36b"/>
+
+            <rect x="1000" y="265" width="8" height="45" fill="#343b3d"/>
+            <circle cx="1004" cy="260" r="12" fill="#242b2d" stroke="#bbb" stroke-width="2"/>
+            <circle cx="1004" cy="260" r="6" fill="#e34a3f"/>
+
+            <rect x="460" y="410" width="6" height="35" fill="#343b3d"/>
+            <circle cx="463" cy="405" r="10" fill="#242b2d" stroke="#bbb" stroke-width="2"/>
+            <circle cx="463" cy="405" r="5" fill="#f0c33b"/>
+          </g>
+
+          <!-- VEÍCULOS NA ESTRADA -->
+          <g id="roadVehicles">
+
+            <g transform="translate(500 510)">
+              <rect x="-27" y="-13" width="54" height="26" rx="7" fill="#d7dce0" stroke="#222" stroke-width="2"/>
+              <rect x="-12" y="-10" width="24" height="20" rx="4" fill="#52758b"/>
+              <circle cx="-16" cy="-14" r="5" fill="#202426"/>
+              <circle cx="16" cy="-14" r="5" fill="#202426"/>
+              <circle cx="-16" cy="14" r="5" fill="#202426"/>
+              <circle cx="16" cy="14" r="5" fill="#202426"/>
+            </g>
+
+            <g transform="translate(1080 545)">
+              <rect x="-29" y="-14" width="58" height="28" rx="6" fill="#c94b3d" stroke="#222" stroke-width="2"/>
+              <rect x="-13" y="-11" width="25" height="22" rx="3" fill="#64889a"/>
+              <circle cx="-18" cy="-15" r="5" fill="#202426"/>
+              <circle cx="18" cy="-15" r="5" fill="#202426"/>
+              <circle cx="-18" cy="15" r="5" fill="#202426"/>
+              <circle cx="18" cy="15" r="5" fill="#202426"/>
+            </g>
+
+          </g>
+
+          <!-- LOCOMOTIVA E VAGÕES: POSIÇÃO INICIAL -->
+          <g id="trainComposition">
+
+            <!-- VAGÃO 2 -->
+            <g id="wagon2" transform="translate(190 215)">
+              <rect x="-48" y="-16" width="96" height="32" rx="5"
+                fill="#a7a9a5" stroke="#30383b" stroke-width="3"/>
+              <rect x="-40" y="-11" width="80" height="22" rx="3"
+                fill="#737c7d"/>
+              <path d="M-30 -10V10 M-10 -10V10 M10 -10V10 M30 -10V10"
+                stroke="#bfc3be" stroke-width="2"/>
+              <circle cx="-30" cy="-19" r="5" fill="#222"/>
+              <circle cx="30" cy="-19" r="5" fill="#222"/>
+              <circle cx="-30" cy="19" r="5" fill="#222"/>
+              <circle cx="30" cy="19" r="5" fill="#222"/>
+            </g>
+
+            <!-- VAGÃO 1 -->
+            <g id="wagon1" transform="translate(300 215)">
+              <rect x="-48" y="-16" width="96" height="32" rx="5"
+                fill="#b5b7b2" stroke="#30383b" stroke-width="3"/>
+              <rect x="-40" y="-11" width="80" height="22" rx="3"
+                fill="#858d8d"/>
+              <path d="M-30 -10V10 M-10 -10V10 M10 -10V10 M30 -10V10"
+                stroke="#c8cbc5" stroke-width="2"/>
+              <circle cx="-30" cy="-19" r="5" fill="#222"/>
+              <circle cx="30" cy="-19" r="5" fill="#222"/>
+              <circle cx="-30" cy="19" r="5" fill="#222"/>
+              <circle cx="30" cy="19" r="5" fill="#222"/>
+            </g>
+
+            <!-- LOCOMOTIVA -->
+            <g id="locomotive" transform="translate(425 215)">
+              <rect x="-53" y="-20" width="106" height="40" rx="9"
+                fill="#102b3f" stroke="#e1b437" stroke-width="3"/>
+
+              <rect x="-39" y="-15" width="22" height="30" rx="4"
+                fill="#234d67" stroke="#9bb4bf" stroke-width="2"/>
+
+              <rect x="-10" y="-15" width="39" height="30" rx="5"
+                fill="#173e58" stroke="#6e91a0" stroke-width="2"/>
+
+              <rect x="34" y="-13" width="12" height="26" rx="3"
+                fill="#d8d8cf"/>
+
+              <path d="M-45 -19V19 M45 -19V19"
+                stroke="#d5ae42" stroke-width="3"/>
+
+              <circle cx="-37" cy="-23" r="5" fill="#252b2d"/>
+              <circle cx="37" cy="-23" r="5" fill="#252b2d"/>
+              <circle cx="-37" cy="23" r="5" fill="#252b2d"/>
+              <circle cx="37" cy="23" r="5" fill="#252b2d"/>
+
+              <text x="0" y="5" font-size="11" font-weight="bold"
+                fill="#f5f5ed" text-anchor="middle">MF</text>
+
+              <path d="M53 0H64" stroke="#d6b044" stroke-width="5"/>
+            </g>
+
+          </g>
+
+          <!-- VEGETAÇÃO -->
+          <g id="vegetation">
+            <use href="#tree" x="95" y="105"/>
+            <use href="#tree" x="175" y="105"/>
+            <use href="#tree" x="1080" y="105"/>
+            <use href="#tree" x="1130" y="145"/>
+            <use href="#tree" x="100" y="630"/>
+            <use href="#tree" x="190" y="630"/>
+            <use href="#tree" x="1080" y="630"/>
+            <use href="#tree" x="1130" y="650"/>
+          </g>
+
+          <!-- POSTES DE ILUMINAÇÃO -->
+          <g id="lighting">
+            <g fill="#d9d4b8" stroke="#343b3d" stroke-width="3">
+              <circle cx="370" cy="115" r="8"/>
+              <circle cx="720" cy="115" r="8"/>
+              <circle cx="720" cy="445" r="8"/>
+              <circle cx="1060" cy="445" r="8"/>
+            </g>
+            <g stroke="#343b3d" stroke-width="5">
+              <path d="M370 115V150"/>
+              <path d="M720 115V150"/>
+              <path d="M720 445V460"/>
+              <path d="M1060 445V460"/>
+            </g>
+          </g>
+
+        </svg>
+
+      </div>
+
+      <div class="scenario-legend">
+        <span><i class="legend-track"></i> Trilhos</span>
+        <span><i class="legend-locomotive"></i> Locomotiva</span>
+        <span><i class="legend-wagon"></i> Vagões</span>
+        <span><i class="legend-signal"></i> Sinalização</span>
+      </div>
+
+    </section>
+
+    <footer class="sim-footer">
+      <p>Mundo Ferroviário • Simulador de Condução 2.0</p>
     </footer>
 
   </main>
 
   <script src="simulando-conducao.js"></script>
 
-  <script>
-    // Solicita orientação horizontal quando disponível
-    async function solicitarTelaHorizontal() {
-      try {
-        if (screen.orientation &&
-            screen.orientation.lock) {
-          await screen.orientation.lock("landscape");
-        }
-      } catch (erro) {
-        console.log("Orientação automática não disponível.");
-      }
-    }
-
-    const inicio = document.getElementById("startMissionButton");
-
-    inicio.addEventListener("click", solicitarTelaHorizontal);
-  </script>
-
 </body>
-</html>
-
-
-
-
-
-    
-    
+  </html>
+  
