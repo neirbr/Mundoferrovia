@@ -1,347 +1,275 @@
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 :root {
   --navy: #102b3f;
   --blue: #174a67;
   --gold: #f0b323;
   --white: #f3f6f8;
-  --panel: #18394e;
-  --red: #c62828;
+  --background: #e9eef1;
+  --text: #263746;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-html,
 body {
-  margin: 0;
-  min-height: 100%;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* CABEÇALHO */
+
+.sim-header {
+  min-height: 82px;
+  padding: 14px 5%;
   background: var(--navy);
   color: var(--white);
-}
-
-body {
-  overflow-x: hidden;
-}
-
-button,
-input {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
-.conducao-container {
-  width: 100%;
-  min-height: 100vh;
-  padding: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.conducao-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 6px 10px;
-  background: var(--panel);
-  border-radius: 7px;
+  gap: 20px;
+  border-bottom: 4px solid var(--gold);
 }
 
-.conducao-header h1 {
-  margin: 0;
-  color: var(--gold);
-  font-size: 16px;
-  text-align: center;
-}
-
-.back-button {
-  color: white;
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.header-tag {
-  color: var(--gold);
-  font-size: 9px;
-  font-weight: bold;
-}
-
-.game-section {
-  flex: 1;
-  min-width: 0;
-}
-
-.mission-start {
-  min-height: 75vh;
+.sim-brand {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 15px;
-  text-align: center;
-  background: var(--panel);
-  border-radius: 10px;
-  padding: 20px;
+  gap: 13px;
 }
 
-.mission-start h2 {
-  margin: 0;
+.brand-symbol {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--gold);
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
   color: var(--gold);
+  font-size: 17px;
+  font-weight: 900;
 }
 
-.mission-info {
+.sim-brand h1 {
+  font-size: clamp(17px, 2.5vw, 23px);
+  margin-bottom: 4px;
+}
+
+.sim-brand p {
+  color: #bdcbd4;
+  font-size: 13px;
+}
+
+.sim-status {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  font-size: 12px;
-}
-
-.primary-button {
-  padding: 10px 20px;
-  color: var(--navy);
-  background: var(--gold);
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-}
-
-.game-area {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  min-width: 0;
-}
-
-.route-header {
-  display: flex;
-  justify-content: space-between;
-  padding: 5px 9px;
-  background: var(--panel);
-  border-radius: 5px;
+  align-items: center;
+  gap: 9px;
   font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #e4eaf0;
 }
 
-.railway-view {
-  width: 100%;
-  height: clamp(300px, 66vh, 720px);
-  min-height: 300px;
+.status-light {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #46c878;
+  box-shadow: 0 0 9px #46c878;
+}
+
+/* ÁREA PRINCIPAL */
+
+.sim-main {
+  width: min(1500px, 96%);
+  margin: 0 auto;
+  padding: 25px 0 35px;
+}
+
+.scenario-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 17px;
+}
+
+.scenario-heading h2 {
+  color: var(--navy);
+  font-size: clamp(21px, 3vw, 28px);
+  margin-bottom: 5px;
+}
+
+.scenario-heading p {
+  color: #657784;
+  font-size: 14px;
+}
+
+/* PAINEL DO CENÁRIO */
+
+.scenario-panel {
   overflow: hidden;
-  position: relative;
-  background: #56834b;
-  border: 2px solid #71899a;
-  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #cbd5dc;
+  border-radius: 13px;
+  box-shadow: 0 5px 20px rgba(16, 43, 63, 0.12);
 }
 
-#conducaoCanvas {
+.scenario-topbar {
+  min-height: 43px;
+  padding: 0 17px;
+  background: var(--navy);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.scenario-topbar span:last-child {
+  color: var(--gold);
+}
+
+/* VISUALIZAÇÃO DO PÁTIO */
+
+.scenario-viewport {
+  width: 100%;
+  overflow: hidden;
+  background: #638052;
+  line-height: 0;
+}
+
+.railway-scenario {
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
+  aspect-ratio: 1200 / 720;
+  user-select: none;
 }
 
-.indicators-panel {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 5px;
-}
+/* LEGENDA */
 
-.indicator {
+.scenario-legend {
+  min-height: 49px;
+  padding: 12px 18px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  min-width: 0;
-  padding: 5px 3px;
-  background: var(--panel);
-  border-radius: 5px;
+  flex-wrap: wrap;
+  gap: 12px 25px;
+  background: #f8fafb;
+  border-top: 1px solid #dce3e7;
 }
 
-.indicator span {
-  color: #c5d5df;
-  font-size: 10px;
-}
-
-.indicator strong {
-  color: var(--gold);
-  font-size: 16px;
-}
-
-.controls-panel {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 5px;
-  padding: 6px;
-  background: var(--panel);
-  border-radius: 7px;
-}
-
-.control-group {
+.scenario-legend span {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  gap: 5px;
-  min-width: 0;
-  padding: 5px;
+  align-items: center;
+  gap: 7px;
+  color: #52636e;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.scenario-legend i {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+}
+
+.legend-track {
+  background: #929b9d;
+}
+
+.legend-locomotive {
   background: var(--navy);
-  border-radius: 5px;
+  border: 2px solid var(--gold);
 }
 
-.control-group h3 {
-  margin: 0;
-  color: var(--gold);
-  font-size: 10px;
+.legend-wagon {
+  background: #929a99;
+}
+
+.legend-signal {
+  background: #35bd68;
+}
+
+/* RODAPÉ */
+
+.sim-footer {
+  padding: 20px 10px 5px;
   text-align: center;
-}
-
-.control-group label {
-  font-size: 10px;
-  text-align: center;
-}
-
-.control-button {
-  min-height: 32px;
-  padding: 5px;
-  color: white;
-  background: var(--blue);
-  border: 1px solid #55758a;
-  border-radius: 5px;
-  font-size: 11px;
-  font-weight: bold;
-}
-
-#brakeSlider {
-  width: 100%;
-  accent-color: var(--gold);
-}
-
-.emergency-button {
-  min-height: 32px;
-  padding: 5px;
-  color: white;
-  background: var(--red);
-  border: 1px solid #ff7777;
-  border-radius: 5px;
-  font-size: 10px;
-  font-weight: bold;
-}
-
-.control-button:disabled,
-.emergency-button:disabled,
-.primary-button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.penalty-panel {
-  padding: 10px;
-  text-align: center;
-  background: #493b21;
-  border: 1px solid var(--gold);
-  border-radius: 6px;
+  color: #71808a;
   font-size: 12px;
 }
 
-.conducao-footer {
-  padding: 4px;
-  text-align: center;
-  color: #aebfca;
-  font-size: 10px;
-}
+/* RESPONSIVIDADE */
 
-/* Celular na horizontal */
-@media (orientation: landscape) and (max-height: 600px) {
-  .conducao-container {
-    padding: 4px;
-    gap: 4px;
+@media (max-width: 650px) {
+  .sim-header {
+    padding: 12px 4%;
+    min-height: 72px;
   }
 
-  .conducao-header {
-    padding: 4px 8px;
-  }
-
-  .conducao-header h1 {
+  .brand-symbol {
+    width: 40px;
+    height: 40px;
     font-size: 14px;
   }
 
-  .game-area {
-    gap: 4px;
+  .sim-status {
+    font-size: 9px;
+    letter-spacing: 0;
   }
 
-  .railway-view {
-    height: 62vh;
-    min-height: 190px;
+  .sim-main {
+    width: 96%;
+    padding-top: 19px;
   }
 
-  .indicator {
-    padding: 3px;
-  }
-
-  .indicator span {
+  .scenario-topbar {
+    min-height: 38px;
+    padding: 0 11px;
     font-size: 9px;
   }
 
-  .indicator strong {
-    font-size: 14px;
+  .scenario-panel {
+    border-radius: 9px;
   }
 
-  .controls-panel {
-    gap: 4px;
-    padding: 4px;
+  .scenario-legend {
+    gap: 10px 14px;
+    padding: 11px 8px;
   }
 
-  .control-group {
-    gap: 3px;
-    padding: 3px;
-  }
-
-  .control-group h3 {
-    font-size: 9px;
-  }
-
-  .control-button,
-  .emergency-button {
-    min-height: 27px;
-    padding: 3px;
-    font-size: 9px;
-  }
-
-  .conducao-footer {
-    display: none;
+  .scenario-legend span {
+    font-size: 10px;
   }
 }
 
-/* Telas estreitas */
-@media (max-width: 700px) {
-  .header-tag {
-    display: none;
+@media (max-width: 390px) {
+  .sim-header {
+    align-items: flex-start;
   }
 
-  .mission-info {
-    flex-direction: column;
-    gap: 7px;
+  .sim-status {
+    margin-top: 8px;
   }
-}
 
-/* Aviso de orientação */
-@media (orientation: portrait) {
-  body.simulator-active .conducao-container {
-    visibility: hidden;
+  .sim-brand h1 {
+    font-size: 16px;
   }
-}
 
-/* Computadores */
-@media (min-width: 1000px) {
-  .conducao-container {
-    max-width: 1800px;
-    margin: 0 auto;
+  .sim-brand p {
+    font-size: 11px;
+  }
+
+  .scenario-heading p {
+    font-size: 12px;
   }
 }
