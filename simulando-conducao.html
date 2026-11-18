@@ -1,1 +1,60 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Simulando Condução 2D | Mundo Ferroviário</title>
+
+  <link rel="stylesheet" href="simulando-conducao.css">
+</head>
+
+<body>
+
+  <main id="simulador">
+
+    <!-- CABEÇALHO -->
+    <header id="cabecalho">
+      <h1>SIMULANDO CONDUÇÃO 2D</h1>
+      <span id="missao">MISSÃO 01</span>
+    </header>
+
+    <!-- ÁREA DO CENÁRIO -->
+    <section id="area-jogo">
+
+      <div id="cenario">
+
+        <!-- IMAGEM ORIGINAL -->
+        <img
+          id="imagemCenario"
+          src="assets/cenario-ferroviário.jpg"
+          alt="Cenário ferroviário do simulador"
+        >
+
+        <!-- ÁREA DOS ELEMENTOS DO JOGO -->
+        <canvas id="camadaJogo"></canvas>
+
+      </div>
+
+    </section>
+
+    <!-- PAINEL INFERIOR -->
+    <section id="painel-controles">
+
+      <div id="status-operacao">
+        AGUARDANDO INÍCIO DA MISSÃO
+      </div>
+
+      <div id="area-botoes">
+        <!-- Controles serão desenvolvidos nas próximas etapas -->
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="simulando-conducao.js"></script>
+
+</body>
+</html>
