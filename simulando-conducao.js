@@ -178,10 +178,8 @@
   // ==========================================
 
   
-function prepararCanvas() {
 
-  canvas.width = imagem.naturalWidth;
-  canvas.height = imagem.naturalHeight;
+function prepararCanvas() {
 
   const cenario = document.getElementById('cenario');
 
@@ -193,24 +191,33 @@ function prepararCanvas() {
   imagem.style.width = '100%';
   imagem.style.height = 'auto';
 
+  canvas.width = imagem.naturalWidth;
+  canvas.height = imagem.naturalHeight;
+
+  canvas.style.position = 'absolute';
+  canvas.style.pointerEvents = 'none';
+  canvas.style.zIndex = '10';
+
   function ajustarCanvas() {
 
     const area = cenario.getBoundingClientRect();
     const foto = imagem.getBoundingClientRect();
 
-    canvas.style.position = 'absolute';
     canvas.style.left = `${foto.left - area.left}px`;
     canvas.style.top = `${foto.top - area.top}px`;
+
     canvas.style.width = `${foto.width}px`;
     canvas.style.height = `${foto.height}px`;
-    canvas.style.pointerEvents = 'none';
+
+    desenhar();
   }
 
   ajustarCanvas();
 
-  desenhar();
+  window.addEventListener('resize', ajustarCanvas);
 
 }
+
 
 
   // ==========================================
