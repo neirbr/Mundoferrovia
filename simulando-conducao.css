@@ -21,6 +21,8 @@ body {
   font-family: Arial, sans-serif;
 }
 
+/* CABEÇALHO */
+
 .topbar {
   display: flex;
   align-items: center;
@@ -51,6 +53,8 @@ body {
   white-space: nowrap;
 }
 
+/* ÁREA PRINCIPAL */
+
 .simulator {
   width: 100%;
   max-width: 1100px;
@@ -75,6 +79,8 @@ body {
   color: #dce9ef;
 }
 
+/* CENÁRIO FERROVIÁRIO */
+
 #game-world {
   position: relative;
   width: 100%;
@@ -83,15 +89,34 @@ body {
   overflow: hidden;
   border: 3px solid #496879;
   border-radius: 7px;
-  background: #548052;
+  background: #718b5d;
 }
 
-#railwayCanvas {
+#railwayScene {
   display: block;
   width: 100%;
   height: 100%;
-  image-rendering: pixelated;
+  background: #718b5d;
+  touch-action: manipulation;
 }
+
+/* COMPOSIÇÃO */
+
+#trainComposition {
+  transform-box: view-box;
+  transform-origin: center;
+}
+
+#locomotive,
+#wagon1,
+#wagon2,
+#wagon3,
+#wagon4 {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* PAINEL DE INSTRUMENTOS */
 
 .dashboard {
   display: grid;
@@ -106,6 +131,7 @@ body {
   padding: 12px 5px;
   text-align: center;
   min-width: 0;
+  border: 1px solid #31566c;
 }
 
 .instrument span {
@@ -120,6 +146,8 @@ body {
   font-size: 17px;
 }
 
+/* CONTROLES */
+
 .controls {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -133,11 +161,13 @@ body {
 .control-group {
   min-width: 0;
   background: #173b52;
+  border: 1px solid #31566c;
   border-radius: 8px;
   padding: 10px 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 9px;
 }
 
@@ -159,11 +189,15 @@ button {
   font-size: 13px;
   font-weight: bold;
   cursor: pointer;
+  transition: background .2s, transform .1s;
+}
+
+button:hover {
+  background: #246587;
 }
 
 button:active {
   transform: scale(.97);
-  background: #246587;
 }
 
 #emergencyButton {
@@ -172,9 +206,14 @@ button:active {
   font-size: 11px;
 }
 
+#emergencyButton:hover {
+  background: #a4444d;
+}
+
 input[type="range"] {
   width: 100%;
   accent-color: var(--gold);
+  cursor: pointer;
 }
 
 #brakeValue {
@@ -182,12 +221,16 @@ input[type="range"] {
   color: white;
 }
 
+/* RODAPÉ */
+
 footer {
   padding: 20px 10px;
   text-align: center;
   color: #a9bdc9;
   font-size: 12px;
 }
+
+/* CELULARES */
 
 @media (max-width: 600px) {
   .topbar h1 {
@@ -208,6 +251,12 @@ footer {
 
   .instrument strong {
     font-size: 15px;
+  }
+
+  #game-world {
+    height: 125vw;
+    min-height: 420px;
+    max-height: 650px;
   }
 
   .controls {
