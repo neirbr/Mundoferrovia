@@ -361,17 +361,31 @@ function prepararCanvas() {
   // DESENHO GERAL
   // ==========================================
 
-  function desenhar() {
+  
+function desenhar() {
 
-    ctx.clearRect(
-      0,
-      0,
-      canvas.width,
-      canvas.height
-    );
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-    desenharComposicao();
-  }
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  ctx.save();
+
+  // Ajustar coordenadas à resolução original da imagem.
+  ctx.scale(
+    canvas.width / 960,
+    canvas.height / 1425
+  );
+
+  desenharComposicao();
+
+  ctx.restore();
+}
+
 
   // ==========================================
   // PAINEL DE CONTROLES
