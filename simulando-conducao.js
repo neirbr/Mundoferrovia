@@ -200,13 +200,13 @@
       #area-botoes.controles-cabine-mf {
         width: 100%;
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: 0.9fr 1fr 1fr 1.7fr 1.1fr;
         align-items: center;
         justify-items: center;
-        gap: 2px;
-        padding: 5px 2px;
+        gap: 3px;
+        padding: 8px 3px;
         box-sizing: border-box;
-        overflow: hidden;
+        overflow: visible;
       }
 
       .mf-controle {
@@ -216,7 +216,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 3px;
+        gap: 4px;
         color: #102b3f;
         font-family: Arial, sans-serif;
       }
@@ -230,9 +230,9 @@
       }
 
       .mf-circulo {
-        width: 43px;
-        height: 43px;
-        min-width: 43px;
+        width: 50px;
+        height: 50px;
+        min-width: 50px;
         border-radius: 50%;
         border: 2px solid #f0b323;
         background: #102b3f;
@@ -240,7 +240,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 20px;
+        font-size: 22px;
         font-weight: bold;
         padding: 0;
         box-sizing: border-box;
@@ -248,15 +248,19 @@
       }
 
       .mf-seta {
-        width: 25px;
-        height: 17px;
+        display: block;
+        width: 34px;
+        height: 23px;
         border: 0;
         padding: 0;
         background: transparent;
         color: #102b3f;
-        font-size: 17px;
-        font-weight: bold;
-        line-height: 17px;
+        font-family: Arial, sans-serif;
+        font-size: 23px;
+        font-weight: 900;
+        line-height: 23px;
+        text-align: center;
+        cursor: pointer;
         touch-action: manipulation;
       }
 
@@ -269,22 +273,23 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0;
+        gap: 1px;
       }
 
       .mf-freio-area {
         width: 100%;
-        max-width: 78px;
-        height: 43px;
+        max-width: 115px;
+        height: 58px;
         display: flex;
         align-items: center;
         touch-action: none;
+        cursor: grab;
       }
 
       .mf-freio-trilho {
         position: relative;
         width: 100%;
-        height: 13px;
+        height: 18px;
         border-radius: 10px;
         background: #aeb9c1;
         border: 2px solid #102b3f;
@@ -305,11 +310,11 @@
         position: absolute;
         top: 50%;
         left: 0%;
-        width: 23px;
-        height: 23px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         background: #102b3f;
-        border: 2px solid #f0b323;
+        border: 3px solid #f0b323;
         transform: translate(-50%, -50%);
         box-sizing: border-box;
       }
@@ -335,18 +340,30 @@
 
       @media (max-width: 380px) {
         .mf-circulo {
-          width: 38px;
-          height: 38px;
-          min-width: 38px;
-          font-size: 18px;
+          width: 44px;
+          height: 44px;
+          min-width: 44px;
+          font-size: 20px;
         }
 
         .mf-controle-label {
           font-size: 8px;
         }
 
+        .mf-seta {
+          font-size: 21px;
+          height: 22px;
+          line-height: 22px;
+        }
+
         .mf-freio-area {
-          max-width: 65px;
+          max-width: 100px;
+          height: 54px;
+        }
+
+        .mf-freio-manopla {
+          width: 29px;
+          height: 29px;
         }
       }
     `;
@@ -435,7 +452,6 @@
 
     if (jogo.emergencia || jogo.destino) return;
 
-    // Não permite inverter o sentido com o trem em movimento.
     if (jogo.velocidade > 0.5) {
       status.textContent =
         'AGUARDE A PARADA COMPLETA PARA MUDAR A DIREÇÃO.';
@@ -889,7 +905,7 @@
 
       desenharVeiculo(
         posicao.x,
-        posicao.y,
+        posicao.y - 12,
         posicao.angulo + giro,
         tipo
       );
@@ -1155,7 +1171,7 @@
 
     status.textContent =
       'SIMULADOR ATIVO. AGUARDANDO COMANDOS DE CONDUÇÃO.';
-    
+
     if (!jogo.animacao) {
       jogo.animacao = requestAnimationFrame(atualizar);
     }
