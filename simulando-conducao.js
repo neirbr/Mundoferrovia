@@ -254,7 +254,7 @@
         border: 0;
         padding: 0;
         background: transparent;
-        color: #102b3f;
+        color: #F0B323;
         font-family: Arial, sans-serif;
         font-size: 23px;
         font-weight: 900;
