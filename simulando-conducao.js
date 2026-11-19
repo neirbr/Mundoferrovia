@@ -161,6 +161,12 @@
   // COM ORIENTAÇÃO SUAVIZADA
   // ==========================================
 
+  
+  // ==========================================
+  // POSIÇÃO SOBRE OS TRILHOS
+  // ORIENTAÇÃO SUAVIZADA
+  // ==========================================
+
   function obterPosicaoBruta(distancia) {
 
     distancia = Math.max(
@@ -189,28 +195,26 @@
 
     const posicao = obterPosicaoBruta(distancia);
 
-    // Distância utilizada para suavizar a orientação
     const janela = 18;
 
-    const pontoAnterior = obterPosicaoBruta(
+    const anterior = obterPosicaoBruta(
       distancia - janela
     );
 
-    const pontoPosterior = obterPosicaoBruta(
+    const posterior = obterPosicaoBruta(
       distancia + janela
     );
 
-    const dx = pontoPosterior.x - pontoAnterior.x;
-    const dy = pontoPosterior.y - pontoAnterior.y;
-
-    const angulo = Math.atan2(dy, dx);
+    const dx = posterior.x - anterior.x;
+    const dy = posterior.y - anterior.y;
 
     return {
       x: posicao.x,
       y: posicao.y,
-      angulo: angulo
+      angulo: Math.atan2(dy, dx)
     };
   }
+
 
   // ==========================================
   // ESTILOS DA CABINE
