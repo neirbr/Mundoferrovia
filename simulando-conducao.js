@@ -905,7 +905,7 @@
 
       desenharVeiculo(
         posicao.x,
-        posicao.y - 18,
+        posicao.y - 22,
         posicao.angulo + giro,
         tipo
       );
