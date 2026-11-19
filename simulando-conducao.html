@@ -1,123 +1,36 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador de Condução 2D</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: #000;
-            font-family: Arial, sans-serif;
-        }
-        #game-container {
-            position: relative;
-            width: 100%;
-            max-width: 1024px;
-            height: 1024px;
-            margin: 0 auto;
-            background-image: url('assets/cenario.jpg');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-        .entity {
-            position: absolute;
-            transition: transform 0.1s linear;
-        }
-        /* Trem (Locomotiva + 4 vagões) */
-        .train {
-            width: 40px;
-            height: 80px;
-            display: flex;
-        }
-        .locomotive {
-            background: #333;
-            width: 40px;
-            height: 80px;
-            border-radius: 5px 5px 0 0;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
-        .wagon {
-            background: #555;
-            width: 40px;
-            height: 70px;
-            border-radius: 5px;
-            margin-left: -38px;
-        }
-        /* Carros */
-        .car {
-            width: 20px;
-            height: 15px;
-            background: #ff6600;
-            border-radius: 3px;
-        }
-        /* Animais */
-        .animal {
-            width: 12px;
-            height: 12px;
-            background: #fff;
-            border-radius: 50%;
-        }
-        /* UI Panel */
-        #ui-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 150px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-        #ui-panel button {
-            background: #333;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            margin: 0 5px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        #speed-display {
-            font-size: 20px;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="simulando-conducao.css">
 </head>
 <body>
     <div id="game-container">
-        <!-- Trem (será criado via JS) -->
-        <!-- Carros (exemplos) -->
+        <!-- O trem e os elementos serão criados pelo JS -->
         <div id="car1" class="entity car" style="left: 850px; top: 100px;"></div>
         <div id="car2" class="entity car" style="left: 900px; top: 150px;"></div>
-        <!-- Animais -->
         <div id="cow1" class="entity animal" style="left: 600px; top: 400px;"></div>
         <div id="cow2" class="entity animal" style="left: 620px; top: 420px;"></div>
     </div>
 
     <div id="ui-panel">
         <button id="buzzer">🔊</button>
-        <div>
+        <div class="control-group">
             <div>DIREÇÃO</div>
             <div id="direction">N</div>
             <button id="forward">↑</button>
             <button id="neutral">N</button>
             <button id="backward">↓</button>
         </div>
-        <div>
+        <div class="control-group">
             <div>POTÊNCIA</div>
             <div id="power">0</div>
             <button id="power-up">↑</button>
             <button id="power-down">↓</button>
         </div>
-        <div>
+        <div class="control-group">
             <div>FREIO</div>
             <input type="range" id="brake" min="0" max="100" value="0">
         </div>
@@ -125,134 +38,6 @@
         <div id="speed-display">0 km/h</div>
     </div>
 
-    <script>
-        // 1. DEFINIÇÃO DO CAMINHO DOS TRILHOS (ajuste as coordenadas conforme necessário)
-        const trackPath = [
-            {x: 150, y: 50},   // Estação inicial (topo)
-            {x: 150, y: 200},
-            {x: 400, y: 200},
-            {x: 800, y: 200},
-            {x: 800, y: 600},
-            {x: 400, y: 600},
-            {x: 400, y: 800},
-            {x: 150, y: 800},
-            {x: 150, y: 950}   // Estação final (base)
-        ];
-
-        // 2. CRIAÇÃO DO TREM (Locomotiva + 4 vagões)
-        const trainContainer = document.createElement('div');
-        trainContainer.className = 'entity train';
-        document.getElementById('game-container').appendChild(trainContainer);
-
-        const locomotive = document.createElement('div');
-        locomotive.className = 'locomotive';
-        trainContainer.appendChild(locomotive);
-
-        for (let i = 0; i < 4; i++) {
-            const wagon = document.createElement('div');
-            wagon.className = 'wagon';
-            trainContainer.appendChild(wagon);
-        }
-
-        // 3. LÓGICA DE MOVIMENTAÇÃO (simples para teste)
-        let currentPoint = 0;
-        let progress = 0;
-        let speed = 0;
-        let direction = 'N'; // N (neutro), F (frente), B (ré)
-        let power = 0;       // 0 a 8
-        let brake = 0;       // 0 a 100
-
-        function updateTrainPosition() {
-            if (currentPoint < trackPath.length - 1) {
-                const start = trackPath[currentPoint];
-                const end = trackPath[currentPoint + 1];
-
-                // Movimento progressivo
-                progress += 0.005 * speed;
-                if (progress >= 1) {
-                    progress = 0;
-                    currentPoint++;
-                }
-
-                // Posição do trem
-                const curX = start.x + (end.x - start.x) * progress;
-                const curY = start.y + (end.y - start.y) * progress;
-
-                trainContainer.style.left = curX + 'px';
-                trainContainer.style.top = curY + 'px';
-
-                // Rotação do trem (para seguir a curva)
-                const angle = Math.atan2(end.y - start.y, end.x - start.x) * (180 / Math.PI);
-                trainContainer.style.transform = `rotate(${angle}deg)`;
-            }
-        }
-
-        // 4. CONTROLES (simulados)
-        document.getElementById('forward').addEventListener('click', () => {
-            direction = 'F';
-            document.getElementById('direction').textContent = 'F';
-        });
-
-        document.getElementById('neutral').addEventListener('click', () => {
-            direction = 'N';
-            document.getElementById('direction').textContent = 'N';
-        });
-
-        document.getElementById('backward').addEventListener('click', () => {
-            direction = 'B';
-            document.getElementById('direction').textContent = 'B';
-        });
-
-        document.getElementById('power-up').addEventListener('click', () => {
-            if (power < 8) power++;
-            document.getElementById('power').textContent = power;
-        });
-
-        document.getElementById('power-down').addEventListener('click', () => {
-            if (power > 0) power--;
-            document.getElementById('power').textContent = power;
-        });
-
-        document.getElementById('brake').addEventListener('input', (e) => {
-            brake = parseInt(e.target.value);
-        });
-
-        document.getElementById('emergency').addEventListener('click', () => {
-            speed = 0;
-            brake = 100;
-            document.getElementById('speed-display').textContent = '0 km/h';
-        });
-
-        // 5. LOOP DE ATUALIZAÇÃO
-        function gameLoop() {
-            // Lógica de velocidade (simplificada)
-            if (direction === 'F') {
-                speed = power * 10; // 0-80 km/h (ajuste conforme sua tabela)
-            } else if (direction === 'B') {
-                speed = -power * 5; // Ré mais lento
-            } else {
-                speed = 0;
-            }
-
-            // Aplicar freio
-            if (brake > 0) {
-                speed -= brake * 0.1;
-                if (speed < 0) speed = 0;
-            }
-
-            // Limitar velocidade máxima
-            if (speed > 100) speed = 100;
-            if (speed < -20) speed = -20;
-
-            // Atualizar posição e exibir velocidade
-            updateTrainPosition();
-            document.getElementById('speed-display').textContent = `${Math.abs(speed)} km/h`;
-
-            requestAnimationFrame(gameLoop);
-        }
-
-        // Iniciar o jogo
-        gameLoop();
-    </script>
+    <script src="simulando-conducao.js"></script>
 </body>
 </html>
