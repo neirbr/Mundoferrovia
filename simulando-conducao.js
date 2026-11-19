@@ -2,6 +2,7 @@
 /* ==========================================
    MUNDO FERROVIÁRIO
    SIMULANDO CONDUÇÃO 2D
+   CABINE DE CONDUÇÃO
    ========================================== */
 
 (() => {
@@ -18,6 +19,9 @@
     return;
   }
 
+  if (window.SimulandoConducaoIniciado) return;
+  window.SimulandoConducaoIniciado = true;
+
   const ctx = canvas.getContext('2d');
 
   // ==========================================
@@ -26,28 +30,36 @@
 
   const jogo = {
     iniciado: false,
-    acelerando: false,
-    freando: false,
     velocidade: 0,
     distancia: 0,
+    direcao: 'N',
+    ponto: 0,
+    freio: 0,
+    emergencia: false,
     destino: false,
     ultimoTempo: 0,
     animacao: null
   };
 
   const config = {
-    velocidadeMaxima: 65,
-    aceleracao: 13,
-    desaceleracao: 25,
-    freioNatural: 2.5,
-    espacamento: 43,
-    tamanhoLocomotiva: 36,
-    tamanhoVagao: 35
+    velocidadePontos: [
+      0, 10, 20, 28, 38, 48, 58, 68, 80
+    ],
+    aceleracao: 4.5,
+    freioNatural: 1.2,
+    desaceleracaoReducao: 2.5,
+    espacamento: 43
   };
+
+  let inicializado = false;
+  let contextoAudio = null;
+  let osciladoresBuzina = [];
+  let ganhoBuzina = null;
+  let temporizadorEmergencia = null;
 
   // ==========================================
   // PERCURSO FERROVIÁRIO
-  // Coordenadas da imagem original 1050x1536
+  // Coordenadas originais 1050x1536
   // ==========================================
 
   const trilho = [
@@ -118,7 +130,7 @@
   ];
 
   // ==========================================
-  // PREPARAÇÃO DO CAMINHO
+  // CÁLCULO DO PERCURSO
   // ==========================================
 
   const segmentos = [];
@@ -174,49 +186,625 @@
   }
 
   // ==========================================
-  // CANVAS
+  // ESTILOS DA CABINE
   // ==========================================
 
-  function prepararCanvas() {
+  function prepararEstilos() {
 
-    const cenario = document.getElementById('cenario');
+    if (document.getElementById('estilosCabineMF')) return;
 
-    if (!cenario || !imagem || !canvas) return;
+    const estilo = document.createElement('style');
+    estilo.id = 'estilosCabineMF';
 
-    cenario.style.position = 'relative';
+    estilo.textContent = `
+      #area-botoes.controles-cabine-mf {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        align-items: center;
+        justify-items: center;
+        gap: 2px;
+        padding: 5px 2px;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
 
-    imagem.style.display = 'block';
-    imagem.style.width = '100%';
-    imagem.style.height = 'auto';
-    imagem.style.objectFit = 'initial';
-    imagem.style.margin = '0';
+      .mf-controle {
+        min-width: 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        color: #102b3f;
+        font-family: Arial, sans-serif;
+      }
 
-    function ajustarCanvas() {
+      .mf-controle-label {
+        font-size: 9px;
+        font-weight: bold;
+        text-align: center;
+        white-space: nowrap;
+        color: #102b3f;
+      }
 
-      const area = cenario.getBoundingClientRect();
-      const foto = imagem.getBoundingClientRect();
+      .mf-circulo {
+        width: 43px;
+        height: 43px;
+        min-width: 43px;
+        border-radius: 50%;
+        border: 2px solid #f0b323;
+        background: #102b3f;
+        color: #f0b323;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: bold;
+        padding: 0;
+        box-sizing: border-box;
+        touch-action: manipulation;
+      }
 
-      canvas.width = imagem.naturalWidth;
-      canvas.height = imagem.naturalHeight;
+      .mf-seta {
+        width: 25px;
+        height: 17px;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: #102b3f;
+        font-size: 17px;
+        font-weight: bold;
+        line-height: 17px;
+        touch-action: manipulation;
+      }
 
-      canvas.style.position = 'absolute';
-      canvas.style.left = `${foto.left - area.left}px`;
-      canvas.style.top = `${foto.top - area.top}px`;
-      canvas.style.width = `${foto.width}px`;
-      canvas.style.height = `${foto.height}px`;
-      canvas.style.pointerEvents = 'none';
-      canvas.style.zIndex = '10';
+      .mf-seta:disabled,
+      .mf-circulo:disabled {
+        opacity: 0.35;
+      }
 
-      desenhar();
+      .mf-selecao {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+      }
+
+      .mf-freio-area {
+        width: 100%;
+        max-width: 78px;
+        height: 43px;
+        display: flex;
+        align-items: center;
+        touch-action: none;
+      }
+
+      .mf-freio-trilho {
+        position: relative;
+        width: 100%;
+        height: 13px;
+        border-radius: 10px;
+        background: #aeb9c1;
+        border: 2px solid #102b3f;
+        box-sizing: border-box;
+      }
+
+      .mf-freio-progresso {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 0%;
+        border-radius: 10px;
+        background: #f0b323;
+      }
+
+      .mf-freio-manopla {
+        position: absolute;
+        top: 50%;
+        left: 0%;
+        width: 23px;
+        height: 23px;
+        border-radius: 50%;
+        background: #102b3f;
+        border: 2px solid #f0b323;
+        transform: translate(-50%, -50%);
+        box-sizing: border-box;
+      }
+
+      .mf-freio-area.bloqueado {
+        opacity: 0.35;
+      }
+
+      .mf-cabine-bloqueada .mf-seta,
+      .mf-cabine-bloqueada .mf-buzina {
+        opacity: 0.35;
+        pointer-events: none;
+      }
+
+      .mf-emergencia-ativa {
+        animation: mf-piscar 0.7s infinite alternate;
+      }
+
+      @keyframes mf-piscar {
+        from { box-shadow: 0 0 0 0 #d32f2f; }
+        to { box-shadow: 0 0 12px 5px #d32f2f; }
+      }
+
+      @media (max-width: 380px) {
+        .mf-circulo {
+          width: 38px;
+          height: 38px;
+          min-width: 38px;
+          font-size: 18px;
+        }
+
+        .mf-controle-label {
+          font-size: 8px;
+        }
+
+        .mf-freio-area {
+          max-width: 65px;
+        }
+      }
+    `;
+
+    document.head.appendChild(estilo);
+  }
+
+  // ==========================================
+  // MONTAR OS CONTROLES
+  // ==========================================
+
+  function criarControles() {
+
+    prepararEstilos();
+
+    botoes.classList.add('controles-cabine-mf');
+
+    botoes.innerHTML = `
+      <div class="mf-controle">
+        <span class="mf-controle-label">BUZINA</span>
+        <button
+          type="button"
+          id="mfBuzina"
+          class="mf-circulo mf-buzina"
+          aria-label="Buzina"
+        >♬</button>
+      </div>
+
+      <div class="mf-controle">
+        <span class="mf-controle-label">DIREÇÃO</span>
+        <div class="mf-selecao">
+          <button type="button" id="mfDirecaoCima" class="mf-seta">▲</button>
+          <div id="mfDirecao" class="mf-circulo">N</div>
+          <button type="button" id="mfDirecaoBaixo" class="mf-seta">▼</button>
+        </div>
+      </div>
+
+      <div class="mf-controle">
+        <span class="mf-controle-label">POTÊNCIA</span>
+        <div class="mf-selecao">
+          <button type="button" id="mfPontoCima" class="mf-seta">▲</button>
+          <div id="mfPonto" class="mf-circulo">0</div>
+          <button type="button" id="mfPontoBaixo" class="mf-seta">▼</button>
+        </div>
+      </div>
+
+      <div class="mf-controle">
+        <span class="mf-controle-label">FREIO</span>
+        <div
+          id="mfFreioArea"
+          class="mf-freio-area"
+          role="slider"
+          aria-label="Aplicação do freio"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          tabindex="0"
+        >
+          <div class="mf-freio-trilho">
+            <div id="mfFreioProgresso" class="mf-freio-progresso"></div>
+            <div id="mfFreioManopla" class="mf-freio-manopla"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mf-controle">
+        <span class="mf-controle-label">EMERGÊNCIA</span>
+        <button
+          type="button"
+          id="mfEmergencia"
+          class="mf-circulo"
+          aria-label="Recuperar emergência"
+        >!</button>
+      </div>
+    `;
+
+    ligarEventosControles();
+    atualizarVisualControles();
+  }
+
+  // ==========================================
+  // SELETORA DE DIREÇÃO
+  // ==========================================
+
+  function mudarDirecao(sentido) {
+
+    if (jogo.emergencia || jogo.destino) return;
+
+    // Não permite inverter o sentido com o trem em movimento.
+    if (jogo.velocidade > 0.5) {
+      status.textContent =
+        'AGUARDE A PARADA COMPLETA PARA MUDAR A DIREÇÃO.';
+      return;
     }
 
-    if (imagem.complete && imagem.naturalWidth > 0) {
-      ajustarCanvas();
-    } else {
-      imagem.addEventListener('load', ajustarCanvas, { once: true });
+    if (jogo.direcao === 'N') {
+
+      jogo.direcao = sentido;
+
+    } else if (
+      (jogo.direcao === 'F' && sentido === 'R') ||
+      (jogo.direcao === 'R' && sentido === 'F')
+    ) {
+
+      jogo.direcao = 'N';
+
     }
 
-    window.addEventListener('resize', ajustarCanvas);
+    atualizarVisualControles();
+    atualizarStatus();
+  }
+
+  // ==========================================
+  // ACELERAÇÃO
+  // ==========================================
+
+  function alterarPonto(valor) {
+
+    if (jogo.emergencia || jogo.destino) return;
+
+    jogo.ponto = Math.max(
+      0,
+      Math.min(8, jogo.ponto + valor)
+    );
+
+    atualizarVisualControles();
+    atualizarStatus();
+  }
+
+  // ==========================================
+  // BUZINA
+  // ==========================================
+
+  function ligarBuzina() {
+
+    if (jogo.emergencia || jogo.destino) return;
+    if (osciladoresBuzina.length > 0) return;
+
+    try {
+
+      const AudioCtx =
+        window.AudioContext || window.webkitAudioContext;
+
+      if (!AudioCtx) return;
+
+      if (!contextoAudio) {
+        contextoAudio = new AudioCtx();
+      }
+
+      if (contextoAudio.state === 'suspended') {
+        contextoAudio.resume();
+      }
+
+      ganhoBuzina = contextoAudio.createGain();
+      ganhoBuzina.gain.value = 0.08;
+      ganhoBuzina.connect(contextoAudio.destination);
+
+      [392, 494].forEach(frequencia => {
+
+        const oscilador = contextoAudio.createOscillator();
+
+        oscilador.type = 'sawtooth';
+        oscilador.frequency.value = frequencia;
+        oscilador.connect(ganhoBuzina);
+        oscilador.start();
+
+        osciladoresBuzina.push(oscilador);
+      });
+
+    } catch (erro) {
+      console.error('Não foi possível iniciar a buzina.', erro);
+    }
+  }
+
+  function desligarBuzina() {
+
+    osciladoresBuzina.forEach(oscilador => {
+      try {
+        oscilador.stop();
+      } catch (erro) {}
+    });
+
+    osciladoresBuzina = [];
+
+    if (ganhoBuzina) {
+      ganhoBuzina.disconnect();
+      ganhoBuzina = null;
+    }
+  }
+
+  // ==========================================
+  // FREIO HORIZONTAL
+  // 0 A 90 = APLICAÇÃO NORMAL
+  // 91 A 100 = EMERGÊNCIA
+  // ==========================================
+
+  function aplicarFreio(valor) {
+
+    if (jogo.emergencia || jogo.destino) return;
+
+    jogo.freio = Math.max(
+      0,
+      Math.min(100, Math.round(valor))
+    );
+
+    atualizarVisualFreio();
+
+    if (jogo.freio > 90) {
+      acionarEmergencia();
+    }
+  }
+
+  function atualizarVisualFreio() {
+
+    const progresso = document.getElementById('mfFreioProgresso');
+    const manopla = document.getElementById('mfFreioManopla');
+    const area = document.getElementById('mfFreioArea');
+
+    if (!progresso || !manopla || !area) return;
+
+    progresso.style.width = jogo.freio + '%';
+    manopla.style.left = jogo.freio + '%';
+
+    area.setAttribute('aria-valuenow', jogo.freio);
+    area.classList.toggle('bloqueado', jogo.emergencia);
+  }
+
+  function ligarArrasteFreio() {
+
+    const area = document.getElementById('mfFreioArea');
+    if (!area) return;
+
+    let arrastando = false;
+
+    function calcularValor(evento) {
+
+      const trilhoFreio = area.querySelector('.mf-freio-trilho');
+      const retangulo = trilhoFreio.getBoundingClientRect();
+
+      const posicao = Math.max(
+        0,
+        Math.min(1, (evento.clientX - retangulo.left) / retangulo.width)
+      );
+
+      aplicarFreio(posicao * 100);
+    }
+
+    area.addEventListener('pointerdown', evento => {
+
+      if (jogo.emergencia || jogo.destino) return;
+
+      evento.preventDefault();
+
+      arrastando = true;
+      area.setPointerCapture(evento.pointerId);
+
+      calcularValor(evento);
+    });
+
+    area.addEventListener('pointermove', evento => {
+
+      if (!arrastando) return;
+
+      calcularValor(evento);
+    });
+
+    function pararArraste() {
+      arrastando = false;
+    }
+
+    area.addEventListener('pointerup', pararArraste);
+    area.addEventListener('pointercancel', pararArraste);
+    area.addEventListener('lostpointercapture', pararArraste);
+
+    area.addEventListener('keydown', evento => {
+
+      if (jogo.emergencia) return;
+
+      if (evento.key === 'ArrowRight') {
+        evento.preventDefault();
+        aplicarFreio(jogo.freio + 2);
+      }
+
+      if (evento.key === 'ArrowLeft') {
+        evento.preventDefault();
+        aplicarFreio(jogo.freio - 2);
+      }
+    });
+  }
+
+  // ==========================================
+  // EMERGÊNCIA
+  // ==========================================
+
+  function acionarEmergencia() {
+
+    if (jogo.emergencia) return;
+
+    jogo.emergencia = true;
+    jogo.freio = 100;
+    jogo.ponto = 0;
+
+    desligarBuzina();
+
+    status.textContent =
+      'EMERGÊNCIA ATIVADA! SEGURE O BOTÃO DE EMERGÊNCIA POR 10 SEGUNDOS PARA RECUPERAR.';
+
+    atualizarVisualControles();
+    atualizarVisualFreio();
+  }
+
+  function iniciarRecuperacaoEmergencia() {
+
+    if (!jogo.emergencia || temporizadorEmergencia) return;
+
+    const botao = document.getElementById('mfEmergencia');
+
+    if (botao) {
+      botao.textContent = '10';
+      botao.classList.add('mf-emergencia-ativa');
+    }
+
+    let restante = 10;
+
+    temporizadorEmergencia = setInterval(() => {
+
+      restante--;
+
+      if (botao) {
+        botao.textContent = restante > 0 ? restante : '!';
+      }
+
+      if (restante <= 0) {
+
+        clearInterval(temporizadorEmergencia);
+        temporizadorEmergencia = null;
+
+        jogo.emergencia = false;
+        jogo.freio = 0;
+        jogo.ponto = 0;
+        jogo.direcao = 'N';
+
+        if (botao) {
+          botao.classList.remove('mf-emergencia-ativa');
+        }
+
+        atualizarVisualControles();
+        atualizarVisualFreio();
+
+        status.textContent =
+          'EMERGÊNCIA RECUPERADA. FREIOS ALIVIADOS. SELECIONE A DIREÇÃO E A POTÊNCIA PARA PARTIR.';
+      }
+
+    }, 1000);
+  }
+
+  function cancelarRecuperacaoEmergencia() {
+
+    if (!temporizadorEmergencia) return;
+
+    clearInterval(temporizadorEmergencia);
+    temporizadorEmergencia = null;
+
+    const botao = document.getElementById('mfEmergencia');
+
+    if (botao) {
+      botao.textContent = '!';
+      botao.classList.remove('mf-emergencia-ativa');
+    }
+  }
+
+  // ==========================================
+  // EVENTOS DOS CONTROLES
+  // ==========================================
+
+  function ligarEventosControles() {
+
+    const buzina = document.getElementById('mfBuzina');
+    const direcaoCima = document.getElementById('mfDirecaoCima');
+    const direcaoBaixo = document.getElementById('mfDirecaoBaixo');
+    const pontoCima = document.getElementById('mfPontoCima');
+    const pontoBaixo = document.getElementById('mfPontoBaixo');
+    const emergencia = document.getElementById('mfEmergencia');
+
+    buzina.addEventListener('pointerdown', evento => {
+      evento.preventDefault();
+      ligarBuzina();
+    });
+
+    buzina.addEventListener('pointerup', desligarBuzina);
+    buzina.addEventListener('pointerleave', desligarBuzina);
+    buzina.addEventListener('pointercancel', desligarBuzina);
+
+    direcaoCima.addEventListener('click', () => {
+      mudarDirecao('F');
+    });
+
+    direcaoBaixo.addEventListener('click', () => {
+      mudarDirecao('R');
+    });
+
+    pontoCima.addEventListener('click', () => {
+      alterarPonto(1);
+    });
+
+    pontoBaixo.addEventListener('click', () => {
+      alterarPonto(-1);
+    });
+
+    emergencia.addEventListener('pointerdown', evento => {
+      evento.preventDefault();
+      iniciarRecuperacaoEmergencia();
+    });
+
+    emergencia.addEventListener('pointerup', cancelarRecuperacaoEmergencia);
+    emergencia.addEventListener('pointerleave', cancelarRecuperacaoEmergencia);
+    emergencia.addEventListener('pointercancel', cancelarRecuperacaoEmergencia);
+
+    ligarArrasteFreio();
+  }
+
+  // ==========================================
+  // ATUALIZAR VISUAL DOS CONTROLES
+  // ==========================================
+
+  function atualizarVisualControles() {
+
+    const direcao = document.getElementById('mfDirecao');
+    const ponto = document.getElementById('mfPonto');
+    const emergencia = document.getElementById('mfEmergencia');
+
+    if (direcao) {
+      direcao.textContent = jogo.direcao;
+    }
+
+    if (ponto) {
+      ponto.textContent = jogo.ponto;
+    }
+
+    if (emergencia) {
+      emergencia.classList.toggle(
+        'mf-emergencia-ativa',
+        jogo.emergencia
+      );
+
+      emergencia.textContent = jogo.emergencia ? '!' : '!';
+    }
+
+    botoes.classList.toggle(
+      'mf-cabine-bloqueada',
+      jogo.emergencia
+    );
+
+    const areaFreio = document.getElementById('mfFreioArea');
+
+    if (areaFreio) {
+      areaFreio.classList.toggle('bloqueado', jogo.emergencia);
+    }
   }
 
   // ==========================================
@@ -238,6 +826,7 @@
     ctx.fillStyle = '#202020';
 
     for (const lado of [-1, 1]) {
+
       ctx.fillRect(
         -comprimento / 2 + 5,
         lado * (largura / 2 - 3),
@@ -263,7 +852,7 @@
       largura
     );
 
-    // Cabine da locomotiva
+    // Cabine
     if (locomotiva) {
 
       ctx.fillStyle = '#d9e2e8';
@@ -291,6 +880,9 @@
 
   function desenharComposicao() {
 
+    const sentido = jogo.direcao === 'R' ? -1 : 1;
+    const giro = sentido === -1 ? Math.PI : 0;
+
     function desenharVeiculoNaLinha(distancia, tipo) {
 
       const posicao = obterPosicao(distancia);
@@ -298,24 +890,25 @@
       desenharVeiculo(
         posicao.x,
         posicao.y,
-        posicao.angulo,
+        posicao.angulo + giro,
         tipo
       );
     }
 
-    // Locomotiva
     desenharVeiculoNaLinha(
       jogo.distancia,
       'locomotiva'
     );
 
-    // Quatro vagões
     for (let i = 1; i <= 4; i++) {
 
       const distanciaVagao =
-        jogo.distancia - config.espacamento * i;
+        jogo.distancia - sentido * config.espacamento * i;
 
-      if (distanciaVagao < 0) continue;
+      if (
+        distanciaVagao < 0 ||
+        distanciaVagao > comprimentoTotal
+      ) continue;
 
       desenharVeiculoNaLinha(
         distanciaVagao,
@@ -341,7 +934,6 @@
 
     ctx.save();
 
-    // Escala baseada nas coordenadas originais 1050x1536
     ctx.scale(
       canvas.width / 1050,
       canvas.height / 1536
@@ -353,114 +945,70 @@
   }
 
   // ==========================================
-  // PAINEL DE CONTROLES
+  // PREPARAÇÃO DO CANVAS
   // ==========================================
 
-  function criarBotao(id, texto) {
+  function prepararCanvas() {
 
-    const botao = document.createElement('button');
+    const cenario = document.getElementById('cenario');
 
-    botao.id = id;
-    botao.type = 'button';
-    botao.textContent = texto;
+    if (!cenario) return;
 
-    botao.style.padding = '12px 16px';
-    botao.style.margin = '5px';
-    botao.style.borderRadius = '8px';
-    botao.style.border = 'none';
-    botao.style.fontWeight = 'bold';
-    botao.style.cursor = 'pointer';
-    botao.style.background = '#174a67';
-    botao.style.color = '#ffffff';
-    botao.style.touchAction = 'none';
+    cenario.style.position = 'relative';
 
-    botoes.appendChild(botao);
+    imagem.style.display = 'block';
+    imagem.style.width = '100%';
+    imagem.style.height = 'auto';
+    imagem.style.objectFit = 'initial';
+    imagem.style.margin = '0';
 
-    return botao;
-  }
+    function ajustarCanvas() {
 
-  function criarControles() {
+      if (!imagem.naturalWidth) return;
 
-    botoes.innerHTML = '';
+      const area = cenario.getBoundingClientRect();
+      const foto = imagem.getBoundingClientRect();
 
-    const iniciar = criarBotao(
-      'botaoIniciar',
-      'INICIAR MISSÃO'
-    );
+      canvas.width = imagem.naturalWidth;
+      canvas.height = imagem.naturalHeight;
 
-    const acelerar = criarBotao(
-      'botaoAcelerar',
-      'ACELERAR'
-    );
+      canvas.style.position = 'absolute';
+      canvas.style.left = `${foto.left - area.left}px`;
+      canvas.style.top = `${foto.top - area.top}px`;
+      canvas.style.width = `${foto.width}px`;
+      canvas.style.height = `${foto.height}px`;
+      canvas.style.pointerEvents = 'none';
+      canvas.style.zIndex = '10';
 
-    const frear = criarBotao(
-      'botaoFrear',
-      'FREAR'
-    );
+      desenhar();
+    }
 
-    iniciar.addEventListener('click', iniciarMissao);
+    ajustarCanvas();
 
-    acelerar.addEventListener('pointerdown', e => {
-      e.preventDefault();
-      if (!jogo.iniciado || jogo.destino) return;
-      jogo.acelerando = true;
-    });
-
-    acelerar.addEventListener('pointerup', () => {
-      jogo.acelerando = false;
-    });
-
-    acelerar.addEventListener('pointerleave', () => {
-      jogo.acelerando = false;
-    });
-
-    acelerar.addEventListener('pointercancel', () => {
-      jogo.acelerando = false;
-    });
-
-    frear.addEventListener('pointerdown', e => {
-      e.preventDefault();
-      jogo.acelerando = false;
-      jogo.freando = true;
-    });
-
-    frear.addEventListener('pointerup', () => {
-      jogo.freando = false;
-    });
-
-    frear.addEventListener('pointerleave', () => {
-      jogo.freando = false;
-    });
-
-    frear.addEventListener('pointercancel', () => {
-      jogo.freando = false;
-    });
+    window.addEventListener('resize', ajustarCanvas);
   }
 
   // ==========================================
-  // INICIAR MISSÃO
+  // FRENAGEM PROGRESSIVA
   // ==========================================
 
-  function iniciarMissao() {
+  function obterDesaceleracaoFreio() {
 
-    if (jogo.iniciado) return;
+    if (jogo.emergencia) return 45;
 
-    jogo.iniciado = true;
-    jogo.ultimoTempo = 0;
+    const psi = Math.min(jogo.freio, 90);
 
-    status.textContent =
-      'MISSÃO INICIADA - AGUARDANDO COMANDO DE ACELERAÇÃO.';
+    if (psi <= 0) return 0;
 
-    const botao = document.getElementById('botaoIniciar');
-
-    if (botao) {
-      botao.disabled = true;
-      botao.textContent = 'MISSÃO EM ANDAMENTO';
+    if (psi <= 40) {
+      return 2.5 + (psi / 40) * 5.5;
     }
 
-    if (!jogo.animacao) {
-      jogo.animacao = requestAnimationFrame(atualizar);
+    if (psi <= 60) {
+      return 8 + ((psi - 40) / 20) * 8;
     }
+
+    return 16 + ((psi - 60) / 30) * 19;
   }
 
   // ==========================================
@@ -485,13 +1033,34 @@
 
     jogo.ultimoTempo = tempo;
 
-    if (jogo.acelerando) {
+    const velocidadeSolicitada =
+      config.velocidadePontos[jogo.ponto];
 
-      jogo.velocidade += config.aceleracao * dt;
+    const desaceleracaoFreio = obterDesaceleracaoFreio();
 
-    } else if (jogo.freando) {
+    if (desaceleracaoFreio > 0) {
 
-      jogo.velocidade -= config.desaceleracao * dt;
+      jogo.velocidade -= desaceleracaoFreio * dt;
+
+    } else if (
+      jogo.direcao !== 'N' &&
+      jogo.ponto > 0
+    ) {
+
+      if (jogo.velocidade < velocidadeSolicitada) {
+
+        jogo.velocidade += config.aceleracao * dt;
+
+        jogo.velocidade = Math.min(
+          jogo.velocidade,
+          velocidadeSolicitada
+        );
+
+      } else if (jogo.velocidade > velocidadeSolicitada) {
+
+        jogo.velocidade -= config.desaceleracaoReducao * dt;
+
+      }
 
     } else {
 
@@ -499,47 +1068,97 @@
 
     }
 
-    jogo.velocidade = Math.max(
-      0,
-      Math.min(jogo.velocidade, config.velocidadeMaxima)
-    );
+    jogo.velocidade = Math.max(0, jogo.velocidade);
 
-    jogo.distancia += jogo.velocidade * dt;
+    const sentido = jogo.direcao === 'R' ? -1 : 1;
 
-    desenhar();
-    atualizarPainel();
+    if (jogo.velocidade > 0) {
+      jogo.distancia += jogo.velocidade * dt * sentido;
+    }
 
-    // Chegada à estação inferior
+    // Limites do percurso
     if (jogo.distancia >= comprimentoTotal) {
 
       jogo.distancia = comprimentoTotal;
-      jogo.velocidade = 0;
-      jogo.acelerando = false;
-      jogo.freando = false;
-      jogo.destino = true;
-
-      desenhar();
-
-      status.textContent =
-        'MISSÃO CONCLUÍDA - CHEGADA À ESTAÇÃO INFERIOR!';
-
-      jogo.animacao = null;
+      finalizarMissao('MISSÃO CONCLUÍDA - CHEGADA À ESTAÇÃO INFERIOR!');
       return;
     }
+
+    if (jogo.distancia <= 0) {
+
+      jogo.distancia = 0;
+      finalizarMissao('MISSÃO CONCLUÍDA - CHEGADA À ESTAÇÃO SUPERIOR!');
+      return;
+    }
+
+    desenhar();
+    atualizarStatus();
 
     jogo.animacao = requestAnimationFrame(atualizar);
   }
 
   // ==========================================
-  // PAINEL DE INFORMAÇÕES
+  // STATUS DA OPERAÇÃO
   // ==========================================
 
-  function atualizarPainel() {
+  function atualizarStatus() {
+
+    if (jogo.emergencia) {
+      status.textContent =
+        'EMERGÊNCIA ATIVADA! SEGURE O BOTÃO DE EMERGÊNCIA POR 10 SEGUNDOS.';
+      return;
+    }
+
+    const nomes = {
+      N: 'NEUTRO',
+      F: 'FRENTE',
+      R: 'RÉ'
+    };
 
     status.textContent =
-      'MISSÃO EM ANDAMENTO | VELOCIDADE: ' +
-      Math.round(jogo.velocidade) +
-      ' km/h';
+      'DIREÇÃO: ' + nomes[jogo.direcao] +
+      ' | PONTO: ' + jogo.ponto +
+      ' | VELOCIDADE: ' + Math.round(jogo.velocidade) + ' km/h';
+  }
+
+  // ==========================================
+  // FINALIZAR MISSÃO
+  // ==========================================
+
+  function finalizarMissao(mensagem) {
+
+    jogo.velocidade = 0;
+    jogo.ponto = 0;
+    jogo.freio = 0;
+    jogo.direcao = 'N';
+    jogo.destino = true;
+
+    desenhar();
+    atualizarVisualControles();
+    atualizarVisualFreio();
+
+    status.textContent = mensagem;
+
+    jogo.animacao = null;
+  }
+
+  // ==========================================
+  // INICIAR SIMULADOR
+  // ==========================================
+
+  function iniciarMissao() {
+
+    if (jogo.iniciado || jogo.emergencia || jogo.destino) return;
+
+    jogo.iniciado = true;
+    jogo.ultimoTempo = 0;
+
+    status.textContent =
+      'SIMULADOR ATIVO. AGUARDANDO COMANDOS DE CONDUÇÃO.';
+    
+    if (!jogo.animacao) {
+      jogo.animacao = requestAnimationFrame(atualizar);
+    }
   }
 
   // ==========================================
@@ -548,23 +1167,36 @@
 
   function iniciarSimulador() {
 
+    if (inicializado) return;
+    if (!imagem.naturalWidth) return;
+
+    inicializado = true;
+
     prepararCanvas();
-    criarControles();
 
     jogo.distancia = 240;
     jogo.velocidade = 0;
+    jogo.direcao = 'N';
+    jogo.ponto = 0;
+    jogo.freio = 0;
+    jogo.emergencia = false;
+    jogo.iniciado = true;
+
+    criarControles();
 
     if (missao) {
       missao.textContent = 'MISSÃO 01';
     }
 
     desenhar();
+    atualizarVisualControles();
+    atualizarVisualFreio();
 
     status.textContent =
-      'LOCOMOTIVA PARADA NA ESTAÇÃO SUPERIOR.';
+      'LOCOMOTIVA PARADA. SELECIONE A DIREÇÃO E A POTÊNCIA.';
 
-    console.log('Simulador ferroviário preparado.');
-    console.log('Extensão do percurso:', comprimentoTotal);
+    jogo.ultimoTempo = 0;
+    jogo.animacao = requestAnimationFrame(atualizar);
   }
 
   imagem.addEventListener('load', iniciarSimulador);
@@ -574,7 +1206,7 @@
       'ERRO: NÃO FOI POSSÍVEL CARREGAR O CENÁRIO.';
   });
 
-  if (imagem.complete && imagem.naturalWidth) {
+  if (imagem.complete && imagem.naturalWidth > 0) {
     iniciarSimulador();
   }
 
@@ -582,7 +1214,8 @@
     jogo,
     trilho,
     iniciarMissao,
-    desenhar
+    desenhar,
+    acionarEmergencia
   };
 
 })();
