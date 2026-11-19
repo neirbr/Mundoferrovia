@@ -1,110 +1,102 @@
 body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-color: black;
-    font-family: Arial, sans-serif;
-    user-select: none;
+ margin: 0;
+ padding: 0;
+ width: 100%;
+ height: 100%;
+ overflow: hidden;
+ background-color: black;
+ font-family: Arial, sans-serif;
+ user-select: none;
+ -webkit-user-select: none;
 }
 
 #game-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+ position: relative;
+ width: 100vw;
+ height: 100vh;
+ background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg');
+ background-size: cover; /* Preenche a tela toda */
+ background-position: center bottom; /* Garante que a base da imagem (controles) esteja visível */
+ background-repeat: no-repeat;
 }
 
-/* Camada de interação sobre a imagem */
 .interaction-layer {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
+ position: absolute;
+ width: 100%;
+ height: 100%;
+ top: 0;
+ left: 0;
 }
 
-/* Estilo base para as zonas de clique invisíveis */
+/* Zonas de clique - COLOQUEI VERMELHO PARA VOCÊ TESTAR A POSIÇÃO */
 .click-zone {
-    position: absolute;
-    background: rgba(255, 0, 0, 0.3); /* Mude para 0.3 para ver as áreas durante o teste */
-    border: 1px solid transparent;
-    cursor: pointer;
-    z-index: 10;
+ position: absolute;
+ background: rgba(255, 0, 0, 0.4); /* Vermelho transparente para ajuste */
+ border: 1px solid red;
+ cursor: pointer;
+ z-index: 10;
 }
 
-/* POSICIONAMENTO BASEADO NA IMAGEM */
+/* POSICIONAMENTO AJUSTADO PARA A BARRA INFERIOR */
 
-/* Buzina (Canto inferior esquerdo) */
 #zone-buzina {
-    bottom: 4%;
-    left: 3%;
-    width: 8%;
-    height: 6%;
+ bottom: 4%;
+ left: 2%;
+ width: 15%;
+ height: 8%;
 }
 
-/* Direção (Seta Cima e Baixo) */
 #zone-dir-up {
-    bottom: 6%;
-    left: 15%;
-    width: 7%;
-    height: 3%;
+ bottom: 7%;
+ left: 20%;
+ width: 12%;
+ height: 4%;
 }
 #zone-dir-down {
-    bottom: 3%;
-    left: 15%;
-    width: 7%;
-    height: 3%;
+ bottom: 3%;
+ left: 20%;
+ width: 12%;
+ height: 4%;
 }
 
-/* Potência (Seta Cima e Baixo) */
 #zone-pot-up {
-    bottom: 6%;
-    left: 35%;
-    width: 7%;
-    height: 3%;
+ bottom: 7%;
+ left: 35%;
+ width: 12%;
+ height: 4%;
 }
 #zone-pot-down {
-    bottom: 3%;
-    left: 35%;
-    width: 7%;
-    height: 3%;
+ bottom: 3%;
+ left: 35%;
+ width: 12%;
+ height: 4%;
 }
 
-/* Freio (Área do Slider) */
 #zone-freio {
-    bottom: 4%;
-    left: 50%;
-    width: 20%;
-    height: 6%;
+ bottom: 3%;
+ left: 50%;
+ width: 25%;
+ height: 8%;
 }
 
-/* Emergência (Botão Vermelho Canto Direito) */
 #zone-emergencia {
-    bottom: 4%;
-    right: 3%;
-    width: 8%;
-    height: 6%;
+ bottom: 4%;
+ right: 2%;
+ width: 15%;
+ height: 8%;
 }
 
-/* Displays de Texto (Para mostrar a velocidade/ponto sobre a imagem) */
+/* Displays de Texto */
 .status-text {
-    position: absolute;
-    color: white;
-    font-weight: bold;
-    text-shadow: 2px 2px 2px black;
-    pointer-events: none;
-    font-size: 14px;
-    text-align: center;
+ position: absolute;
+ color: white;
+ font-weight: bold;
+ text-shadow: 2px 2px 2px black;
+ pointer-events: none;
+ font-size: 18px;
+ text-align: center;
 }
 
-#txt-direcao { bottom: 8%; left: 16%; }
-#txt-potencia { bottom: 8%; left: 36%; }
-#txt-velocidade { bottom: 8%; right: 15%; color: #00ff00; }
+#txt-direcao { bottom: 8%; left: 22%; }
+#txt-potencia { bottom: 8%; left: 37%; }
+#txt-velocidade { bottom: 2%; right: 15%; color: #00ff00; font-size: 22px; }
