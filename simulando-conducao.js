@@ -155,11 +155,13 @@
     comprimentoTotal += comprimento;
   }
 
+  
   // ==========================================
   // POSIÇÃO SOBRE OS TRILHOS
+  // COM ORIENTAÇÃO SUAVIZADA
   // ==========================================
 
-  function obterPosicao(distancia) {
+  function obterPosicaoBruta(distancia) {
 
     distancia = Math.max(
       0,
@@ -179,9 +181,34 @@
         (segmento.b[0] - segmento.a[0]) * progresso,
 
       y: segmento.a[1] +
-        (segmento.b[1] - segmento.a[1]) * progresso,
+        (segmento.b[1] - segmento.a[1]) * progresso
+    };
+  }
 
-      angulo: segmento.angulo
+  function obterPosicao(distancia) {
+
+    const posicao = obterPosicaoBruta(distancia);
+
+    // Distância utilizada para suavizar a orientação
+    const janela = 18;
+
+    const pontoAnterior = obterPosicaoBruta(
+      distancia - janela
+    );
+
+    const pontoPosterior = obterPosicaoBruta(
+      distancia + janela
+    );
+
+    const dx = pontoPosterior.x - pontoAnterior.x;
+    const dy = pontoPosterior.y - pontoAnterior.y;
+
+    const angulo = Math.atan2(dy, dx);
+
+    return {
+      x: posicao.x,
+      y: posicao.y,
+      angulo: angulo
     };
   }
 
