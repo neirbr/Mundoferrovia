@@ -905,12 +905,11 @@
 
   const ajuste = 18;
 
-  const x = posicao.x -
+  const x = posicao.x +
   Math.sin(posicao.angulo) * ajuste;
 
-const y = posicao.y +
+const y = posicao.y -
   Math.cos(posicao.angulo) * ajuste;
-
   desenharVeiculo(
     x,
     y,
