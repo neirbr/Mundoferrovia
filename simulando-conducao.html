@@ -1,60 +1,60 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-  <title>Simulando Condução 2D | Mundo Ferroviário</title>
-
-  <link rel="stylesheet" href="simulando-conducao.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Trem 2D</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-  <main id="simulador">
+<div id="game-container">
+    <div id="msg-overlay"></div>
+    <canvas id="simCanvas" width="1000" height="700"></canvas>
 
-    <!-- CABEÇALHO -->
-    <header id="cabecalho">
-      <h1>SIMULANDO CONDUÇÃO 2D</h1>
-      <span id="missao">MISSÃO 01</span>
-    </header>
+    <div id="hud">
+        <!-- Telemetria -->
+        <div class="dashboard-display">
+            <div id="speedometer" class="speed-val">0.0 KM/H</div>
+            <div id="reverser-disp" class="reverser-val">SELETORA: N</div>
+            <div id="notch-disp" class="notch-val">PONTO: 0 / 8</div>
+        </div>
 
-    <!-- ÁREA DO CENÁRIO -->
-    <section id="area-jogo">
+        <!-- Controles -->
+        <div class="control-group">
+            <!-- Seletora F N R -->
+            <div class="control-box">
+                <span class="control-label">Seletora</span>
+                <div class="round-btn-container">
+                    <button type="button" class="arrow-btn" onclick="changeReverser(1)" title="Avançar seletora">▲</button>
+                    <button type="button" class="arrow-btn" onclick="changeReverser(-1)" title="Recuar seletora">▼</button>
+                </div>
+            </div>
 
-      <div id="cenario">
+            <!-- Pontos de Aceleração -->
+            <div class="control-box">
+                <span class="control-label">Aceleração</span>
+                <div class="round-btn-container">
+                    <button type="button" class="arrow-btn" onclick="changeNotch(1)" title="Aumentar ponto de aceleração">▲</button>
+                    <button type="button" class="arrow-btn" onclick="changeNotch(-1)" title="Reduzir ponto de aceleração">▼</button>
+                </div>
+            </div>
 
-        <!-- IMAGEM ORIGINAL -->
-        <img
-          id="imagemCenario"
-          src="assets/cenario-ferroviário.jpg"
-          alt="Cenário ferroviário do simulador"
-        >
+            <!-- Freio Manete -->
+            <div class="control-box brake-container">
+                <span class="control-label">Freio Pneumático</span>
+                <input type="range" id="brakeRange" class="brake-slider" min="0" max="100" value="0" oninput="updateBrake(this.value)">
+                <span id="brake-disp" class="brake-text">ALÍVIO (0%)</span>
+            </div>
+        </div>
 
-        <!-- ÁREA DOS ELEMENTOS DO JOGO -->
-        <canvas id="camadaJogo"></canvas>
+        <!-- Ação da Rota -->
+        <div>
+            <button type="button" id="routeBtn" class="route-btn" onclick="setRoute()">Alinhamento de Rota</button>
+        </div>
+    </div>
+</div>
 
-      </div>
-
-    </section>
-
-    <!-- PAINEL INFERIOR -->
-    <section id="painel-controles">
-
-      <div id="status-operacao">
-        AGUARDANDO INÍCIO DA MISSÃO
-      </div>
-
-      <div id="area-botoes">
-        <!-- Controles serão desenvolvidos nas próximas etapas -->
-      </div>
-
-    </section>
-
-  </main>
-
-  <script src="simulando-conducao.js"></script>
-
+<script src="game.js"></script>
 </body>
 </html>
