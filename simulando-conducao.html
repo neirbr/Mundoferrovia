@@ -2,38 +2,40 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Condução 2D</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Simulador Ferroviário</title>
     <link rel="stylesheet" href="simulando-conducao.css">
 </head>
-
 <body>
+
     <div id="game-container">
-        <!-- Displays de informação que aparecem sobre a imagem -->
-        <div id="direction-display" class="status-display">N</div>
-        <div id="power-display" class="status-display">0</div>
-        <div id="speed-display" class="status-display">0 km/h</div>
-
-        <!-- Botões invisíveis posicionados sobre os desenhos da imagem -->
-        <div class="control-overlay">
-            <button class="btn-invisible" onclick="acionarBuzina()"> Buzina </button>
+        <!-- Camada de interação com as zonas invisíveis -->
+        <div class="interaction-layer">
             
-            <div style="display:flex; flex-direction:column; gap:5px;">
-                <button class="btn-invisible" onclick="mudarDirecao('up')"> ↑ </button>
-                <button class="btn-invisible" onclick="mudarDirecao('down')"> ↓ </button>
-            </div>
+            <!-- Buzina -->
+            <div id="zone-buzina" class="click-zone" onclick="acionarBuzina()"></div>
+            
+            <!-- Direção -->
+            <div id="zone-dir-up" class="click-zone" onclick="mudarDirecao('up')"></div>
+            <div id="zone-dir-down" class="click-zone" onclick="mudarDirecao('down')"></div>
+            <div id="txt-direcao" class="status-text">N</div>
 
-            <div style="display:flex; flex-direction:column; gap:5px;">
-                <button class="btn-invisible" onclick="mudarPotencia('up')"> ↑ </button>
-                <button class="btn-invisible" onclick="mudarPotencia('down')"> ↓ </button>
-            </div>
+            <!-- Potência -->
+            <div id="zone-pot-up" class="click-zone" onclick="mudarPotencia('up')"></div>
+            <div id="zone-pot-down" class="click-zone" onclick="mudarPotencia('down')"></div>
+            <div id="txt-potencia" class="status-text">0</div>
 
-            <button class="btn-invisible" onmousedown="ativarFreio()" onmouseup="soltarFreio()"> Freio </button>
-            <button class="btn-invisible" onclick="emergencia()"> Emergência </button>
+            <!-- Freio -->
+            <div id="zone-freio" class="click-zone" onmousedown="ativarFreio()" onmouseup="soltarFreio()" ontouchstart="ativarFreio()" ontouchend="soltarFreio()"></div>
+
+            <!-- Emergência -->
+            <div id="zone-emergencia" class="click-zone" onclick="emergencia()"></div>
+            
+            <!-- Velocidade -->
+            <div id="txt-velocidade" class="status-text">0 km/h</div>
         </div>
     </div>
 
     <script src="simulando-conducao.js"></script>
 </body>
-    
 </html>
