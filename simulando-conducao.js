@@ -129,42 +129,125 @@
     [960,1425]
   ];
 
+  
   // ==========================================
   // CÁLCULO DO PERCURSO
+  // CURVAS CONTÍNUAS CATMULL-ROM
   // ==========================================
 
-  const segmentos = [];
+  const caminho = [];
   let comprimentoTotal = 0;
 
-  for (let i = 0; i < trilho.length - 1; i++) {
-    const a = trilho[i];
-    const b = trilho[i + 1];
+  const amostrasPorTrecho = 16;
 
-    const dx = b[0] - a[0];
-    const dy = b[1] - a[1];
-    const comprimento = Math.hypot(dx, dy);
+  function interpolarCatmullRom(p0, p1, p2, p3, t) {
 
-    segmentos.push({
-      a,
-      b,
-      inicio: comprimentoTotal,
-      comprimento,
-      angulo: Math.atan2(dy, dx)
-    });
+    function distancia(a, b) {
+      return Math.hypot(b.x - a.x, b.y - a.y);
+    }
 
-    comprimentoTotal += comprimento;
+    function misturar(a, b, t) {
+      return {
+        x: a.x + (b.x - a.x) * t,
+        y: a.y + (b.y - a.y) * t
+      };
+    }
+
+    const t0 = 0;
+    const t1 = t0 + Math.sqrt(distancia(p0, p1));
+    const t2 = t1 + Math.sqrt(distancia(p1, p2));
+    const t3 = t2 + Math.sqrt(distancia(p2, p3));
+
+    const tempo = t1 + (t2 - t1) * t;
+
+    const A1 = misturar(
+      p0, p1, (tempo - t0) / (t1 - t0)
+    );
+
+    const A2 = misturar(
+      p1, p2, (tempo - t1) / (t2 - t1)
+    );
+
+    const A3 = misturar(
+      p2, p3, (tempo - t2) / (t3 - t2)
+    );
+
+    const B1 = misturar(
+      A1, A2, (tempo - t0) / (t2 - t0)
+    );
+
+    const B2 = misturar(
+      A2, A3, (tempo - t1) / (t3 - t1)
+    );
+
+    return misturar(
+      B1, B2, (tempo - t1) / (t2 - t1)
+    );
   }
 
-  
-  // ==========================================
-  // POSIÇÃO SOBRE OS TRILHOS
-  // COM ORIENTAÇÃO SUAVIZADA
-  // ==========================================
+  // Construir trajetória com os pontos originais
 
-  
+  for (let i = 0; i < trilho.length - 1; i++) {
+
+    const atual = trilho[i];
+    const proximo = trilho[i + 1];
+
+    const anterior = i === 0
+      ? [
+          2 * atual[0] - proximo[0],
+          2 * atual[1] - proximo[1]
+        ]
+      : trilho[i - 1];
+
+    const seguinte = i + 2 >= trilho.length
+      ? [
+          2 * proximo[0] - atual[0],
+          2 * proximo[1] - atual[1]
+        ]
+      : trilho[i + 2];
+
+    const p0 = { x: anterior[0], y: anterior[1] };
+    const p1 = { x: atual[0], y: atual[1] };
+    const p2 = { x: proximo[0], y: proximo[1] };
+    const p3 = { x: seguinte[0], y: seguinte[1] };
+
+    if (i === 0) {
+      caminho.push({
+        x: p1.x,
+        y: p1.y,
+        distancia: 0
+      });
+    }
+
+    for (let j = 1; j <= amostrasPorTrecho; j++) {
+
+      const t = j / amostrasPorTrecho;
+
+      const ponto = interpolarCatmullRom(
+        p0, p1, p2, p3, t
+      );
+
+      const ultimo = caminho[caminho.length - 1];
+
+      const trecho = Math.hypot(
+        ponto.x - ultimo.x,
+        ponto.y - ultimo.y
+      );
+
+      if (trecho <= 0) continue;
+
+      comprimentoTotal += trecho;
+
+      caminho.push({
+        x: ponto.x,
+        y: ponto.y,
+        distancia: comprimentoTotal
+      });
+    }
+  }
+
   // ==========================================
-  // POSIÇÃO SOBRE OS TRILHOS
-  // ORIENTAÇÃO SUAVIZADA
+  // POSIÇÃO SOBRE A TRAJETÓRIA
   // ==========================================
 
   function obterPosicaoBruta(distancia) {
@@ -174,28 +257,44 @@
       Math.min(distancia, comprimentoTotal)
     );
 
-    const segmento = segmentos.find(s =>
-      distancia <= s.inicio + s.comprimento
-    ) || segmentos[segmentos.length - 1];
+    let inicio = 0;
+    let fim = caminho.length - 1;
 
-    const progresso =
-      (distancia - segmento.inicio) /
-      segmento.comprimento;
+    while (fim - inicio > 1) {
+
+      const meio = Math.floor((inicio + fim) / 2);
+
+      if (caminho[meio].distancia < distancia) {
+        inicio = meio;
+      } else {
+        fim = meio;
+      }
+    }
+
+    const a = caminho[inicio];
+    const b = caminho[fim];
+
+    const intervalo = b.distancia - a.distancia;
+
+    const progresso = intervalo > 0
+      ? (distancia - a.distancia) / intervalo
+      : 0;
 
     return {
-      x: segmento.a[0] +
-        (segmento.b[0] - segmento.a[0]) * progresso,
-
-      y: segmento.a[1] +
-        (segmento.b[1] - segmento.a[1]) * progresso
+      x: a.x + (b.x - a.x) * progresso,
+      y: a.y + (b.y - a.y) * progresso
     };
   }
+
+  // ==========================================
+  // POSIÇÃO E ORIENTAÇÃO DO VEÍCULO
+  // ==========================================
 
   function obterPosicao(distancia) {
 
     const posicao = obterPosicaoBruta(distancia);
 
-    const janela = 18;
+    const janela = 10;
 
     const anterior = obterPosicaoBruta(
       distancia - janela
@@ -205,15 +304,18 @@
       distancia + janela
     );
 
-    const dx = posterior.x - anterior.x;
-    const dy = posterior.y - anterior.y;
+    const angulo = Math.atan2(
+      posterior.y - anterior.y,
+      posterior.x - anterior.x
+    );
 
     return {
       x: posicao.x,
       y: posicao.y,
-      angulo: Math.atan2(dy, dx)
+      angulo: angulo
     };
   }
+
 
 
   // ==========================================
