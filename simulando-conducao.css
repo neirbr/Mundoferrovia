@@ -3,9 +3,10 @@ body, html {
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden; /* Trava a tela para não precisar de pinça */
+    overflow: hidden;
     background-color: black;
     font-family: Arial, sans-serif;
+    user-select: none;
 }
 
 #game-container {
@@ -13,7 +14,7 @@ body, html {
     width: 100vw;
     height: 100vh;
     background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg');
-    background-size: contain; /* Faz a imagem caber na tela sem cortar */
+    background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
     display: flex;
@@ -21,37 +22,89 @@ body, html {
     align-items: center;
 }
 
-/* Área dos botões invisíveis que ficam sobre a imagem */
-.control-overlay {
+/* Camada de interação sobre a imagem */
+.interaction-layer {
     position: absolute;
-    bottom: 5%; /* Ajusta a posição para ficar na barra de baixo da imagem */
-    width: 90%;
-    height: 12%; 
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    pointer-events: none; /* Permite que a gente clique nos botões internos */
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
 }
 
-.btn-invisible {
-    pointer-events: auto;
-    background: rgba(255, 0, 0, 0); /* Mude para 0.2 se quiser ver onde o botão está para testar */
-    border: none;
+/* Estilo base para as zonas de clique invisíveis */
+.click-zone {
+    position: absolute;
+    background: rgba(255, 0, 0, 0); /* Mude para 0.3 para ver as áreas durante o teste */
+    border: 1px solid transparent;
     cursor: pointer;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+    z-index: 10;
 }
 
-/* Estilo para os textos de status (Velocidade, Ponto, etc) */
-.status-display {
+/* POSICIONAMENTO BASEADO NA IMAGEM */
+
+/* Buzina (Canto inferior esquerdo) */
+#zone-buzina {
+    bottom: 4%;
+    left: 3%;
+    width: 8%;
+    height: 6%;
+}
+
+/* Direção (Seta Cima e Baixo) */
+#zone-dir-up {
+    bottom: 6%;
+    left: 15%;
+    width: 7%;
+    height: 3%;
+}
+#zone-dir-down {
+    bottom: 3%;
+    left: 15%;
+    width: 7%;
+    height: 3%;
+}
+
+/* Potência (Seta Cima e Baixo) */
+#zone-pot-up {
+    bottom: 6%;
+    left: 35%;
+    width: 7%;
+    height: 3%;
+}
+#zone-pot-down {
+    bottom: 3%;
+    left: 35%;
+    width: 7%;
+    height: 3%;
+}
+
+/* Freio (Área do Slider) */
+#zone-freio {
+    bottom: 4%;
+    left: 50%;
+    width: 20%;
+    height: 6%;
+}
+
+/* Emergência (Botão Vermelho Canto Direito) */
+#zone-emergencia {
+    bottom: 4%;
+    right: 3%;
+    width: 8%;
+    height: 6%;
+}
+
+/* Displays de Texto (Para mostrar a velocidade/ponto sobre a imagem) */
+.status-text {
     position: absolute;
     color: white;
     font-weight: bold;
-    text-shadow: 2px 2px 4px black;
+    text-shadow: 2px 2px 2px black;
     pointer-events: none;
+    font-size: 14px;
+    text-align: center;
 }
 
-#speed-display { bottom: 8%; right: 5%; font-size: 20px; }
-#power-display { bottom: 8%; left: 40%; font-size: 20px; }
-#direction-display { bottom: 8%; left: 15%; font-size: 20px; }
+#txt-direcao { bottom: 8%; left: 16%; }
+#txt-potencia { bottom: 8%; left: 36%; }
+#txt-velocidade { bottom: 8%; right: 15%; color: #00ff00; }
