@@ -34,7 +34,7 @@ body, html {
 /* Estilo base para as zonas de clique invisíveis */
 .click-zone {
     position: absolute;
-    background: rgba(255, 0, 0, 0); /* Mude para 0.3 para ver as áreas durante o teste */
+    background: rgba(255, 0, 0, 0.3); /* Mude para 0.3 para ver as áreas durante o teste */
     border: 1px solid transparent;
     cursor: pointer;
     z-index: 10;
