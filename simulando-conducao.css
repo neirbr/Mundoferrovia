@@ -1,9 +1,10 @@
-
-body {
+body, html {
     margin: 0;
     padding: 0;
-    overflow: hidden;
-    background: #000;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Trava a tela para não precisar de pinça */
+    background-color: black;
     font-family: Arial, sans-serif;
 }
 
@@ -12,106 +13,45 @@ body {
     width: 100vw;
     height: 100vh;
     background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg');
-    background-size: contain;
-    background-repeat: no-repeat;
+    background-size: contain; /* Faz a imagem caber na tela sem cortar */
     background-position: center;
-}
-
-.entity {
-    position: absolute;
-    transition: transform 0.1s linear;
-}
-
-/* Trem (Locomotiva + 4 vagões) */
-.train {
+    background-repeat: no-repeat;
     display: flex;
-    flex-direction: column; /* Alinha os vagões verticalmente */
+    justify-content: center;
     align-items: center;
 }
 
-.locomotive {
-    background: #333;
-    width: 20px;
-    height: 40px;
-    border-radius: 3px 3px 0 0;
-    box-shadow: 0 0 5px rgba(0,0,0,0.5);
-    z-index: 2;
-}
-
-.wagon {
-    background: #555;
-    width: 20px;
-    height: 35px;
-    border-radius: 3px;
-    margin-top: 2px; /* Espaço entre vagões */
-}
-
-/* Carros e Animais */
-.car {
-    width: 15px;
-    height: 10px;
-    background: #ff6600;
-    border-radius: 2px;
-}
-
-.animal {
-    width: 8px;
-    height: 8px;
-    background: #fff;
-    border-radius: 50%;
-}
-
-/* Painel de Controle (UI) */
-#ui-panel {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 180px;
-    background: rgba(0, 0, 0, 0.9);
-    color: white;
+/* Área dos botões invisíveis que ficam sobre a imagem */
+.control-overlay {
+    position: absolute;
+    bottom: 5%; /* Ajusta a posição para ficar na barra de baixo da imagem */
+    width: 90%;
+    height: 12%; 
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 10px;
-    box-sizing: border-box;
-    z-index: 100;
+    pointer-events: none; /* Permite que a gente clique nos botões internos */
 }
 
-.control-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-}
-
-#ui-panel button {
-    background: #444;
-    color: white;
-    border: 1px solid #666;
-    padding: 10px;
+.btn-invisible {
+    pointer-events: auto;
+    background: rgba(255, 0, 0, 0); /* Mude para 0.2 se quiser ver onde o botão está para testar */
+    border: none;
     cursor: pointer;
-    border-radius: 5px;
-    min-width: 40px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
 }
 
-#ui-panel button:active {
-    background: #666;
-}
-
-#direction, #power {
+/* Estilo para os textos de status (Velocidade, Ponto, etc) */
+.status-display {
+    position: absolute;
+    color: white;
     font-weight: bold;
-    font-size: 1.2rem;
-    color: #ffcc00;
+    text-shadow: 2px 2px 4px black;
+    pointer-events: none;
 }
 
-#speed-display {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #00ff00;
-}
-
-#emergency {
-    background: #aa0000 !important;
-    font-weight: bold;
-}
+#speed-display { bottom: 8%; right: 5%; font-size: 20px; }
+#power-display { bottom: 8%; left: 40%; font-size: 20px; }
+#direction-display { bottom: 8%; left: 15%; font-size: 20px; }
