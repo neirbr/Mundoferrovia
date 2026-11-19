@@ -11,7 +11,7 @@ body {
     position: relative;
     width: 100vw;
     height: 100vh;
-    background-image: url('assets/cenario-ferroviário.jpg');
+    background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
