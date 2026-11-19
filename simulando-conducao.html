@@ -6,38 +6,34 @@
     <title>Simulador de Condução 2D</title>
     <link rel="stylesheet" href="simulando-conducao.css">
 </head>
+
 <body>
     <div id="game-container">
-        <!-- O trem e os elementos serão criados pelo JS -->
-        <div id="car1" class="entity car" style="left: 850px; top: 100px;"></div>
-        <div id="car2" class="entity car" style="left: 900px; top: 150px;"></div>
-        <div id="cow1" class="entity animal" style="left: 600px; top: 400px;"></div>
-        <div id="cow2" class="entity animal" style="left: 620px; top: 420px;"></div>
-    </div>
+        <!-- Displays de informação que aparecem sobre a imagem -->
+        <div id="direction-display" class="status-display">N</div>
+        <div id="power-display" class="status-display">0</div>
+        <div id="speed-display" class="status-display">0 km/h</div>
 
-    <div id="ui-panel">
-        <button id="buzzer">🔊</button>
-        <div class="control-group">
-            <div>DIREÇÃO</div>
-            <div id="direction">N</div>
-            <button id="forward">↑</button>
-            <button id="neutral">N</button>
-            <button id="backward">↓</button>
+        <!-- Botões invisíveis posicionados sobre os desenhos da imagem -->
+        <div class="control-overlay">
+            <button class="btn-invisible" onclick="acionarBuzina()"> Buzina </button>
+            
+            <div style="display:flex; flex-direction:column; gap:5px;">
+                <button class="btn-invisible" onclick="mudarDirecao('up')"> ↑ </button>
+                <button class="btn-invisible" onclick="mudarDirecao('down')"> ↓ </button>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:5px;">
+                <button class="btn-invisible" onclick="mudarPotencia('up')"> ↑ </button>
+                <button class="btn-invisible" onclick="mudarPotencia('down')"> ↓ </button>
+            </div>
+
+            <button class="btn-invisible" onmousedown="ativarFreio()" onmouseup="soltarFreio()"> Freio </button>
+            <button class="btn-invisible" onclick="emergencia()"> Emergência </button>
         </div>
-        <div class="control-group">
-            <div>POTÊNCIA</div>
-            <div id="power">0</div>
-            <button id="power-up">↑</button>
-            <button id="power-down">↓</button>
-        </div>
-        <div class="control-group">
-            <div>FREIO</div>
-            <input type="range" id="brake" min="0" max="100" value="0">
-        </div>
-        <button id="emergency">!</button>
-        <div id="speed-display">0 km/h</div>
     </div>
 
     <script src="simulando-conducao.js"></script>
 </body>
+    
 </html>
