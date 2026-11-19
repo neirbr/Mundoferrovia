@@ -1,41 +1,42 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Simulador Ferroviário</title>
-    <link rel="stylesheet" href="simulando-conducao.css">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+ <title>Simulador Ferroviário</title>
+ <link rel="stylesheet" href="simulando-conducao.css">
 </head>
 <body>
 
-    <div id="game-container">
-        <!-- Camada de interação com as zonas invisíveis -->
-        <div class="interaction-layer">
-            
-            <!-- Buzina -->
-            <div id="zone-buzina" class="click-zone" onclick="acionarBuzina()"></div>
-            
-            <!-- Direção -->
-            <div id="zone-dir-up" class="click-zone" onclick="mudarDirecao('up')"></div>
-            <div id="zone-dir-down" class="click-zone" onclick="mudarDirecao('down')"></div>
-            <div id="txt-direcao" class="status-text">N</div>
+ <div id="game-container">
+ <div class="interaction-layer">
 
-            <!-- Potência -->
-            <div id="zone-pot-up" class="click-zone" onclick="mudarPotencia('up')"></div>
-            <div id="zone-pot-down" class="click-zone" onclick="mudarPotencia('down')"></div>
-            <div id="txt-potencia" class="status-text">0</div>
+ <!-- Buzina -->
+ <div id="zone-buzina" class="click-zone" onclick="acionarBuzina()"></div>
 
-            <!-- Freio -->
-            <div id="zone-freio" class="click-zone" onmousedown="ativarFreio()" onmouseup="soltarFreio()" ontouchstart="ativarFreio()" ontouchend="soltarFreio()"></div>
+ <!-- Direção -->
+ <div id="zone-dir-up" class="click-zone" onclick="mudarDirecao('up')"></div>
+ <div id="zone-dir-down" class="click-zone" onclick="mudarDirecao('down')"></div>
+ <div id="txt-direcao" class="status-text">N</div>
 
-            <!-- Emergência -->
-            <div id="zone-emergencia" class="click-zone" onclick="emergencia()"></div>
-            
-            <!-- Velocidade -->
-            <div id="txt-velocidade" class="status-text">0 km/h</div>
-        </div>
-    </div>
+ <!-- Potência -->
+ <div id="zone-pot-up" class="click-zone" onclick="mudarPotencia('up')"></div>
+ <div id="zone-pot-down" class="click-zone" onclick="mudarPotencia('down')"></div>
+ <div id="txt-potencia" class="status-text">0</div>
 
-    <script src="simulando-conducao.js"></script>
+ <!-- Freio -->
+ <div id="zone-freio" class="click-zone" 
+      onmousedown="ativarFreio()" onmouseup="soltarFreio()" 
+      ontouchstart="ativarFreio()" ontouchend="soltarFreio()"></div>
+
+ <!-- Emergência -->
+ <div id="zone-emergencia" class="click-zone" onclick="emergencia()"></div>
+
+ <!-- Velocidade -->
+ <div id="txt-velocidade" class="status-text">0 km/h</div>
+ </div>
+ </div>
+
+ <script src="simulando-conducao.js"></script>
 </body>
 </html>
