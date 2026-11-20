@@ -1,185 +1,60 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
- <title>Simulador Ferroviário</title>
-<style>
-body, html {
- margin: 0;
- padding: 0;
- background: black;
- font-family: Arial, sans-serif;
- overflow: hidden;
-}
-
-#game-container {
- position: relative;
- display: inline-block;
- margin: 0 auto;
-}
-
-#cenario {
- display: block;
- max-width: 100%;
- height: auto;
-}
-
-.interaction-layer {
- position: absolute;
- top: 0;
- left: 0;
- width: 100%;
- height: 100%;
-}
-
-/* REMOVENDO TODOS OS ELEMENTOS INDICADOS */
-#area-freio,
-#range-freio,
-#txt-direcao,
-#txt-potencia,
-#txt-velocidade {
- display: none !important;
-}
-
-.btn-invisible {
- position: absolute;
- cursor: pointer;
- background: rgba(255, 255, 255, 0);
- border: none;
- outline: none;
- -webkit-tap-highlight-color: transparent;
-}
-
-/* POSICIONAMENTO DOS BOTÕES (manteve para referência, mas não interfere) */
-#btn-buzina { bottom: 2%; left: 1%; width: 18%; height: 8%; }
-#btn-dir-up { bottom: 6%; left: 21%; width: 15%; height: 4%; }
-#btn-dir-down { bottom: 2%; left: 21%; width: 15%; height: 4%; }
-#btn-pot-up { bottom: 6%; left: 36%; width: 15%; height: 4%; }
-#btn-pot-down { bottom: 2%; left: 36%; width: 15%; height: 4%; }
-#btn-emergencia { bottom: 2%; left: 81%; width: 18%; height: 8%; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Simulador Ferroviário</title>
+    <!-- Link para o seu arquivo CSS -->
+    <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
 
- <div style="text-align: center;">
- <div id="game-container">
- <img id="cenario" src="https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg">
+    <div id="game-container">
+        <div id="txt-velocidade">0 km/h</div>
 
- <div class="interaction-layer">
- <div id="btn-buzina" class="btn-invisible" onclick="buzina()"></div>
- <div id="btn-dir-up" class="btn-invisible" onclick="mudarDirecao(1)"></div>
- <div id="btn-dir-down" class="btn-invisible" onclick="mudarDirecao(-1)"></div>
- <div id="btn-pot-up" class="btn-invisible" onclick="mudarPotencia(1)"></div>
- <div id="btn-pot-down" class="btn-invisible" onclick="mudarPotencia(-1)"></div>
+        <div id="control-panel">
+            <div class="control-section">
+                <div class="control-label">BUZINA</div>
+                <div class="btn-buzina" onclick="buzina()">
+                    <svg viewBox="0 0 24 24"><path d="M12 4L5 9H2v6h3l7 5V4zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.74 2.5-2.26 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                </div>
+            </div>
 
- <!-- SLIDER DE FREIO (Arrastar) -->
- <div id="area-freio">
- <input type="range" id="range-freio" min="0" max="100" value="0" oninput="atualizarFreio(this.value)">
- </div>
+            <div class="control-section">
+                <div class="control-label">DIREÇÃO</div>
+                <div class="arrow-control">
+                    <button class="arrow-btn" onclick="mudarDirecao(1)"><div class="arrow-up"></div></button>
+                    <div class="control-display-circle" id="txt-direcao">N</div>
+                    <button class="arrow-btn" onclick="mudarDirecao(-1)"><div class="arrow-down"></div></button>
+                </div>
+            </div>
 
- <div id="btn-emergencia" class="btn-invisible" onclick="acionarEmergencia()"></div>
+            <div class="control-section">
+                <div class="control-label">POTÊNCIA</div>
+                <div class="arrow-control">
+                    <button class="arrow-btn" onclick="mudarPotencia(1)"><div class="arrow-up"></div></button>
+                    <div class="control-display-circle" id="txt-potencia">0</div>
+                    <button class="arrow-btn" onclick="mudarPotencia(-1)"><div class="arrow-down"></div></button>
+                </div>
+            </div>
 
- <div id="txt-direcao" class="status-text">N</div>
- <div id="txt-potencia" class="status-text">0</div>
- <div id="txt-velocidade" class="status-text">0 km/h</div>
- </div>
- </div>
- </div>
+            <div class="control-section" style="flex: 1.4;">
+                <div class="control-label">FREIO</div>
+                <div class="brake-container">
+                    <input type="range" id="range-freio" min="0" max="100" value="0" oninput="atualizarFreio(this.value)">
+                </div>
+            </div>
 
- <script>
- let direcao = 'N'; // 'N' = Neutro, 'F' = Frente, 'R' = Ré
- let pontoAceleracao = 0; // 0 a 8
- let velocidadeAtual = 0;
- let valorFreio = 0; // 0 a 1
- let emergenciaAtiva = false;
- let freiosTravados = false;
+            <div class="control-section">
+                <div class="control-label">EMERGÊNCIA</div>
+                <div class="btn-emergencia" onclick="acionarEmergencia()">!</div>
+            </div>
+        </div>
 
- const limitesVelocidade = { 0: 0, 1: 15, 2: 25, 3: 35, 4: 45, 5: 55, 6: 65, 7: 75, 8: 100 };
+        <div class="interaction-layer"></div>
+    </div>
 
- function mudarDirecao(v) {
- if (emergenciaAtiva || freiosTravados) return;
-
- if (v > 0) {
- // Seta para cima: vai direto para Frente
- direcao = 'F';
- } else {
- // Seta para baixo: F -> N -> R -> N (ciclo)
- if (direcao === 'F') direcao = 'N';
- else if (direcao === 'N') direcao = 'R';
- else if (direcao === 'R') direcao = 'N';
- }
- document.getElementById('txt-direcao').innerText = direcao;
- }
-
- function mudarPotencia(v) {
- if (emergenciaAtiva || freiosTravados) return;
- pontoAceleracao = Math.max(0, Math.min(8, pontoAceleracao + v));
- document.getElementById('txt-potencia').innerText = pontoAceleracao;
- }
-
- function atualizarFreio(val) {
- if (emergenciaAtiva || freiosTravados) return;
- valorFreio = val / 100; // Proporção de 0 a 1
- }
-
- function acionarEmergencia() {
- emergenciaAtiva = true;
- document.getElementById('range-freio').value = 100;
- valorFreio = 1;
- }
-
- function aliviarFreios() {
- // Só permite aliviar se a emergência já tiver parado totalmente o trem
- if (emergenciaAtiva && velocidadeAtual <= 0) {
- emergenciaAtiva = false;
- freiosTravados = false;
- document.getElementById('range-freio').value = 0;
- valorFreio = 0;
- }
- }
-
- function buzina() { 
- alert("📢 BUZINA!"); 
- }
-
- // Loop principal de física do trem
- setInterval(() => {
- // Se os freios estiverem travados após a emergência, não faz nada até aliviar
- if (freiosTravados) return;
-
- // Velocidade alvo só existe se não estiver em Neutro
- let velAlvo = (direcao !== 'N') ? limitesVelocidade[pontoAceleracao] : 0;
-
- // Aceleração ou desaceleração natural para alcançar a velocidade alvo
- if (velocidadeAtual < velAlvo) {
- velocidadeAtual += 0.15;
- } else if (velocidadeAtual > velAlvo) {
- velocidadeAtual -= 0.1;
- }
-
- // Aplicação do freio comum (pelo slider)
- if (valorFreio > 0) {
- velocidadeAtual -= (valorFreio * 0.7);
- }
-
- // Aplicação da parada de emergência
- if (emergenciaAtiva) {
- velocidadeAtual -= 0.6; // Parada gradual
- if (velocidadeAtual <= 0) {
- velocidadeAtual = 0;
- freiosTravados = true; // Trava os controles até aliviar os freios
- }
- }
-
- // Garante que a velocidade nunca seja negativa
- if (velocidadeAtual < 0) velocidadeAtual = 0;
-
- document.getElementById('txt-velocidade').innerText = Math.round(velocidadeAtual) + " km/h";
- }, 50);
-
- // Dê um duplo clique na tela para aliviar os freios após uma parada de emergência total
- window.addEventListener('dblclick', aliviarFreios);
- </script>
+    <!-- Link para o seu arquivo JS -->
+    <script src="script.js"></script>
 </body>
 </html>
