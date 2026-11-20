@@ -4,104 +4,61 @@
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
  <title>Simulador Ferroviário</title>
- <style>
- body, html { margin: 0; padding: 0; background: black; font-family: Arial, sans-serif; overflow: hidden; }
+<style>
+body, html {
+ margin: 0;
+ padding: 0;
+ background: black;
+ font-family: Arial, sans-serif;
+ overflow: hidden;
+}
 
- #game-container {
+#game-container {
  position: relative;
  display: inline-block;
  margin: 0 auto;
- }
+}
 
- #cenario {
+#cenario {
  display: block;
  max-width: 100%;
  height: auto;
- }
+}
 
- .interaction-layer {
+.interaction-layer {
  position: absolute;
  top: 0;
  left: 0;
  width: 100%;
  height: 100%;
- }
+}
 
- .btn-invisible {
+/* REMOVENDO TODOS OS ELEMENTOS INDICADOS */
+#area-freio,
+#range-freio,
+#txt-direcao,
+#txt-potencia,
+#txt-velocidade {
+ display: none !important;
+}
+
+.btn-invisible {
  position: absolute;
  cursor: pointer;
  background: rgba(255, 255, 255, 0);
  border: none;
  outline: none;
  -webkit-tap-highlight-color: transparent;
- }
+}
 
- /* POSICIONAMENTO DOS BOTÕES */
- #btn-buzina { bottom: 2%; left: 1%; width: 18%; height: 8%; }
- #btn-dir-up { bottom: 6%; left: 21%; width: 15%; height: 4%; }
- #btn-dir-down { bottom: 2%; left: 21%; width: 15%; height: 4%; }
- #btn-pot-up { bottom: 6%; left: 36%; width: 15%; height: 4%; }
- #btn-pot-down { bottom: 2%; left: 36%; width: 15%; height: 4%; }
- #btn-emergencia { bottom: 2%; left: 81%; width: 18%; height: 8%; }
-
- /* ÁREA DO SLIDER DE FREIO (Arrastar) */
- #area-freio {
- position: absolute;
- bottom: 2%;
- left: 52%;
- width: 25%;
- height: 8%;
- display: flex;
- align-items: center;
- cursor: pointer;
- -webkit-tap-highlight-color: transparent;
- }
-
- /* O slider customizado que fica em cima da barra da imagem */
- #range-freio {
- width: 100%;
- appearance: none;
- -webkit-appearance: none;
- background: transparent;
- outline: none;
- }
-
- #range-freio::-webkit-slider-runnable-track {
- width: 100%;
- height: 10px;
- background: rgba(0, 0, 0, 0.3);
- border-radius: 5px;
- }
-
- #range-freio::-webkit-slider-thumb {
- -webkit-appearance: none;
- height: 26px;
- width: 26px;
- border-radius: 50%;
- background: #ffcc00;
- cursor: pointer;
- margin-top: -8px;
- border: 2px solid #ffffff;
- box-shadow: 0 2px 4px rgba(0,0,0,0.5);
- }
-
- /* TEXTOS DE STATUS */
- .status-text {
- position: absolute;
- color: white;
- font-weight: bold;
- text-shadow: 2px 2px 4px black;
- pointer-events: none;
- font-size: 20px;
- display: flex;
- align-items: center;
- justify-content: center;
- }
-
- #txt-direcao { bottom: 4.5%; left: 21%; width: 15%; }
- #txt-potencia { bottom: 4.5%; left: 36%; width: 15%; }
- #txt-velocidade { bottom: 10.5%; left: 52%; width: 25%; color: #00ff00; font-size: 22px; justify-content: flex-end; }
- </style>
+/* POSICIONAMENTO DOS BOTÕES (manteve para referência, mas não interfere) */
+#btn-buzina { bottom: 2%; left: 1%; width: 18%; height: 8%; }
+#btn-dir-up { bottom: 6%; left: 21%; width: 15%; height: 4%; }
+#btn-dir-down { bottom: 2%; left: 21%; width: 15%; height: 4%; }
+#btn-pot-up { bottom: 6%; left: 36%; width: 15%; height: 4%; }
+#btn-pot-down { bottom: 2%; left: 36%; width: 15%; height: 4%; }
+#btn-emergencia { bottom: 2%; left: 81%; width: 18%; height: 8%; }
+</style>
 </head>
 <body>
 
