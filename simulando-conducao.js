@@ -8,7 +8,8 @@ let freiosTravados = false;
 const limitesVelocidade = { 0: 0, 1: 15, 2: 25, 3: 35, 4: 45, 5: 55, 6: 65, 7: 75, 8: 100 };
 
 function mudarDirecao(v) {
-    if (emergenciaAtiva || freiosTravados) return;
+    // Removi o 'freiosTravados' daqui para você conseguir mudar a marcha mesmo parado
+    if (emergenciaAtiva) return;
 
     if (v > 0) {
         direcao = 'F';
@@ -17,23 +18,30 @@ function mudarDirecao(v) {
         else if (direcao === 'N') direcao = 'R';
         else if (direcao === 'R') direcao = 'N';
     }
-    document.getElementById('txt-direcao').innerText = direcao;
+    
+    const el = document.getElementById('txt-direcao');
+    if(el) el.innerText = direcao;
 }
 
 function mudarPotencia(v) {
-    if (emergenciaAtiva || freiosTravados) return;
+    // Removi o 'freiosTravados' daqui para você conseguir acelerar para sair da inércia
+    if (emergenciaAtiva) return;
+    
     pontoAceleracao = Math.max(0, Math.min(8, pontoAceleracao + v));
-    document.getElementById('txt-potencia').innerText = pontoAceleracao;
+    
+    const el = document.getElementById('txt-potencia');
+    if(el) el.innerText = pontoAceleracao;
 }
 
 function atualizarFreio(val) {
-    if (emergenciaAtiva || freiosTravados) return;
+    if (emergenciaAtiva) return;
     valorFreio = val / 100;
 }
 
 function acionarEmergencia() {
     emergenciaAtiva = true;
-    document.getElementById('range-freio').value = 100;
+    const range = document.getElementById('range-freio');
+    if(range) range.value = 100;
     valorFreio = 1;
 }
 
@@ -41,8 +49,10 @@ function aliviarFreios() {
     if (emergenciaAtiva && velocidadeAtual <= 0) {
         emergenciaAtiva = false;
         freiosTravados = false;
-        document.getElementById('range-freio').value = 0;
+        const range = document.getElementById('range-freio');
+        if(range) range.value = 0;
         valorFreio = 0;
+        console.log("Freios aliviados!");
     }
 }
 
@@ -81,7 +91,8 @@ setInterval(() => {
 
     if (velocidadeAtual < 0) velocidadeAtual = 0;
 
-    document.getElementById('txt-velocidade').innerText = Math.round(velocidadeAtual) + " km/h";
+    const velEl = document.getElementById('txt-velocidade');
+    if(velEl) velEl.innerText = Math.round(velocidadeAtual) + " km/h";
 }, 50);
 
 window.addEventListener('dblclick', aliviarFreios);
