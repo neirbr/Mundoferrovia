@@ -27,37 +27,80 @@
  height: 100%;
  }
 
- /* BOTÕES INVISÍVEIS - Eles ficam exatamente sobre os desenhos da imagem */
  .btn-invisible {
  position: absolute;
  cursor: pointer;
- background: rgba(255, 255, 255, 0); /* Totalmente transparente */
+ background: rgba(255, 255, 255, 0);
  border: none;
+ outline: none;
+ -webkit-tap-highlight-color: transparent;
+ }
+
+ /* POSICIONAMENTO DOS BOTÕES */
+ #btn-buzina { bottom: 2%; left: 1%; width: 18%; height: 8%; }
+ #btn-dir-up { bottom: 6%; left: 21%; width: 15%; height: 4%; }
+ #btn-dir-down { bottom: 2%; left: 21%; width: 15%; height: 4%; }
+ #btn-pot-up { bottom: 6%; left: 36%; width: 15%; height: 4%; }
+ #btn-pot-down { bottom: 2%; left: 36%; width: 15%; height: 4%; }
+ #btn-emergencia { bottom: 2%; left: 81%; width: 18%; height: 8%; }
+
+ /* ÁREA DO SLIDER DE FREIO (Arrastar) */
+ #area-freio {
+ position: absolute;
+ bottom: 2%;
+ left: 52%;
+ width: 25%;
+ height: 8%;
+ display: flex;
+ align-items: center;
+ cursor: pointer;
+ -webkit-tap-highlight-color: transparent;
+ }
+
+ /* O slider customizado que fica em cima da barra da imagem */
+ #range-freio {
+ width: 100%;
+ appearance: none;
+ -webkit-appearance: none;
+ background: transparent;
  outline: none;
  }
 
- /* Posicionamento ajustado para bater com a imagem do painel */
- #btn-buzina { bottom: 2%; left: 2%; width: 15%; height: 8%; }
- #btn-dir-up { bottom: 6%; left: 22%; width: 10%; height: 4%; }
- #btn-dir-down { bottom: 2%; left: 22%; width: 10%; height: 4%; }
- #btn-pot-up { bottom: 6%; left: 37%; width: 10%; height: 4%; }
- #btn-pot-down { bottom: 2%; left: 37%; width: 10%; height: 4%; }
- #btn-freio { bottom: 2%; left: 50%; width: 25%; height: 8%; transform: translateX(-50%); }
- #btn-emergencia { bottom: 2%; right: 2%; width: 15%; height: 8%; }
-
- /* Textos de Status - Posicionados sobre os indicadores da imagem */
- .status-text { 
- position: absolute; 
- color: white; 
- font-weight: bold; 
- text-shadow: 2px 2px 2px black; 
- pointer-events: none; 
- font-size: 18px; 
- text-align: center;
+ #range-freio::-webkit-slider-runnable-track {
+ width: 100%;
+ height: 10px;
+ background: rgba(0, 0, 0, 0.3);
+ border-radius: 5px;
  }
- #txt-direcao { bottom: 5%; left: 22%; width: 10%; }
- #txt-potencia { bottom: 5%; left: 37%; width: 10%; }
- #txt-velocidade { bottom: 2%; right: 18%; color: #00ff00; font-size: 22px; }
+
+ #range-freio::-webkit-slider-thumb {
+ -webkit-appearance: none;
+ height: 26px;
+ width: 26px;
+ border-radius: 50%;
+ background: #ffcc00;
+ cursor: pointer;
+ margin-top: -8px;
+ border: 2px solid #ffffff;
+ box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+ }
+
+ /* TEXTOS DE STATUS */
+ .status-text {
+ position: absolute;
+ color: white;
+ font-weight: bold;
+ text-shadow: 2px 2px 4px black;
+ pointer-events: none;
+ font-size: 20px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ }
+
+ #txt-direcao { bottom: 4.5%; left: 21%; width: 15%; }
+ #txt-potencia { bottom: 4.5%; left: 36%; width: 15%; }
+ #txt-velocidade { bottom: 10.5%; left: 52%; width: 25%; color: #00ff00; font-size: 22px; justify-content: flex-end; }
  </style>
 </head>
 <body>
@@ -67,16 +110,19 @@
  <img id="cenario" src="https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg">
 
  <div class="interaction-layer">
- <!-- Botões agora são invisíveis, apenas áreas de clique -->
  <div id="btn-buzina" class="btn-invisible" onclick="buzina()"></div>
  <div id="btn-dir-up" class="btn-invisible" onclick="mudarDirecao(1)"></div>
  <div id="btn-dir-down" class="btn-invisible" onclick="mudarDirecao(-1)"></div>
  <div id="btn-pot-up" class="btn-invisible" onclick="mudarPotencia(1)"></div>
  <div id="btn-pot-down" class="btn-invisible" onclick="mudarPotencia(-1)"></div>
- <div id="btn-freio" class="btn-invisible" onmousedown="startBrake()" onmouseup="stopBrake()" ontouchstart="startBrake()" ontouchend="stopBrake()"></div>
+
+ <!-- SLIDER DE FREIO (Arrastar) -->
+ <div id="area-freio">
+ <input type="range" id="range-freio" min="0" max="100" value="0" oninput="atualizarFreio(this.value)">
+ </div>
+
  <div id="btn-emergencia" class="btn-invisible" onclick="acionarEmergencia()"></div>
 
- <!-- Os textos aparecem dentro dos círculos/quadrados da imagem -->
  <div id="txt-direcao" class="status-text">N</div>
  <div id="txt-potencia" class="status-text">0</div>
  <div id="txt-velocidade" class="status-text">0 km/h</div>
@@ -85,11 +131,10 @@
  </div>
 
  <script>
- // --- MECÂNICA DE TRAÇÃO E FÍSICA ---
  let direcao = 'N';
  let pontoAceleracao = 0;
  let velocidadeAtual = 0;
- let freioAtivo = 0;
+ let valorFreio = 0;
  let emergenciaAtiva = false;
  let freiosTravados = false;
 
@@ -111,25 +156,47 @@
  document.getElementById('txt-potencia').innerText = pontoAceleracao;
  }
 
- function startBrake() { if (emergenciaAtiva) return; freioAtivo = 0.5; }
- function stopBrake() { freioAtivo = 0; }
- function acionarEmergencia() { emergenciaAtiva = true; }
- function aliviarFreios() { emergenciaAtiva = false; freiosTravados = false; alert("Freios aliviados!"); }
+ function atualizarFreio(val) {
+ if (emergenciaAtiva) return;
+ valorFreio = val / 100; // Converte para proporção de 0 a 1
+ }
+
+ function acionarEmergencia() {
+ emergenciaAtiva = true;
+ document.getElementById('range-freio').value = 100;
+ valorFreio = 1;
+ }
+
+ function aliviarFreios() {
+ emergenciaAtiva = false;
+ freiosTravados = false;
+ document.getElementById('range-freio').value = 0;
+ valorFreio = 0;
+ }
+
  function buzina() { alert("📢 BUZINA!"); }
 
  setInterval(() => {
  if (freiosTravados) return;
+
  let velAlvo = (direcao !== 'N') ? limitesVelocidade[pontoAceleracao] : 0;
+
  if (velocidadeAtual < velAlvo) velocidadeAtual += 0.1;
  else if (velocidadeAtual > velAlvo) velocidadeAtual -= 0.05;
- if (freioAtivo > 0) velocidadeAtual -= (freioAtivo * 0.5);
+
+ // Aplicação suave e proporcional do freio conforme você arrasta
+ if (valorFreio > 0) {
+ velocidadeAtual -= (valorFreio * 0.8);
+ }
+
  if (emergenciaAtiva) {
- velocidadeAtual -= 0.3;
+ velocidadeAtual -= 0.8;
  if (velocidadeAtual <= 0) {
  velocidadeAtual = 0;
  freiosTravados = true;
  }
  }
+
  if (velocidadeAtual < 0) velocidadeAtual = 0;
  document.getElementById('txt-velocidade').innerText = Math.round(velocidadeAtual) + " km/h";
  }, 50);
