@@ -1,42 +1,140 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
- <title>Simulador Ferroviário</title>
- <link rel="stylesheet" href="simulando-conducao.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Simulando Condução 2D</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 100%;
+            max-height: 100vh;
+            background: #000;
+            overflow: hidden;
+        }
+
+        #cenario {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Mantém a proporção exata da imagem sem distorcer */
+            display: block;
+        }
+
+        /* Camada interativa posicional sobre os botões da imagem */
+        .control-hotspot {
+            position: absolute;
+            cursor: pointer;
+            background: rgba(255, 0, 0, 0.15); /* Apenas para teste visual, depois remova o background */
+            border: 1px dashed rgba(255, 255, 255, 0.4);
+            z-index: 10;
+        }
+
+        .control-hotspot:active {
+            background: rgba(0, 255, 0, 0.3);
+        }
+
+        /* Ajustes específicos para os botões do painel inferior da imagem */
+        #btn-buzina { left: 4%; bottom: 4%; width: 12%; height: 8%; border-radius: 50%; }
+        #btn-dir-up { left: 21%; bottom: 8%; width: 6%; height: 5%; }
+        #btn-dir-down { left: 21%; bottom: 2%; width: 6%; height: 5%; }
+        #btn-pot-up { left: 40%; bottom: 8%; width: 6%; height: 5%; }
+        #btn-pot-down { left: 40%; bottom: 2%; width: 6%; height: 5%; }
+        
+        #slider-freio {
+            position: absolute;
+            left: 54%;
+            bottom: 4%;
+            width: 18%;
+            height: 6%;
+            z-index: 10;
+            accent-color: #f1c40f;
+            cursor: pointer;
+        }
+
+        #btn-emergencia { left: 83%; bottom: 3%; width: 13%; height: 8%; border-radius: 50%; }
+    </style>
 </head>
 <body>
 
- <div id="game-container">
- <div class="interaction-layer">
+    <div id="game-container">
+        <!-- Imagem de fundo contendo o cenário e o painel -->
+        <img id="cenario" src="assets/cenario-ferroviario.jpg" alt="Cenário Ferroviário">
 
- <!-- Buzina -->
- <div id="zone-buzina" class="click-zone" onclick="acionarBuzina()"></div>
+        <!-- Hotspots interativos mapeados sobre o painel gráfico da imagem -->
+        <div id="btn-buzina" class="control-hotspot" title="Buzina" onclick="tocarBuzina()"></div>
+        
+        <div id="btn-dir-up" class="control-hotspot" title="Direção Cima" onclick="mudarDirecao(1)"></div>
+        <div id="btn-dir-down" class="control-hotspot" title="Direção Baixo" onclick="mudarDirecao(-1)"></div>
 
- <!-- Direção -->
- <div id="zone-dir-up" class="click-zone" onclick="mudarDirecao('up')"></div>
- <div id="zone-dir-down" class="click-zone" onclick="mudarDirecao('down')"></div>
- <div id="txt-direcao" class="status-text">N</div>
+        <div id="btn-pot-up" class="control-hotspot" title="Potência Cima" onclick="mudarPotencia(1)"></div>
+        <div id="btn-pot-down" class="control-hotspot" title="Potência Baixo" onclick="mudarPotencia(-1)"></div>
 
- <!-- Potência -->
- <div id="zone-pot-up" class="click-zone" onclick="mudarPotencia('up')"></div>
- <div id="zone-pot-down" class="click-zone" onclick="mudarPotencia('down')"></div>
- <div id="txt-potencia" class="status-text">0</div>
+        <input type="range" id="slider-freio" min="0" max="100" value="0" oninput="ajustarFreio(this.value)">
 
- <!-- Freio -->
- <div id="zone-freio" class="click-zone" 
-      onmousedown="ativarFreio()" onmouseup="soltarFreio()" 
-      ontouchstart="ativarFreio()" ontouchend="soltarFreio()"></div>
+        <div id="btn-emergencia" class="control-hotspot" title="Emergência" onclick="freioEmergencia()"></div>
+    </div>
 
- <!-- Emergência -->
- <div id="zone-emergencia" class="click-zone" onclick="emergencia()"></div>
+    <script>
+        let direcao = 'N'; // N, F (Frente), R (Ré)
+        let potencia = 0; // 0 a 8
+        let freio = 0; // 0 a 100
+        let emergenciaAtiva = false;
 
- <!-- Velocidade -->
- <div id="txt-velocidade" class="status-text">0 km/h</div>
- </div>
- </div>
+        function tocarBuzina() {
+            console.log("Buzina acionada!");
+        }
 
- <script src="simulando-conducao.js"></script>
+        function mudarDirecao(delta) {
+            if (emergenciaAtiva) return;
+            if (delta > 0) {
+                direcao = (direcao === 'N') ? 'F' : (direcao === 'R' ? 'N' : 'F');
+            } else {
+                direcao = (direcao === 'F') ? 'N' : (direcao === 'N' ? 'R' : 'N');
+            }
+            console.log("Direção:", direcao);
+        }
+
+        function mudarPotencia(delta) {
+            if (emergenciaAtiva) return;
+            potencia = Math.max(0, Math.min(8, potencia + delta));
+            console.log("Potência:", potencia);
+        }
+
+        function ajustarFreio(valor) {
+            if (emergenciaAtiva) return;
+            freio = valor;
+            console.log("Freio:", freio);
+        }
+
+        function freioEmergencia() {
+            emergenciaAtiva = true;
+            potencia = 0;
+            freio = 100;
+            console.log("FREIO DE EMERGÊNCIA ACIONADO!");
+        }
+    </script>
 </body>
 </html>
