@@ -26,29 +26,6 @@
  width: 100%;
  height: 100%;
  }
-
- /* TEXTOS DE STATUS */
- .status-text {
- position: absolute;
- color: white;
- font-weight: bold;
- text-shadow: 2px 2px 4px black;
- pointer-events: none;
- font-size: 18px;
- display: flex;
- align-items: center;
- justify-content: center;
- }
-
- /* Mantivemos apenas a velocidade, ajustei a posição para ficar visível */
- #txt-velocidade { 
- bottom: 10.5%; 
- left: 52%; 
- width: 25%; 
- color: #00ff00; 
- font-size: 22px; 
- justify-content: flex-end; 
- }
  </style>
 </head>
 <body style="text-align: center;">
@@ -57,15 +34,12 @@
  <img id="cenario" src="https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg">
 
  <div class="interaction-layer">
- <!-- Removido: area-freio (bolinha amarela) -->
- <!-- Removido: txt-direcao (N) -->
- <!-- Removido: txt-potencia (0) -->
- 
- <div id="txt-velocidade" class="status-text">0 km/h</div>
+ <!-- Tudo foi removido daqui: bolinha, N, 0 e Velocidade -->
  </div>
  </div>
 
  <script>
+ // Mantive a lógica no script para não dar erro, mas como não há elementos no HTML, nada será atualizado na tela.
  let direcao = 'N';
  let pontoAceleracao = 0;
  let velocidadeAtual = 0;
@@ -77,7 +51,7 @@
 
  function atualizarFreio(val) {
  if (emergenciaAtiva) return;
- valorFreio = val / 100; 
+ valorFreio = val / 100;
  }
 
  function aliviarFreios() {
@@ -88,16 +62,12 @@
 
  setInterval(() => {
  if (freiosTravados) return;
-
  let velAlvo = (direcao !== 'N') ? limitesVelocidade[pontoAceleracao] : 0;
-
  if (velocidadeAtual < velAlvo) velocidadeAtual += 0.1;
  else if (velocidadeAtual > velAlvo) velocidadeAtual -= 0.05;
-
  if (valorFreio > 0) {
  velocidadeAtual -= (valorFreio * 0.8);
  }
-
  if (emergenciaAtiva) {
  velocidadeAtual -= 0.8;
  if (velocidadeAtual <= 0) {
@@ -105,9 +75,10 @@
  freiosTravados = true;
  }
  }
-
  if (velocidadeAtual < 0) velocidadeAtual = 0;
- document.getElementById('txt-velocidade').innerText = Math.round(velocidadeAtual) + " km/h";
+ 
+ // O comando abaixo foi desativado para não dar erro já que o txt-velocidade não existe mais
+ // document.getElementById('txt-velocidade').innerText = Math.round(velocidadeAtual) + " km/h";
  }, 50);
 
  window.addEventListener('dblclick', aliviarFreios);
