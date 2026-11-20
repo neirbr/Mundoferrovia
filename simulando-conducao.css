@@ -1,4 +1,4 @@
-body, html {
+body {
     margin: 0;
     padding: 0;
     width: 100%;
@@ -29,58 +29,21 @@ body, html {
     left: 0;
 }
 
-/* ÁREA DO SLIDER DE FREIO */
+/* ÁREA DO SLIDER DE FREIO - REMOVIDO */
 #zone-freio {
-    position: absolute;
-    bottom: 3%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 25%;
-    height: 8%;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    z-index: 10;
+    display: none;
 }
 
 #range-freio {
-    width: 100%;
-    appearance: none;
-    -webkit-appearance: none;
-    background: transparent;
-    outline: none;
+    display: none;
 }
 
-#range-freio::-webkit-slider-runnable-track {
-    width: 100%;
-    height: 10px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 5px;
-}
-
-#range-freio::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    height: 26px;
-    width: 26px;
-    border-radius: 50%;
-    background: #ffcc00;
-    cursor: pointer;
-    margin-top: -8px;
-    border: 2px solid #ffffff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* APENAS O TEXTO DE VELOCIDADE */
+/* APENAS O TEXTO DE VELOCIDADE - REMOVIDO */
 #txt-velocidade {
-    position: absolute;
-    bottom: 2%;
-    right: 15%;
-    color: #00ff00;
-    font-size: 22px;
-    text-shadow: 2px 2px 4px black;
-    pointer-events: none;
-    font-weight: bold;
+    display: none;
 }
 
-/* REMOVIDOS: #txt-direcao, #txt-potencia */
+/* REMOVENDO A LETRA N E O 0 (DIREÇÃO E POTÊNCIA) */
+#txt-direcao, #txt-potencia {
+    display: none !important;
+}
