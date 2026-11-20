@@ -22,7 +22,7 @@ body, html {
     /* Trava a proporção da imagem original para que ela não estique */
     aspect-ratio: 1037 / 1516; 
 
-    background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg');
+    background-image: url('https://github.com/neirbr/Mundoferrovia/blob/89b9aab9e3b342939920404530435976850a1821/assets/cenario-ferroviario.jpg');
     
     /* 'contain' garante que a imagem inteira caiba na tela, 
        mantendo a proporção e deixando as bordas pretas se a tela for diferente */
