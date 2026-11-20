@@ -5,133 +5,168 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Simulando Condução 2D</title>
     <style>
-        * {
-            box-sizing: border-box;
+        body, html {
             margin: 0;
             padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        body, html {
             width: 100%;
             height: 100%;
-            background-color: #000;
             overflow: hidden;
+            background-color: black;
+            font-family: Arial, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
         }
 
-        /* Container que mantém a proporção exata da imagem 1037x1516 */
-        #game-viewport {
+        /* Container principal */
+        #game-container {
             position: relative;
-            height: 100vh; /* Ocupa a altura total da tela */
-            aspect-ratio: 1037 / 1516; /* Trava a largura proporcionalmente à altura */
-            background-image: url('assets/cenario-ferroviario.jpg');
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
-            background-position: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Zonas de clique - Ajustadas para a proporção da imagem */
-        .btn-zone {
+        /* Área do cenário (parte superior) */
+        #scenario {
+            flex: 1;
+            background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg');
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
+            overflow: hidden; /* Impede scroll indesejado */
+        }
+
+        /* Área do painel (parte inferior, fixa) */
+        #control-panel {
+            height: 20vh; /* Altura fixa para o painel */
+            background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg');
+            background-size: cover;
+            background-position: center bottom; /* Fixa o painel na parte inferior */
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        /* Camada de interação (sobreposta ao painel) */
+        .interaction-layer {
             position: absolute;
-            background: rgba(255, 0, 0, 0.3); /* Vermelho para ajuste */
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        /* Zonas de clique */
+        .click-zone {
+            position: absolute;
+            background: rgba(255, 0, 0, 0.4);
             border: 1px solid red;
             cursor: pointer;
             z-index: 10;
         }
 
-        /* POSICIONAMENTO BASEADO NA IMAGEM 1037x1516 */
-        
-        #btn-buzina {
-            bottom: 4.5%; 
-            left: 3%;
+        /* POSICIONAMENTO DOS BOTÕES (ajustado para o painel fixo) */
+        #zone-buzina {
+            bottom: 15%; /* Ajuste para o painel fixo */
+            left: 2%;
             width: 15%;
-            height: 7%;
-            border-radius: 50%;
+            height: 8%;
         }
 
-        #btn-dir-up {
-            bottom: 8%; 
-            left: 22%;
-            width: 10%;
+        #zone-dir-up {
+            bottom: 25%;
+            left: 20%;
+            width: 12%;
             height: 4%;
         }
 
-        #btn-dir-down {
-            bottom: 3%; 
-            left: 22%;
-            width: 10%;
+        #zone-dir-down {
+            bottom: 35%;
+            left: 20%;
+            width: 12%;
             height: 4%;
         }
 
-        #btn-pot-up {
-            bottom: 8%; 
-            left: 38%;
-            width: 10%;
+        #zone-pot-up {
+            bottom: 25%;
+            left: 35%;
+            width: 12%;
             height: 4%;
         }
 
-        #btn-pot-down {
-            bottom: 3%; 
-            left: 38%;
-            width: 10%;
+        #zone-pot-down {
+            bottom: 35%;
+            left: 35%;
+            width: 12%;
             height: 4%;
         }
 
-        #slider-freio {
-            position: absolute;
-            bottom: 4.5%;
-            left: 53%;
-            width: 22%;
-            height: 5%;
-            z-index: 20;
-            accent-color: #f1c40f;
+        #zone-freio {
+            bottom: 15%;
+            left: 50%;
+            width: 25%;
+            height: 8%;
         }
 
-        #btn-emergencia {
-            bottom: 4.5%;
-            right: 3%;
+        #zone-emergencia {
+            bottom: 15%;
+            right: 2%;
             width: 15%;
-            height: 7%;
-            border-radius: 50%;
+            height: 8%;
         }
 
-        /* Texto de Status */
-        .status-display {
+        /* Textos de status */
+        .status-text {
             position: absolute;
             color: white;
-            font-family: Arial, sans-serif;
             font-weight: bold;
-            text-align: center;
+            text-shadow: 2px 2px 2px black;
             pointer-events: none;
-            text-shadow: 2px 2px 4px black;
+            font-size: 18px;
+            text-align: center;
         }
-        #txt-dir { bottom: 13%; left: 23%; width: 10%; font-size: 1.2rem; }
-        #txt-pot { bottom: 13%; left: 39%; width: 10%; font-size: 1.2rem; }
+
+        #txt-direcao {
+            bottom: 30%;
+            left: 22%;
+        }
+
+        #txt-potencia {
+            bottom: 30%;
+            left: 37%;
+        }
+
+        #txt-velocidade {
+            bottom: 5%;
+            right: 15%;
+            color: #00ff00;
+            font-size: 22px;
+        }
     </style>
 </head>
 <body>
+    <div id="game-container">
+        <!-- Cenário (parte superior) -->
+        <div id="scenario"></div>
 
-    <div id="game-viewport">
-        <!-- Displays de Texto -->
-        <div id="txt-dir" class="status-display">N</div>
-        <div id="txt-pot" class="status-display">0</div>
+        <!-- Painel de controles (parte inferior fixa) -->
+        <div id="control-panel">
+            <div class="interaction-layer">
+                <div id="zone-buzina" class="click-zone" onclick="buzina()"></div>
+                <div id="zone-dir-up" class="click-zone" onclick="mudarDir(1)"></div>
+                <div id="zone-dir-down" class="click-zone" onclick="mudarDir(-1)"></div>
+                <div id="zone-pot-up" class="click-zone" onclick="mudarPot(1)"></div>
+                <div id="zone-pot-down" class="click-zone" onclick="mudarPot(-1)"></div>
+                <input type="range" id="slider-freio" min="0" max="100" value="0" oninput="freio(this.value)" style="position: absolute; bottom: 15%; left: 50%; width: 25%; height: 8%; z-index: 20; transform: translateX(-50%);">
+                <div id="zone-emergencia" class="click-zone" onclick="emergencia()"></div>
 
-        <!-- Botões Interativos -->
-        <div id="btn-buzina" class="btn-zone" onclick="buzina()"></div>
-        
-        <div id="btn-dir-up" class="btn-zone" onclick="mudarDir(1)"></div>
-        <div id="btn-dir-down" class="btn-zone" onclick="mudarDir(-1)"></div>
-        
-        <div id="btn-pot-up" class="btn-zone" onclick="mudarPot(1)"></div>
-        <div id="btn-pot-down" class="btn-zone" onclick="mudarPot(-1)"></div>
-        
-        <input type="range" id="slider-freio" min="0" max="100" value="0" oninput="freio(this.value)">
-        
-        <div id="btn-emergencia" class="btn-zone" onclick="emergencia()"></div>
+                <!-- Textos -->
+                <div id="txt-direcao" class="status-text">N</div>
+                <div id="txt-potencia" class="status-text">0</div>
+                <div id="txt-velocidade" class="status-text">0</div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -139,16 +174,16 @@
         let pot = 0;
 
         function buzina() { alert("Buzina! 📢"); }
-        
+
         function mudarDir(v) {
             if(v > 0) dir = (dir === 'N') ? 'F' : (dir === 'R' ? 'N' : 'F');
             else dir = (dir === 'F') ? 'N' : (dir === 'N' ? 'R' : 'N');
-            document.getElementById('txt-dir').innerText = dir;
+            document.getElementById('txt-direcao').innerText = dir;
         }
 
         function mudarPot(v) {
             pot = Math.max(0, Math.min(8, pot + v));
-            document.getElementById('txt-pot').innerText = pot;
+            document.getElementById('txt-potencia').innerText = pot;
         }
 
         function freio(v) { console.log("Freio: " + v); }
