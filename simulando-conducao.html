@@ -5,78 +5,91 @@
  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
  <title>Simulador Ferroviário</title>
  <style>
- /* VOLTANDO AO LAYOUT ORIGINAL - SEM PREENCHER TELA */
- body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: black; font-family: Arial, sans-serif; }
+ body, html { margin: 0; padding: 0; background: black; font-family: Arial, sans-serif; overflow: hidden; }
 
- #game-container { 
-    position: relative; 
-    width: 100vw; 
-    height: 100vh; 
-    /* Imagem volta ao modo original: não estica, não preenche forçado */
-    background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg'); 
-    background-repeat: no-repeat;
-    background-position: center top;
-    background-size: auto; 
+ #game-container {
+ position: relative;
+ display: inline-block;
+ margin: 0 auto;
  }
 
- .interaction-layer { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
-
- /* BOTÕES IMERSIVOS (Mantidos) */
- .btn-sim { 
-    position: absolute; 
-    cursor: pointer; 
-    border: 2px solid rgba(255,255,255,0.2); 
-    border-radius: 8px; 
-    transition: all 0.1s ease; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    color: white; 
-    font-weight: bold; 
-    text-shadow: 1px 1px 2px black; 
-    box-shadow: inset 0px 0px 10px rgba(0,0,0,0.5); 
+ #cenario {
+ display: block;
+ max-width: 100%;
+ height: auto;
  }
- .btn-sim:active { transform: scale(0.95); filter: brightness(1.3); }
- .btn-metal { background: linear-gradient(to bottom, #888, #444); }
 
- #btn-buzina { bottom: 2%; left: 2%; width: 15%; height: 8%; background: linear-gradient(to bottom, #a67c52, #5d3a1a); border-radius: 15px; }
+ .interaction-layer {
+ position: absolute;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ }
+
+ /* BOTÕES INVISÍVEIS - Eles ficam exatamente sobre os desenhos da imagem */
+ .btn-invisible {
+ position: absolute;
+ cursor: pointer;
+ background: rgba(255, 255, 255, 0); /* Totalmente transparente */
+ border: none;
+ outline: none;
+ }
+
+ /* Posicionamento ajustado para bater com a imagem do painel */
+ #btn-buzina { bottom: 2%; left: 2%; width: 15%; height: 8%; }
  #btn-dir-up { bottom: 6%; left: 22%; width: 10%; height: 4%; }
  #btn-dir-down { bottom: 2%; left: 22%; width: 10%; height: 4%; }
  #btn-pot-up { bottom: 6%; left: 37%; width: 10%; height: 4%; }
  #btn-pot-down { bottom: 2%; left: 37%; width: 10%; height: 4%; }
- #btn-freio { bottom: 2%; left: 50%; width: 25%; height: 8%; background: linear-gradient(to bottom, #ffcc00, #ff8800); border-radius: 20px; transform: translateX(-50%); color: black; }
- #btn-emergencia { bottom: 2%; right: 2%; width: 15%; height: 8%; background: radial-gradient(circle, #ff4444, #880000); border-radius: 50%; }
+ #btn-freio { bottom: 2%; left: 50%; width: 25%; height: 8%; transform: translateX(-50%); }
+ #btn-emergencia { bottom: 2%; right: 2%; width: 15%; height: 8%; }
 
- .status-text { position: absolute; color: white; font-weight: bold; text-shadow: 2px 2px 2px black; pointer-events: none; font-size: 18px; }
- #txt-direcao { bottom: 11%; left: 22%; }
- #txt-potencia { bottom: 11%; left: 37%; }
+ /* Textos de Status - Posicionados sobre os indicadores da imagem */
+ .status-text { 
+ position: absolute; 
+ color: white; 
+ font-weight: bold; 
+ text-shadow: 2px 2px 2px black; 
+ pointer-events: none; 
+ font-size: 18px; 
+ text-align: center;
+ }
+ #txt-direcao { bottom: 5%; left: 22%; width: 10%; }
+ #txt-potencia { bottom: 5%; left: 37%; width: 10%; }
  #txt-velocidade { bottom: 2%; right: 18%; color: #00ff00; font-size: 22px; }
  </style>
 </head>
 <body>
 
+ <div style="text-align: center;">
  <div id="game-container">
- <div class="interaction-layer">
- <div id="btn-buzina" class="btn-sim" onclick="buzina()">BUZINA</div>
- <div id="btn-dir-up" class="btn-sim btn-metal" onclick="mudarDirecao(1)">▲</div>
- <div id="btn-dir-down" class="btn-sim btn-metal" onclick="mudarDirecao(-1)">▼</div>
- <div id="btn-pot-up" class="btn-sim btn-metal" onclick="mudarPotencia(1)">▲</div>
- <div id="btn-pot-down" class="btn-sim btn-metal" onclick="mudarPotencia(-1)">▼</div>
- <div id="btn-freio" class="btn-sim" onmousedown="startBrake()" onmouseup="stopBrake()" ontouchstart="startBrake()" ontouchend="stopBrake()">FREIO</div>
- <div id="btn-emergencia" class="btn-sim" onclick="acionarEmergencia()">!</div>
+ <img id="cenario" src="https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg">
 
+ <div class="interaction-layer">
+ <!-- Botões agora são invisíveis, apenas áreas de clique -->
+ <div id="btn-buzina" class="btn-invisible" onclick="buzina()"></div>
+ <div id="btn-dir-up" class="btn-invisible" onclick="mudarDirecao(1)"></div>
+ <div id="btn-dir-down" class="btn-invisible" onclick="mudarDirecao(-1)"></div>
+ <div id="btn-pot-up" class="btn-invisible" onclick="mudarPotencia(1)"></div>
+ <div id="btn-pot-down" class="btn-invisible" onclick="mudarPotencia(-1)"></div>
+ <div id="btn-freio" class="btn-invisible" onmousedown="startBrake()" onmouseup="stopBrake()" ontouchstart="startBrake()" ontouchend="stopBrake()"></div>
+ <div id="btn-emergencia" class="btn-invisible" onclick="acionarEmergencia()"></div>
+
+ <!-- Os textos aparecem dentro dos círculos/quadrados da imagem -->
  <div id="txt-direcao" class="status-text">N</div>
  <div id="txt-potencia" class="status-text">0</div>
  <div id="txt-velocidade" class="status-text">0 km/h</div>
  </div>
  </div>
+ </div>
 
  <script>
- // --- MECÂNICA DE TRAÇÃO E FÍSICA (Mantida conforme solicitado) ---
- let direcao = 'N'; 
+ // --- MECÂNICA DE TRAÇÃO E FÍSICA ---
+ let direcao = 'N';
  let pontoAceleracao = 0;
  let velocidadeAtual = 0;
- let freioAtivo = 0; 
+ let freioAtivo = 0;
  let emergenciaAtiva = false;
  let freiosTravados = false;
 
