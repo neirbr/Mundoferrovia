@@ -42,7 +42,7 @@
 
 #control-panel {
     position: absolute;
-    bottom: 10%;
+    bottom: 10%; 
     left: 50%;
     transform: translateX(-50%);
     width: 92%;
@@ -52,13 +52,13 @@
     border: 2px solid #b89735;
     border-radius: 12px;
     display: flex;
-    align-items: center; /* Já está centralizado verticalmente, mas vamos ajustar o padding */
+    align-items: flex-start; /* Mudamos de center para flex-start para liberar o movimento */
     justify-content: space-around;
-    padding: 0 10px 0 10px; /* Removemos o padding-bottom para subir os botões */
+    padding: 0 10px;
     box-sizing: border-box;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
     z-index: 20;
-    padding-top: -5px; /* Ajuste esse valor para subir ou descer os botões */
+    padding-top: 15px; /* AGORA SIM: Aumente esse valor para descer ou diminua para subir */
 }
 
         .control-section {
