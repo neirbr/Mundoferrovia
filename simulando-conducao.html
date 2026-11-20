@@ -5,7 +5,7 @@
  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
  <title>Simulador Ferroviário</title>
  <style>
-  body, html { margin: 0; padding: 0; background: black; font-family: Arial, sans-serif; overflow: hidden; }
+ body, html { margin: 0; padding: 0; background: black; font-family: Arial, sans-serif; overflow: hidden; }
 
  #game-container {
  position: relative;
@@ -26,61 +26,202 @@
  width: 100%;
  height: 100%;
  }
+
+ .btn-invisible {
+ position: absolute;
+ cursor: pointer;
+ background: rgba(255, 255, 255, 0);
+ border: none;
+ outline: none;
+ -webkit-tap-highlight-color: transparent;
+ }
+
+ /* POSICIONAMENTO DOS BOTÕES */
+ #btn-buzina { bottom: 2%; left: 1%; width: 18%; height: 8%; }
+ #btn-dir-up { bottom: 6%; left: 21%; width: 15%; height: 4%; }
+ #btn-dir-down { bottom: 2%; left: 21%; width: 15%; height: 4%; }
+ #btn-pot-up { bottom: 6%; left: 36%; width: 15%; height: 4%; }
+ #btn-pot-down { bottom: 2%; left: 36%; width: 15%; height: 4%; }
+ #btn-emergencia { bottom: 2%; left: 81%; width: 18%; height: 8%; }
+
+ /* ÁREA DO SLIDER DE FREIO (Arrastar) */
+ #area-freio {
+ position: absolute;
+ bottom: 2%;
+ left: 52%;
+ width: 25%;
+ height: 8%;
+ display: flex;
+ align-items: center;
+ cursor: pointer;
+ -webkit-tap-highlight-color: transparent;
+ }
+
+ /* O slider customizado que fica em cima da barra da imagem */
+ #range-freio {
+ width: 100%;
+ appearance: none;
+ -webkit-appearance: none;
+ background: transparent;
+ outline: none;
+ }
+
+ #range-freio::-webkit-slider-runnable-track {
+ width: 100%;
+ height: 10px;
+ background: rgba(0, 0, 0, 0.3);
+ border-radius: 5px;
+ }
+
+ #range-freio::-webkit-slider-thumb {
+ -webkit-appearance: none;
+ height: 26px;
+ width: 26px;
+ border-radius: 50%;
+ background: #ffcc00;
+ cursor: pointer;
+ margin-top: -8px;
+ border: 2px solid #ffffff;
+ box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+ }
+
+ /* TEXTOS DE STATUS */
+ .status-text {
+ position: absolute;
+ color: white;
+ font-weight: bold;
+ text-shadow: 2px 2px 4px black;
+ pointer-events: none;
+ font-size: 20px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ }
+
+ #txt-direcao { bottom: 4.5%; left: 21%; width: 15%; }
+ #txt-potencia { bottom: 4.5%; left: 36%; width: 15%; }
+ #txt-velocidade { bottom: 10.5%; left: 52%; width: 25%; color: #00ff00; font-size: 22px; justify-content: flex-end; }
  </style>
 </head>
-<body style="text-align: center;">
+<body>
 
+ <div style="text-align: center;">
  <div id="game-container">
  <img id="cenario" src="https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg">
 
  <div class="interaction-layer">
- <!-- Tudo foi removido daqui: bolinha, N, 0 e Velocidade -->
+ <div id="btn-buzina" class="btn-invisible" onclick="buzina()"></div>
+ <div id="btn-dir-up" class="btn-invisible" onclick="mudarDirecao(1)"></div>
+ <div id="btn-dir-down" class="btn-invisible" onclick="mudarDirecao(-1)"></div>
+ <div id="btn-pot-up" class="btn-invisible" onclick="mudarPotencia(1)"></div>
+ <div id="btn-pot-down" class="btn-invisible" onclick="mudarPotencia(-1)"></div>
+
+ <!-- SLIDER DE FREIO (Arrastar) -->
+ <div id="area-freio">
+ <input type="range" id="range-freio" min="0" max="100" value="0" oninput="atualizarFreio(this.value)">
+ </div>
+
+ <div id="btn-emergencia" class="btn-invisible" onclick="acionarEmergencia()"></div>
+
+ <div id="txt-direcao" class="status-text">N</div>
+ <div id="txt-potencia" class="status-text">0</div>
+ <div id="txt-velocidade" class="status-text">0 km/h</div>
+ </div>
  </div>
  </div>
 
  <script>
- // Mantive a lógica no script para não dar erro, mas como não há elementos no HTML, nada será atualizado na tela.
- let direcao = 'N';
- let pontoAceleracao = 0;
+ let direcao = 'N'; // 'N' = Neutro, 'F' = Frente, 'R' = Ré
+ let pontoAceleracao = 0; // 0 a 8
  let velocidadeAtual = 0;
- let valorFreio = 0;
+ let valorFreio = 0; // 0 a 1
  let emergenciaAtiva = false;
  let freiosTravados = false;
 
  const limitesVelocidade = { 0: 0, 1: 15, 2: 25, 3: 35, 4: 45, 5: 55, 6: 65, 7: 75, 8: 100 };
 
+ function mudarDirecao(v) {
+ if (emergenciaAtiva || freiosTravados) return;
+
+ if (v > 0) {
+ // Seta para cima: vai direto para Frente
+ direcao = 'F';
+ } else {
+ // Seta para baixo: F -> N -> R -> N (ciclo)
+ if (direcao === 'F') direcao = 'N';
+ else if (direcao === 'N') direcao = 'R';
+ else if (direcao === 'R') direcao = 'N';
+ }
+ document.getElementById('txt-direcao').innerText = direcao;
+ }
+
+ function mudarPotencia(v) {
+ if (emergenciaAtiva || freiosTravados) return;
+ pontoAceleracao = Math.max(0, Math.min(8, pontoAceleracao + v));
+ document.getElementById('txt-potencia').innerText = pontoAceleracao;
+ }
+
  function atualizarFreio(val) {
- if (emergenciaAtiva) return;
- valorFreio = val / 100;
+ if (emergenciaAtiva || freiosTravados) return;
+ valorFreio = val / 100; // Proporção de 0 a 1
+ }
+
+ function acionarEmergencia() {
+ emergenciaAtiva = true;
+ document.getElementById('range-freio').value = 100;
+ valorFreio = 1;
  }
 
  function aliviarFreios() {
+ // Só permite aliviar se a emergência já tiver parado totalmente o trem
+ if (emergenciaAtiva && velocidadeAtual <= 0) {
  emergenciaAtiva = false;
  freiosTravados = false;
+ document.getElementById('range-freio').value = 0;
  valorFreio = 0;
  }
-
- setInterval(() => {
- if (freiosTravados) return;
- let velAlvo = (direcao !== 'N') ? limitesVelocidade[pontoAceleracao] : 0;
- if (velocidadeAtual < velAlvo) velocidadeAtual += 0.1;
- else if (velocidadeAtual > velAlvo) velocidadeAtual -= 0.05;
- if (valorFreio > 0) {
- velocidadeAtual -= (valorFreio * 0.8);
  }
+
+ function buzina() { 
+ alert("📢 BUZINA!"); 
+ }
+
+ // Loop principal de física do trem
+ setInterval(() => {
+ // Se os freios estiverem travados após a emergência, não faz nada até aliviar
+ if (freiosTravados) return;
+
+ // Velocidade alvo só existe se não estiver em Neutro
+ let velAlvo = (direcao !== 'N') ? limitesVelocidade[pontoAceleracao] : 0;
+
+ // Aceleração ou desaceleração natural para alcançar a velocidade alvo
+ if (velocidadeAtual < velAlvo) {
+ velocidadeAtual += 0.15;
+ } else if (velocidadeAtual > velAlvo) {
+ velocidadeAtual -= 0.1;
+ }
+
+ // Aplicação do freio comum (pelo slider)
+ if (valorFreio > 0) {
+ velocidadeAtual -= (valorFreio * 0.7);
+ }
+
+ // Aplicação da parada de emergência
  if (emergenciaAtiva) {
- velocidadeAtual -= 0.8;
+ velocidadeAtual -= 0.6; // Parada gradual
  if (velocidadeAtual <= 0) {
  velocidadeAtual = 0;
- freiosTravados = true;
+ freiosTravados = true; // Trava os controles até aliviar os freios
  }
  }
+
+ // Garante que a velocidade nunca seja negativa
  if (velocidadeAtual < 0) velocidadeAtual = 0;
- 
- // O comando abaixo foi desativado para não dar erro já que o txt-velocidade não existe mais
- // document.getElementById('txt-velocidade').innerText = Math.round(velocidadeAtual) + " km/h";
+
+ document.getElementById('txt-velocidade').innerText = Math.round(velocidadeAtual) + " km/h";
  }, 50);
 
+ // Dê um duplo clique na tela para aliviar os freios após uma parada de emergência total
  window.addEventListener('dblclick', aliviarFreios);
  </script>
 </body>
