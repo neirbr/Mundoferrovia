@@ -17,47 +17,59 @@
             -webkit-user-select: none;
         }
 
-#game-container {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg');
-    background-size: contain;
-    background-position: center top;
-    background-repeat: no-repeat;
-    padding-bottom: 15%; /* Espaço para o painel */
-}
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg');
+            background-size: contain;
+            background-position: center top;
+            background-repeat: no-repeat;
+            padding-bottom: 15%; 
+        }
 
-#txt-velocidade {
-    position: absolute;
-    bottom: 10%; /* Ajuste para não ficar tão baixo */
-    right: 15%;
-    color: #00ff00;
-    font-size: 22px;
-    text-shadow: 2px 2px 4px black;
-    pointer-events: none;
-    font-weight: bold;
-    z-index: 10;
-}
-#control-panel {
-    position: absolute;
-    bottom: 20%; /* Aumentei de 10% para 20% para subir o painel inteiro na tela */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 92%;
-    max-width: 700px;
-    height: auto; /* Removi os 11% para a caixa não travar os botões */
-    background-color: #0b1a2c;
-    border: 2px solid #b89735;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 15px 10px; /* Adicionei preenchimento em cima e embaixo para ficar bonito */
-    box-sizing: border-box;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
-    z-index: 20;
-}
+        /* ESTILO DA COMPOSIÇÃO (NOVO) */
+        #composicao {
+            position: absolute;
+            width: 100px; /* Ajuste o tamanho da sua locomotiva aqui */
+            height: auto;
+            z-index: 15;
+            transition: transform 0.1s linear;
+            pointer-events: none;
+        }
+
+        #txt-velocidade {
+            position: absolute;
+            bottom: 2%;
+            right: 15%;
+            color: #00ff00;
+            font-size: 22px;
+            text-shadow: 2px 2px 4px black;
+            pointer-events: none;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        #control-panel {
+            position: absolute;
+            bottom: 20%; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 92%;
+            max-width: 700px;
+            height: auto; 
+            background-color: #0b1a2c;
+            border: 2px solid #b89735;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 15px 10px; 
+            box-sizing: border-box;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+            z-index: 20;
+        }
+
         .control-section {
             display: flex;
             flex-direction: column;
@@ -84,7 +96,6 @@
             font-weight: bold;
             letter-spacing: 1px;
             margin-bottom: 4px;
-            text-align: center;
         }
 
         .btn-buzina {
@@ -100,6 +111,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.5);
             -webkit-tap-highlight-color: transparent;
         }
+
         .btn-buzina svg {
             width: 22px;
             height: 22px;
@@ -209,23 +221,14 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             -webkit-tap-highlight-color: transparent;
         }
-
-        #txt-velocidade {
-            position: absolute;
-            bottom: 2%;
-            right: 15%;
-            color: #00ff00;
-            font-size: 22px;
-            text-shadow: 2px 2px 4px black;
-            pointer-events: none;
-            font-weight: bold;
-            z-index: 10;
-        }
     </style>
 </head>
 <body>
 
     <div id="game-container">
+        <!-- IMAGEM DA COMPOSIÇÃO (NOVO) -->
+        <img id="composicao" src="https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/composicao.png" alt="Trem">
+
         <div id="txt-velocidade">0 km/h</div>
 
         <div id="control-panel">
@@ -270,8 +273,6 @@
         <div class="interaction-layer"></div>
     </div>
 
-    <!-- Link para o seu arquivo JS -->
-
     <script>
         let direcao = 'N'; 
         let pontoAceleracao = 0; 
@@ -282,9 +283,45 @@
 
         const limitesVelocidade = { 0: 0, 1: 15, 2: 25, 3: 35, 4: 45, 5: 55, 6: 65, 7: 75, 8: 100 };
 
+        // --- LÓGICA DE MOVIMENTO DA COMPOSIÇÃO (NOVO) ---
+        const trajeto = [
+            {x: 10, y: 40}, // Ponto A (Início)
+            {x: 30, y: 40}, // Ponto B
+            {x: 50, y: 35}, // Ponto C (Exemplo de curva)
+            {x: 80, y: 35}, // Ponto D
+        ];
+        let pontoAtualIndex = 0;
+        let progressoNoTrecho = 0;
+
+        function atualizarPosicaoComposicao() {
+            if (velocidadeAtual === 0) return;
+
+            const composicao = document.getElementById('composicao');
+            const p1 = trajeto[pontoAtualIndex];
+            const p2 = trajeto[(pontoAtualIndex + 1) % trajeto.length];
+
+            // O trem move baseado na velocidade
+            progressoNoTrecho += (velocidadeAtual / 5000); 
+
+            if (progressoNoTrecho >= 1) {
+                progressoNoTrecho = 0;
+                pontoAtualIndex = (pontoAtualIndex + 1) % trajeto.length;
+            }
+
+            const currentX = p1.x + (p2.x - p1.x) * progressoNoTrecho;
+            const currentY = p1.y + (p2.y - p1.y) * progressoNoTrecho;
+
+            composicao.style.left = currentX + '%';
+            composicao.style.top = currentY + '%';
+
+            // Rotaciona a imagem para olhar para o próximo ponto
+            const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+            composicao.style.transform = `rotate(${angle}deg)`;
+        }
+        // -----------------------------------------------
+
         function mudarDirecao(v) {
             if (emergenciaAtiva) return;
-
             if (v > 0) {
                 direcao = 'F';
             } else {
@@ -357,11 +394,12 @@
             if (velocidadeAtual < 0) velocidadeAtual = 0;
 
             document.getElementById('txt-velocidade').innerText = Math.round(velocidadeAtual) + " km/h";
+            
+            // ATUALIZA A POSIÇÃO DO TREM NO LOOP (NOVO)
+            atualizarPosicaoComposicao();
         }, 50);
 
         window.addEventListener('dblclick', aliviarFreios);
     </script>
-
-    
 </body>
 </html>
