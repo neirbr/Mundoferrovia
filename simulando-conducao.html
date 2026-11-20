@@ -17,43 +17,48 @@
             -webkit-user-select: none;
         }
 
-        #game-container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg');
-            background-size: contain;
-            background-position: center top;
-            background-repeat: no-repeat;
-        }
+#game-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg');
+    background-size: contain;
+    background-position: center top;
+    background-repeat: no-repeat;
+    padding-bottom: 15%; /* Espaço para o painel */
+}
 
-        .interaction-layer {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-        }
+#txt-velocidade {
+    position: absolute;
+    bottom: 10%; /* Ajuste para não ficar tão baixo */
+    right: 15%;
+    color: #00ff00;
+    font-size: 22px;
+    text-shadow: 2px 2px 4px black;
+    pointer-events: none;
+    font-weight: bold;
+    z-index: 10;
+}
 
-        #control-panel {
-            position: absolute;
-            bottom: 3%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 92%;
-            max-width: 700px;
-            height: 11%;
-            background-color: #0b1a2c;
-            border: 2px solid #b89735;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            padding: 0 10px;
-            box-sizing: border-box;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.8);
-            z-index: 20;
-        }
+#control-panel {
+    position: absolute;
+    bottom: 10%; /* Ajuste para centralizar melhor */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%;
+    max-width: 700px;
+    height: 11%;
+    background-color: #0b1a2c;
+    border: 2px solid #b89735;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 10px;
+    box-sizing: border-box;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+    z-index: 20;
+}
 
         .control-section {
             display: flex;
