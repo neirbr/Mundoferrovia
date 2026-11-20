@@ -28,23 +28,6 @@
  height: 100%;
  }
 
- .btn-invisible {
- position: absolute;
- cursor: pointer;
- background: rgba(255, 255, 255, 0);
- border: none;
- outline: none;
- -webkit-tap-highlight-color: transparent;
- }
-
- /* POSICIONAMENTO DOS BOTÕES */
- #btn-buzina { bottom: 2%; left: 1%; width: 18%; height: 8%; }
- #btn-dir-up { bottom: 6%; left: 21%; width: 15%; height: 4%; }
- #btn-dir-down { bottom: 2%; left: 21%; width: 15%; height: 4%; }
- #btn-pot-up { bottom: 6%; left: 36%; width: 15%; height: 4%; }
- #btn-pot-down { bottom: 2%; left: 36%; width: 15%; height: 4%; }
- #btn-emergencia { bottom: 2%; left: 81%; width: 18%; height: 8%; }
-
  /* ÁREA DO SLIDER DE FREIO (Arrastar) */
  #area-freio {
  position: absolute;
@@ -99,26 +82,6 @@
  justify-content: center;
  }
 
- /* Centralizados perfeitamente na área dos botões de cima/baixo */
- #txt-direcao { bottom: 2%; left: 21%; width: 15%; height: 8%; }
- #txt-potencia { bottom: 2%; left: 36%; width: 15%; height: 8%; }
-
- /* Jogado para dentro da barra preta inferior, logo acima do slider de freio */
-#txt-velocidade { 
-  position: absolute;
-  bottom: 2%; /* Isso joga o texto para baixo, dentro da barra preta */
-  left: 52%; 
-  width: 25%; 
-  height: 8%; 
-  color: #00ff00; 
-  font-size: 18px; /* Tamanho menor para não vazar */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-shadow: 2px 2px 4px black;
-  pointer-events: none;
-}
-
  #txt-direcao { bottom: 4.5%; left: 21%; width: 15%; }
  #txt-potencia { bottom: 4.5%; left: 36%; width: 15%; }
  #txt-velocidade { bottom: 10.5%; left: 52%; width: 25%; color: #00ff00; font-size: 22px; justify-content: flex-end; }
@@ -131,18 +94,11 @@
  <img id="cenario" src="https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg">
 
  <div class="interaction-layer">
- <div id="btn-buzina" class="btn-invisible" onclick="buzina()"></div>
- <div id="btn-dir-up" class="btn-invisible" onclick="mudarDirecao(1)"></div>
- <div id="btn-dir-down" class="btn-invisible" onclick="mudarDirecao(-1)"></div>
- <div id="btn-pot-up" class="btn-invisible" onclick="mudarPotencia(1)"></div>
- <div id="btn-pot-down" class="btn-invisible" onclick="mudarPotencia(-1)"></div>
-
+ 
  <!-- SLIDER DE FREIO (Arrastar) -->
  <div id="area-freio">
  <input type="range" id="range-freio" min="0" max="100" value="0" oninput="atualizarFreio(this.value)">
  </div>
-
- <div id="btn-emergencia" class="btn-invisible" onclick="acionarEmergencia()"></div>
 
  <div id="txt-direcao" class="status-text">N</div>
  <div id="txt-potencia" class="status-text">0</div>
@@ -161,31 +117,9 @@
 
  const limitesVelocidade = { 0: 0, 1: 15, 2: 25, 3: 35, 4: 45, 5: 55, 6: 65, 7: 75, 8: 100 };
 
- function mudarDirecao(v) {
- if (emergenciaAtiva) return;
- if (v > 0) {
- direcao = (direcao === 'N') ? 'F' : (direcao === 'R' ? 'N' : 'F');
- } else {
- direcao = (direcao === 'F') ? 'N' : (direcao === 'N' ? 'R' : 'N');
- }
- document.getElementById('txt-direcao').innerText = direcao;
- }
-
- function mudarPotencia(v) {
- if (emergenciaAtiva) return;
- pontoAceleracao = Math.max(0, Math.min(8, pontoAceleracao + v));
- document.getElementById('txt-potencia').innerText = pontoAceleracao;
- }
-
  function atualizarFreio(val) {
  if (emergenciaAtiva) return;
  valorFreio = val / 100; // Converte para proporção de 0 a 1
- }
-
- function acionarEmergencia() {
- emergenciaAtiva = true;
- document.getElementById('range-freio').value = 100;
- valorFreio = 1;
  }
 
  function aliviarFreios() {
@@ -194,8 +128,6 @@
  document.getElementById('range-freio').value = 0;
  valorFreio = 0;
  }
-
- function buzina() { alert("📢 BUZINA!"); }
 
  setInterval(() => {
  if (freiosTravados) return;
