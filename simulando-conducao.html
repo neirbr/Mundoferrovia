@@ -5,7 +5,8 @@
  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
  <title>Simulador Ferroviário</title>
  <style>
- body, html { margin: 0; padding: 0; background: black; font-family: Arial, sans-serif; overflow: hidden; }
+  
+  body, html { margin: 0; padding: 0; background: black; font-family: Arial, sans-serif; overflow: hidden; }
 
  #game-container {
  position: relative;
@@ -92,10 +93,25 @@
  font-weight: bold;
  text-shadow: 2px 2px 4px black;
  pointer-events: none;
- font-size: 20px;
+ font-size: 18px;
  display: flex;
  align-items: center;
  justify-content: center;
+ }
+
+ /* Centralizados perfeitamente na área dos botões de cima/baixo */
+ #txt-direcao { bottom: 2%; left: 21%; width: 15%; height: 8%; }
+ #txt-potencia { bottom: 2%; left: 36%; width: 15%; height: 8%; }
+
+ /* Jogado para dentro da barra preta inferior, logo acima do slider de freio */
+ #txt-velocidade { 
+ bottom: 2.2%; 
+ left: 52%; 
+ width: 25%; 
+ height: 8%; 
+ color: #00ff00; 
+ font-size: 16px; 
+ justify-content: center; 
  }
 
  #txt-direcao { bottom: 4.5%; left: 21%; width: 15%; }
