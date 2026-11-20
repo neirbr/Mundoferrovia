@@ -4,8 +4,221 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Simulador Ferroviário</title>
-    <!-- Link para o seu arquivo CSS -->
-    <link rel="stylesheet" href="style.css"> 
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: black;
+            font-family: Arial, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg');
+            background-size: contain;
+            background-position: center top;
+            background-repeat: no-repeat;
+        }
+
+        .interaction-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        #control-panel {
+            position: absolute;
+            bottom: 3%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 92%;
+            max-width: 700px;
+            height: 11%;
+            background-color: #0b1a2c;
+            border: 2px solid #b89735;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 10px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+            z-index: 20;
+        }
+
+        .control-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            height: 100%;
+            position: relative;
+        }
+
+        .control-section:not(:last-child):after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 15%;
+            height: 70%;
+            width: 2px;
+            background-color: #b89735;
+        }
+
+        .control-label {
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .btn-buzina {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #1a2f4c 0%, #0b1a2c 100%);
+            border: 2px solid #ffcc00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn-buzina svg {
+            width: 22px;
+            height: 22px;
+            fill: #ffcc00;
+        }
+
+        .arrow-control {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .arrow-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            line-height: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .arrow-up {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 14px solid #ffcc00;
+            margin-bottom: 3px;
+        }
+
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 14px solid #ffcc00;
+            margin-top: 3px;
+        }
+
+        .control-display-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #ffcc00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffcc00;
+            font-size: 14px;
+            font-weight: bold;
+            background-color: #0b1a2c;
+        }
+
+        .brake-container {
+            width: 85%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+        }
+
+        #range-freio {
+            width: 100%;
+            appearance: none;
+            -webkit-appearance: none;
+            background: transparent;
+            outline: none;
+            cursor: pointer;
+        }
+
+        #range-freio::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 12px;
+            background: #334455;
+            border-radius: 6px;
+            border: 1px solid #556677;
+        }
+
+        #range-freio::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 26px;
+            width: 26px;
+            border-radius: 50%;
+            background: #ffcc00;
+            cursor: pointer;
+            margin-top: -8px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+        }
+
+        .btn-emergencia {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ff4444 0%, #cc0000 100%);
+            border: 2px solid #ffcc00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #txt-velocidade {
+            position: absolute;
+            bottom: 2%;
+            right: 15%;
+            color: #00ff00;
+            font-size: 22px;
+            text-shadow: 2px 2px 4px black;
+            pointer-events: none;
+            font-weight: bold;
+            z-index: 10;
+        }
+    </style>
 </head>
 <body>
 
