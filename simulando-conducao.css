@@ -4,7 +4,7 @@ body, html {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background-color: black; /* O fundo da tela é preto, a imagem fica no centro */
+    background-color: black;
     font-family: Arial, sans-serif;
     user-select: none;
     -webkit-user-select: none;
@@ -15,18 +15,11 @@ body, html {
 
 #game-container {
     position: relative;
-    /* Aqui definimos que o simulador nunca ultrapassa a tela */
-    max-width: 100%; 
+    max-width: 100%;
     max-height: 100vh;
-    
-    /* Trava a proporção da imagem original para que ela não estique */
-    aspect-ratio: 1037 / 1516; 
-
-    background-image: url('https://github.com/neirbr/Mundoferrovia/blob/89b9aab9e3b342939920404530435976850a1821/assets/cenario-ferroviario.jpg');
-    
-    /* 'contain' garante que a imagem inteira caiba na tela, 
-       mantendo a proporção e deixando as bordas pretas se a tela for diferente */
-    background-size: contain; 
+    aspect-ratio: 1037 / 1516;
+    background-image: url('https://raw.githubusercontent.com/neirbr/Mundoferrovia/main/assets/cenario-ferroviario.jpg');
+    background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
 }
@@ -37,66 +30,51 @@ body, html {
     height: 100%;
     top: 0;
     left: 0;
-    /* Garante que a camada de cliques acompanhe a imagem */
 }
 
-/* Zonas de clique - Agora elas são relativas ao tamanho da IMAGEM, não da TELA */
-.click-zone {
-    position: absolute;
-    background: rgba(255, 0, 0, 0.4); 
-    border: 1px solid red;
-    cursor: pointer;
-    z-index: 10;
-}
-
-/* POSICIONAMENTO (Ajuste esses valores agora que eles são relativos à imagem) */
-#zone-buzina {
-    bottom: 4%;
-    left: 2%;
-    width: 15%;
-    height: 8%;
-}
-
-#zone-dir-up {
-    bottom: 7%;
-    left: 20%;
-    width: 12%;
-    height: 4%;
-}
-#zone-dir-down {
-    bottom: 3%;
-    left: 20%;
-    width: 12%;
-    height: 4%;
-}
-
-#zone-pot-up {
-    bottom: 7%;
-    left: 35%;
-    width: 12%;
-    height: 4%;
-}
-#zone-pot-down {
-    bottom: 3%;
-    left: 35%;
-    width: 12%;
-    height: 4%;
-}
-
+/* ÁREA DO SLIDER DE FREIO (Arrastar) */
 #zone-freio {
+    position: absolute;
     bottom: 3%;
     left: 50%;
     width: 25%;
     height: 8%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 10;
 }
 
-#zone-emergencia {
-    bottom: 4%;
-    right: 2%;
-    width: 15%;
-    height: 8%;
+/* Slider customizado */
+#range-freio {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    outline: none;
 }
 
+#range-freio::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+#range-freio::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 26px;
+    width: 26px;
+    border-radius: 50%;
+    background: #ffcc00;
+    cursor: pointer;
+    margin-top: -8px;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* TEXTOS DE STATUS */
 .status-text {
     position: absolute;
     color: white;
