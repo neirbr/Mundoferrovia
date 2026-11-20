@@ -104,15 +104,20 @@
  #txt-potencia { bottom: 2%; left: 36%; width: 15%; height: 8%; }
 
  /* Jogado para dentro da barra preta inferior, logo acima do slider de freio */
- #txt-velocidade { 
- bottom: 2.2%; 
- left: 52%; 
- width: 25%; 
- height: 8%; 
- color: #00ff00; 
- font-size: 16px; 
- justify-content: center; 
- }
+#txt-velocidade { 
+  position: absolute;
+  bottom: 2%; /* Isso joga o texto para baixo, dentro da barra preta */
+  left: 52%; 
+  width: 25%; 
+  height: 8%; 
+  color: #00ff00; 
+  font-size: 18px; /* Tamanho menor para não vazar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 2px 2px 4px black;
+  pointer-events: none;
+}
 
  #txt-direcao { bottom: 4.5%; left: 21%; width: 15%; }
  #txt-potencia { bottom: 4.5%; left: 36%; width: 15%; }
