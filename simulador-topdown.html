@@ -1,1 +1,308 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Mundo Ferroviário — Simulador Top-Down</title>
+<style>
+:root{--navy:#102b3f;--panel:#0b1d2e;--gold:#e0b32e;--yellow:#ffc400}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-family:Arial,sans-serif;color:#fff}
+body{height:100dvh;display:flex;flex-direction:column;touch-action:manipulation}
+header{height:42px;min-height:42px;background:var(--navy);border-bottom:3px solid var(--gold);display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-weight:bold;letter-spacing:.6px;font-size:clamp(12px,3.5vw,17px)}
+header span:last-child{color:var(--yellow)}
+#gameArea{position:relative;flex:1;min-height:0;overflow:hidden;background:#173b32}
+#gameCanvas{width:100%;height:100%;display:block}
+#hud{position:absolute;top:8px;left:50%;transform:translateX(-50%);padding:7px 12px;background:#102b3fee;border:1px solid var(--gold);border-radius:18px;font-size:12px;font-weight:bold;white-space:nowrap;pointer-events:none}
+#status{position:absolute;left:8px;bottom:8px;padding:6px 9px;background:#102b3fee;border:1px solid var(--gold);border-radius:7px;font-size:10px;pointer-events:none}
+#controls{margin:5px 7px 3px;padding:9px 7px;background:var(--panel);border:3px solid var(--gold);border-radius:24px;min-height:154px;display:grid;grid-template-columns:.9fr 1fr 1fr 1.35fr .95fr;gap:4px;align-items:center}
+.control{height:125px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:space-around;position:relative}
+.control:not(:last-child)::after{content:"";position:absolute;right:-3px;top:12%;height:76%;width:3px;background:var(--gold)}
+.control-title{font-size:clamp(8px,2.6vw,12px);font-weight:bold;letter-spacing:.3px;white-space:nowrap}
+.round{width:clamp(43px,12vw,64px);height:clamp(43px,12vw,64px);border:3px solid var(--yellow);border-radius:50%;background:#102b3f;color:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:clamp(21px,6vw,28px);font-weight:bold}
+button{font-family:inherit;touch-action:manipulation;cursor:pointer}
+.arrow{width:38px;height:29px;border:0;background:transparent;color:var(--yellow);font-size:25px;font-weight:bold}
+.arrow:active{transform:scale(.88)}
+.selector{display:flex;flex-direction:column;align-items:center}
+.indicator{font-size:25px}
+#brake{width:94%;height:16px;appearance:none;border-radius:20px;background:#34485b;border:2px solid #526477;touch-action:pan-x}
+#brake::-webkit-slider-thumb{appearance:none;width:29px;height:29px;border-radius:50%;background:var(--yellow);border:3px solid white;box-shadow:0 2px 5px #0008}
+#brake::-moz-range-thumb{width:23px;height:23px;border-radius:50%;background:var(--yellow);border:3px solid white}
+.brake-label{font-size:10px;font-weight:bold}
+.emergency{width:clamp(48px,13vw,68px);height:clamp(48px,13vw,68px);border-radius:50%;border:4px solid var(--gold);background:radial-gradient(#ff4545,#bd0000);color:white;font-size:35px;font-weight:bold;box-shadow:0 3px 7px #0008}
+.emergency:active{transform:scale(.93)}
+button:disabled,input:disabled{opacity:.42;cursor:not-allowed}
+footer{height:15px;min-height:15px;text-align:center;font-size:9px;color:#a8bac5}
+@media(max-height:520px){header{height:30px;min-height:30px}#controls{min-height:112px;padding:3px}.control{height:96px}footer{height:11px;min-height:11px}}
+</style>
+</head>
+<body>
+<header><span>SIMULADOR 2D</span><span>MISSÃO 01</span></header>
+<main id="gameArea">
+  <canvas id="gameCanvas"></canvas>
+  <div id="hud">VELOCIDADE: 0 km/h</div>
+  <div id="status">PRONTO PARA PARTIDA</div>
+</main>
+<section id="controls">
+  <div class="control">
+    <div class="control-title">BUZINA</div>
+    <button class="round" id="horn" aria-label="Buzina">◖))</button>
+  </div>
+  <div class="control">
+    <div class="control-title">DIREÇÃO</div>
+    <div class="selector">
+      <button class="arrow" id="directionUp" aria-label="Selecionar frente">▲</button>
+      <div class="round indicator" id="directionDisplay">N</div>
+      <button class="arrow" id="directionDown" aria-label="Selecionar neutro ou ré">▼</button>
+    </div>
+  </div>
+  <div class="control">
+    <div class="control-title">POTÊNCIA</div>
+    <div class="selector">
+      <button class="arrow" id="powerUp" aria-label="Aumentar potência">▲</button>
+      <div class="round indicator" id="powerDisplay">0</div>
+      <button class="arrow" id="powerDown" aria-label="Diminuir potência">▼</button>
+    </div>
+  </div>
+  <div class="control">
+    <div class="control-title">FREIO</div>
+    <div class="brake-label">APLICAÇÃO</div>
+    <input id="brake" type="range" min="0" max="100" value="0" aria-label="Aplicação do freio">
+    <div class="brake-label">ALÍVIO</div>
+  </div>
+  <div class="control">
+    <div class="control-title">EMERGÊNCIA</div>
+    <button class="emergency" id="emergency" aria-label="Freio de emergência">!</button>
+  </div>
+</section>
+<footer>MUNDO FERROVIÁRIO · CONDUÇÃO FERROVIÁRIA 2D</footer>
+
+<script>
+(() => {
+"use strict";
+const canvas=document.getElementById("gameCanvas");
+const ctx=canvas.getContext("2d");
+const image=new Image();
+image.src="./cenario-topdow.png";
+let imageReady=false, view={scale:1,x:0,y:0};
+const W=1086,H=1448;
+
+const hud=document.getElementById("hud");
+const status=document.getElementById("status");
+const dirDisplay=document.getElementById("directionDisplay");
+const powerDisplay=document.getElementById("powerDisplay");
+const brakeInput=document.getElementById("brake");
+const directionUp=document.getElementById("directionUp");
+const directionDown=document.getElementById("directionDown");
+const powerUp=document.getElementById("powerUp");
+const powerDown=document.getElementById("powerDown");
+const emergencyButton=document.getElementById("emergency");
+
+let direction=0;       // -1 ré, 0 neutro, 1 frente
+let power=0;           // pontos 0 a 8
+let brake=0;           // aplicação 0 a 100
+let speed=0;           // km/h, sempre positiva; direção define o sentido
+let routePosition=0;   // distância ao longo do percurso em pixels
+let emergencyActive=false;
+let emergencyLatched=false;
+let missionFinished=false;
+let lastTime=performance.now();
+const maxSpeeds=[0,15,25,35,45,55,65,75,100];
+
+// Curva ferroviária mapeada sobre a imagem de 1086 x 1448.
+// Cada grupo contém quatro pontos de uma curva Bézier cúbica.
+const curves=[
+ [[0,112],[210,112],[590,112],[825,112]],
+ [[825,112],[920,112],[962,168],[962,265]],
+ [[962,265],[962,430],[962,690],[865,810]],
+ [[865,810],[790,900],[650,850],[545,850]],
+ [[545,850],[485,850],[458,800],[458,725]],
+ [[458,725],[458,590],[468,455],[385,390]],
+ [[385,390],[310,330],[170,355],[105,390]],
+ [[105,390],[48,420],[48,510],[48,650]],
+ [[48,650],[48,875],[48,1060],[105,1168]],
+ [[105,1168],[165,1260],[285,1260],[430,1260]],
+ [[430,1260],[620,1260],[835,1260],[1080,1260]]
+];
+let route=[],routeLengths=[],routeTotal=0;
+function buildRoute(){
+ route=[];routeLengths=[0];routeTotal=0;
+ for(let s=0;s<curves.length;s++){
+  const [p0,p1,p2,p3]=curves[s];
+  for(let i=0;i<=100;i++){
+   if(s>0&&i===0)continue;
+   const t=i/100,m=1-t;
+   const x=m*m*m*p0[0]+3*m*m*t*p1[0]+3*m*t*t*p2[0]+t*t*t*p3[0];
+   const y=m*m*m*p0[1]+3*m*m*t*p1[1]+3*m*t*t*p2[1]+t*t*t*p3[1];
+   if(route.length){const prev=route[route.length-1];routeTotal+=Math.hypot(x-prev.x,y-prev.y);}
+   route.push({x,y});routeLengths.push(routeTotal);
+  }
+ }
+}
+buildRoute();
+
+function pointAt(d){
+ d=Math.max(0,Math.min(d,routeTotal));
+ let lo=0,hi=routeLengths.length-1;
+ while(lo<hi){const mid=(lo+hi)>>1;if(routeLengths[mid]<d)lo=mid+1;else hi=mid;}
+ const i=Math.max(1,lo),a=route[i-1],b=route[i];
+ const span=routeLengths[i]-routeLengths[i-1];
+ const t=span?(d-routeLengths[i-1])/span:0;
+ return {x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,angle:Math.atan2(b.y-a.y,b.x-a.x)};
+}
+function resize(){
+ const rect=canvas.getBoundingClientRect(),ratio=Math.min(devicePixelRatio||1,2);
+ canvas.width=Math.round(rect.width*ratio);canvas.height=Math.round(rect.height*ratio);
+ ctx.setTransform(ratio,0,0,ratio,0,0);
+ if(imageReady){
+  view.scale=Math.min(rect.width/W,rect.height/H);
+  view.x=(rect.width-W*view.scale)/2;
+  view.y=(rect.height-H*view.scale)/2;
+ }
+ draw();
+}
+image.onload=()=>{imageReady=true;resize();status.textContent="PRONTO PARA PARTIDA";};
+image.onerror=()=>{status.textContent="IMAGEM NÃO ENCONTRADA: confira cenario-topdow.png";draw();};
+window.addEventListener("resize",resize);
+
+function setDirection(next){
+ if(emergencyActive||emergencyLatched||missionFinished)return;
+ direction=next;
+ dirDisplay.textContent=next===1?"F":next===-1?"R":"N";
+ updateStatus();
+}
+// Seletor em três posições: F <-> N <-> R.
+directionUp.addEventListener("click",()=>setDirection(direction===-1?0:1));
+directionDown.addEventListener("click",()=>setDirection(direction===1?0:-1));
+function setPower(next){
+ if(emergencyActive||emergencyLatched||missionFinished)return;
+ power=Math.max(0,Math.min(8,next));
+ powerDisplay.textContent=String(power);
+ updateStatus();
+}
+powerUp.addEventListener("click",()=>setPower(power+1));
+powerDown.addEventListener("click",()=>setPower(power-1));
+brakeInput.addEventListener("input",()=>{
+ if(emergencyActive||emergencyLatched||missionFinished)return;
+ brake=Number(brakeInput.value);
+});
+function lockControls(locked){
+ directionUp.disabled=locked;directionDown.disabled=locked;
+ powerUp.disabled=locked;powerDown.disabled=locked;
+ brakeInput.disabled=locked;
+}
+emergencyButton.addEventListener("click",()=>{
+ if(missionFinished)return;
+ if(!emergencyActive&&!emergencyLatched){
+  emergencyActive=true;
+  lockControls(true);
+  status.textContent="EMERGÊNCIA — FRENAGEM";
+ }else if(speed<=0.05&&emergencyLatched){
+  emergencyActive=false;emergencyLatched=false;
+  brake=0;brakeInput.value="0";
+  lockControls(false);
+  status.textContent="EMERGÊNCIA ALIVIADA — PRONTO";
+ }
+});
+
+let audioContext=null;
+document.getElementById("horn").addEventListener("click",()=>{
+ try{
+  audioContext=audioContext||new (window.AudioContext||window.webkitAudioContext)();
+  if(audioContext.state==="suspended")audioContext.resume();
+  const osc=audioContext.createOscillator(),gain=audioContext.createGain();
+  osc.type="sawtooth";osc.frequency.setValueAtTime(190,audioContext.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(135,audioContext.currentTime+.55);
+  gain.gain.setValueAtTime(.0001,audioContext.currentTime);
+  gain.gain.linearRampToValueAtTime(.10,audioContext.currentTime+.04);
+  gain.gain.exponentialRampToValueAtTime(.0001,audioContext.currentTime+.65);
+  osc.connect(gain);gain.connect(audioContext.destination);
+  osc.start();osc.stop(audioContext.currentTime+.66);
+ }catch(e){}
+});
+function updateStatus(){
+ if(emergencyActive||emergencyLatched||missionFinished)return;
+ if(speed>.1)status.textContent="COMPOSIÇÃO EM MOVIMENTO";
+ else if(direction===0&&power>0)status.textContent="POTÊNCIA SELECIONADA — NEUTRO";
+ else if(direction!==0&&power>0)status.textContent="PRONTO PARA MOVIMENTAÇÃO";
+ else status.textContent="PRONTO PARA PARTIDA";
+}
+
+function update(now){
+ const dt=Math.min((now-lastTime)/1000,.05);lastTime=now;
+ if(emergencyActive){
+  speed=Math.max(0,speed-5.5*dt);
+  if(speed<=.05){speed=0;emergencyActive=false;emergencyLatched=true;status.textContent="PARADA TOTAL — ALIVIE A EMERGÊNCIA";}
+ }else if(!emergencyLatched&&!missionFinished){
+  if(brake>0){
+   const decel=.6+(brake/100)*3.2;
+   speed=Math.max(0,speed-decel*dt);
+  }else if(direction!==0&&power>0){
+   const target=maxSpeeds[power];
+   if(speed<target)speed=Math.min(target,speed+2.2*dt);
+   else if(speed>target)speed=Math.max(target,speed-.65*dt);
+  }else{
+   // Inércia: em neutro ou potência zero, a composição desacelera lentamente.
+   speed=Math.max(0,speed-.12*dt);
+  }
+  if(direction!==0&&speed>0){
+   // Escala de jogo: converte km/h em pixels por segundo no mapa.
+   routePosition+=direction*speed*.34*dt;
+   routePosition=Math.max(0,Math.min(routeTotal,routePosition));
+  }
+  if(routePosition>=routeTotal&&direction===1){
+   speed=0;missionFinished=true;status.textContent="MISSÃO CONCLUÍDA!";
+   lockControls(true);
+  }
+ }
+ hud.textContent="VELOCIDADE: "+Math.round(speed)+" km/h";
+ draw();
+ requestAnimationFrame(update);
+}
+function drawVehicle(pos,color,isLocomotive=false){
+ const x=view.x+pos.x*view.scale,y=view.y+pos.y*view.scale,s=view.scale;
+ ctx.save();ctx.translate(x,y);ctx.rotate(pos.angle);ctx.scale(s,s);
+ // Comprimento orientado ao eixo dos trilhos.
+ ctx.fillStyle="#18232a";ctx.fillRect(-19,-11,38,22);
+ ctx.fillStyle=color;ctx.fillRect(-17,-9,34,18);
+ if(isLocomotive){
+  ctx.fillStyle="#e6b83c";ctx.fillRect(-2,-8,13,16);
+  ctx.fillStyle="#9ed4e4";ctx.fillRect(0,-6,10,12);
+  ctx.fillStyle="#f8df8a";ctx.fillRect(14,-5,3,10);
+ }else{
+  ctx.fillStyle="#65717a";ctx.fillRect(-13,-6,25,12);
+  ctx.fillStyle="#d6dce0";ctx.fillRect(-9,-4,17,8);
+ }
+ ctx.fillStyle="#15191c";
+ for(const xx of [-11,11]){
+  ctx.fillRect(xx-3,-12,6,4);ctx.fillRect(xx-3,8,6,4);
+ }
+ ctx.restore();
+}
+function draw(){
+ const w=canvas.clientWidth,h=canvas.clientHeight;
+ ctx.clearRect(0,0,w,h);ctx.fillStyle="#173b32";ctx.fillRect(0,0,w,h);
+ if(!imageReady){
+  ctx.fillStyle="#fff";ctx.font="14px Arial";ctx.textAlign="center";
+  ctx.fillText("Carregando cenário...",w/2,h/2);return;
+ }
+ ctx.drawImage(image,view.x,view.y,W*view.scale,H*view.scale);
+ // Posição dos vagões calculada para trás da locomotiva, ao longo do traçado.
+ const sign=direction===-1?-1:1;
+ for(let i=3;i>=1;i--){
+  const d=routePosition-sign*i*34;
+  if(d>=0&&d<=routeTotal)drawVehicle(pointAt(d),"#b8c4cc",false);
+ }
+ drawVehicle(pointAt(routePosition),"#174d78",true);
+ if(emergencyActive||emergencyLatched){
+  ctx.fillStyle="#b90000e8";ctx.fillRect(8,42,120,25);
+  ctx.fillStyle="#fff";ctx.font="bold 11px Arial";ctx.fillText("EMERGÊNCIA",17,59);
+ }
+}
+resize();
+requestAnimationFrame(update);
+})();
+</script>
+</body>
+</html>
