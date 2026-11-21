@@ -148,7 +148,7 @@ new ResizeObserver(fit).observe($('stage'));fit();
 controls();$('status').textContent='Carregando o mapa…';
 map.onload=()=>{ready=true;reset();if(modal.open)modal.close();show('start');requestAnimationFrame(frame)};
 map.onerror=()=>{mode='unavailable';$('error').hidden=false;$('error').textContent='Não foi possível carregar o mapa. Recarregue a página para tentar novamente.';controls()};
-map.src='public/rogue-images/upload-efe926660b01a7dbc91f01f0349194b86fa454142d37de0ace695804aece7ae7.webp';
+map.src='https://neirbr.github.io/Mundoferrovia/cenario-topdow.png';
 </script>
 
 </body>
