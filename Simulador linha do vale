@@ -1,339 +1,155 @@
-
+index.html
 <!doctype html>
 <html lang="pt-BR">
-<head>
+<head><style data-rogue-action-style="1">[hidden]:not([hidden="until-found" i]){display:none!important}[data-rogue-action-blocked]{cursor:not-allowed!important;white-space:normal!important;flex-wrap:wrap!important;height:auto!important;opacity:1!important}[data-rogue-action-note]{display:block!important;flex-basis:100%;font-family:inherit;font-size:max(12px,.75em);font-weight:400;line-height:1.4;white-space:normal;pointer-events:none;margin-top:.25em}[data-rogue-provider-notice]{display:block!important;box-sizing:border-box!important;width:calc(100% - 2rem)!important;max-width:72rem!important;margin:1rem auto!important;padding:.75rem 1rem!important;border:1px solid #c9ced8!important;border-radius:.5rem!important;background:#f6f7f9!important;color:#1d2330!important;font:400 14px/1.5 system-ui,sans-serif!important;overflow-wrap:anywhere!important}</style><script data-rogue-action-runtime="1">(function E(e,t,a,r,s){let n="data-rogue-action-blocked",i="data-rogue-action-destination",o="data-rogue-action-destination-attribute",l="data-rogue-action-note",c=`a[href],form,[formaction],[data-rogue-action-requires],[data-rogue-action-state="setup_required"],[${n}]`,f={...e.dependencies};for(let t of(e={...e,dependencies:f},Object.keys(f)))t.startsWith("provider:")&&(f[t]=!1);let d=null,u=0,p=new Set,m=new Map,h=()=>[...new Set([...(e.providerDependencies??[]).map(e=>`provider:${e}`),...Array.from(document.querySelectorAll("[data-rogue-action-requires]")).flatMap(e=>(e.getAttribute("data-rogue-action-requires")??"").split(/\s+/).filter(e=>/^provider:[a-z0-9][a-z0-9-]{0,63}$/.test(e)))])],g=()=>{if(!document.body)return;let e=h(),t=document.documentElement.querySelector(":scope > [data-rogue-provider-notice]");if(!e.length&&!t)return;if(!t){let e=document.querySelector("template[data-rogue-provider-template]");(t=e?.content.querySelector("[data-rogue-provider-notice]")??document.createElement("aside")).setAttribute("data-rogue-provider-notice","1"),t.setAttribute("role","status"),t.setAttribute("aria-live","polite"),document.documentElement.insertBefore(t,document.body),e?.remove()}let r=e.some(e=>"unavailable"===m.get(e))?"unavailable":e.some(e=>!m.has(e))?"checking":e.some(e=>"setup"===m.get(e))?"setup":"ready",s="ready"===r?"":a[y()][r];t.textContent!==s&&(t.textContent=s),t.dataset.rogueProviderState!==r&&(t.dataset.rogueProviderState=r),t.hidden!==("ready"===r)&&(t.hidden="ready"===r)},v=(e=!1)=>{let t=h(),a=t.some(e=>!p.has(e));if(!t.length||d||!e&&!a&&Date.now()-u<1e4)return;t.forEach(e=>p.add(e)),u=Date.now();let r=new AbortController,s=setTimeout(()=>r.abort(),5e3);d=(async()=>{try{let e=await fetch("/__api/_capabilities",{cache:"no-store",credentials:"omit",signal:r.signal});if(!e.ok)throw Error("capabilities_unavailable");let a=await e.json(),s=a&&"object"==typeof a?a.dependencies:null;if(!s||"object"!=typeof s||Array.isArray(s))throw Error("invalid_capabilities");for(let e of t){let t=s[e];f[e]=!0===t,m.set(e,"boolean"!=typeof t?"unavailable":t?"connected":"setup")}}catch{for(let e of t)f[e]=!1,m.set(e,"unavailable")}finally{clearTimeout(s),document.querySelectorAll(c).forEach(e=>b(e,S(e))),d=null,g(),h().some(e=>!p.has(e))&&v()}})()},y=()=>document.documentElement.lang?/^pt(?:-|$)/i.test(document.documentElement.lang)?"pt":"en":e.language??"pt",S=t=>{let a=t.hasAttribute("formaction")?"formaction":"FORM"===t.tagName?"action":"href";return s(t.getAttribute(a)??t.getAttribute(i),t.getAttribute("data-rogue-action-requires"),t.getAttribute("data-rogue-action-state"),t.getAttribute("data-rogue-action-kind"),e,r)},b=(e,a)=>{let r="INPUT"===e.tagName,s=r?e.nextElementSibling?.matches(`[${l}]`)?e.nextElementSibling:null:e.querySelector(`:scope > [${l}]`);if(!a){if(!e.hasAttribute(n))return;let t=e.getAttribute(i),a=e.getAttribute(o);t&&a&&!e.hasAttribute(a)&&e.setAttribute(a,t);let r=e.getAttribute("data-rogue-action-original-aria-disabled"),l=e.getAttribute("data-rogue-action-original-tabindex");for(let t of(r?e.setAttribute("aria-disabled",r):e.removeAttribute("aria-disabled"),l?e.setAttribute("tabindex",l):e.removeAttribute("tabindex"),e.hasAttribute("data-rogue-action-added-role")&&e.removeAttribute("role"),[n,i,o,"data-rogue-action-original-aria-disabled","data-rogue-action-original-tabindex","data-rogue-action-added-role"]))e.removeAttribute(t);s?.remove();return}for(let t of(e.hasAttribute(n)||(e.setAttribute("data-rogue-action-original-aria-disabled",e.getAttribute("aria-disabled")??""),e.setAttribute("data-rogue-action-original-tabindex",e.getAttribute("tabindex")??""),e.setAttribute(n,a.kind)),e.getAttribute(n)!==a.kind&&e.setAttribute(n,a.kind),["href","formaction",..."FORM"===e.tagName?["action"]:[]])){let a=e.getAttribute(t);a&&(e.setAttribute(i,a),e.setAttribute(o,t),e.removeAttribute(t))}"FORM"!==e.tagName&&e.setAttribute("aria-disabled","true"),"A"===e.tagName&&(e.hasAttribute("role")||(e.setAttribute("role","link"),e.setAttribute("data-rogue-action-added-role","1")),e.setAttribute("tabindex","0")),s||((s=document.createElement("small")).setAttribute(l,"1"),r?e.insertAdjacentElement("afterend",s):e.appendChild(s));let c=t[y()];s.textContent!==c&&(s.textContent=c)},E=()=>{document.querySelectorAll(c).forEach(e=>b(e,S(e))),g(),v()},C=e=>{let t=e.target instanceof Element?e.target:null;if(e instanceof KeyboardEvent){if("Enter"!==e.key&&" "!==e.key&&"Spacebar"!==e.key)return;let a=t?.closest("input,textarea,select,[contenteditable]");if(a instanceof HTMLTextAreaElement||a instanceof HTMLSelectElement||a instanceof HTMLInputElement&&!["button","submit","image"].includes(a.type)||a instanceof HTMLElement&&a.isContentEditable)return}let a="submit"!==e.type?t?.closest('a,button,input[type="submit"],input[type="image"],input[type="button"],[role="button"],[role="link"]'):null;if("submit"!==e.type&&!a)return;let r=(a instanceof HTMLButtonElement?"submit"===a.type:a instanceof HTMLInputElement&&("submit"===a.type||"image"===a.type))&&(a instanceof HTMLButtonElement||a instanceof HTMLInputElement)?a.form:null,s=(a??t)?.closest(c)??null;for(;s;){if(a&&"FORM"===s.tagName&&s!==r){s=s.parentElement?.closest(c)??null;continue}let t=S(s);if(t){b(s,t),e.preventDefault(),e.stopImmediatePropagation(),v(!0);return}s=s.parentElement?.closest(c)??null}if(a&&r){let t=S(r);t&&(b(r,t),e.preventDefault(),e.stopImmediatePropagation(),v(!0))}};for(let e of(window.addEventListener("click",C,!0),window.addEventListener("submit",C,!0),["keydown","keypress","keyup"]))window.addEventListener(e,C,!0);new MutationObserver(E).observe(document.documentElement,{childList:!0,subtree:!0,attributes:!0,attributeFilter:["href","formaction","action","data-rogue-action-requires","data-rogue-action-state","data-rogue-action-kind","lang"]}),window.addEventListener("focus",()=>v(!0)),window.addEventListener("pageshow",()=>v(!0)),document.addEventListener("visibilitychange",()=>{document.hidden||v(!0)}),setInterval(()=>{document.hidden||v()},3e4),E()})({"contacts":["1000541879"],"emails":[],"dependencies":{"backend":false,"shopify":false},"providerDependencies":[],"language":"pt","inventedContacts":true},{"pt":"Indisponível no momento","en":"Not available yet"},{"pt":{"checking":"Carregando recursos…","unavailable":"Alguns recursos podem não funcionar agora. Tente novamente mais tarde.","setup":"Alguns recursos ainda não estão disponíveis."},"en":{"checking":"Loading features…","unavailable":"Some features may not work right now. Try again later.","setup":"Some features are not available yet."}},function(e,t=[],a=[]){let i,r,n=e.trim();if(/^tel:/i.test(n)){i="phone";try{r=decodeURIComponent(n.slice(4).split(/[;?]/,1)[0])}catch{r=""}}else if(/^mailto:/i.test(n)){i="email";try{let e=new URL(n);r=[decodeURIComponent(n.slice(7).split("?",1)[0]),...e.searchParams.getAll("cc"),...e.searchParams.getAll("bcc")].filter(Boolean).join(",")}catch{r=""}}else{let e;try{e=new URL(/^(?:wa\.me|(?:api|web)\.whatsapp\.com)\//i.test(n)?`https://${n}`:n)}catch{return null}let t=e.hostname.toLowerCase().replace(/^www\./,"");if("wa.me"===t&&/^https?:$/.test(e.protocol)){if(/^\/message\/[^/]+\/?$/i.test(e.pathname))return null;if(e.searchParams.has("phone"))r=e.searchParams.get("phone")??"";else{try{r=decodeURIComponent(e.pathname.replace(/^\/+|\/+$/g,""))}catch{r=""}if(!r)return null}}else{if(!(["api.whatsapp.com","web.whatsapp.com"].includes(t)&&/^https?:$/.test(e.protocol)&&/^\/send\/?$/i.test(e.pathname))&&("whatsapp:"!==e.protocol||"send"!==t)||!e.searchParams.has("phone"))return null;r=e.searchParams.get("phone")??""}i="whatsapp"}if(!r.trim())return{kind:i,reason:"missing"};if("email"===i){let e=r.split(/[;,]/).map(e=>e.trim().toLowerCase());return e.some(e=>!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)||/@(?:[^@]+\.)?(?:example\.(?:com|net|org)|example|invalid|test|localhost)$/i.test(e))?{kind:i,reason:"placeholder"}:e.every(e=>a.some(t=>t.trim().toLowerCase()===e))?null:{kind:i,reason:"unverified"}}let o=r.replace(/\D/g,"");if(!/^[+\d\s().-]+$/.test(r)||o.length<3||o.length>15||/^0+$/.test(o.replace(/^55/,"")))return{kind:i,reason:"placeholder"};if(o.length<8)return"phone"===i&&t.some(e=>e.replace(/\D/g,"")===o)?null:{kind:i,reason:"unverified"};let s=o.slice(-8);return t.some(e=>e.replace(/\D/g,"").endsWith(s))?null:{kind:i,reason:"unverified"}},function l(e,t,a,r,s,n){let i=e?n(e,s.contacts??[],s.emails??[]):null;return i&&!(s.inventedContacts&&"unverified"===i.reason)?i:(t??"").trim().split(/\s+/).filter(Boolean).find(e=>s.dependencies?.[e]!==!0)||"setup_required"===a?{kind:"payment"===r||"form"===r||"ai"===r?r:"service",reason:"setup_required"}:null});</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Linha do Vale</title>
+<meta name="description" content="Conduza manualmente uma locomotiva e cinco vagões pelo mapa da Linha do Vale com reversor, oito pontos de tração e freio de emergência.">
+<title>Linha do Vale — Simulador ferroviário 2D</title>
 <style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: #111a17; color: #f4f8f4;
-    font: 16px system-ui, sans-serif;
-  }
-  main {
-    max-width: 1100px; margin: auto; padding: 14px;
-    display: grid; grid-template-columns: minmax(0, 1fr) 300px;
-    align-items: start; gap: 14px;
-  }
-  canvas {
-    display: block; width: 100%; height: auto;
-    max-height: 94vh; object-fit: contain; border-radius: 12px;
-  }
-  aside { background: #20312a; border-radius: 12px; padding: 14px; }
-  h1 { margin: 0; font-size: 1.4rem; }
-  #velocidade { font-size: 2rem; font-variant-numeric: tabular-nums; }
-  fieldset { margin: 10px 0; border: 1px solid #6c887b; border-radius: 8px; }
-  .seletor {
-    display: grid; grid-template-columns: 44px 1fr 44px;
-    align-items: center; gap: 5px; text-align: center;
-  }
-  button {
-    min-height: 44px; padding: 6px; border: 0; border-radius: 8px;
-    background: #dceee3; color: #101d16; font: inherit;
-    cursor: pointer; touch-action: manipulation;
-  }
-  button:disabled { opacity: .45; cursor: default; }
-  input[type=range] { width: 100%; height: 32px; accent-color: #9fe0ab; }
-  .acoes { display: grid; gap: 8px; }
-  #emergencia { background: #b91c1c; color: white; font-weight: bold; }
-  #status { min-height: 3em; margin-bottom: 0; }
-  small { display: block; margin-top: 10px; color: #deebe2; }
-  @media (max-width: 720px) {
-    main { grid-template-columns: 1fr; }
-    canvas { max-height: 53vh; }
-  }
+:root{color-scheme:dark;--bg:#101913;--panel:#1b2921;--line:#52695a;--text:#f5f5e6;--muted:#bed0c2;--gold:#ffda81}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px system-ui,sans-serif}main{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:6px;padding:6px;max-width:1300px;margin:auto}header,footer{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:6px 10px}header,.actions,.lever,.readout{display:flex;align-items:center;gap:6px}header{justify-content:space-between}h1{font-size:16px;margin:0}button{font:inherit;font-weight:700;color:inherit;background:#2a4033;border:1px solid #688575;border-radius:7px;min-height:36px;padding:3px 9px;cursor:pointer}button:hover:not(:disabled){background:#405c4a}button:active:not(:disabled){transform:translateY(1px)}button:disabled{opacity:.45;cursor:not-allowed}:focus-visible{outline:3px solid var(--gold);outline-offset:2px}.stage{position:relative;display:grid;place-items:center;min-height:0;overflow:hidden;background:#132219;border:1px solid var(--line);border-radius:10px}canvas{display:block;width:min(100%,calc(var(--height, 400px) * .75));height:auto;aspect-ratio:3/4}.hud{position:absolute;top:6px;left:6px;right:6px;display:flex;justify-content:space-between;gap:4px;pointer-events:none}.chip{background:#14231ef5;border:1px solid #678174;border-radius:7px;padding:4px 7px}.speed{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}.route{text-align:right}.route small{display:block}small,.sub{color:var(--muted);font-size:11px}footer{display:grid;grid-template-columns:1fr 1fr 1.4fr auto;gap:5px 12px;align-items:end}.label{display:block;font-weight:700;margin-bottom:3px}.lever button{min-width:38px}.readout{display:block;text-align:center;min-width:66px;font-variant-numeric:tabular-nums}.readout b,.readout small{display:block}.brake label{display:flex;justify-content:space-between;gap:5px}input[type=range]{width:100%;margin:0;min-height:36px;accent-color:var(--gold)}.emergency{background:#672d2a;border-color:#d8877d;min-width:104px}.emergency:hover:not(:disabled){background:#823b32}.status{grid-column:1/-1;display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;min-height:20px}.status span{flex:1}progress{width:22%;height:8px;accent-color:var(--gold)}dialog{width:min(440px,calc(100% - 20px));border:1px solid #779180;border-radius:13px;background:var(--panel);color:var(--text);padding:18px;max-height:90dvh}dialog::backdrop{background:#09160dbd}dialog h2{margin:0}dialog p{line-height:1.5;white-space:pre-line}.primary{background:var(--gold);color:#251d0d;border-color:var(--gold)}.primary:hover:not(:disabled){background:#ffe6a3}.error{position:absolute;text-align:center;background:var(--panel);padding:12px;margin:8px;border-radius:8px}.error[hidden]{display:none}@media(max-width:650px){footer{grid-template-columns:1fr 1fr;gap:4px 8px}header button{padding:3px 6px;font-size:12px}.lever{justify-content:space-between}.emergency{width:100%}}@media(pointer:coarse){button{min-height:42px}.lever button{min-width:42px}}
 </style>
-</head>
+<meta property="og:type" content="website"><meta property="og:title" content="Linha do Vale — Simulador ferroviário 2D"><meta property="og:description" content="Conduza manualmente uma locomotiva e cinco vagões pelo mapa da Linha do Vale com reversor, oito pontos de tração e freio de emergência."><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Linha do Vale — Simulador ferroviário 2D"><meta name="twitter:description" content="Conduza manualmente uma locomotiva e cinco vagões pelo mapa da Linha do Vale com reversor, oito pontos de tração e freio de emergência."></head>
 <body>
 <main>
-  <canvas id="mapa" width="1086" height="1448"
-          aria-label="Mapa ferroviário com a locomotiva e cinco vagões"></canvas>
-
-  <aside>
-    <h1>Linha do Vale</h1>
-    <div><output id="velocidade">0,0</output> km/h</div>
-
-    <fieldset id="comandos">
-      <legend>Condução manual</legend>
-
-      <p>Direção</p>
-      <div class="seletor">
-        <button id="dirMenos" aria-label="Direção para baixo">▼</button>
-        <output id="direcao">Neutro</output>
-        <button id="dirMais" aria-label="Direção para cima">▲</button>
-      </div>
-
-      <p>Ponto de tração</p>
-      <div class="seletor">
-        <button id="pontoMenos" aria-label="Reduzir ponto">▼</button>
-        <output id="tracao">0</output>
-        <button id="pontoMais" aria-label="Aumentar ponto">▲</button>
-      </div>
-
-      <p>
-        <label for="freio">Freio: <output id="freioValor">0%</output></label>
-        <input id="freio" type="range" min="0" max="100" value="0">
-      </p>
-    </fieldset>
-
-    <div class="acoes">
-      <button id="emergencia">🛑 Freio de emergência</button>
-      <button id="aliviar" disabled>Aliviar freios</button>
-      <button id="reiniciar">Reiniciar viagem</button>
-    </div>
-
-    <p id="status" role="status">Pare na faixa amarela do ramal inferior.</p>
-    <small>Teclado: ↑/↓ direção · W/S tração · Espaço emergência.</small>
-  </aside>
+<header><h1>Linha do Vale</h1><div class="actions"><button id="pause">Pausar</button><button id="restart">Reiniciar</button><button id="help">Ajuda</button></div></header>
+<section class="stage" id="stage" aria-label="Mapa da ferrovia visto de cima">
+<canvas id="scene" width="1086" height="1448" role="img" aria-label="Mapa ferroviário com locomotiva e cinco vagões"></canvas>
+<div class="hud"><div class="chip"><strong class="speed" id="speed">0</strong> km/h</div><div class="chip route"><small>ATÉ A FAIXA FINAL</small><b id="distance"></b></div></div>
+<p id="error" class="error" role="alert" hidden></p>
+</section>
+<footer>
+<div><span class="label" id="directionLabel">Direção</span><div class="lever" role="group" aria-labelledby="directionLabel"><button id="dirDown" aria-label="Direção: um passo em direção à ré">↓</button><output class="readout" id="direction" aria-live="polite"></output><button id="dirUp" aria-label="Direção: um passo em direção à frente">↑</button></div></div>
+<div><span class="label" id="powerLabel">Tração</span><div class="lever" role="group" aria-labelledby="powerLabel"><button id="powerDown" aria-label="Diminuir um ponto de tração">↓</button><output class="readout" id="power" aria-live="polite"></output><button id="powerUp" aria-label="Aumentar um ponto de tração">↑</button></div></div>
+<div class="brake"><label class="label" for="brake">Freio <output id="brakeValue" for="brake">0%</output></label><input id="brake" type="range" min="0" max="100" value="0"></div>
+<button id="emergency" class="emergency">⚠ Emergência</button>
+<div class="status"><span id="status" role="status"></span><progress id="progress" aria-label="Progresso da viagem"></progress></div>
+</footer>
 </main>
-
+<dialog id="modal" aria-labelledby="modalTitle"><h2 id="modalTitle"></h2><p id="modalText"></p><button id="continue" class="primary"></button></dialog>
 <script>
-"use strict";
-
-const $ = id => document.getElementById(id);
-const canvas = $("mapa");
-const ctx = canvas.getContext("2d");
-const limitar = (x, min, max) => Math.max(min, Math.min(max, x));
-const limites = [0, 15, 25, 35, 45, 55, 65, 75, 100];
-
-// Coordenadas sobre a imagem de referência, em 1086 × 1448.
-// A linha segue da estação superior até o desvio e o ramal inferior.
-const trilho = document.createElementNS("http://www.w3.org/2000/svg", "path");
-trilho.setAttribute("d", `
-  M 0 122 H 795
-  C 889 122 946 200 946 287
-  V 702
-  C 946 810 891 862 784 862
-  H 632
-  C 515 862 452 793 452 690
-  V 560
-  C 452 432 375 367 263 367
-  C 145 367 56 437 56 549
-  V 1025
-  C 56 1160 132 1235 272 1235
-  H 315
-  C 446 1235 482 1336 585 1336
-  H 920
-`);
-const comprimento = trilho.getTotalLength();
-const espaco = 42;
-const inicio = 370;
-const minimo = 5 * espaco + 23;
-const maximo = comprimento - 23;
-const chegada = [comprimento - 130, comprimento - 35];
-const pixelsPorMetro = 1.35;
-
-const imagem = new Image();
-let mapaPronto = false;
-let mapaFalhou = false;
-imagem.onload = () => { mapaPronto = true; };
-imagem.onerror = () => { mapaFalhou = true; };
-imagem.src = "1000541879.png";
-
-let posicao, velocidade, direcao, ponto, emergencia, concluido;
-
-function reiniciar() {
-  posicao = inicio;
-  velocidade = 0;       // m/s, com sinal: positivo = avanço
-  direcao = 0;          // -1 ré, 0 neutro, +1 frente
-  ponto = 0;
-  emergencia = false;  // permanece acionada até o alívio manual
-  concluido = false;
-  $("freio").value = "0";
-  atualizarPainel();
+'use strict';
+const $=id=>document.getElementById(id),canvas=$('scene'),g=canvas.getContext('2d'),brake=$('brake'),modal=$('modal');
+const map=new Image();
+const limits=[0,15,25,35,45,55,65,75,100];
+// Centro do trilho na imagem original, da plataforma superior ao ramal inferior.
+const points=4,118],[120,118],[280,118],[445,118],[775,118],[812,119],[845,124],[873,136],[896,153],[915,177],[930,206],[940,239],[945,277],[945,677],[945,717],[942,749],[934,778],[920,805],[900,826],[875,843],[846,854],[813,860],[780,862],[613,862],[578,858],[548,848],[520,833],[498,812],[482,787],[469,757],[461,723],[455,687],[454,647],[454,552],[451,515],[444,483],[434,454],[418,428],[397,406],[373,390],[346,377],[316,369],[284,365],[249,368],[213,375],[179,386],[147,402],[119,424],[94,451],[75,482],[62,516],[56,550],[55,590],[54,889],[54,1057],[55,1092],[60,1123],[69,1149],[84,1172],[104,1192],[129,1207],[158,1219],[193,1227],[228,1231],[293,1232],[328,1233],[354,1238],[382,1245],[415,1257],[446,1272],[478,1290],[509,1308],[536,1320],[566,1329],[600,1333],[920,1334;
+const lengths=[0];
+for(let i=1;i<points.length;i++)lengths.push(lengths[i-1]+Math.hypot(points[i][0]-points[i-1][0],points[i][1]-points[i-1][1]));
+const end=lengths.at(-1),start=291,lower=185,goal=end-27,stopMin=end-49,stopMax=end-5,pixelsPerMeter=1.48;
+let position=start,velocity=0,notch=0,direction=0,locked=false,ready=false,mode='loading',back='play',last=0,notice='';
+function at(s){
+ s=Math.max(0,Math.min(end,s));
+ let lo=0,hi=lengths.length-1;
+ while(hi-lo>1){const mid=(lo+hi)>>1;if(lengths[mid]<=s)lo=mid;else hi=mid}
+ const a=points[lo],b=points[hi],t=(s-lengths[lo])/(lengths[hi]-lengths[lo]);
+ return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
 }
-
-function alterarDirecao(delta) {
-  if (!emergencia) direcao = limitar(direcao + delta, -1, 1);
+function render(){
+ if(!ready)return;
+ g.drawImage(map,0,0,1086,1448);
+ const [x,y]=at(stopMin),[x2]=at(stopMax);
+ g.fillStyle='#ffdc6c77';g.fillRect(x,y-14,x2-x,28);
+ g.fillStyle='#ffe18c';g.fillRect(x,y-15,3,30);g.fillRect(x2-3,y-15,3,30);
+ g.fillStyle='#18281d';g.fillRect(740,1285,180,29);
+ g.font='bold 17px system-ui';g.fillStyle='#ffe18c';g.textAlign='center';g.fillText('PARADA FINAL',830,1306);
+ for(let i=5;i>=0;i--){
+   const s=position-20-i*30,[cx,cy]=at(s),[ax,ay]=at(s-8),[bx,by]=at(s+8);
+   g.save();g.translate(cx,cy);g.rotate(Math.atan2(by-ay,bx-ax));g.scale(1.12,1.55);
+   g.fillStyle='#141c16';g.fillRect(-13,-6,26,13);if(i)g.fillRect(12,-2,4,4);
+   g.fillStyle=i?'#287385':'#b54224';g.fillRect(-12,-5,24,10);
+   g.fillStyle=i?'#82c5cc':'#f58c48';g.fillRect(-9,-4,18,3);
+   if(i){g.fillStyle='#d3efe4';for(let j=-8;j<9;j+=5)g.fillRect(j,1,3,2)}
+   else{g.fillStyle='#263d3c';g.fillRect(-7,-4,5,8);g.fillStyle='#fff19a';g.fillRect(9,-3,3,2);g.fillRect(9,2,3,2)}
+   g.restore();
+ }
 }
-
-function alterarPonto(delta) {
-  if (!emergencia) ponto = limitar(ponto + delta, 0, 8);
+function sync(){
+ $('speed').textContent=Math.round(Math.abs(velocity)*3.6);
+ $('distance').textContent=Math.max(0,Math.ceil((stopMin-position)/pixelsPerMeter)).toLocaleString('pt-BR')+' m';
+ $('progress').value=Math.max(0,(position-start)/(goal-start));
+ const status=!ready?'Mapa indisponível para condução.':locked?(velocity?'Emergência aplicada · aguarde a parada':'Composição parada · alivie o freio de emergência'):notice|| (position>=stopMin?'Faixa final · pare em neutro':position<start+120?'Estação de partida':position<lengths[35]?'Área rural':position<lengths[46]?'Bosque do Vale':position<lengths[61]?'Área urbana':'Ramal final');
+ if($('status').textContent!==status)$('status').textContent=status;
+ $('emergency').disabled=!ready||locked&&velocity!==0;
 }
-
-function aplicarEmergencia() {
-  if (emergencia) return;
-  emergencia = true;
-  ponto = 0;
-  $("freio").value = "100";
-  atualizarPainel();
+function controls(){
+ $('direction').innerHTML='<b>'+['Ré','Neutro','Frente'][direction+1]+'</b><small>Reversor</small>';
+ $('power').innerHTML='<b>Ponto '+notch+'</b><small>'+(notch?'Até '+limits[notch]+' km/h':'Sem tração')+'</small>';
+ $('brakeValue').textContent=brake.value+'%';
+ brake.setAttribute('aria-valuetext',brake.value+' por cento');
+ for(const [id,blocked] of 'dirDown',direction===-1],['dirUp',direction===1],['powerDown',notch===0],['powerUp',notch===8)$(id).disabled=!ready||locked||blocked;
+ brake.disabled=!ready||locked;
+ $('emergency').textContent=locked?'Aliviar freio':'⚠ Emergência';
+ $('pause').disabled=$('restart').disabled=!ready;
+ sync();
 }
-
-function aliviar() {
-  if (!emergencia || velocidade !== 0) return;
-  emergencia = false;
-  $("freio").value = "0";
-  atualizarPainel();
+function reset(){position=start;velocity=0;notch=0;direction=0;locked=false;brake.value=0;notice='';mode='play';controls();render()}
+function shift(d){
+ if(mode!=='play'||locked)return;
+ direction=Math.max(-1,Math.min(1,direction+d));notice='';
+ if(direction*velocity<0)notice='Sentido oposto selecionado · fre/ie até parar antes de inverter.'.replace('fre/ie','freie');
+ controls();
 }
-
-$("dirMenos").onclick = () => alterarDirecao(-1);
-$("dirMais").onclick = () => alterarDirecao(1);
-$("pontoMenos").onclick = () => alterarPonto(-1);
-$("pontoMais").onclick = () => alterarPonto(1);
-$("emergencia").onclick = aplicarEmergencia;
-$("aliviar").onclick = aliviar;
-$("reiniciar").onclick = reiniciar;
-
-window.addEventListener("keydown", e => {
-  // Não rouba as setas do controle deslizante nem o Espaço de um botão.
-  if (e.target.matches("input, button")) return;
-  if (!["ArrowUp", "ArrowDown", "KeyW", "KeyS", "Space"].includes(e.code)) return;
-  e.preventDefault();
-  if (e.repeat) return;
-  if (e.code === "ArrowUp") alterarDirecao(1);
-  if (e.code === "ArrowDown") alterarDirecao(-1);
-  if (e.code === "KeyW") alterarPonto(1);
-  if (e.code === "KeyS") alterarPonto(-1);
-  if (e.code === "Space") aplicarEmergencia();
+function power(d){if(mode==='play'&&!locked){notch=Math.max(0,Math.min(8,notch+d));notice='';controls()}}
+$('dirDown').addEventListener('click',()=>shift(-1));$('dirUp').addEventListener('click',()=>shift(1));
+$('powerDown').addEventListener('click',()=>power(-1));$('powerUp').addEventListener('click',()=>power(1));
+brake.addEventListener('input',()=>{notice='';controls()});
+function emergency(){
+ if(mode!=='play')return;
+ if(!locked){locked=true;notice=''}
+ else if(!velocity){locked=false;brake.value=0;notch=0;notice='Freio aliviado · selecione um ponto de tração.'}
+ controls();
+}
+$('emergency').addEventListener('click',emergency);
+const guide='Use ↑ e ↓ em cada seletor para mudar um estágio. A direção passa por Ré, Neutro e Frente. Com o reversor em neutro, nenhum ponto de tração move o trem parado. Engate um sentido para acelerar gradualmente até o limite do ponto escolhido.\n\nArraste o freio para dosar a frenagem. A emergência bloqueia os comandos até a parada total; então use Aliviar freio. Para concluir, pare com a frente da locomotiva na faixa amarela do ramal inferior e deixe a tração em 0.\n\nTeclado: ↑/↓ no seletor em foco, W/S para direção, A/D para tração, E para emergência ou alívio e P para pausar.';
+function show(type){
+ if(type==='help')back=mode;
+ mode=type;
+ const copy={start:['Assuma a condução',guide,'Iniciar viagem'],help:['Como conduzir',guide,'Voltar'],pause:['Viagem pausada','Os comandos serão mantidos ao retomar.','Retomar'],win:['Chegada concluída','Você estacionou a locomotiva e os cinco vagões no ramal final.','Nova viagem']}[type];
+ $('modalTitle').textContent=copy[0];$('modalText').textContent=copy[1];$('continue').textContent=copy[2];
+ if(!modal.open)modal.showModal();
+}
+function advance(){
+ if(mode==='start'||mode==='win')reset();
+ else mode=mode==='help'?back:'play';
+ modal.close();
+}
+$('continue').addEventListener('click',advance);
+modal.addEventListener('cancel',e=>{e.preventDefault();if(mode==='help'||mode==='pause')advance()});
+$('help').addEventListener('click',()=>show('help'));$('pause').addEventListener('click',()=>show('pause'));$('restart').addEventListener('click',reset);
+document.addEventListener('keydown',e=>{
+ if(mode!=='play'||e.altKey||e.ctrlKey||e.metaKey)return;
+ const key=e.key.toLowerCase(),vertical=key==='arrowup'||key==='arrowdown',id=e.target.id;
+ const action=vertical&&id.startsWith('dir')?()=>shift(key==='arrowup'?1:-1):vertical&&id.startsWith('power')?()=>power(key==='arrowup'?1:-1):({w:()=>shift(1),s:()=>shift(-1),a:()=>power(-1),d:()=>power(1),e:emergency,p:()=>show('pause'),escape:()=>show('pause')})[key];
+ if(typeof action==='function'){e.preventDefault();if(!e.repeat)action()}
 });
-
-function aproximar(atual, alvo, passo) {
-  if (Math.abs(alvo - atual) <= passo) return alvo;
-  return atual + Math.sign(alvo - atual) * passo;
+function frame(time){
+ const dt=Math.min(.05,(time-(last||time))/1000);last=time;
+ if(mode==='play'){
+ const speed=Math.abs(velocity),sign=Math.sign(velocity),b=Number(brake.value)/100,cap=limits[notch]/3.6;
+ let amount=speed;
+ if(locked||b>0)amount=Math.max(0,speed-(locked?2.9:.11+2.05*b)*dt);
+ else if(!direction||!notch||sign&&sign!==direction)amount=Math.max(0,speed-.085*dt);
+ else if(speed<cap)amount=Math.min(cap,speed+(.42+notch*.088)*dt);
+ else if(speed>cap)amount=Math.max(cap,speed-.28*dt);
+ velocity=amount*(sign||direction);
+ position+=velocity*dt*pixelsPerMeter;
+ if(position<lower||position>end){
+   position=Math.max(lower,Math.min(end,position));velocity=0;
+   notice='Fim do trilho · selecione o sentido oposto para voltar.';
+ }
+ if(!locked&&!velocity&&!notch&&position>=stopMin&&position<=stopMax)show('win');
+ sync();render();
+ }
+ requestAnimationFrame(frame);
 }
-
-function simular(dt) {
-  const freio = Number($("freio").value) / 100;
-  const anterior = velocidade;
-  const limite = limites[ponto] / 3.6;
-
-  if (emergencia) {
-    velocidade = aproximar(velocidade, 0, 2.1 * dt);
-  } else if (freio > 0) {
-    velocidade = aproximar(velocidade, 0, (0.05 + 1.35 * freio) * dt);
-  } else if (direcao === 0 || ponto === 0) {
-    // Sem tração, a composição perde velocidade só pela resistência.
-    velocidade = aproximar(velocidade, 0, 0.055 * dt);
-  } else if (velocidade * direcao < 0) {
-    // Não inverte instantaneamente uma composição ainda em movimento.
-    velocidade = aproximar(velocidade, 0, 0.055 * dt);
-  } else if (Math.abs(velocidade) > limite) {
-    // Reduzir o ponto não é o mesmo que aplicar o freio.
-    velocidade = aproximar(velocidade, direcao * limite, 0.055 * dt);
-  } else {
-    velocidade = aproximar(velocidade, direcao * limite,
-      (0.20 + ponto * 0.065) * dt);
-  }
-
-  posicao += (anterior + velocidade) * 0.5 * dt * pixelsPorMetro;
-  if (posicao <= minimo || posicao >= maximo) {
-    posicao = limitar(posicao, minimo, maximo);
-    velocidade = 0;
-  }
-
-  if (velocidade === 0 && posicao >= chegada[0] && posicao <= chegada[1]) {
-    concluido = true;
-  }
-}
-
-function atualizarPainel() {
-  $("velocidade").textContent =
-    (Math.abs(velocidade) * 3.6).toFixed(1).replace(".", ",");
-  $("direcao").textContent = ["Ré", "Neutro", "Frente"][direcao + 1];
-  $("tracao").textContent = ponto ? `${ponto} · ${limites[ponto]} km/h` : "0";
-  $("freioValor").textContent = `${$("freio").value}%`;
-  $("comandos").disabled = emergencia;
-  $("emergencia").disabled = emergencia;
-  $("aliviar").disabled = !emergencia || velocidade !== 0;
-
-  let texto = "Pare com a locomotiva na faixa amarela do ramal inferior.";
-  if (concluido) texto = "Viagem concluída! Você parou na faixa de chegada.";
-  if (emergencia) {
-    texto = velocidade === 0
-      ? "Composição parada. Clique em “Aliviar freios”."
-      : "Emergência aplicada. Aguarde a parada total.";
-  }
-  if ($("status").textContent !== texto) $("status").textContent = texto;
-}
-
-function amostrar(s) {
-  return trilho.getPointAtLength(limitar(s, 0, comprimento));
-}
-
-function caixa(x, y, largura, altura, cor) {
-  ctx.fillStyle = cor;
-  ctx.fillRect(x, y, largura, altura);
-}
-
-function desenharVeiculo(s, motor, indice) {
-  const p = amostrar(s);
-  const antes = amostrar(s - 10);
-  const depois = amostrar(s + 10);
-  ctx.save();
-  ctx.translate(p.x, p.y);
-  ctx.rotate(Math.atan2(depois.y - antes.y, depois.x - antes.x));
-
-  // O lado direito do desenho é a frente física da locomotiva.
-  const w = motor ? 40 : 37;
-  const h = motor ? 25 : 23;
-  const cores = ["#ce6b32", "#396ea9", "#aa423d", "#7253a0", "#41885b"];
-
-  caixa(-21, -3, 42, 6, "#151c20"); // engates
-  caixa(-w / 2 - 1, -h / 2 - 1, w + 2, h + 2, "#152027");
-  caixa(-w / 2, -h / 2, w, h, motor ? "#e8a727" : cores[indice - 1]);
-  caixa(-w / 2 + 2, -h / 2 + 2, w - 4, 3, "#ffffff55");
-
-  if (motor) {
-    caixa(3, -9, 12, 18, "#263741");
-    caixa(5, -7, 8, 14, "#95d6e9");
-    caixa(-15, -6, 15, 12, "#78451c");
-    caixa(17, -6, 3, 4, "#fff5b2");
-    caixa(17, 2, 3, 4, "#fff5b2");
-  } else {
-    caixa(-15, -7, 30, 14, "#00000035");
-    for (let x = -10; x <= 10; x += 10) {
-      caixa(x, -7, 2, 14, "#ffffff44");
-    }
-  }
-  ctx.restore();
-}
-
-function desenhar() {
-  caixa(0, 0, canvas.width, canvas.height, "#304a38");
-  if (mapaPronto) {
-    ctx.drawImage(imagem, 0, 0, canvas.width, canvas.height);
-  } else {
-    // O jogo continua utilizável sem o PNG, com um mapa esquemático.
-    const linha = new Path2D(trilho.getAttribute("d"));
-    ctx.lineWidth = 22;
-    ctx.strokeStyle = "#8a7051";
-    ctx.stroke(linha);
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = "#e7dfcb";
-    ctx.stroke(linha);
-    ctx.fillStyle = "white";
-    ctx.font = "29px system-ui";
-    ctx.fillText(mapaFalhou
-      ? "Mapa não encontrado: coloque 1000541879.png na pasta."
-      : "Carregando mapa…", 32, 65);
-  }
-
-  const a = amostrar(chegada[0]);
-  const b = amostrar(chegada[1]);
-  ctx.strokeStyle = "#ffe04a";
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.moveTo(a.x, a.y + 18);
-  ctx.lineTo(b.x, b.y + 18);
-  ctx.stroke();
-
-  for (let i = 5; i >= 0; i--) {
-    desenharVeiculo(posicao - i * espaco, i === 0, i);
-  }
-}
-
-reiniciar();
-let ultimo = performance.now();
-function quadro(agora) {
-  const dt = limitar((agora - ultimo) / 1000, 0, 0.05);
-  ultimo = agora;
-  simular(dt);
-  desenhar();
-  atualizarPainel();
-  requestAnimationFrame(quadro);
-}
-requestAnimationFrame(quadro);
+function fit(){$('stage').style.setProperty('--height',$('stage').clientHeight+'px')}
+new ResizeObserver(fit).observe($('stage'));fit();
+controls();$('status').textContent='Carregando o mapa…';
+map.onload=()=>{ready=true;reset();if(modal.open)modal.close();show('start');requestAnimationFrame(frame)};
+map.onerror=()=>{mode='unavailable';$('error').hidden=false;$('error').textContent='Não foi possível carregar o mapa. Recarregue a página para tentar novamente.';controls()};
+map.src='public/rogue-images/upload-efe926660b01a7dbc91f01f0349194b86fa454142d37de0ace695804aece7ae7.webp';
 </script>
+
 </body>
 </html>
