@@ -1,1 +1,339 @@
 
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linha do Vale</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #111a17; color: #f4f8f4;
+    font: 16px system-ui, sans-serif;
+  }
+  main {
+    max-width: 1100px; margin: auto; padding: 14px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start; gap: 14px;
+  }
+  canvas {
+    display: block; width: 100%; height: auto;
+    max-height: 94vh; object-fit: contain; border-radius: 12px;
+  }
+  aside { background: #20312a; border-radius: 12px; padding: 14px; }
+  h1 { margin: 0; font-size: 1.4rem; }
+  #velocidade { font-size: 2rem; font-variant-numeric: tabular-nums; }
+  fieldset { margin: 10px 0; border: 1px solid #6c887b; border-radius: 8px; }
+  .seletor {
+    display: grid; grid-template-columns: 44px 1fr 44px;
+    align-items: center; gap: 5px; text-align: center;
+  }
+  button {
+    min-height: 44px; padding: 6px; border: 0; border-radius: 8px;
+    background: #dceee3; color: #101d16; font: inherit;
+    cursor: pointer; touch-action: manipulation;
+  }
+  button:disabled { opacity: .45; cursor: default; }
+  input[type=range] { width: 100%; height: 32px; accent-color: #9fe0ab; }
+  .acoes { display: grid; gap: 8px; }
+  #emergencia { background: #b91c1c; color: white; font-weight: bold; }
+  #status { min-height: 3em; margin-bottom: 0; }
+  small { display: block; margin-top: 10px; color: #deebe2; }
+  @media (max-width: 720px) {
+    main { grid-template-columns: 1fr; }
+    canvas { max-height: 53vh; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <canvas id="mapa" width="1086" height="1448"
+          aria-label="Mapa ferroviário com a locomotiva e cinco vagões"></canvas>
+
+  <aside>
+    <h1>Linha do Vale</h1>
+    <div><output id="velocidade">0,0</output> km/h</div>
+
+    <fieldset id="comandos">
+      <legend>Condução manual</legend>
+
+      <p>Direção</p>
+      <div class="seletor">
+        <button id="dirMenos" aria-label="Direção para baixo">▼</button>
+        <output id="direcao">Neutro</output>
+        <button id="dirMais" aria-label="Direção para cima">▲</button>
+      </div>
+
+      <p>Ponto de tração</p>
+      <div class="seletor">
+        <button id="pontoMenos" aria-label="Reduzir ponto">▼</button>
+        <output id="tracao">0</output>
+        <button id="pontoMais" aria-label="Aumentar ponto">▲</button>
+      </div>
+
+      <p>
+        <label for="freio">Freio: <output id="freioValor">0%</output></label>
+        <input id="freio" type="range" min="0" max="100" value="0">
+      </p>
+    </fieldset>
+
+    <div class="acoes">
+      <button id="emergencia">🛑 Freio de emergência</button>
+      <button id="aliviar" disabled>Aliviar freios</button>
+      <button id="reiniciar">Reiniciar viagem</button>
+    </div>
+
+    <p id="status" role="status">Pare na faixa amarela do ramal inferior.</p>
+    <small>Teclado: ↑/↓ direção · W/S tração · Espaço emergência.</small>
+  </aside>
+</main>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+const canvas = $("mapa");
+const ctx = canvas.getContext("2d");
+const limitar = (x, min, max) => Math.max(min, Math.min(max, x));
+const limites = [0, 15, 25, 35, 45, 55, 65, 75, 100];
+
+// Coordenadas sobre a imagem de referência, em 1086 × 1448.
+// A linha segue da estação superior até o desvio e o ramal inferior.
+const trilho = document.createElementNS("http://www.w3.org/2000/svg", "path");
+trilho.setAttribute("d", `
+  M 0 122 H 795
+  C 889 122 946 200 946 287
+  V 702
+  C 946 810 891 862 784 862
+  H 632
+  C 515 862 452 793 452 690
+  V 560
+  C 452 432 375 367 263 367
+  C 145 367 56 437 56 549
+  V 1025
+  C 56 1160 132 1235 272 1235
+  H 315
+  C 446 1235 482 1336 585 1336
+  H 920
+`);
+const comprimento = trilho.getTotalLength();
+const espaco = 42;
+const inicio = 370;
+const minimo = 5 * espaco + 23;
+const maximo = comprimento - 23;
+const chegada = [comprimento - 130, comprimento - 35];
+const pixelsPorMetro = 1.35;
+
+const imagem = new Image();
+let mapaPronto = false;
+let mapaFalhou = false;
+imagem.onload = () => { mapaPronto = true; };
+imagem.onerror = () => { mapaFalhou = true; };
+imagem.src = "1000541879.png";
+
+let posicao, velocidade, direcao, ponto, emergencia, concluido;
+
+function reiniciar() {
+  posicao = inicio;
+  velocidade = 0;       // m/s, com sinal: positivo = avanço
+  direcao = 0;          // -1 ré, 0 neutro, +1 frente
+  ponto = 0;
+  emergencia = false;  // permanece acionada até o alívio manual
+  concluido = false;
+  $("freio").value = "0";
+  atualizarPainel();
+}
+
+function alterarDirecao(delta) {
+  if (!emergencia) direcao = limitar(direcao + delta, -1, 1);
+}
+
+function alterarPonto(delta) {
+  if (!emergencia) ponto = limitar(ponto + delta, 0, 8);
+}
+
+function aplicarEmergencia() {
+  if (emergencia) return;
+  emergencia = true;
+  ponto = 0;
+  $("freio").value = "100";
+  atualizarPainel();
+}
+
+function aliviar() {
+  if (!emergencia || velocidade !== 0) return;
+  emergencia = false;
+  $("freio").value = "0";
+  atualizarPainel();
+}
+
+$("dirMenos").onclick = () => alterarDirecao(-1);
+$("dirMais").onclick = () => alterarDirecao(1);
+$("pontoMenos").onclick = () => alterarPonto(-1);
+$("pontoMais").onclick = () => alterarPonto(1);
+$("emergencia").onclick = aplicarEmergencia;
+$("aliviar").onclick = aliviar;
+$("reiniciar").onclick = reiniciar;
+
+window.addEventListener("keydown", e => {
+  // Não rouba as setas do controle deslizante nem o Espaço de um botão.
+  if (e.target.matches("input, button")) return;
+  if (!["ArrowUp", "ArrowDown", "KeyW", "KeyS", "Space"].includes(e.code)) return;
+  e.preventDefault();
+  if (e.repeat) return;
+  if (e.code === "ArrowUp") alterarDirecao(1);
+  if (e.code === "ArrowDown") alterarDirecao(-1);
+  if (e.code === "KeyW") alterarPonto(1);
+  if (e.code === "KeyS") alterarPonto(-1);
+  if (e.code === "Space") aplicarEmergencia();
+});
+
+function aproximar(atual, alvo, passo) {
+  if (Math.abs(alvo - atual) <= passo) return alvo;
+  return atual + Math.sign(alvo - atual) * passo;
+}
+
+function simular(dt) {
+  const freio = Number($("freio").value) / 100;
+  const anterior = velocidade;
+  const limite = limites[ponto] / 3.6;
+
+  if (emergencia) {
+    velocidade = aproximar(velocidade, 0, 2.1 * dt);
+  } else if (freio > 0) {
+    velocidade = aproximar(velocidade, 0, (0.05 + 1.35 * freio) * dt);
+  } else if (direcao === 0 || ponto === 0) {
+    // Sem tração, a composição perde velocidade só pela resistência.
+    velocidade = aproximar(velocidade, 0, 0.055 * dt);
+  } else if (velocidade * direcao < 0) {
+    // Não inverte instantaneamente uma composição ainda em movimento.
+    velocidade = aproximar(velocidade, 0, 0.055 * dt);
+  } else if (Math.abs(velocidade) > limite) {
+    // Reduzir o ponto não é o mesmo que aplicar o freio.
+    velocidade = aproximar(velocidade, direcao * limite, 0.055 * dt);
+  } else {
+    velocidade = aproximar(velocidade, direcao * limite,
+      (0.20 + ponto * 0.065) * dt);
+  }
+
+  posicao += (anterior + velocidade) * 0.5 * dt * pixelsPorMetro;
+  if (posicao <= minimo || posicao >= maximo) {
+    posicao = limitar(posicao, minimo, maximo);
+    velocidade = 0;
+  }
+
+  if (velocidade === 0 && posicao >= chegada[0] && posicao <= chegada[1]) {
+    concluido = true;
+  }
+}
+
+function atualizarPainel() {
+  $("velocidade").textContent =
+    (Math.abs(velocidade) * 3.6).toFixed(1).replace(".", ",");
+  $("direcao").textContent = ["Ré", "Neutro", "Frente"][direcao + 1];
+  $("tracao").textContent = ponto ? `${ponto} · ${limites[ponto]} km/h` : "0";
+  $("freioValor").textContent = `${$("freio").value}%`;
+  $("comandos").disabled = emergencia;
+  $("emergencia").disabled = emergencia;
+  $("aliviar").disabled = !emergencia || velocidade !== 0;
+
+  let texto = "Pare com a locomotiva na faixa amarela do ramal inferior.";
+  if (concluido) texto = "Viagem concluída! Você parou na faixa de chegada.";
+  if (emergencia) {
+    texto = velocidade === 0
+      ? "Composição parada. Clique em “Aliviar freios”."
+      : "Emergência aplicada. Aguarde a parada total.";
+  }
+  if ($("status").textContent !== texto) $("status").textContent = texto;
+}
+
+function amostrar(s) {
+  return trilho.getPointAtLength(limitar(s, 0, comprimento));
+}
+
+function caixa(x, y, largura, altura, cor) {
+  ctx.fillStyle = cor;
+  ctx.fillRect(x, y, largura, altura);
+}
+
+function desenharVeiculo(s, motor, indice) {
+  const p = amostrar(s);
+  const antes = amostrar(s - 10);
+  const depois = amostrar(s + 10);
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.rotate(Math.atan2(depois.y - antes.y, depois.x - antes.x));
+
+  // O lado direito do desenho é a frente física da locomotiva.
+  const w = motor ? 40 : 37;
+  const h = motor ? 25 : 23;
+  const cores = ["#ce6b32", "#396ea9", "#aa423d", "#7253a0", "#41885b"];
+
+  caixa(-21, -3, 42, 6, "#151c20"); // engates
+  caixa(-w / 2 - 1, -h / 2 - 1, w + 2, h + 2, "#152027");
+  caixa(-w / 2, -h / 2, w, h, motor ? "#e8a727" : cores[indice - 1]);
+  caixa(-w / 2 + 2, -h / 2 + 2, w - 4, 3, "#ffffff55");
+
+  if (motor) {
+    caixa(3, -9, 12, 18, "#263741");
+    caixa(5, -7, 8, 14, "#95d6e9");
+    caixa(-15, -6, 15, 12, "#78451c");
+    caixa(17, -6, 3, 4, "#fff5b2");
+    caixa(17, 2, 3, 4, "#fff5b2");
+  } else {
+    caixa(-15, -7, 30, 14, "#00000035");
+    for (let x = -10; x <= 10; x += 10) {
+      caixa(x, -7, 2, 14, "#ffffff44");
+    }
+  }
+  ctx.restore();
+}
+
+function desenhar() {
+  caixa(0, 0, canvas.width, canvas.height, "#304a38");
+  if (mapaPronto) {
+    ctx.drawImage(imagem, 0, 0, canvas.width, canvas.height);
+  } else {
+    // O jogo continua utilizável sem o PNG, com um mapa esquemático.
+    const linha = new Path2D(trilho.getAttribute("d"));
+    ctx.lineWidth = 22;
+    ctx.strokeStyle = "#8a7051";
+    ctx.stroke(linha);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#e7dfcb";
+    ctx.stroke(linha);
+    ctx.fillStyle = "white";
+    ctx.font = "29px system-ui";
+    ctx.fillText(mapaFalhou
+      ? "Mapa não encontrado: coloque 1000541879.png na pasta."
+      : "Carregando mapa…", 32, 65);
+  }
+
+  const a = amostrar(chegada[0]);
+  const b = amostrar(chegada[1]);
+  ctx.strokeStyle = "#ffe04a";
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(a.x, a.y + 18);
+  ctx.lineTo(b.x, b.y + 18);
+  ctx.stroke();
+
+  for (let i = 5; i >= 0; i--) {
+    desenharVeiculo(posicao - i * espaco, i === 0, i);
+  }
+}
+
+reiniciar();
+let ultimo = performance.now();
+function quadro(agora) {
+  const dt = limitar((agora - ultimo) / 1000, 0, 0.05);
+  ultimo = agora;
+  simular(dt);
+  desenhar();
+  atualizarPainel();
+  requestAnimationFrame(quadro);
+}
+requestAnimationFrame(quadro);
+</script>
+</body>
+</html>
