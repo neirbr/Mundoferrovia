@@ -153,17 +153,26 @@ function renderFields(){
 
     if(t==='textarea'){
       field=`<textarea name="${k}" ${req?'required':''}></textarea>`;
-    }else if(t==='select'&&k==='category'){
+
+}else if(t==='select'&&k==='category'){
+      const categories = tab === 'articles'
+        ? ['Ferrovias','Logística','Infraestrutura','Tecnologia','Outros']
+        : [
+            'Locomotivas',
+            'Vagões',
+            'Componentes ferroviários',
+            'Sinalização',
+            'Operações ferroviárias',
+            'História ferroviária'
+          ];
+
       field=`
         <select name="${k}" ${req?'required':''}>
           <option value="">Selecione uma categoria</option>
-          <option value="Locomotivas">Locomotivas</option>
-          <option value="Vagões">Vagões</option>
-          <option value="Componentes ferroviários">Componentes ferroviários</option>
-          <option value="Sinalização">Sinalização</option>
-          <option value="Operações ferroviárias">Operações ferroviárias</option>
-          <option value="História ferroviária">História ferroviária</option>
+          ${categories.map(c=>`<option value="${c}">${c}</option>`).join('')}
         </select>`;
+
+      
     }else if(t==='checkbox'){
       field=`<input type="checkbox" name="${k}" style="width:auto" checked>`;
     }else{
