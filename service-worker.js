@@ -75,8 +75,14 @@ async function guardarResposta(request, response) {
     return response;
   }
 
-  const cache = await caches.open(CACHE_NAME);
-  await cache.put(request, response.clone());
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(request, response.clone());
+  } catch (error) {
+    // Falha de quota nunca deve impedir o uso online do recurso.
+    console.warn("Não foi possível guardar recurso para uso offline:", error);
+  }
+
   return response;
 }
 
