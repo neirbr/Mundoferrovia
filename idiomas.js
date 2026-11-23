@@ -401,6 +401,14 @@ aboutClosingText: "¡Conocimiento que mueve los rieles!",
         element.setAttribute("aria-label", dictionary[key]);
       }
     });
+
+    document.querySelectorAll("[data-i18n-title]").forEach(element => {
+      const key = element.getAttribute("data-i18n-title");
+
+      if (dictionary[key] !== undefined) {
+        element.setAttribute("title", dictionary[key]);
+      }
+    });
   }
 
   // Disponibilizar a tradução para os outros módulos
