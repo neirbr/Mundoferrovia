@@ -3634,93 +3634,129 @@ function nextQuestion() {
 })();
     
     
-window.addEventListener('load', async()=>{
-  const box=document.getElementById('publishedNews');
-  if(!box) return;
+const MF_NEWS_CACHE_KEY = 'mf_news_cache_v1';
 
-  try {
-    const snap=await MF_DB.collection('articles')
-      .where('published','==',true)
-      .orderBy('created_at','desc')
-      .get();
+function renderPublishedNews(data, offline) {
+  const box = document.getElementById('publishedNews');
+  if (!box) return;
 
-    const data=snap.docs.map(d=>({id:d.id,...d.data()}));
+  box.innerHTML = data.length ? data.map(a => `
+    <article class="card news-card">
+      ${a.image_url ? `
+        <img class="news-cover"
+          src="${esc(a.image_url)}"
+          alt="${esc(a.title || 'Notícia ferroviária')}"
+          loading="lazy">
+      ` : `
+        <div class="news-placeholder">🚂</div>
+      `}
 
-    box.innerHTML=data.length ? data.map(a=>`
-      <article class="card news-card">
-        ${a.image_url ? `
-          <img class="news-cover"
-            src="${esc(a.image_url)}"
-            alt="${esc(a.title||'Notícia ferroviária')}"
-            loading="lazy">
-        ` : `
-          <div class="news-placeholder">🚂</div>
-        `}
-
-        <div class="news-content">
-          <span class="tag">${esc(a.category||'Notícia ferroviária')}</span>
-
-          <h3>${esc(a.title||'Sem título')}</h3>
-
-          <p>${esc(a.summary||a.body||'').slice(0,260)}</p>
-
-          <small class="muted">
-            ${a.created_at?.toDate
-              ? a.created_at.toDate().toLocaleDateString('pt-BR')
-              : 'Notícia recente'}
-          </small>
-
-          <button class="btn" type="button"
-            data-news-id="${esc(a.id)}">
-            Ler matéria completa →
-          </button>
-        </div>
-      </article>
-    `).join('') :
-    '<div class="empty">Ainda não há notícias publicadas.</div>';
-
-    box.onclick=event=>{
-      const btn=event.target.closest('[data-news-id]');
-      if(!btn) return;
-
-      const article=data.find(a=>a.id===btn.dataset.newsId);
-      if(!article) return;
-
-      const full=document.getElementById('fullNewsContent');
-      if(!full) return;
-
-      full.innerHTML=`
-        ${article.image_url ? `
-          <img class="full-news-cover"
-            src="${esc(article.image_url)}"
-            alt="${esc(article.title||'Notícia ferroviária')}">
-        ` : ''}
-
-        <span class="tag">${esc(article.category||'Notícia ferroviária')}</span>
-
-        <h1>${esc(article.title||'Sem título')}</h1>
-
+      <div class="news-content">
+        <span class="tag">${esc(a.category || 'Notícia ferroviária')}</span>
+        <h3>${esc(a.title || 'Sem título')}</h3>
+        <p>${esc(a.summary || a.body || '').slice(0, 260)}</p>
         <small class="muted">
-          ${article.created_at?.toDate
-            ? article.created_at.toDate().toLocaleDateString('pt-BR')
+          ${a.created_at_ms
+            ? new Date(a.created_at_ms).toLocaleDateString('pt-BR')
             : 'Notícia recente'}
         </small>
+        <button class="btn" type="button" data-news-id="${esc(a.id)}">
+          Ler matéria completa →
+        </button>
+      </div>
+    </article>
+  `).join('') : '<div class="empty">Ainda não há notícias publicadas.</div>';
 
-        <div class="full-news-body">${esc(article.body||article.summary||'Conteúdo não informado.')}</div>
-
-        ${article.source ? `
-          <p class="muted">Fonte: ${esc(article.source)}</p>
-        ` : ''}
-      `;
-
-      showPage('noticiaCompleta');
-    };
-
-  } catch(e) {
-    console.error('Erro ao carregar notícias:',e);
-    box.innerHTML='<div class="empty">Erro ao carregar notícias. Confira a conexão com o Firebase.</div>';
+  if (offline && data.length) {
+    box.insertAdjacentHTML(
+      'afterbegin',
+      '<div class="notice" role="status">Você está offline. Exibindo as últimas notícias salvas neste aparelho.</div>'
+    );
   }
-}); 
+
+  box.onclick = event => {
+    const btn = event.target.closest('[data-news-id]');
+    if (!btn) return;
+
+    const article = data.find(a => a.id === btn.dataset.newsId);
+    if (!article) return;
+
+    const full = document.getElementById('fullNewsContent');
+    if (!full) return;
+
+    full.innerHTML = `
+      ${article.image_url ? `
+        <img class="full-news-cover"
+          src="${esc(article.image_url)}"
+          alt="${esc(article.title || 'Notícia ferroviária')}">
+      ` : ''}
+
+      <span class="tag">${esc(article.category || 'Notícia ferroviária')}</span>
+      <h1>${esc(article.title || 'Sem título')}</h1>
+      <small class="muted">
+        ${article.created_at_ms
+          ? new Date(article.created_at_ms).toLocaleDateString('pt-BR')
+          : 'Notícia recente'}
+      </small>
+      <div class="full-news-body">${esc(article.body || article.summary || 'Conteúdo não informado.')}</div>
+      ${article.source ? `<p class="muted">Fonte: ${esc(article.source)}</p>` : ''}
+    `;
+
+    showPage('noticiaCompleta');
+  };
+}
+
+window.addEventListener('load', async () => {
+  const box = document.getElementById('publishedNews');
+  if (!box) return;
+
+  try {
+    const snap = await MF_DB.collection('articles')
+      .where('published', '==', true)
+      .orderBy('created_at', 'desc')
+      .get();
+
+    const data = snap.docs.map(doc => {
+      const article = doc.data();
+      return {
+        id: doc.id,
+        title: article.title || '',
+        category: article.category || '',
+        summary: article.summary || '',
+        body: article.body || '',
+        image_url: article.image_url || '',
+        source: article.source || '',
+        created_at_ms: article.created_at && article.created_at.toMillis
+          ? article.created_at.toMillis()
+          : 0
+      };
+    });
+
+    try {
+      localStorage.setItem(MF_NEWS_CACHE_KEY, JSON.stringify(data));
+    } catch (storageError) {
+      console.warn('Não foi possível atualizar as notícias salvas:', storageError);
+    }
+
+    renderPublishedNews(data, !!(snap.metadata && snap.metadata.fromCache));
+
+  } catch (error) {
+    console.error('Erro ao carregar notícias:', error);
+
+    try {
+      const saved = JSON.parse(localStorage.getItem(MF_NEWS_CACHE_KEY) || '[]');
+
+      if (saved.length) {
+        renderPublishedNews(saved, true);
+        return;
+      }
+    } catch (cacheError) {
+      console.warn('Não foi possível ler as notícias salvas:', cacheError);
+    }
+
+    box.innerHTML = '<div class="empty">Não foi possível carregar as notícias. Acesse esta área com internet para preparar a consulta offline.</div>';
+  }
+});
 
   function esc(s){
   return String(s??'').replace(/[&<>"']/g,c=>({
