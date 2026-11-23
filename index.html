@@ -380,6 +380,132 @@ body.dark-mode .footer {
   background: #071a27;
 }
      
+
+/* MENU PRINCIPAL ORGANIZADO POR CATEGORIAS */
+.top {
+  align-items: center;
+}
+
+.main-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nav-group {
+  position: relative;
+}
+
+.nav-group > summary {
+  list-style: none;
+  cursor: pointer;
+  color: #dce8ee;
+  background: #173b52;
+  border: 1px solid rgba(240,179,35,.22);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: background .2s ease, border-color .2s ease;
+}
+
+.nav-group > summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-group > summary::after {
+  content: " ▾";
+  color: #f0b323;
+}
+
+.nav-group[open] > summary,
+.nav-group > summary:hover,
+.nav-group > summary:focus-visible {
+  background: #24485e;
+  border-color: #f0b323;
+  color: #fff;
+  outline: none;
+}
+
+.nav-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 20;
+  min-width: 205px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: #102b3f;
+  border: 1px solid rgba(240,179,35,.35);
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.25);
+}
+
+.nav-menu button {
+  width: 100%;
+  display: block;
+  text-align: left;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #dce8ee;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: normal;
+}
+
+.nav-menu button:hover,
+.nav-menu button.active {
+  background: #24485e;
+  color: #fff;
+}
+
+.nav-menu button.active {
+  box-shadow: inset 3px 0 0 #f0b323;
+}
+
+@media (max-width: 760px) {
+  .top {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .main-navigation {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 7px;
+  }
+
+  .nav-group {
+    flex: 1 1 calc(50% - 7px);
+    min-width: 135px;
+  }
+
+  .nav-group > summary {
+    text-align: center;
+  }
+
+  .nav-menu {
+    position: static;
+    min-width: 0;
+    width: 100%;
+    margin-top: 6px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.18);
+  }
+}
+
+@media (max-width: 380px) {
+  .nav-group {
+    flex-basis: 100%;
+  }
+}
+
 </style></head>
 <body>
  <div id="splash-screen">
@@ -387,43 +513,72 @@ body.dark-mode .footer {
   <div class="splash-title">MUNDO <span>FERROVIÁRIO</span></div>
   <div class="splash-subtitle">Conhecimento que move trilhos</div>
   <div class="splash-loader"></div>
- </div><header class="top"><div class="brand">🚂 MUNDO <span>FERROVIÁRIO</span></div><nav aria-label="Navegação principal">
-<button class="active" data-page="home">Início</button>
-<button data-page="locomotivas">Locomotivas</button>
-<button data-page="vagoes">Vagões</button>
-<button data-page="aprender">Aprenda</button>
-<button data-page="glossario">Glossário</button>
-<button data-page="quiz">Quiz</button>   
-<button data-page="ranking">🏆 Ranking</button>
-<button type="button" onclick="window.location.href='simulador-2d.html'">
-  🚆 Simulador 2D
-  
-<button type="button" onclick="window.open('https://linha-f90f.p.rogueon.ai/', '_blank')">
+ </div><header class="top">
+  <div class="brand">🚂 MUNDO <span>FERROVIÁRIO</span></div>
 
-🚇 Simulador de Condução
-  
-</button>
+  <nav aria-label="Navegação principal" class="main-navigation">
 
-<button data-page="noticias">Notícias</button>
-<button data-page="enciclopedia">Enciclopédia</button>
-<button data-page="galeria">Galeria</button>
-<button data-page="comunidade">Comunidade</button>
-<button data-page="perfil">Meu Perfil</button>
-<button data-page="sobre">Sobre</button>
+    <details class="nav-group">
+      <summary>🚆 Explorar</summary>
+      <div class="nav-menu">
+        <button class="active" data-page="home">Início</button>
+        <button data-page="locomotivas">Locomotivas</button>
+        <button data-page="vagoes">Vagões</button>
+        <button data-page="galeria">Galeria</button>
+      </div>
+    </details>
 
-<button type="button" id="openSettings"
-  aria-label="Configurações"
-  title="Configurações">
-  ⚙️ Configurações
-</button>
+    <details class="nav-group">
+      <summary>📚 Aprender</summary>
+      <div class="nav-menu">
+        <button data-page="aprender">Aprenda</button>
+        <button data-page="glossario">Glossário</button>
+        <button data-page="enciclopedia">Enciclopédia</button>
+      </div>
+    </details>
 
-<button type="button" id="adminAccessButton"
-  style="display:none"
-  onclick="window.location.href='admin.html'">
-  🔐 Painel Administrativo
-</button>
-   
-</nav></header>
+    <details class="nav-group">
+      <summary>🎮 Interagir</summary>
+      <div class="nav-menu">
+        <button data-page="quiz">Quiz</button>
+        <button data-page="ranking">🏆 Ranking</button>
+        <button type="button" onclick="window.location.href='simulador-2d.html'">
+          🚆 Simulador 2D
+        </button>
+        <button type="button"
+          onclick="window.open('https://linha-f90f.p.rogueon.ai/', '_blank', 'noopener,noreferrer')">
+          🚇 Simulador de Condução
+        </button>
+        <button data-page="comunidade">Comunidade</button>
+      </div>
+    </details>
+
+    <details class="nav-group">
+      <summary>📰 Atualizações</summary>
+      <div class="nav-menu">
+        <button data-page="noticias">Notícias</button>
+      </div>
+    </details>
+
+    <details class="nav-group">
+      <summary>👤 Minha conta</summary>
+      <div class="nav-menu">
+        <button data-page="perfil">Meu Perfil</button>
+        <button data-page="sobre">Sobre</button>
+        <button type="button" id="openSettings"
+          aria-label="Configurações" title="Configurações">
+          ⚙️ Configurações
+        </button>
+        <button type="button" id="adminAccessButton"
+          style="display:none"
+          onclick="window.location.href='admin.html'">
+          🔐 Painel Administrativo
+        </button>
+      </div>
+    </details>
+
+  </nav>
+</header>
 <div class="top-note">PLATAFORMA GRATUITA • CONHECIMENTO, CULTURA E PAIXÃO FERROVIÁRIA</div><main class="wrap">
 
 <section id="home" class="page active">
@@ -4387,4 +4542,16 @@ openBtn.addEventListener('click', function () {
 })();
 </script>
   
+
+<script>
+// Fecha os menus expansíveis após a seleção de uma página.
+document.querySelectorAll('.nav-menu button[data-page]').forEach(function (button) {
+  button.addEventListener('click', function () {
+    document.querySelectorAll('.nav-group[open]').forEach(function (group) {
+      group.removeAttribute('open');
+    });
+  });
+});
+</script>
+
 </body></html>
