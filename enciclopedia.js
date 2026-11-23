@@ -255,6 +255,68 @@
   // CARREGAR ARTIGOS PUBLICADOS
   // =====================================
 
+  const ARTICLES_CACHE_KEY = 'mf_encyclopedia_published_v1';
+
+  function renderizarArtigos(artigos) {
+    if (!articlesContainer) return;
+
+    if (!Array.isArray(artigos) || artigos.length === 0) {
+      articlesContainer.innerHTML =
+        `<div class="empty">${textoHTML('Ainda não existem artigos publicados na Enciclopédia.')}</div>`;
+      return;
+    }
+
+    const lista = artigos.slice();
+
+    lista.sort(function (a, b) {
+      return timestampValue(b.published_at) - timestampValue(a.published_at);
+    });
+
+    articlesContainer.innerHTML = lista.map(function (artigo) {
+      return `
+        <div class="card">
+          <span class="tag">${escapeHTML(t(artigo.category))}</span>
+          <h3>${escapeHTML(artigo.title)}</h3>
+          <p>${escapeHTML(artigo.summary)}</p>
+
+          <details>
+            <summary class="btn">${textoHTML('Ler artigo completo')}</summary>
+
+            <div style="margin-top:15px; white-space:pre-wrap;">
+              ${escapeHTML(artigo.content)}
+            </div>
+
+            ${artigo.source ? `
+              <p class="muted" style="margin-top:15px">
+                ${textoHTML('Fonte:')} ${escapeHTML(artigo.source)}
+              </p>
+            ` : ''}
+          </details>
+
+          <p class="muted" style="margin-top:12px">
+            ${textoHTML('Contribuição:')} ${escapeHTML(artigo.author_name || t('Comunidade ferroviária'))}
+          </p>
+
+          ${auth.currentUser && auth.currentUser.uid === ADMIN_UID ? `
+            <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+              <button type="button"
+                class="btn btn-secondary"
+                data-edit-article="${escapeHTML(artigo.id)}">
+                ✏️ ${textoHTML('Editar')}
+              </button>
+
+              <button type="button"
+                class="btn btn-danger"
+                data-delete-article="${escapeHTML(artigo.id)}">
+                🗑️ ${textoHTML('Excluir')}
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }).join('');
+  }
+
   async function carregarArtigos() {
     if (!articlesContainer) return;
 
@@ -262,12 +324,6 @@
       const snapshot = await db.collection('encyclopedia_articles')
         .where('status', '==', 'published')
         .get();
-
-      if (snapshot.empty) {
-        articlesContainer.innerHTML =
-          `<div class="empty">${textoHTML('Ainda não existem artigos publicados na Enciclopédia.')}</div>`;
-        return;
-      }
 
       const artigos = [];
 
@@ -278,59 +334,57 @@
         });
       });
 
+      // Se o Firestore estiver offline e não tiver documentos em seu cache,
+      // preserva a última cópia completa salva pelo aplicativo.
+      if (snapshot.empty && snapshot.metadata && snapshot.metadata.fromCache) {
+        const copiaAnterior = JSON.parse(
+          localStorage.getItem(ARTICLES_CACHE_KEY) || '[]'
+        );
+
+        if (copiaAnterior.length) {
+          renderizarArtigos(copiaAnterior);
+          articlesContainer.insertAdjacentHTML(
+            'afterbegin',
+            `<div class="notice" role="status">${textoHTML('Exibindo os artigos salvos neste aparelho. Conecte-se à internet para verificar atualizações.')}</div>`
+          );
+          return;
+        }
+      }
+
       artigos.sort(function (a, b) {
         return timestampValue(b.published_at) - timestampValue(a.published_at);
       });
 
-      articlesContainer.innerHTML = artigos.map(function (artigo) {
-        return `
-          <div class="card">
-            <span class="tag">${escapeHTML(t(artigo.category))}</span>
-            <h3>${escapeHTML(artigo.title)}</h3>
-            <p>${escapeHTML(artigo.summary)}</p>
+      try {
+        localStorage.setItem(ARTICLES_CACHE_KEY, JSON.stringify(artigos));
+      } catch (storageError) {
+        console.warn('Não foi possível atualizar a cópia local da Enciclopédia:', storageError);
+      }
 
-            <details>
-              <summary class="btn">${textoHTML('Ler artigo completo')}</summary>
-
-              <div style="margin-top:15px; white-space:pre-wrap;">
-                ${escapeHTML(artigo.content)}
-              </div>
-
-              ${artigo.source ? `
-                <p class="muted" style="margin-top:15px">
-                  ${textoHTML('Fonte:')} ${escapeHTML(artigo.source)}
-                </p>
-              ` : ''}
-            </details>
-
-            <p class="muted" style="margin-top:12px">
-              ${textoHTML('Contribuição:')} ${escapeHTML(artigo.author_name || t('Comunidade ferroviária'))}
-            </p>
-
-            ${auth.currentUser && auth.currentUser.uid === ADMIN_UID ? `
-              <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
-                <button type="button"
-                  class="btn btn-secondary"
-                  data-edit-article="${escapeHTML(artigo.id)}">
-                  ✏️ ${textoHTML('Editar')}
-                </button>
-
-                <button type="button"
-                  class="btn btn-danger"
-                  data-delete-article="${escapeHTML(artigo.id)}">
-                  🗑️ ${textoHTML('Excluir')}
-                </button>
-              </div>
-            ` : ''}
-          </div>
-        `;
-      }).join('');
+      renderizarArtigos(artigos);
 
     } catch (error) {
       console.error('Erro ao carregar artigos:', error);
 
+      try {
+        const artigosSalvos = JSON.parse(
+          localStorage.getItem(ARTICLES_CACHE_KEY) || '[]'
+        );
+
+        if (artigosSalvos.length) {
+          renderizarArtigos(artigosSalvos);
+          articlesContainer.insertAdjacentHTML(
+            'afterbegin',
+            `<div class="notice" role="status">${textoHTML('Você está offline. Exibindo a última versão salva da Enciclopédia.')}</div>`
+          );
+          return;
+        }
+      } catch (cacheError) {
+        console.warn('Não foi possível ler a cópia local da Enciclopédia:', cacheError);
+      }
+
       articlesContainer.innerHTML =
-        `<div class="empty">${textoHTML('Não foi possível carregar os artigos.')}</div>`;
+        `<div class="empty">${textoHTML('Não foi possível carregar os artigos. Acesse esta área com internet para preparar a consulta offline.')}</div>`;
     }
   }
 
