@@ -3,7 +3,7 @@
  * Estratégia: pré-cache dos arquivos essenciais + rede primeiro
  * para navegações e cache como alternativa quando estiver sem conexão.
  */
-const CACHE_NAME = "mundo-ferroviario-v9";
+const CACHE_NAME = "mundo-ferroviario-v10";
 
 const APP_SHELL = [
   "./",
@@ -28,12 +28,31 @@ const APP_SHELL = [
   "./simulador-topdown.html"
 ];
 
+const EXTERNAL_SCRIPTS = [
+  "https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js",
+  "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js",
+  "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"
+];
+
 self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
-  );
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.addAll(APP_SHELL);
+
+    // SDKs do Firebase: armazenar respostas cross-origin opacas quando possível.
+    await Promise.all(EXTERNAL_SCRIPTS.map(async url => {
+      try {
+        const response = await fetch(url, { mode: "no-cors", cache: "reload" });
+        if (response && (response.ok || response.type === "opaque")) {
+          await cache.put(url, response);
+        }
+      } catch (error) {
+        // A falha de um recurso externo não impede a instalação do app shell.
+      }
+    }));
+
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener("activate", event => {
@@ -68,10 +87,22 @@ self.addEventListener("fetch", event => {
 
   const url = new URL(request.url);
 
-  // Não intercepta Firebase, Cloudinary ou outros serviços externos.
-  if (url.origin !== self.location.origin) return;
+  // Recursos externos explicitamente permitidos para uso offline.
+  const isFirebaseSdk =
+    url.origin === "https://www.gstatic.com" &&
+    url.pathname.startsWith("/firebasejs/10.14.1/");
 
-  // Somente páginas HTML recebem a página inicial como fallback.
+  const isPublicImage =
+    request.destination === "image" &&
+    (
+      url.origin === "https://images.unsplash.com" ||
+      url.origin === "https://res.cloudinary.com"
+    );
+
+  if (url.origin !== self.location.origin && !isFirebaseSdk && !isPublicImage) {
+    return;
+  }
+
   const isNavigation = request.mode === "navigate";
 
   event.respondWith((async () => {
@@ -84,7 +115,7 @@ self.addEventListener("fetch", event => {
 
       return response;
     } catch (error) {
-      const cached = await caches.match(request);
+      const cached = await caches.match(request, { ignoreSearch: false });
 
       if (cached) return cached;
 
