@@ -71,7 +71,7 @@ self.addEventListener("activate", event => {
 });
 
 async function guardarResposta(request, response) {
-  if (!response || !response.ok || response.type === "opaque") {
+  if (!response || (!response.ok && response.type !== "opaque")) {
     return response;
   }
 
