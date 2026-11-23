@@ -20,14 +20,7 @@ body{
 
 .hidden{display:none!important}
 
-#resultScreen.hidden{
-  display:none!important;
-}
-
-.screen{
-  width:100%;
-  min-height:100vh;
-}
+.screen{width:100%;min-height:100vh}
 
 #introScreen{
   display:flex;
@@ -35,7 +28,6 @@ body{
   justify-content:center;
   padding:18px;
   overflow-y:auto;
-  overflow-x:hidden;
   min-height:100vh;
   height:100dvh;
   background:linear-gradient(145deg,#102b3f,#174a67);
@@ -57,10 +49,7 @@ h1{
   margin-bottom:8px;
 }
 
-.intro-content h2{
-  font-size:20px;
-  margin-bottom:15px;
-}
+.intro-content h2{font-size:20px;margin-bottom:15px}
 
 .intro-description{
   line-height:1.5;
@@ -76,10 +65,7 @@ h1{
   text-align:left;
 }
 
-.manual h3,.mission h3{
-  color:#f0b323;
-  margin-bottom:12px;
-}
+.manual h3,.mission h3{color:#f0b323;margin-bottom:12px}
 
 .manual-item{
   display:flex;
@@ -105,15 +91,8 @@ h1{
 .control-icon.switch{background:#a47b27}
 .control-icon.restart{background:#596b78}
 
-.mission ol{
-  padding-left:22px;
-  line-height:1.7;
-}
-
-.mission p{
-  margin-top:10px;
-  line-height:1.5;
-}
+.mission ol{padding-left:22px;line-height:1.7}
+.mission p{margin-top:10px;line-height:1.5}
 
 .start-button,#retryButton{
   border:0;
@@ -129,18 +108,19 @@ h1{
 
 #gameScreen{
   height:100vh;
+  height:100dvh;
   display:flex;
   flex-direction:column;
   background:#102b3f;
 }
 
 #gameHeader{
-  min-height:58px;
+  min-height:100px;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  padding:8px 12px;
+  padding:7px 12px;
   background:#102b3f;
 }
 
@@ -159,12 +139,14 @@ h1{
 
 .game-information{
   display:flex;
-  gap:12px;
+  flex-direction:column;
+  gap:5px;
+  align-items:center;
   font-weight:bold;
-  font-size:13px;
+  font-size:12px;
 }
 
-#speedDisplay{color:#f0b323}
+#statusDisplay{color:#fff}
 
 .restart-phase{
   border:1px solid #dcae3c;
@@ -173,6 +155,84 @@ h1{
   border-radius:7px;
   padding:8px;
   font-size:12px;
+}
+
+/* VELOCÍMETRO */
+
+#speedometer{
+  width:88px;
+  height:88px;
+  flex-shrink:0;
+  position:relative;
+  border-radius:50%;
+  background:#172f40;
+  border:3px solid #607b8d;
+  box-shadow:0 0 8px #0008,inset 0 0 8px #0008;
+}
+
+#speedometer::before{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:50%;
+  background:conic-gradient(
+    from 225deg,
+    #39b96c 0deg,
+    #e2b43b 170deg,
+    #e54b43 270deg,
+    transparent 270deg 360deg
+  );
+  -webkit-mask:radial-gradient(farthest-side,transparent 75%,#000 77%);
+  mask:radial-gradient(farthest-side,transparent 75%,#000 77%);
+}
+
+.speed-needle{
+  position:absolute;
+  width:3px;
+  height:31px;
+  background:#fff;
+  left:50%;
+  top:12px;
+  transform-origin:50% 32px;
+  transform:translateX(-50%) rotate(-135deg);
+  border-radius:3px;
+  z-index:2;
+  transition:transform .12s linear;
+}
+
+.speed-needle::after{
+  content:"";
+  position:absolute;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#e3ae35;
+  left:-3px;
+  bottom:-4px;
+}
+
+.speed-center{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding-top:23px;
+  z-index:3;
+}
+
+#speedDisplay{
+  color:#f0b323;
+  font-size:19px;
+  font-weight:bold;
+  line-height:1;
+}
+
+.speed-unit{
+  font-size:9px;
+  color:#d5e0e7;
+  margin-top:3px;
 }
 
 #yardContainer{
@@ -192,6 +252,8 @@ h1{
   object-fit:contain;
   touch-action:none;
 }
+
+/* CONTROLES */
 
 #controls{
   position:absolute;
@@ -213,11 +275,58 @@ h1{
   color:white;
   box-shadow:0 3px 8px #0008;
   touch-action:none;
+  flex-shrink:0;
 }
 
 .accelerate{background:#287db0}
-.brake{background:#b83e36}
 .resume{background:#27884c;font-size:14px}
+
+/* FREIO DESLIZANTE */
+
+#brakeControl{
+  width:155px;
+  min-height:58px;
+  padding:7px 10px;
+  border:2px solid white;
+  border-radius:12px;
+  background:#71352f;
+  box-shadow:0 3px 8px #0008;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:5px;
+  touch-action:pan-y;
+}
+
+.brake-label{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:11px;
+  font-weight:bold;
+  color:#fff;
+}
+
+#brakePercentage{
+  color:#ffd36b;
+  font-size:12px;
+}
+
+#brakeSlider{
+  width:100%;
+  height:19px;
+  margin:0;
+  accent-color:#f0b323;
+  cursor:pointer;
+  touch-action:pan-y;
+}
+
+.brake-scale{
+  display:flex;
+  justify-content:space-between;
+  color:#f4d9d6;
+  font-size:9px;
+}
 
 .switch-button{
   position:absolute;
@@ -280,29 +389,28 @@ h1{
   text-align:center;
 }
 
-.result-content h2{
-  color:#f0b323;
-  margin-bottom:15px;
-}
-
-.result-content p{
-  line-height:1.6;
-  margin:12px 0;
-}
-
-#resultScore{
-  font-size:22px;
-  font-weight:bold;
-  color:#f0b323;
-  margin:18px 0;
-}
+.result-content h2{color:#f0b323;margin-bottom:15px}
+.result-content p{line-height:1.6;margin:12px 0}
+#resultScore{font-size:22px;font-weight:bold;color:#f0b323;margin:18px 0}
 
 @media(orientation:portrait){
-  #gameHeader{min-height:54px}
-  .game-title{font-size:12px}
-  .game-information{font-size:11px;gap:7px}
-  .round-control{width:49px;height:49px}
+  #gameHeader{min-height:94px}
+  .game-title{font-size:11px}
+  .game-information{font-size:10px;gap:5px}
+  #speedometer{width:76px;height:76px}
+  .speed-needle{height:26px;transform-origin:50% 27px}
+  #speedDisplay{font-size:17px}
+  .round-control{width:45px;height:45px;font-size:15px}
+  #brakeControl{width:125px;min-height:53px;padding:5px 7px}
+  #controls{gap:6px;left:7px}
   #operationMessage{max-width:52%;font-size:10px}
+  .restart-phase{font-size:10px;padding:7px}
+}
+
+@media(max-width:380px){
+  #brakeControl{width:105px}
+  #controls{gap:4px}
+  .round-control{width:41px;height:41px}
 }
 </style>
 </head>
@@ -325,12 +433,12 @@ Realize a mudança de rota, aguarde a passagem do trem contrário e conclua a op
 
 <div class="manual-item">
 <span class="control-icon">Ac</span>
-<span><b>ACELERAR:</b> toque uma vez para aumentar a velocidade.</span>
+<span><b>ACELERAR:</b> toque para iniciar a aceleração da composição.</span>
 </div>
 
 <div class="manual-item">
 <span class="control-icon brake">Fr</span>
-<span><b>FREAR:</b> mantenha pressionado para reduzir a velocidade gradualmente.</span>
+<span><b>FREIO:</b> deslize o controle para a direita para aumentar a força de frenagem. À esquerda, os freios ficam em alívio.</span>
 </div>
 
 <div class="manual-item">
@@ -376,8 +484,15 @@ MUNDO FERROVIÁRIO
 <span>SIMULADOR 2D</span>
 </div>
 
+<div id="speedometer">
+<div class="speed-needle" id="speedNeedle"></div>
+<div class="speed-center">
+<span id="speedDisplay">0</span>
+<span class="speed-unit">km/h</span>
+</div>
+</div>
+
 <div class="game-information">
-<span id="speedDisplay">0 km/h</span>
 <span id="statusDisplay">PARADO</span>
 </div>
 
@@ -391,7 +506,27 @@ MUNDO FERROVIÁRIO
 
 <div id="controls">
 <button id="accelerateButton" class="round-control accelerate">Ac</button>
-<button id="brakeButton" class="round-control brake">Fr</button>
+
+<div id="brakeControl">
+<div class="brake-label">
+<span>FREIO</span>
+<span id="brakePercentage">0%</span>
+</div>
+<input
+  type="range"
+  id="brakeSlider"
+  min="0"
+  max="100"
+  value="0"
+  step="1"
+  aria-label="Força de frenagem"
+>
+<div class="brake-scale">
+<span>ALÍVIO</span>
+<span>MÁX.</span>
+</div>
+</div>
+
 <button id="resumeButton" class="round-control resume">Rnc</button>
 </div>
 
@@ -432,13 +567,15 @@ const result=$("resultScreen");
 
 const startBtn=$("startButton");
 const accBtn=$("accelerateButton");
-const brakeBtn=$("brakeButton");
+const brakeSlider=$("brakeSlider");
+const brakePercentage=$("brakePercentage");
 const resumeBtn=$("resumeButton");
 const switchBtn=$("switchButton");
 const restartBtn=$("restartPhase");
 const retryBtn=$("retryButton");
 
 const speedDisplay=$("speedDisplay");
+const speedNeedle=$("speedNeedle");
 const statusDisplay=$("statusDisplay");
 const signalStatus=$("signalStatus");
 const message=$("operationMessage");
@@ -524,11 +661,7 @@ function pointAt(route,d){
 
   const p=route[route.length-1];
 
-  return {
-    x:p.x,
-    y:p.y,
-    angle:0
-  };
+  return {x:p.x,y:p.y,angle:0};
 }
 
 function distanceAtX(route,x){
@@ -559,6 +692,7 @@ let speed=0;
 let moving=false;
 let accelerating=false;
 let braking=false;
+let brakeLevel=0;
 
 let locked=false;
 let stoppedAtSignal=false;
@@ -576,42 +710,48 @@ let frame=null;
 let lastFrameTime=0;
 
 /* =========================================
-   NOVA FÍSICA FERROVIÁRIA
+   FÍSICA FERROVIÁRIA
 ========================================= */
 
-/*
-  A velocidade agora é calculada em pixels por segundo.
-
-  A física utiliza o tempo real entre os quadros.
-  Assim, a aceleração não depende diretamente do FPS.
-*/
-
-/* Velocidade máxima: aproximadamente 32 km/h */
 const maxSpeed=32;
 
-/* Aceleração base da locomotiva */
 const baseAcceleration=3.0;
 
-/* Resistência ao movimento durante a aceleração */
 const loadResistance=1+(COUNT-1)*0.18;
 
-/* Aceleração efetiva considerando os vagões */
 const accel=baseAcceleration/loadResistance;
 
-/* Frenagem de serviço */
+/* Frenagem máxima */
 const brakeForce=3.2;
 
 /* Resistência natural ao rolamento */
 const rollingResistance=0.18;
 
-/* Conversão da velocidade para km/h */
 const speedConversion=1;
 
-/* Limite de tempo entre atualizações */
 const maxDeltaTime=0.05;
 
 function say(t){
   message.textContent=t;
+}
+
+function setBrakeLevel(value){
+
+  brakeLevel=Math.max(0,Math.min(100,Number(value)||0));
+
+  brakeSlider.value=brakeLevel;
+  brakePercentage.textContent=brakeLevel+"%";
+
+  braking=brakeLevel>0;
+
+  if(braking){
+    accelerating=false;
+  }
+}
+
+function releaseBrake(){
+
+  setBrakeLevel(0);
 }
 
 function updateSignal(){
@@ -849,8 +989,6 @@ function signal(){
   ctx.fill();
 }
 
-/* SINAL DE CHAMADA - LINHA 2 */
-
 function callSignal(){
 
   const p=pointAt(route,0);
@@ -942,6 +1080,12 @@ function startAcceleration(){
     return;
   }
 
+  if(brakeLevel>0){
+
+    say("Coloque o freio em alívio antes de acelerar.");
+    return;
+  }
+
   accelerating=true;
   moving=true;
 }
@@ -955,11 +1099,7 @@ function startBraking(){
   if(!started||finished)return;
 
   accelerating=false;
-  braking=true;
-}
-
-function stopBraking(){
-  braking=false;
+  braking=brakeLevel>0;
 }
 
 function resumeTrain(){
@@ -982,6 +1122,8 @@ function resumeTrain(){
   stoppedAtSignal=false;
   moving=false;
 
+  releaseBrake();
+
   say("Circulação liberada. Utilize Ac para movimentar.");
 }
 
@@ -991,6 +1133,9 @@ function stopTrain(){
   moving=false;
   accelerating=false;
   braking=false;
+
+  releaseBrake();
+
   locked=true;
 
   const p=pointAt(route,trainD);
@@ -1042,7 +1187,6 @@ function updateOther(dt){
     return;
   }
 
-  /* Mantém a velocidade do trem contrário */
   otherX-=90*dt;
 
   if(otherX<-250){
@@ -1094,6 +1238,7 @@ function fail(title,text){
   moving=false;
   accelerating=false;
   braking=false;
+  releaseBrake();
   locked=true;
 
   $("resultTitle").textContent=title;
@@ -1114,6 +1259,7 @@ function win(){
   moving=false;
   accelerating=false;
   braking=false;
+  releaseBrake();
   locked=true;
 
   green=true;
@@ -1135,21 +1281,14 @@ function win(){
 }
 
 /* =========================================
-   NOVO SISTEMA DE MOVIMENTAÇÃO
+   MOVIMENTAÇÃO E FRENAGEM PROPORCIONAL
 ========================================= */
 
 function updatePlayer(dt){
 
   if(!moving||locked||finished)return;
 
-  /*
-    ACELERAÇÃO PROGRESSIVA
-
-    A força de aceleração considera a quantidade
-    de vagões da composição.
-  */
-
-  if(accelerating){
+  if(accelerating&&brakeLevel===0){
 
     speed=Math.min(
       maxSpeed,
@@ -1158,17 +1297,25 @@ function updatePlayer(dt){
   }
 
   /*
-    FRENAGEM
+    A frenagem é proporcional ao slider.
 
-    A força de frenagem é aplicada continuamente
-    enquanto o botão estiver pressionado.
+    0%   = freios em alívio
+    25%  = frenagem leve
+    50%  = frenagem média
+    75%  = frenagem forte
+    100% = frenagem máxima
   */
 
-  if(braking){
+  if(brakeLevel>0){
+
+    accelerating=false;
+
+    const appliedBrake=
+      brakeForce*(brakeLevel/100);
 
     speed=Math.max(
       0,
-      speed-brakeForce*dt
+      speed-appliedBrake*dt
     );
 
     if(speed===0){
@@ -1179,14 +1326,11 @@ function updatePlayer(dt){
   }
 
   /*
-    INÉRCIA FERROVIÁRIA
-
-    Quando o acelerador é solto, o trem não para
-    imediatamente. Ele continua avançando,
-    perdendo velocidade lentamente.
+    Com o acelerador desligado e o freio em alívio,
+    a composição continua em movimento por inércia.
   */
 
-  if(!accelerating&&!braking){
+  if(!accelerating&&brakeLevel===0){
 
     speed=Math.max(
       0,
@@ -1199,13 +1343,6 @@ function updatePlayer(dt){
       return;
     }
   }
-
-  /*
-    MOVIMENTO BASEADO NO TEMPO REAL
-
-    Evita que o trem fique mais rápido em aparelhos
-    com maior taxa de quadros.
-  */
 
   trainD+=speed*dt;
 
@@ -1245,13 +1382,31 @@ function updatePlayer(dt){
 }
 
 /* =========================================
-   PAINEL DE INFORMAÇÕES
+   PAINEL E VELOCÍMETRO
 ========================================= */
 
 function updateDisplay(){
 
-  speedDisplay.textContent=
-    Math.round(speed*speedConversion)+" km/h";
+  const currentSpeed=Math.round(speed*speedConversion);
+
+  speedDisplay.textContent=currentSpeed;
+
+  /*
+    O ponteiro percorre a escala do velocímetro
+    de -135 graus até +135 graus.
+  */
+
+  const gaugeMax=40;
+
+  const normalizedSpeed=Math.min(
+    Math.max(speed/gaugeMax,0),
+    1
+  );
+
+  const angle=-135+(normalizedSpeed*270);
+
+  speedNeedle.style.transform=
+    "translateX(-50%) rotate("+angle+"deg)";
 
   if(finished){
 
@@ -1261,7 +1416,7 @@ function updateDisplay(){
 
     statusDisplay.textContent="PARADO";
 
-  }else if(braking){
+  }else if(brakeLevel>0){
 
     statusDisplay.textContent="FREANDO";
 
@@ -1289,11 +1444,6 @@ function animate(timestamp){
 
   if(!started)return;
 
-  /*
-    Calcula o tempo transcorrido desde
-    o último quadro de animação.
-  */
-
   if(!lastFrameTime){
     lastFrameTime=timestamp;
   }
@@ -1301,12 +1451,6 @@ function animate(timestamp){
   let dt=(timestamp-lastFrameTime)/1000;
 
   lastFrameTime=timestamp;
-
-  /*
-    Limita o intervalo para evitar saltos
-    de movimento quando o celular fica lento
-    ou a tela é temporariamente interrompida.
-  */
 
   dt=Math.min(dt,maxDeltaTime);
 
@@ -1345,6 +1489,8 @@ function resetGame(){
   moving=false;
   accelerating=false;
   braking=false;
+
+  releaseBrake();
 
   locked=false;
   stoppedAtSignal=false;
@@ -1411,34 +1557,35 @@ restartBtn.addEventListener("click",resetGame);
 
 retryBtn.addEventListener("click",resetGame);
 
-/* Acelerador: toque para iniciar a aceleração */
+/* Acelerador */
+
 accBtn.addEventListener("click",startAcceleration);
 
-/* Freio: mantém a frenagem enquanto pressionado */
+/* Slider de frenagem */
 
-brakeBtn.addEventListener("pointerdown",e=>{
+brakeSlider.addEventListener("input",e=>{
 
-  e.preventDefault();
+  if(!started||finished)return;
 
-  startBraking();
+  setBrakeLevel(e.target.value);
+
+  if(brakeLevel===0){
+
+    say("Freios em alívio. Composição em regime de inércia.");
+
+  }else{
+
+    say("Frenagem aplicada: "+brakeLevel+"% da força máxima.");
+  }
+
+  updateDisplay();
 });
 
-brakeBtn.addEventListener("pointerup",stopBraking);
-
-brakeBtn.addEventListener("pointerleave",stopBraking);
-
-brakeBtn.addEventListener("pointercancel",stopBraking);
-
-window.addEventListener("pointerup",()=>{
-
-  accelerating=false;
-  braking=false;
-});
+/* Segurança: ao sair da página, libera o acelerador */
 
 window.addEventListener("blur",()=>{
 
   accelerating=false;
-  braking=false;
 });
 
 /* =========================================
@@ -1450,6 +1597,8 @@ intro.style.display="flex";
 game.classList.add("hidden");
 
 result.classList.add("hidden");
+
+releaseBrake();
 
 updateSignal();
 
