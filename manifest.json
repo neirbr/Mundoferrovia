@@ -1,10 +1,9 @@
-
 {
   "id": "./",
   "name": "Mundo Ferroviário",
   "short_name": "Mundo Ferroviário",
   "description": "Portal dedicado ao universo ferroviário.",
-  "start_url": "./Index.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
