@@ -519,60 +519,60 @@ body.dark-mode .footer {
   <nav aria-label="Navegação principal" class="main-navigation">
 
     <details class="nav-group">
-      <summary>🚆 Explorar</summary>
+      <summary data-i18n="navExplore">🚆 Explorar</summary>
       <div class="nav-menu">
-        <button class="active" data-page="home">Início</button>
-        <button data-page="locomotivas">Locomotivas</button>
-        <button data-page="vagoes">Vagões</button>
-        <button data-page="galeria">Galeria</button>
+        <button class="active" data-page="home" data-i18n="navHome">Início</button>
+        <button data-page="locomotivas" data-i18n="navLocomotives">Locomotivas</button>
+        <button data-page="vagoes" data-i18n="navWagons">Vagões</button>
+        <button data-page="galeria" data-i18n="navGallery">Galeria</button>
       </div>
     </details>
 
     <details class="nav-group">
-      <summary>📚 Aprender</summary>
+      <summary data-i18n="navLearn">📚 Aprender</summary>
       <div class="nav-menu">
-        <button data-page="aprender">Aprenda</button>
-        <button data-page="glossario">Glossário</button>
-        <button data-page="enciclopedia">Enciclopédia</button>
+        <button data-page="aprender" data-i18n="navLearning">Aprenda</button>
+        <button data-page="glossario" data-i18n="navGlossary">Glossário</button>
+        <button data-page="enciclopedia" data-i18n="navEncyclopedia">Enciclopédia</button>
       </div>
     </details>
 
     <details class="nav-group">
-      <summary>🎮 Interagir</summary>
+      <summary data-i18n="navInteract">🎮 Interagir</summary>
       <div class="nav-menu">
-        <button data-page="quiz">Quiz</button>
-        <button data-page="ranking">🏆 Ranking</button>
-        <button type="button" onclick="window.location.href='simulador-2d.html'">
+        <button data-page="quiz" data-i18n="navQuiz">Quiz</button>
+        <button data-page="ranking" data-i18n="navRanking">🏆 Ranking</button>
+        <button type="button" data-i18n="navSimulator2D" onclick="window.location.href='simulador-2d.html'">
           🚆 Simulador 2D
         </button>
-        <button type="button"
+        <button type="button" data-i18n="navDrivingSimulator"
           onclick="window.open('https://linha-f90f.p.rogueon.ai/', '_blank', 'noopener,noreferrer')">
           🚇 Simulador de Condução
         </button>
-        <button data-page="comunidade">Comunidade</button>
+        <button data-page="comunidade" data-i18n="navCommunity">Comunidade</button>
       </div>
     </details>
 
     <details class="nav-group">
-      <summary>📰 Atualizações</summary>
+      <summary data-i18n="navUpdates">📰 Atualizações</summary>
       <div class="nav-menu">
-        <button data-page="noticias">Notícias</button>
+        <button data-page="noticias" data-i18n="navNews">Notícias</button>
       </div>
     </details>
 
     <details class="nav-group">
-      <summary>👤 Minha conta</summary>
+      <summary data-i18n="navAccount">👤 Minha conta</summary>
       <div class="nav-menu">
-        <button data-page="perfil">Meu Perfil</button>
-        <button data-page="sobre">Sobre</button>
+        <button data-page="perfil" data-i18n="navProfile">Meu Perfil</button>
+        <button data-page="sobre" data-i18n="navAbout">Sobre</button>
         <button type="button" id="openSettings"
-          aria-label="Configurações" title="Configurações">
-          ⚙️ Configurações
+          aria-label="Configurações" title="Configurações" data-i18n="navSettings">
+          <span data-i18n="navSettings">⚙️ Configurações</span>
         </button>
         <button type="button" id="adminAccessButton"
           style="display:none"
           onclick="window.location.href='admin.html'">
-          🔐 Painel Administrativo
+          <span data-i18n="navAdmin">🔐 Painel Administrativo</span>
         </button>
       </div>
     </details>
