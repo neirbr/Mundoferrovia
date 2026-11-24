@@ -138,7 +138,7 @@ body{min-height:100dvh}
     ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
     // Composição: locomotiva à frente, seguida por exatamente 15 vagões.
     const locoY=frontY;
-    drawUnit(trackX(locoY)+23,locoY,43,23,'#d2a51c','loco');
+    drawUnit(trackX(locoY)+22,locoY,43,23,'#d2a51c','loco');
     for(let i=1;i<=15;i++){
       const y=frontY+i*29;
       drawUnit(trackX(y)+36,y,25,19,'#795238','wagon');
