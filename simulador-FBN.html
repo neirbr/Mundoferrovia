@@ -7,92 +7,99 @@
 <meta name="description" content="Simulador ferroviário FBN — Mundo Ferroviário">
 <title>Simulador FBN | Mundo Ferroviário</title>
 <style>
-:root {
-  color-scheme: dark;
-  --fbn-navy: #102b3f;
-  --fbn-blue: #174a67;
-  --fbn-gold: #f0b323;
-  --fbn-bg: #101820;
-}
-* { box-sizing: border-box; }
-html, body {
-  margin: 0;
-  min-height: 100%;
-  background: var(--fbn-bg);
-  color: #fff;
-  font-family: Arial, Helvetica, sans-serif;
-}
-body { min-height: 100dvh; }
-#fbn-app {
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: var(--fbn-bg);
-}
-.fbn-header {
-  width: 100%;
-  padding: 13px 16px;
-  text-align: center;
-  background: var(--fbn-navy);
-  border-bottom: 2px solid var(--fbn-gold);
-}
-.fbn-header h1 { margin: 0; font-size: 20px; letter-spacing: .06em; }
-.fbn-header p { margin: 5px 0 0; color: #d6e0e6; font-size: 12px; }
-.fbn-game {
-  width: 100%;
-  max-width: 520px;
-  padding: 10px;
-  flex: 1;
-}
-.fbn-map {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  overflow: hidden;
-  background: #26352c;
-  border: 1px solid #52616a;
-  border-radius: 8px;
-}
-.fbn-map-message {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 22px;
-  text-align: center;
-}
-.fbn-map-message h2 { margin: 0 0 12px; color: var(--fbn-gold); font-size: 23px; }
-.fbn-map-message p { max-width: 290px; margin: 0; color: #e0e7eb; font-size: 14px; line-height: 1.55; }
-.fbn-footer {
-  width: 100%;
-  padding: 10px 14px max(10px, env(safe-area-inset-bottom));
-  text-align: center;
-  color: #aebbc4;
-  font-size: 11px;
-}
-@media (max-height: 650px) {
-  .fbn-game { max-width: 420px; }
-}
+:root{color-scheme:dark;--navy:#102b3f;--blue:#174a67;--gold:#f0b323;--bg:#101820}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:#fff;font-family:Arial,Helvetica,sans-serif}
+body{min-height:100dvh}
+#fbn-app{min-height:100dvh;display:flex;flex-direction:column;align-items:center}
+.fbn-header{width:100%;padding:13px 16px;text-align:center;background:var(--navy);border-bottom:2px solid var(--gold)}
+.fbn-header h1{margin:0;font-size:20px;letter-spacing:.06em}
+.fbn-header p{margin:5px 0 0;color:#d6e0e6;font-size:12px}
+.fbn-game{width:100%;max-width:520px;padding:10px;flex:1}
+.fbn-status{display:flex;justify-content:space-between;gap:8px;align-items:center;margin:0 2px 8px;font-size:13px;color:#dce5eb}
+.fbn-map{position:relative;width:100%;height:min(68dvh,760px);min-height:390px;overflow:hidden;background:#26352c;border:1px solid #52616a;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.fbn-map img{display:block;width:100%;height:100%;object-fit:contain;background:#26352c}
+.fbn-placeholder{padding:24px;text-align:center;color:#e0e7eb;line-height:1.5}
+.fbn-placeholder strong{display:block;color:var(--gold);font-size:20px;margin-bottom:10px}
+.fbn-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:10px}
+.fbn-controls button{min-height:44px;border:1px solid #547083;border-radius:7px;background:var(--blue);color:#fff;font-weight:700;font-size:13px}
+.fbn-controls button[aria-pressed=true]{background:var(--gold);color:#17232b;border-color:var(--gold)}
+.fbn-controls button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.fbn-transition{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .18s linear;z-index:5}
+.fbn-transition.active{opacity:1;pointer-events:auto;transition:none}
+.fbn-transition span{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;color:#fff;font-size:13px;letter-spacing:.12em}
+.fbn-footer{width:100%;padding:10px 14px max(10px,env(safe-area-inset-bottom));text-align:center;color:#aebbc4;font-size:11px}
+@media(max-height:650px){.fbn-map{height:60dvh;min-height:300px}.fbn-game{max-width:420px}}
 </style>
 </head>
 <body>
 <main id="fbn-app">
-  <header class="fbn-header">
-    <h1>SIMULADOR FBN</h1>
-    <p>Operação ferroviária de carga e manobras</p>
-  </header>
-  <section class="fbn-game" aria-label="Área do simulador">
-    <div class="fbn-map" id="fbn-map">
-      <div class="fbn-map-message">
-        <h2>SIMULADOR FBN</h2>
-        <p>Estrutura inicial criada.<br><br>Os quatro cenários, os trilhos e os veículos serão integrados nas próximas etapas.</p>
-      </div>
-    </div>
-  </section>
-  <footer class="fbn-footer">Mundo Ferroviário · Simulador independente</footer>
+<header class="fbn-header"><h1>SIMULADOR FBN</h1><p>Operação ferroviária de carga e manobras</p></header>
+<section class="fbn-game" aria-label="Área do simulador">
+<div class="fbn-status"><strong id="fbn-stage-label">Cenário 1</strong><span id="fbn-load-status" role="status">Mapa pronto para carregar</span></div>
+<div class="fbn-map" id="fbn-map">
+<div class="fbn-placeholder" id="fbn-placeholder"><strong>SIMULADOR FBN</strong>Carregando o primeiro cenário...</div>
+<div class="fbn-transition" id="fbn-transition" aria-hidden="true"><span>CARREGANDO CENÁRIO</span></div>
+</div>
+<nav class="fbn-controls" aria-label="Pré-visualização dos cenários">
+<button type="button" data-stage="0" aria-pressed="true">Cenário 1</button>
+<button type="button" data-stage="1" aria-pressed="false">Cenário 2</button>
+<button type="button" data-stage="2" aria-pressed="false">Cenário 3</button>
+<button type="button" data-stage="3" aria-pressed="false">Cenário 4</button>
+</nav>
+</section>
+<footer class="fbn-footer">Mundo Ferroviário · Simulador independente</footer>
 </main>
+<script>
+(function(){
+  const paths=[
+    './assets/fbn/cenarios/cenario1.jpg',
+    './assets/fbn/cenarios/cenario2.jpg',
+    './assets/fbn/cenarios/cenario3.jpg',
+    './assets/fbn/cenarios/cenario4.jpg'
+  ];
+  const map=document.getElementById('fbn-map');
+  const transition=document.getElementById('fbn-transition');
+  const placeholder=document.getElementById('fbn-placeholder');
+  const label=document.getElementById('fbn-stage-label');
+  const status=document.getElementById('fbn-load-status');
+  const buttons=[...document.querySelectorAll('[data-stage]')];
+  let current=-1;
+  let changing=false;
+
+  function showStage(index){
+    if(changing||index===current)return;
+    changing=true;
+    transition.classList.add('active');
+    status.textContent='Transição de cenário';
+    window.setTimeout(()=>{
+      const img=new Image();
+      img.alt='Mapa ferroviário do cenário '+(index+1);
+      img.onload=()=>{
+        const old=map.querySelector('img');
+        if(old)old.remove();
+        placeholder.hidden=true;
+        map.insertBefore(img,transition);
+        current=index;
+        label.textContent='Cenário '+(index+1);
+        status.textContent='Mapa carregado';
+        buttons.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));
+        transition.classList.remove('active');
+        changing=false;
+      };
+      img.onerror=()=>{
+        status.textContent='Não foi possível carregar este mapa';
+        placeholder.hidden=false;
+        placeholder.innerHTML='<strong>Mapa indisponível</strong>Confira se o arquivo cenario'+(index+1)+'.jpg está na pasta assets/fbn/cenarios/.';
+        transition.classList.remove('active');
+        changing=false;
+      };
+      img.src=paths[index];
+    },1000);
+  }
+  buttons.forEach(button=>button.addEventListener('click',()=>showStage(Number(button.dataset.stage))));
+  showStage(0);
+})();
+</script>
 </body>
 </html>
