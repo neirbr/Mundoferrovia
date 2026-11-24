@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#102b3f">
+<meta name="description" content="Simulador ferroviário FBN — Mundo Ferroviário">
+<title>Simulador FBN | Mundo Ferroviário</title>
+<style>
+:root {
+  color-scheme: dark;
+  --fbn-navy: #102b3f;
+  --fbn-blue: #174a67;
+  --fbn-gold: #f0b323;
+  --fbn-bg: #101820;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--fbn-bg);
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+}
+body { min-height: 100dvh; }
+#fbn-app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--fbn-bg);
+}
+.fbn-header {
+  width: 100%;
+  padding: 13px 16px;
+  text-align: center;
+  background: var(--fbn-navy);
+  border-bottom: 2px solid var(--fbn-gold);
+}
+.fbn-header h1 { margin: 0; font-size: 20px; letter-spacing: .06em; }
+.fbn-header p { margin: 5px 0 0; color: #d6e0e6; font-size: 12px; }
+.fbn-game {
+  width: 100%;
+  max-width: 520px;
+  padding: 10px;
+  flex: 1;
+}
+.fbn-map {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background: #26352c;
+  border: 1px solid #52616a;
+  border-radius: 8px;
+}
+.fbn-map-message {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  text-align: center;
+}
+.fbn-map-message h2 { margin: 0 0 12px; color: var(--fbn-gold); font-size: 23px; }
+.fbn-map-message p { max-width: 290px; margin: 0; color: #e0e7eb; font-size: 14px; line-height: 1.55; }
+.fbn-footer {
+  width: 100%;
+  padding: 10px 14px max(10px, env(safe-area-inset-bottom));
+  text-align: center;
+  color: #aebbc4;
+  font-size: 11px;
+}
+@media (max-height: 650px) {
+  .fbn-game { max-width: 420px; }
+}
+</style>
+</head>
+<body>
+<main id="fbn-app">
+  <header class="fbn-header">
+    <h1>SIMULADOR FBN</h1>
+    <p>Operação ferroviária de carga e manobras</p>
+  </header>
+  <section class="fbn-game" aria-label="Área do simulador">
+    <div class="fbn-map" id="fbn-map">
+      <div class="fbn-map-message">
+        <h2>SIMULADOR FBN</h2>
+        <p>Estrutura inicial criada.<br><br>Os quatro cenários, os trilhos e os veículos serão integrados nas próximas etapas.</p>
+      </div>
+    </div>
+  </section>
+  <footer class="fbn-footer">Mundo Ferroviário · Simulador independente</footer>
+</main>
+</body>
+</html>
