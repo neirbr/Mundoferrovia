@@ -107,7 +107,7 @@ body{min-height:100dvh}
     const scale=Math.min(w/mapImage.naturalWidth,h/mapImage.naturalHeight);
     return {scale,x:(w-mapImage.naturalWidth*scale)/2,y:(h-mapImage.naturalHeight*scale)/2};
   }
-  function trackX(y){const yy=Math.max(0,Math.min(1536,y));return 680-0.020*yy-0.000080*yy*yy-610;}
+  function trackX(y){const yy=Math.max(0,Math.min(1536,y));return 680-0.020*yy-0.000080*yy*yy-260;}
   function drawUnit(x,y,length,width,color,kind){
     ctx.save();ctx.translate(x,y);const slope=-0.020-0.000160*y;ctx.rotate(Math.atan(-slope));
     ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(-width/2+2,-length/2+3,width,length);
