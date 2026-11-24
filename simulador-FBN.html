@@ -93,7 +93,7 @@ body{min-height:100dvh}
   const brake=document.getElementById('brake'),brakeValue=document.getElementById('brakeValue'),mission=document.getElementById('mission');
   let current=-1,changing=false,mapImage=null, direction=0, notch=0, speed=0, frontY=900, failed=false, lastTime=0;
   const limits=[0,15,25,35,45,55,65,75,100];
-  const startY=900, stopY=235, signalY=190;
+  const startY=1030, stopY=235, signalY=180;
 
   function fitCanvas(){
     const rect=map.getBoundingClientRect(), dpr=Math.max(1,window.devicePixelRatio||1);
@@ -107,9 +107,9 @@ body{min-height:100dvh}
     const scale=Math.min(w/mapImage.naturalWidth,h/mapImage.naturalHeight);
     return {scale,x:(w-mapImage.naturalWidth*scale)/2,y:(h-mapImage.naturalHeight*scale)/2};
   }
-  function trackX(y){return 440+(675-440)*(1536-y)/1536;}
+  function trackX(y){const yy=Math.max(0,Math.min(1536,y));return 680-0.020*yy-0.000080*yy*yy;}
   function drawUnit(x,y,length,width,color,kind){
-    ctx.save();ctx.translate(x,y);ctx.rotate(-0.15);
+    ctx.save();ctx.translate(x,y);const slope=-0.020-0.000160*y;ctx.rotate(Math.atan(-slope));
     ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(-width/2+2,-length/2+3,width,length);
     ctx.fillStyle=color;ctx.fillRect(-width/2,-length/2,width,length);
     ctx.strokeStyle='#171c20';ctx.lineWidth=3;ctx.strokeRect(-width/2,-length/2,width,length);
@@ -132,7 +132,7 @@ body{min-height:100dvh}
     ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,canvas.width/dpr,canvas.height/dpr);
     ctx.save();ctx.translate(tr.x,tr.y);ctx.scale(tr.scale,tr.scale);
     // Sinal de parada, desenhado sobre a referência do mapa.
-    const sx=trackX(signalY)+34;
+    const sx=trackX(signalY)+35;
     ctx.strokeStyle='#171717';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(sx,signalY-12);ctx.lineTo(sx,signalY+35);ctx.stroke();
     ctx.fillStyle=failed?'#ff3434':'#e00000';ctx.beginPath();ctx.arc(sx,signalY-17,11,0,Math.PI*2);ctx.fill();
     ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
