@@ -107,7 +107,7 @@ body{min-height:100dvh}
     const scale=Math.min(w/mapImage.naturalWidth,h/mapImage.naturalHeight);
     return {scale,x:(w-mapImage.naturalWidth*scale)/2,y:(h-mapImage.naturalHeight*scale)/2};
   }
-  function trackX(y){const yy=Math.max(0,Math.min(1536,y));return 680-0.020*yy-0.000080*yy*yy-140;}
+  function trackX(y){const yy=Math.max(0,Math.min(1536,y));return 680-0.020*yy-0.000080*yy*yy-142;}
   function drawUnit(x,y,length,width,color,kind){
     ctx.save();ctx.translate(x,y);const slope=-0.020-0.000160*y;ctx.rotate(Math.atan(-slope));
     ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(-width/2+2,-length/2+3,width,length);
@@ -132,7 +132,7 @@ body{min-height:100dvh}
     ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,canvas.width/dpr,canvas.height/dpr);
     ctx.save();ctx.translate(tr.x,tr.y);ctx.scale(tr.scale,tr.scale);
     // Sinal de parada, desenhado sobre a referência do mapa.
-    const sx=trackX(signalY)+35;
+    const sx=trackX(signalY)+40;
     ctx.strokeStyle='#171717';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(sx,signalY-12);ctx.lineTo(sx,signalY+35);ctx.stroke();
     ctx.fillStyle=failed?'#ff3434':'#e00000';ctx.beginPath();ctx.arc(sx,signalY-17,11,0,Math.PI*2);ctx.fill();
     ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
