@@ -140,7 +140,7 @@ body{min-height:100dvh}
     const locoY=frontY;
     drawUnit(trackX(locoY)+22,locoY,43,23,'#d2a51c','loco');
     for(let i=1;i<=15;i++){
-      const y=frontY+i*29;
+      const y=frontY+i*29+6;
       drawUnit(trackX(y)+135,y,25,19,'#795238','wagon');
     }
     ctx.restore();
