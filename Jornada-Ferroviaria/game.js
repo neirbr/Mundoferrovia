@@ -14,7 +14,7 @@
   const W = 800;
   const H = 800;
   const TRACK_SHIFT_X = 70;
-  const TRACK_LENGTH = 3120; // Percurso ampliado em 30% para dar mais tempo entre as paisagens.
+  const TRACK_LENGTH = 4100; // Percurso ampliado para incluir a região dos campos floridos.
   const START_S = 520; // Posição inicial da locomotiva junto à plataforma.
   const TRAIN_SPACING = 48;
   const MAX_SPEED = 82;
@@ -218,6 +218,35 @@
             ctx.fillRect(clearingX - 7, y + 27, 3, 3);
             ctx.fillRect(clearingX + 5, y + 31, 3, 3);
           }
+        }
+      }
+    }
+  }
+
+  function drawFlowerField(cameraY) {
+    // Campos floridos após a travessia do rio: manchas naturais dos dois lados da ferrovia.
+    for (let s = 3780; s <= 4500; s += 58) {
+      const p = trackPoint(s);
+      const center = worldToScreen(p, cameraY);
+      if (center.y < -110 || center.y > H + 110) continue;
+
+      for (const side of [-1, 1]) {
+        const seed = Math.floor(s * 3 + side * 97);
+        const patchX = center.x + side * (150 + seeded(seed) * 95);
+        const patchY = center.y + (seeded(seed + 11) - 0.5) * 42;
+        if (patchX < 35 || patchX > W - 35) continue;
+
+        ctx.fillStyle = seeded(seed + 21) > 0.5 ? "#86a95b" : "#91ad61";
+        ctx.fillRect(patchX - 38, patchY - 21, 76, 42);
+
+        const colors = ["#e7d45d", "#e9a4bd", "#f1eee0", "#b9a0d8", "#e28b55"];
+        for (let i = 0; i < 19; i++) {
+          const fx = patchX + (seeded(seed + 30 + i * 5) - 0.5) * 68;
+          const fy = patchY + (seeded(seed + 31 + i * 7) - 0.5) * 34;
+          ctx.fillStyle = colors[Math.floor(seeded(seed + 32 + i * 13) * colors.length)];
+          ctx.fillRect(fx, fy, 4, 4);
+          ctx.fillStyle = "#f5e9a2";
+          ctx.fillRect(fx + 1, fy - 2, 2, 2);
         }
       }
     }
@@ -484,6 +513,7 @@
     drawScenery(cameraY);
     drawFarmRegion(cameraY);
     drawForestRegion(cameraY);
+    drawFlowerField(cameraY);
     drawBridge(cameraY);
     drawRails(cameraY);
     drawSignal(cameraY);
@@ -514,7 +544,7 @@
     distanceValue.textContent=(state.distance/1000).toFixed(2).replace(".",",")+" km";
     const pct=Math.min(100,state.distance/TRACK_LENGTH*100);
     progressFill.style.width=pct+"%";progressText.textContent=Math.round(pct)+"% do trecho";
-    if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else regionName.textContent="Rios, lagos e pontes";
+    if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else if(state.distance<3350)regionName.textContent="Rios, lagos e pontes";else regionName.textContent="Campos floridos";
     render();
   }
 
