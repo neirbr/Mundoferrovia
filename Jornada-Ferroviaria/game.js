@@ -17,7 +17,8 @@
   const START_S = 520; // Posição inicial da locomotiva junto à plataforma.
   const TRAIN_SPACING = 48;
   const MAX_SPEED = 82;
-  const state = { distance: 0, speed: 0, throttle: false, braking: false, paused: false, lastTime: 0, hornFlash: 0 };
+  const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
+  const state = {distance:0,trackOffset:0,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,hornFlash:0};
 
   // Traçado provisório do primeiro trecho. A geometria será refinada na etapa de construção do mapa.
   function trackPoint(s) {
@@ -89,7 +90,7 @@
   }
 
   function drawRails(cameraY) {
-    const trainS = START_S + state.distance;
+    const trainS = START_S + state.trackOffset;
     const start = Math.max(0, trainS - 500);
     const end = Math.min(START_S + TRACK_LENGTH + 700, trainS + 700);
     ctx.lineCap = "square";
@@ -166,7 +167,7 @@
     const q = worldToScreen(p, cameraY);
     ctx.save();
     ctx.translate(q.x, q.y);
-    ctx.rotate(Math.atan2(p.ty, p.tx) + Math.PI / 2);
+    ctx.rotate(Math.atan2(p.ty, p.tx) + Math.PI / 2 + (state.direction < 0 ? Math.PI : 0));
     ctx.fillStyle = "#252c2b";
     ctx.fillRect(-13, -18, 26, 42);
     ctx.fillStyle = index % 2 ? "#9a6845" : "#a77b50";
@@ -188,7 +189,7 @@
     const q = worldToScreen(p, cameraY);
     ctx.save();
     ctx.translate(q.x, q.y);
-    ctx.rotate(Math.atan2(p.ty, p.tx) + Math.PI / 2);
+    ctx.rotate(Math.atan2(p.ty, p.tx) + Math.PI / 2 + (state.direction < 0 ? Math.PI : 0));
     // Truques e chassi
     ctx.fillStyle = "#202827";
     ctx.fillRect(-16, -30, 32, 64);
@@ -216,7 +217,7 @@
 
   function drawTrain(cameraY) {
     // Os vagões seguem pontos anteriores do mesmo traçado, cada um com orientação própria.
-    const trainS = START_S + state.distance;
+    const trainS = START_S + state.trackOffset;
     for (let i = 8; i >= 1; i--) drawWagon(trainS - i * TRAIN_SPACING, i, cameraY);
     drawLocomotive(trainS, cameraY);
   }
@@ -236,7 +237,7 @@
   }
 
   function render() {
-    const cameraY = trackPoint(START_S + state.distance).y;
+    const cameraY = trackPoint(START_S + state.trackOffset).y;
     drawGround(cameraY);
     drawScenery(cameraY);
     drawStation(cameraY);
@@ -254,29 +255,30 @@
   }
 
   function update(dt) {
-    if (state.paused) return;
-    if (state.throttle) state.speed += 17 * dt;
-    else state.speed -= 2.5 * dt;
-    if (state.braking) state.speed -= 38 * dt;
-    state.speed = Math.max(0, Math.min(MAX_SPEED, state.speed));
-    state.distance += (state.speed / 3.6) * 13 * dt;
-    state.hornFlash = Math.max(0, state.hornFlash - dt);
-
-    if (state.distance > TRACK_LENGTH) {
-      state.distance = TRACK_LENGTH;
-      state.speed = 0;
-      state.throttle = false;
-      hint.textContent = "Fim do primeiro trecho de demonstração";
+    if(state.paused)return;
+    const limit=state.direction===0||state.throttlePoint===0?0:SPEED_LIMITS[state.throttlePoint];
+    const traction=state.direction!==0&&state.throttlePoint>0&&!state.emergency;
+    if(state.emergency){
+      state.speed=Math.max(0,state.speed-7.5*dt);
+      if(state.speed<=0.05){state.speed=0;state.emergencyStopped=true;brakeStatus.textContent="Composição parada — alivie o freio";}
+    }else if(state.brake>0){
+      state.speed=Math.max(0,state.speed-(0.35+state.brake/100*2.7)*dt);
+    }else if(traction&&state.speed<limit){
+      state.speed=Math.min(limit,state.speed+(0.32+state.throttlePoint*0.105)*dt);
+    }else{
+      state.speed=Math.max(0,state.speed-0.12*dt);
     }
-
-    speedValue.textContent = Math.round(state.speed);
-    distanceValue.textContent = (state.distance / 1000).toFixed(2).replace(".", ",") + " km";
-    const pct = Math.min(100, state.distance / TRACK_LENGTH * 100);
-    progressFill.style.width = pct + "%";
-    progressText.textContent = Math.round(pct) + "% do trecho";
-    if (state.distance < 650) regionName.textContent = "Estação de partida";
-    else if (state.distance < 1400) regionName.textContent = "Campo verde";
-    else regionName.textContent = "Trecho rural";
+    if(state.speed>0&&state.direction!==0&&!state.emergency){
+      const moved=state.speed/3.6*13*dt*state.direction;
+      state.trackOffset+=moved;state.distance+=Math.abs(moved);
+    }
+    state.hornFlash=Math.max(0,state.hornFlash-dt);
+    if(state.distance>TRACK_LENGTH){state.distance=TRACK_LENGTH;state.speed=0;state.throttlePoint=0;}
+    speedValue.textContent=Math.round(state.speed);
+    distanceValue.textContent=(state.distance/1000).toFixed(2).replace(".",",")+" km";
+    const pct=Math.min(100,state.distance/TRACK_LENGTH*100);
+    progressFill.style.width=pct+"%";progressText.textContent=Math.round(pct)+"% do trecho";
+    if(state.distance<650)regionName.textContent="Estação de partida";else if(state.distance<1400)regionName.textContent="Campo verde";else regionName.textContent="Trecho rural";
     render();
   }
 
@@ -287,42 +289,51 @@
     requestAnimationFrame(frame);
   }
 
-  function holdButton(id, key) {
-    const el = document.getElementById(id);
-    const start = e => { e.preventDefault(); state[key] = true; };
-    const stop = e => { if (e) e.preventDefault(); state[key] = false; };
-    el.addEventListener("pointerdown", start);
-    ["pointerup", "pointerleave", "pointercancel"].forEach(ev => el.addEventListener(ev, stop));
-    window.addEventListener("blur", () => stop());
+  const directionValue=document.getElementById("directionValue");
+  const throttleValue=document.getElementById("throttleValue");
+  const limitValue=document.getElementById("limitValue");
+  const brakeSlider=document.getElementById("brakeSlider");
+  const brakeValue=document.getElementById("brakeValue");
+  const brakeStatus=document.getElementById("brakeStatus");
+  const forwardButton=document.getElementById("forwardButton"),neutralButton=document.getElementById("neutralButton"),reverseButton=document.getElementById("reverseButton");
+  const throttleUp=document.getElementById("throttleUp"),throttleDown=document.getElementById("throttleDown");
+  const emergencyButton=document.getElementById("emergencyButton"),releaseEmergencyButton=document.getElementById("releaseEmergencyButton");
+  function refreshControls(){
+    directionValue.textContent=state.direction>0?"FRENTE":state.direction<0?"RÉ":"NEUTRO";
+    [forwardButton,neutralButton,reverseButton].forEach(b=>b.classList.remove("direction-selected","neutral-selected"));
+    if(state.direction>0)forwardButton.classList.add("direction-selected");else if(state.direction<0)reverseButton.classList.add("direction-selected");else neutralButton.classList.add("neutral-selected");
+    throttleValue.textContent=state.throttlePoint;limitValue.textContent=state.throttlePoint? "LIMITE "+SPEED_LIMITS[state.throttlePoint]+" KM/H":"TRAÇÃO DESLIGADA";
+    brakeValue.textContent=state.brake+"%";brakeSlider.value=state.brake;
+    const locked=state.emergency||state.emergencyStopped;
+    [forwardButton,neutralButton,reverseButton,throttleUp,throttleDown,brakeSlider].forEach(b=>b.disabled=locked);
+    emergencyButton.disabled=locked;releaseEmergencyButton.disabled=!state.emergencyStopped;
+    if(state.emergency&&!state.emergencyStopped)brakeStatus.textContent="EMERGÊNCIA — frenagem em andamento";
+    else if(!state.emergency&&!state.emergencyStopped)brakeStatus.textContent=state.brake?"Freio de serviço aplicado":"Freio aliviado";
   }
-
-  holdButton("accelerateButton", "throttle");
-  holdButton("brakeButton", "braking");
-
-  document.getElementById("hornButton").addEventListener("click", () => {
-    state.hornFlash = 1.1;
-    hint.textContent = "Buzina acionada!";
-    setTimeout(() => { if (!state.paused) hint.textContent = "Toque em ACELERAR para conduzir"; }, 1200);
-  });
+  function chooseDirection(d){if(state.emergency||state.emergencyStopped)return;state.direction=d;refreshControls();}
+  forwardButton.addEventListener("click",()=>chooseDirection(1));neutralButton.addEventListener("click",()=>chooseDirection(0));reverseButton.addEventListener("click",()=>chooseDirection(-1));
+  throttleUp.addEventListener("click",()=>{if(!state.emergency&&!state.emergencyStopped){state.throttlePoint=Math.min(8,state.throttlePoint+1);refreshControls();}});
+  throttleDown.addEventListener("click",()=>{if(!state.emergency&&!state.emergencyStopped){state.throttlePoint=Math.max(0,state.throttlePoint-1);refreshControls();}});
+  brakeSlider.addEventListener("input",()=>{if(!state.emergency&&!state.emergencyStopped){state.brake=Number(brakeSlider.value);refreshControls();}});
+  emergencyButton.addEventListener("click",()=>{if(state.emergency||state.emergencyStopped)return;state.emergency=true;state.brake=100;state.throttlePoint=0;refreshControls();});
+  releaseEmergencyButton.addEventListener("click",()=>{if(!state.emergencyStopped||state.speed>0)return;state.emergency=false;state.emergencyStopped=false;state.brake=0;state.direction=0;refreshControls();});
+  document.getElementById("hornButton").addEventListener("click",()=>{state.hornFlash=1.1;hint.textContent="Buzina acionada!";setTimeout(()=>{if(!state.paused)hint.textContent="Selecione FRENTE e aumente os pontos de aceleração para partir";},1200);});
 
   function setPaused(value) {
     state.paused = value;
     pauseOverlay.hidden = !value;
     document.getElementById("pauseButton").textContent = value ? "▶" : "Ⅱ";
-    if (value) { state.throttle = false; state.braking = false; }
+    if(value){state.throttlePoint=0;}
   }
   document.getElementById("pauseButton").addEventListener("click", () => setPaused(!state.paused));
   document.getElementById("resumeButton").addEventListener("click", () => setPaused(false));
 
-  window.addEventListener("keydown", e => {
-    if (e.key === "ArrowUp") { e.preventDefault(); state.throttle = true; }
-    if (e.key === "ArrowDown") { e.preventDefault(); state.braking = true; }
-    if (e.code === "Space") { e.preventDefault(); state.hornFlash = 1.1; }
+  window.addEventListener("keydown",e=>{
+    if(e.key==="ArrowUp"){e.preventDefault();if(!state.emergency&&!state.emergencyStopped)state.throttlePoint=Math.min(8,state.throttlePoint+1);refreshControls();}
+    if(e.key==="ArrowDown"){e.preventDefault();if(!state.emergency&&!state.emergencyStopped)state.throttlePoint=Math.max(0,state.throttlePoint-1);refreshControls();}
+    if(e.code==="Space"){e.preventDefault();state.hornFlash=1.1;}
   });
-  window.addEventListener("keyup", e => {
-    if (e.key === "ArrowUp") state.throttle = false;
-    if (e.key === "ArrowDown") state.braking = false;
-  });
+  refreshControls();
 
   render();
   requestAnimationFrame(frame);
