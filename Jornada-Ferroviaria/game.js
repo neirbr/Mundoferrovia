@@ -245,9 +245,8 @@
     for (let row = first; row <= last; row++) {
       const s = 690 - (row * 104 + 52);
       if (s < 3146 || s > 3460) continue;
-      // Mantém uma faixa sem árvores junto ao rio e ao lago.
-      // A copa e a sombra das árvores não podem invadir a área da água.
-      if (s >= 3340 && s <= 3460) continue;
+      // Reserva apenas a margem imediata do rio; o restante da floresta permanece.
+      if (s >= 3400 && s <= 3460) continue;
       const p = trackPoint(s);
       const y = row * 104 + 52 - cameraWorld;
       const density = Math.min(1, Math.max(0.35, (s - 3146) / 260));
@@ -522,8 +521,9 @@
     for (let row = first; row <= last; row++) {
       const yWorld = row * 82 + 38;
       const s = 690 - yWorld;
-      // A região dos campos floridos é aberta: não desenhar árvores nesse trecho.
-      if (s >= 3780 && s <= 5650) continue;
+      // A vegetação genérica fica apenas no trecho inicial; fazendas, floresta,
+      // água, campos floridos e cidade usam seus próprios cenários.
+      if (s >= 1820 || s < 0) continue;
       const p = trackPoint(s);
       const y = yWorld - cameraWorld;
 
@@ -694,7 +694,8 @@
     const cameraY = trackPoint(START_S + state.trackOffset).y;
     drawGround(cameraY);
     drawLateralAtmosphere(cameraY);
-    // Retiramos a vegetação genérica das laterais; permanecem os cenários próprios de cada região.
+    // Vegetação inicial restaurada; as demais regiões mantêm seus cenários próprios.
+    drawScenery(cameraY);
     drawFarmRegion(cameraY);
     drawForestRegion(cameraY);
     drawFlowerField(cameraY);
