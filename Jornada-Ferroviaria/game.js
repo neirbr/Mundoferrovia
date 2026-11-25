@@ -14,7 +14,7 @@
   const W = 800;
   const H = 800;
   const TRACK_SHIFT_X = 70;
-  const TRACK_LENGTH = 2400;
+  const TRACK_LENGTH = 3120; // Percurso ampliado em 30% para dar mais tempo entre as paisagens.
   const START_S = 520; // Posição inicial da locomotiva junto à plataforma.
   const TRAIN_SPACING = 48;
   const MAX_SPEED = 82;
@@ -127,21 +127,21 @@
   function drawFarmRegion(cameraY) {
     // Primeira região rural: os talhões ficam afastados da ferrovia.
     const plots = [
-      { s: 1840, side: -1, variant: 0 },
-      { s: 2040, side: 1, variant: 1 },
-      { s: 2260, side: -1, variant: 1 },
-      { s: 2480, side: 1, variant: 0 }
+      { s: 2236, side: -1, variant: 0 },
+      { s: 2496, side: 1, variant: 1 },
+      { s: 2782, side: -1, variant: 1 },
+      { s: 3068, side: 1, variant: 0 }
     ];
     for (const plot of plots) {
       const q = worldToScreen(trackPoint(plot.s), cameraY);
       if (q.y < -110 || q.y > H + 110) continue;
       drawFarmPlot(q.x + plot.side * 178, q.y, plot.variant);
     }
-    const barn = worldToScreen(trackPoint(2160), cameraY);
+    const barn = worldToScreen(trackPoint(2652), cameraY);
     if (barn.y > -70 && barn.y < H + 70) drawFarmBuilding(barn.x - 185, barn.y + 35);
-    const animals = worldToScreen(trackPoint(1950), cameraY);
+    const animals = worldToScreen(trackPoint(2380), cameraY);
     if (animals.y > -50 && animals.y < H + 50) drawFarmAnimals(animals.x + 155, animals.y + 48);
-    const silo = worldToScreen(trackPoint(2420), cameraY);
+    const silo = worldToScreen(trackPoint(2990), cameraY);
     if (silo.y > -70 && silo.y < H + 70) {
       ctx.fillStyle = "#ddd5b9";
       ctx.fillRect(silo.x + 190, silo.y - 24, 22, 43);
@@ -186,10 +186,10 @@
 
     for (let row = first; row <= last; row++) {
       const s = 690 - (row * 104 + 52);
-      if (s < 2540 || s > 3500) continue;
+      if (s < 3146 || s > 3460) continue;
       const p = trackPoint(s);
       const y = row * 104 + 52 - cameraWorld;
-      const density = Math.min(1, Math.max(0.35, (s - 2540) / 360));
+      const density = Math.min(1, Math.max(0.35, (s - 3146) / 260));
 
       for (let side = -1; side <= 1; side += 2) {
         for (let col = 0; col < 5; col++) {
@@ -225,7 +225,7 @@
 
   function drawRiverLakeRegion(cameraY) {
     // Rio transversal ao vale, com margens irregulares e água em tons de azul.
-    const riverS = 2780;
+    const riverS = 3468;
     const riverPoint = trackPoint(riverS);
     const riverY = worldToScreen({ x: 0, y: riverPoint.y }, cameraY).y;
     ctx.fillStyle = "#9b956d";
@@ -263,7 +263,7 @@
     }
 
     // Lago lateral, conectado visualmente ao mesmo vale.
-    const lake = worldToScreen(trackPoint(3060), cameraY);
+    const lake = worldToScreen(trackPoint(3560), cameraY);
     const lakeX = lake.x + 225;
     const lakeY = lake.y + 8;
     if (lakeY > -190 && lakeY < H + 190 && lakeX > 75 && lakeX < W - 75) {
@@ -283,7 +283,7 @@
 
   function drawBridge(cameraY) {
     // Tabuleiro acompanha a geometria existente da ferrovia; os trilhos permanecem intactos.
-    const centerS = 2780;
+    const centerS = 3468;
     const a = trackPoint(centerS - 88);
     const b = trackPoint(centerS + 88);
     const corners = [
@@ -514,7 +514,7 @@
     distanceValue.textContent=(state.distance/1000).toFixed(2).replace(".",",")+" km";
     const pct=Math.min(100,state.distance/TRACK_LENGTH*100);
     progressFill.style.width=pct+"%";progressText.textContent=Math.round(pct)+"% do trecho";
-    if(state.distance<650)regionName.textContent="Estação de partida";else if(state.distance<1400)regionName.textContent="Campo verde";else if(state.distance<2050)regionName.textContent="Fazendas e plantações";else if(state.distance<2250)regionName.textContent="Floresta";else regionName.textContent="Rios, lagos e pontes";
+    if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else regionName.textContent="Rios, lagos e pontes";
     render();
   }
 
