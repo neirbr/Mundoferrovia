@@ -223,6 +223,102 @@
     }
   }
 
+  function drawRiverLakeRegion(cameraY) {
+    // Rio transversal ao vale, com margens irregulares e água em tons de azul.
+    const riverS = 2780;
+    const riverPoint = trackPoint(riverS);
+    const riverY = worldToScreen({ x: 0, y: riverPoint.y }, cameraY).y;
+    ctx.fillStyle = "#9b956d";
+    ctx.beginPath();
+    ctx.moveTo(0, riverY - 82);
+    for (let x = 0; x <= W; x += 40) {
+      const wave = Math.sin(x * 0.018) * 9 + Math.sin(x * 0.043) * 4;
+      ctx.lineTo(x, riverY - 67 + wave);
+    }
+    for (let x = W; x >= 0; x -= 40) {
+      const wave = Math.sin(x * 0.016 + 1.4) * 10 + Math.sin(x * 0.039) * 4;
+      ctx.lineTo(x, riverY + 72 + wave);
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#397f9a";
+    ctx.beginPath();
+    ctx.moveTo(0, riverY - 67);
+    for (let x = 0; x <= W; x += 40) {
+      ctx.lineTo(x, riverY - 57 + Math.sin(x * 0.018) * 9 + Math.sin(x * 0.043) * 4);
+    }
+    for (let x = W; x >= 0; x -= 40) {
+      ctx.lineTo(x, riverY + 59 + Math.sin(x * 0.016 + 1.4) * 10 + Math.sin(x * 0.039) * 4);
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    // Reflexos simples sobre a água.
+    ctx.fillStyle = "rgba(183, 220, 215, 0.55)";
+    for (let i = 0; i < 13; i++) {
+      const x = 28 + i * 61;
+      const y = riverY + Math.sin(i * 2.1) * 28;
+      ctx.fillRect(x, y, 22 + (i % 3) * 7, 3);
+    }
+
+    // Lago lateral, conectado visualmente ao mesmo vale.
+    const lake = worldToScreen(trackPoint(3060), cameraY);
+    const lakeX = lake.x + 225;
+    const lakeY = lake.y + 8;
+    if (lakeY > -190 && lakeY < H + 190 && lakeX > 75 && lakeX < W - 75) {
+      ctx.fillStyle = "#a49a70";
+      ctx.beginPath();
+      ctx.ellipse(lakeX, lakeY, 105, 76, -0.12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#397f9a";
+      ctx.beginPath();
+      ctx.ellipse(lakeX, lakeY, 94, 65, -0.12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(183, 220, 215, 0.55)";
+      ctx.fillRect(lakeX - 49, lakeY - 22, 37, 4);
+      ctx.fillRect(lakeX + 12, lakeY + 13, 28, 3);
+    }
+  }
+
+  function drawBridge(cameraY) {
+    // Tabuleiro acompanha a geometria existente da ferrovia; os trilhos permanecem intactos.
+    const centerS = 2780;
+    const a = trackPoint(centerS - 88);
+    const b = trackPoint(centerS + 88);
+    const corners = [
+      { x: a.x + a.nx * 34, y: a.y + a.ny * 34 },
+      { x: b.x + b.nx * 34, y: b.y + b.ny * 34 },
+      { x: b.x - b.nx * 34, y: b.y - b.ny * 34 },
+      { x: a.x - a.nx * 34, y: a.y - a.ny * 34 }
+    ].map(p => worldToScreen(p, cameraY));
+
+    ctx.fillStyle = "#554c3d";
+    ctx.beginPath();
+    ctx.moveTo(corners[0].x, corners[0].y);
+    for (let i = 1; i < corners.length; i++) ctx.lineTo(corners[i].x, corners[i].y);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#88785c";
+    ctx.beginPath();
+    ctx.moveTo(corners[0].x + 5, corners[0].y);
+    ctx.lineTo(corners[1].x + 5, corners[1].y);
+    ctx.lineTo(corners[2].x - 5, corners[2].y);
+    ctx.lineTo(corners[3].x - 5, corners[3].y);
+    ctx.closePath();
+    ctx.fill();
+
+    // Travessas estruturais nas extremidades da ponte.
+    for (const s of [centerS - 72, centerS + 72]) {
+      const p = worldToScreen(trackPoint(s), cameraY);
+      ctx.fillStyle = "#4b4438";
+      ctx.fillRect(p.x - 39, p.y - 5, 78, 10);
+      ctx.fillStyle = "#b49a70";
+      ctx.fillRect(p.x - 34, p.y - 4, 68, 3);
+    }
+  }
+
   function drawScenery(cameraY) {
     const cameraWorld = cameraY - H * .56;
     const first = Math.floor((cameraWorld - 100) / 82);
@@ -384,9 +480,11 @@
   function render() {
     const cameraY = trackPoint(START_S + state.trackOffset).y;
     drawGround(cameraY);
+    drawRiverLakeRegion(cameraY);
     drawScenery(cameraY);
     drawFarmRegion(cameraY);
     drawForestRegion(cameraY);
+    drawBridge(cameraY);
     drawRails(cameraY);
     drawSignal(cameraY);
     drawTrain(cameraY);
@@ -416,7 +514,7 @@
     distanceValue.textContent=(state.distance/1000).toFixed(2).replace(".",",")+" km";
     const pct=Math.min(100,state.distance/TRACK_LENGTH*100);
     progressFill.style.width=pct+"%";progressText.textContent=Math.round(pct)+"% do trecho";
-    if(state.distance<650)regionName.textContent="Estação de partida";else if(state.distance<1400)regionName.textContent="Campo verde";else if(state.distance<2050)regionName.textContent="Fazendas e plantações";else regionName.textContent="Floresta";
+    if(state.distance<650)regionName.textContent="Estação de partida";else if(state.distance<1400)regionName.textContent="Campo verde";else if(state.distance<2050)regionName.textContent="Fazendas e plantações";else if(state.distance<2250)regionName.textContent="Floresta";else regionName.textContent="Rios, lagos e pontes";
     render();
   }
 
