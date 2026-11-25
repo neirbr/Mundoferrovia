@@ -14,7 +14,7 @@
   const W = 800;
   const H = 800;
   const TRACK_SHIFT_X = 70;
-  const TRACK_LENGTH = 5200; // Percurso ampliado para criar um campo florido extenso.
+  const TRACK_LENGTH = 6800; // Percurso ampliado para incluir a pequena cidade do interior.
   const START_S = 520; // Posição inicial da locomotiva junto à plataforma.
   const TRAIN_SPACING = 48;
   const MAX_SPEED = 82;
@@ -258,6 +258,101 @@
         }
       }
     }
+  }
+
+
+  function drawTownHouse(x, y, variant = 0) {
+    // Construções simples vistas de cima, com quintal e telhado colorido.
+    const wall = ["#d8c49a", "#c9d1bd", "#d6b2a0", "#d7cfaa"][variant % 4];
+    const roof = ["#a64f3d", "#8b6650", "#6e7880", "#b47a45"][variant % 4];
+    ctx.fillStyle = "rgba(39, 49, 35, .25)";
+    ctx.fillRect(x - 33, y - 24, 70, 55);
+    ctx.fillStyle = "#66844e";
+    ctx.fillRect(x - 38, y - 31, 76, 63);
+    ctx.fillStyle = wall;
+    ctx.fillRect(x - 29, y - 23, 58, 46);
+    ctx.fillStyle = roof;
+    ctx.fillRect(x - 32, y - 28, 64, 38);
+    ctx.fillStyle = "#d6b78a";
+    ctx.fillRect(x - 27, y - 25, 54, 5);
+    ctx.fillStyle = "#51483b";
+    ctx.fillRect(x - 6, y - 4, 13, 27);
+    ctx.fillStyle = "#a9c5c1";
+    ctx.fillRect(x - 23, y - 14, 9, 9);
+    ctx.fillRect(x + 14, y - 14, 9, 9);
+    ctx.fillStyle = "#e2d6b9";
+    ctx.fillRect(x - 35, y + 32, 70, 3);
+    // Pequena árvore no quintal.
+    ctx.fillStyle = "#376b43";
+    ctx.fillRect(x + 37, y - 23, 15, 17);
+    ctx.fillStyle = "#80a75b";
+    ctx.fillRect(x + 41, y - 27, 7, 7);
+  }
+
+  function drawTownShop(x, y, variant = 0) {
+    ctx.fillStyle = "#66844e";
+    ctx.fillRect(x - 42, y - 32, 86, 68);
+    ctx.fillStyle = "#d8c9a7";
+    ctx.fillRect(x - 34, y - 25, 70, 53);
+    ctx.fillStyle = variant % 2 ? "#477b85" : "#b45d45";
+    ctx.fillRect(x - 38, y - 31, 78, 25);
+    ctx.fillStyle = "#f0dfb4";
+    for (let i = 0; i < 6; i++) ctx.fillRect(x - 34 + i * 13, y - 9, 9, 4);
+    ctx.fillStyle = "#354b4b";
+    ctx.fillRect(x - 9, y + 3, 19, 25);
+    ctx.fillStyle = "#a9c9c5";
+    ctx.fillRect(x - 29, y + 1, 14, 13);
+    ctx.fillRect(x + 15, y + 1, 14, 13);
+  }
+
+  function drawTownRoad(cameraY, s, crossing = false) {
+    const p = worldToScreen(trackPoint(s), cameraY);
+    // Rua transversal à ferrovia; o desenho acompanha a posição do trilho sem alterá-lo.
+    ctx.fillStyle = "#77766d";
+    ctx.fillRect(0, p.y - (crossing ? 31 : 24), W, crossing ? 62 : 48);
+    ctx.fillStyle = "#b6ad91";
+    ctx.fillRect(0, p.y - (crossing ? 35 : 28), W, 5);
+    ctx.fillRect(0, p.y + (crossing ? 30 : 23), W, 5);
+    ctx.fillStyle = "#d6c99f";
+    for (let x = 18; x < W; x += 76) ctx.fillRect(x, p.y - 1, 34, 3);
+    if (crossing) {
+      // Marcas de alerta da passagem de nível, posicionadas nos dois lados da via.
+      for (const side of [-1, 1]) {
+        const x = p.x + side * 52;
+        ctx.fillStyle = "#e8dfc8";
+        ctx.fillRect(x - 15, p.y - 28, 7, 22);
+        ctx.fillRect(x - 5, p.y - 28, 7, 22);
+        ctx.fillRect(x + 5, p.y - 28, 7, 22);
+        ctx.fillStyle = "#d7b34f";
+        ctx.fillRect(x - 4, p.y - 48, 8, 18);
+        ctx.fillStyle = "#b4483b";
+        ctx.fillRect(x - 3, p.y - 45, 6, 5);
+      }
+    }
+  }
+
+  function drawTownRegion(cameraY) {
+    // Pequena cidade do interior: casas e comércios dos dois lados da ferrovia.
+    const buildings = [
+      {s: 5740, side:-1, d:160, v:0}, {s: 5825, side:1, d:175, v:1},
+      {s: 5940, side:-1, d:260, v:2}, {s: 6035, side:1, d:265, v:3},
+      {s: 6160, side:-1, d:165, shop:true, v:0}, {s: 6285, side:1, d:170, shop:true, v:1},
+      {s: 6410, side:-1, d:270, v:1}, {s: 6515, side:1, d:260, v:2},
+      {s: 6650, side:-1, d:170, v:3}, {s: 6750, side:1, d:175, v:0},
+      {s: 6900, side:-1, d:260, v:2}, {s: 7010, side:1, d:265, v:1},
+      {s: 7140, side:-1, d:165, v:1}, {s: 7220, side:1, d:175, v:3}
+    ];
+    for (const b of buildings) {
+      const p = worldToScreen(trackPoint(b.s), cameraY);
+      if (p.y < -100 || p.y > H + 100) continue;
+      const x = p.x + b.side * b.d;
+      if (x < 50 || x > W - 50) continue;
+      if (b.shop) drawTownShop(x, p.y, b.v);
+      else drawTownHouse(x, p.y, b.v);
+    }
+    drawTownRoad(cameraY, 5920, false);
+    drawTownRoad(cameraY, 6300, true);
+    drawTownRoad(cameraY, 6680, false);
   }
 
   function drawRiverLakeRegion(cameraY) {
@@ -525,6 +620,7 @@
     drawFarmRegion(cameraY);
     drawForestRegion(cameraY);
     drawFlowerField(cameraY);
+    drawTownRegion(cameraY);
     drawBridge(cameraY);
     drawRails(cameraY);
     drawSignal(cameraY);
@@ -555,7 +651,7 @@
     distanceValue.textContent=(state.distance/1000).toFixed(2).replace(".",",")+" km";
     const pct=Math.min(100,state.distance/TRACK_LENGTH*100);
     progressFill.style.width=pct+"%";progressText.textContent=Math.round(pct)+"% do trecho";
-    if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else if(state.distance<3260)regionName.textContent="Rios, lagos e pontes";else regionName.textContent="Campos floridos";
+    if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else if(state.distance<3260)regionName.textContent="Rios, lagos e pontes";else if(state.distance<5200)regionName.textContent="Campos floridos";else regionName.textContent="Cidade do interior";
     render();
   }
 
