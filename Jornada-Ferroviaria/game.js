@@ -17,6 +17,7 @@
   const TRACK_LENGTH = 6800; // Percurso ampliado para incluir a pequena cidade do interior.
   const START_S = 520; // Posição inicial da locomotiva junto à plataforma.
   const TRAIN_SPACING = 48;
+  const PASSENGER_WAGON_COUNT = 8;
   const MAX_SPEED = 82;
   const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
   const state = {distance:0,trackOffset:0,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0};
@@ -544,19 +545,36 @@
     ctx.save();
     ctx.translate(q.x, q.y);
     ctx.rotate(Math.atan2(p.ty, p.tx) + Math.PI / 2 + (state.direction < 0 ? Math.PI : 0));
+
+    // Carro de passageiros visto de cima, com teto claro e janelas laterais.
     ctx.fillStyle = "#252c2b";
-    ctx.fillRect(-13, -18, 26, 42);
-    ctx.fillStyle = index % 2 ? "#9a6845" : "#a77b50";
-    ctx.fillRect(-11, -19, 22, 38);
-    ctx.fillStyle = "#c99b68";
-    ctx.fillRect(-8, -16, 16, 5);
-    ctx.fillStyle = "#594936";
-    ctx.fillRect(-15, -13, 4, 10);
-    ctx.fillRect(11, -13, 4, 10);
-    ctx.fillRect(-15, 9, 4, 10);
-    ctx.fillRect(11, 9, 4, 10);
-    ctx.fillStyle = "#e2c69a";
-    ctx.fillRect(-2, -5, 4, 12);
+    ctx.fillRect(-15, -23, 30, 46);
+    ctx.fillStyle = index % 2 ? "#315d78" : "#376b86";
+    ctx.fillRect(-13, -22, 26, 44);
+    ctx.fillStyle = "#d9d5c5";
+    ctx.fillRect(-10, -19, 20, 38);
+    ctx.fillStyle = "#b84f3e";
+    ctx.fillRect(-13, -22, 26, 3);
+    ctx.fillRect(-13, 19, 26, 3);
+
+    // Fileiras de janelas ao longo dos dois lados do salão.
+    for (let wy = -14; wy <= 10; wy += 8) {
+      ctx.fillStyle = "#263f4b";
+      ctx.fillRect(-12, wy, 4, 6);
+      ctx.fillRect(8, wy, 4, 6);
+      ctx.fillStyle = "#8fb8c1";
+      ctx.fillRect(-11, wy + 1, 2, 4);
+      ctx.fillRect(9, wy + 1, 2, 4);
+    }
+
+    // Corredor central e truques nas extremidades.
+    ctx.fillStyle = "#b5b3a5";
+    ctx.fillRect(-2, -15, 4, 30);
+    ctx.fillStyle = "#343b3a";
+    ctx.fillRect(-16, -17, 4, 9);
+    ctx.fillRect(12, -17, 4, 9);
+    ctx.fillRect(-16, 8, 4, 9);
+    ctx.fillRect(12, 8, 4, 9);
     ctx.restore();
   }
 
@@ -594,7 +612,7 @@
   function drawTrain(cameraY) {
     // Os vagões seguem pontos anteriores do mesmo traçado, cada um com orientação própria.
     const trainS = START_S + state.trackOffset;
-    for (let i = 8; i >= 1; i--) drawWagon(trainS - i * TRAIN_SPACING, i, cameraY);
+    for (let i = PASSENGER_WAGON_COUNT; i >= 1; i--) drawWagon(trainS - i * TRAIN_SPACING, i, cameraY);
     drawLocomotive(trainS, cameraY);
   }
 
@@ -638,7 +656,7 @@
     }else if(state.brake>0){
       state.speed=Math.max(0,state.speed-(0.35+state.brake/100*2.7)*dt);
     }else if(traction&&state.speed<limit){
-      state.speed=Math.min(limit,state.speed+(0.32+state.throttlePoint*0.105)*dt);
+      state.speed=Math.min(limit,state.speed+(0.40+state.throttlePoint*0.125)*dt);
     }else{
       state.speed=Math.max(0,state.speed-0.12*dt);
     }
