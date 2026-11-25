@@ -158,34 +158,6 @@
     }
   }
 
-  function drawStation(cameraY) {
-    const stationS = START_S;
-    const trackPosition = trackPoint(stationS);
-    // A estação permanece no lugar; somente a ferrovia e a composição são deslocadas.
-    const p = worldToScreen({ ...trackPosition, x: trackPosition.x - TRACK_SHIFT_X }, cameraY);
-    if (p.y < -160 || p.y > H + 160) return;
-    ctx.fillStyle = "#b7a47c";
-    ctx.fillRect(p.x + 34, p.y - 125, 62, 235);
-    ctx.fillStyle = "#725b43";
-    ctx.fillRect(p.x + 28, p.y - 135, 74, 18);
-    ctx.fillStyle = "#e5d9b7";
-    ctx.fillRect(p.x + 42, p.y - 106, 46, 35);
-    ctx.fillStyle = "#8b4f3e";
-    ctx.fillRect(p.x + 52, p.y - 61, 22, 34);
-    ctx.fillStyle = "#f1d98c";
-    ctx.fillRect(p.x + 43, p.y - 96, 10, 12);
-    ctx.fillRect(p.x + 76, p.y - 96, 10, 12);
-    ctx.fillStyle = "#d7c49a";
-    ctx.fillRect(p.x - 42, p.y - 100, 25, 185);
-    ctx.fillStyle = "#8e7958";
-    ctx.fillRect(p.x - 47, p.y - 106, 35, 10);
-    ctx.fillStyle = "#4c5e47";
-    ctx.fillRect(p.x - 38, p.y - 85, 18, 8);
-    ctx.fillStyle = "#f6e7b9";
-    ctx.font = "bold 10px monospace";
-    ctx.fillText("ESTAÇÃO", p.x + 43, p.y - 115);
-  }
-
   function drawWagon(s, index, cameraY) {
     const p = trackPoint(s);
     const q = worldToScreen(p, cameraY);
@@ -264,7 +236,6 @@
     const cameraY = trackPoint(START_S + state.trackOffset).y;
     drawGround(cameraY);
     drawScenery(cameraY);
-    drawStation(cameraY);
     drawRails(cameraY);
     drawSignal(cameraY);
     drawTrain(cameraY);
