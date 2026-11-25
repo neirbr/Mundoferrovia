@@ -42,16 +42,22 @@
   function drawGround(cameraY) {
     ctx.fillStyle = "#71985b";
     ctx.fillRect(0, 0, W, H);
-    for (let gy = -100; gy < 1000; gy += 32) {
+
+    // A textura fica presa ao mundo, acompanhando a câmera sem trocar os blocos de lugar.
+    const cameraWorld = cameraY - H * .56;
+    const firstRow = Math.floor(cameraWorld / 32);
+    const lastRow = Math.ceil((cameraWorld + H) / 32);
+
+    for (let row = firstRow; row <= lastRow; row++) {
+      const screenY = row * 32 - cameraWorld;
       for (let gx = 0; gx < W; gx += 32) {
-        const worldY = Math.floor((gy + cameraY - H * .56) / 32);
-        const r = seeded(Math.floor(gx / 32) * 97 + worldY);
+        const r = seeded(Math.floor(gx / 32) * 97 + row);
         ctx.fillStyle = r > .82 ? "#789e60" : r < .12 ? "#688e53" : "#71985b";
-        ctx.fillRect(gx, gy, 32, 32);
+        ctx.fillRect(gx, screenY, 32, 32);
         if (r > .91) {
           ctx.fillStyle = "#9bb66a";
-          ctx.fillRect(gx + 8, gy + 11, 3, 3);
-          ctx.fillRect(gx + 19, gy + 22, 3, 3);
+          ctx.fillRect(gx + 8, screenY + 11, 3, 3);
+          ctx.fillRect(gx + 19, screenY + 22, 3, 3);
         }
       }
     }
