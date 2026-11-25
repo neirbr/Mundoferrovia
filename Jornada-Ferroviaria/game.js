@@ -125,14 +125,51 @@
   }
 
   function drawTree(x, y, variant = 0) {
-    ctx.fillStyle = "#3d5b3c";
-    ctx.fillRect(x - 10, y + 8, 20, 8);
-    ctx.fillStyle = variant % 2 ? "#315c3e" : "#376b43";
-    ctx.fillRect(x - 13, y - 8, 26, 22);
-    ctx.fillStyle = variant % 2 ? "#4c8050" : "#52894e";
-    ctx.fillRect(x - 9, y - 14, 18, 20);
-    ctx.fillStyle = "#7da65b";
-    ctx.fillRect(x - 5, y - 12, 7, 5);
+    // Árvore em pixel art 2.5D: sombra no chão, tronco e copa em camadas.
+    const tone = Math.abs(variant) % 3;
+    const deep = ["#244b35", "#285239", "#315b3b"][tone];
+    const mid = ["#376b43", "#3d7547", "#477b48"][tone];
+    const light = ["#568b50", "#609452", "#6b9b59"][tone];
+
+    // Sombra projetada para dar altura à copa.
+    ctx.fillStyle = "rgba(28, 48, 31, 0.30)";
+    ctx.fillRect(x - 18, y + 13, 39, 8);
+    ctx.fillRect(x - 13, y + 19, 27, 4);
+
+    // Tronco visível na base da árvore.
+    ctx.fillStyle = "#594633";
+    ctx.fillRect(x - 4, y + 3, 8, 15);
+    ctx.fillStyle = "#806044";
+    ctx.fillRect(x - 2, y + 5, 3, 10);
+
+    // Copa inferior, mais escura, criando volume.
+    ctx.fillStyle = deep;
+    ctx.fillRect(x - 17, y - 7, 34, 22);
+    ctx.fillRect(x - 12, y - 13, 25, 28);
+    ctx.fillRect(x - 21, y - 2, 8, 13);
+    ctx.fillRect(x + 13, y - 3, 8, 14);
+
+    // Camada central e pequenos recortes de folhagem.
+    ctx.fillStyle = mid;
+    ctx.fillRect(x - 14, y - 13, 28, 23);
+    ctx.fillRect(x - 9, y - 18, 19, 25);
+    ctx.fillRect(x - 18, y - 5, 8, 12);
+    ctx.fillRect(x + 10, y - 7, 8, 13);
+
+    // Partes iluminadas no topo da copa.
+    ctx.fillStyle = light;
+    ctx.fillRect(x - 9, y - 17, 18, 9);
+    ctx.fillRect(x - 5, y - 21, 11, 7);
+    ctx.fillRect(x - 15, y - 9, 7, 7);
+    ctx.fillRect(x + 8, y - 11, 6, 7);
+
+    // Pixels de luz e pequenos detalhes de folhagem.
+    ctx.fillStyle = "#91b968";
+    ctx.fillRect(x - 5, y - 18, 5, 4);
+    ctx.fillRect(x + 5, y - 12, 4, 3);
+    ctx.fillStyle = "#315b3b";
+    ctx.fillRect(x - 12, y + 5, 5, 4);
+    ctx.fillRect(x + 9, y + 2, 5, 4);
   }
 
   function drawFarmPlot(x, y, variant) {
