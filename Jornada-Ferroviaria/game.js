@@ -127,21 +127,21 @@
   function drawFarmRegion(cameraY) {
     // Primeira região rural: os talhões ficam afastados da ferrovia.
     const plots = [
-      { s: 1190, side: -1, variant: 0 },
-      { s: 1390, side: 1, variant: 1 },
-      { s: 1610, side: -1, variant: 1 },
-      { s: 1830, side: 1, variant: 0 }
+      { s: 1840, side: -1, variant: 0 },
+      { s: 2040, side: 1, variant: 1 },
+      { s: 2260, side: -1, variant: 1 },
+      { s: 2480, side: 1, variant: 0 }
     ];
     for (const plot of plots) {
       const q = worldToScreen(trackPoint(plot.s), cameraY);
       if (q.y < -110 || q.y > H + 110) continue;
       drawFarmPlot(q.x + plot.side * 178, q.y, plot.variant);
     }
-    const barn = worldToScreen(trackPoint(1510), cameraY);
+    const barn = worldToScreen(trackPoint(2160), cameraY);
     if (barn.y > -70 && barn.y < H + 70) drawFarmBuilding(barn.x - 185, barn.y + 35);
-    const animals = worldToScreen(trackPoint(1300), cameraY);
+    const animals = worldToScreen(trackPoint(1950), cameraY);
     if (animals.y > -50 && animals.y < H + 50) drawFarmAnimals(animals.x + 155, animals.y + 48);
-    const silo = worldToScreen(trackPoint(1770), cameraY);
+    const silo = worldToScreen(trackPoint(2420), cameraY);
     if (silo.y > -70 && silo.y < H + 70) {
       ctx.fillStyle = "#ddd5b9";
       ctx.fillRect(silo.x + 190, silo.y - 24, 22, 43);
