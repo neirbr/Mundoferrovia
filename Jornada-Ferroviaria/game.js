@@ -69,21 +69,36 @@
 
   function drawScenery(cameraY) {
     const cameraWorld = cameraY - H * .56;
-    const first = Math.floor((cameraWorld - 100) / 115);
-    const last = Math.ceil((cameraWorld + H + 100) / 115);
+    const first = Math.floor((cameraWorld - 100) / 82);
+    const last = Math.ceil((cameraWorld + H + 100) / 82);
+
+    // Faixas de vegetação dos dois lados, distribuídas até as bordas do mapa.
+    const columns = [14, 78, 150, 224, 296];
     for (let row = first; row <= last; row++) {
+      const yWorld = row * 82 + 38;
+      const p = trackPoint(690 - yWorld);
+      const y = yWorld - cameraWorld;
+
       for (let side = 0; side < 2; side++) {
-        const r = seeded(row * 13 + side * 777);
-        const yWorld = row * 115 + 45;
-        const p = trackPoint(690 - yWorld);
-        const x = side === 0 ? 35 + r * 105 : W - 35 - r * 105;
-        const y = yWorld - cameraWorld;
-        if (Math.abs(x - p.x) > 65) drawTree(x, y, row + side);
-        if (r > .62) {
-          ctx.fillStyle = "#d9c16c";
-          ctx.fillRect(x + (side ? -24 : 22), y + 22, 5, 5);
-          ctx.fillStyle = "#e9e0b0";
-          ctx.fillRect(x + (side ? -16 : 30), y + 29, 4, 4);
+        for (let col = 0; col < columns.length; col++) {
+          const seed = row * 97 + side * 777 + col * 131;
+          const r = seeded(seed);
+          const offset = (r - .5) * 22;
+          const baseX = columns[col];
+          const x = side === 0 ? baseX + offset : W - baseX - offset;
+
+          // Mantém uma faixa livre junto aos trilhos e à composição.
+          if (Math.abs(x - p.x) > 65) {
+            drawTree(x, y + (col % 2 ? 12 : 0), row + side + col);
+          }
+
+          if (r > .42) {
+            const flowerX = x + (side ? -19 : 19);
+            ctx.fillStyle = "#d9c16c";
+            ctx.fillRect(flowerX, y + 22, 5, 5);
+            ctx.fillStyle = "#e9e0b0";
+            ctx.fillRect(flowerX + (side ? -5 : 5), y + 29, 4, 4);
+          }
         }
       }
     }
