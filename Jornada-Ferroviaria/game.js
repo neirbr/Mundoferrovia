@@ -66,6 +66,37 @@
     return x - Math.floor(x);
   }
 
+  function drawLateralAtmosphere(cameraY) {
+    // Faixas translúcidas nas bordas: a tonalidade acompanha a região atravessada.
+    const cameraWorld = cameraY - H * .56;
+    const firstRow = Math.floor(cameraWorld / 32);
+    const lastRow = Math.ceil((cameraWorld + H) / 32);
+    for (let row = firstRow; row <= lastRow; row++) {
+      const worldY = row * 32 + 16;
+      const s = 690 - worldY;
+      let tint = "rgba(116, 151, 105, 0.17)";
+      if (s >= 1820 && s < 2665) tint = "rgba(170, 151, 91, 0.17)";
+      else if (s >= 2665 && s < 2948) tint = "rgba(54, 91, 62, 0.20)";
+      else if (s >= 2948 && s < 3260) tint = "rgba(72, 139, 166, 0.22)";
+      else if (s >= 3260 && s < 5200) tint = "rgba(190, 150, 190, 0.17)";
+      else if (s >= 5200) tint = "rgba(164, 126, 101, 0.18)";
+      const screenY = row * 32 - cameraWorld;
+      ctx.fillStyle = tint;
+      ctx.fillRect(0, screenY, 112, 33);
+      ctx.fillRect(W - 112, screenY, 112, 33);
+      const fadeLeft = ctx.createLinearGradient(82, 0, 150, 0);
+      fadeLeft.addColorStop(0, tint);
+      fadeLeft.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = fadeLeft;
+      ctx.fillRect(82, screenY, 68, 33);
+      const fadeRight = ctx.createLinearGradient(W - 150, 0, W - 82, 0);
+      fadeRight.addColorStop(0, "rgba(0,0,0,0)");
+      fadeRight.addColorStop(1, tint);
+      ctx.fillStyle = fadeRight;
+      ctx.fillRect(W - 150, screenY, 68, 33);
+    }
+  }
+
   function drawGround(cameraY) {
     ctx.fillStyle = "#71985b";
     ctx.fillRect(0, 0, W, H);
@@ -659,17 +690,18 @@
   function render() {
     const cameraY = trackPoint(START_S + state.trackOffset).y;
     drawGround(cameraY);
-    drawRiverLakeRegion(cameraY);
-    drawScenery(cameraY);
+    drawLateralAtmosphere(cameraY);
+    // Retiramos a vegetação genérica das laterais; permanecem os cenários próprios de cada região.
     drawFarmRegion(cameraY);
     drawForestRegion(cameraY);
     drawFlowerField(cameraY);
     drawTownRegion(cameraY);
+    // Água é desenhada depois da vegetação para nunca deixar árvores sobre o rio ou o lago.
+    drawRiverLakeRegion(cameraY);
     drawBridge(cameraY);
     drawRails(cameraY);
     drawSignal(cameraY);
     drawTrain(cameraY);
-
   }
 
   function update(dt) {
