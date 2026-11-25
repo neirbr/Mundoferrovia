@@ -74,6 +74,84 @@
     ctx.fillRect(x - 5, y - 12, 7, 5);
   }
 
+  function drawFarmPlot(x, y, variant) {
+    // Talhão visto de cima, com linhas de cultivo e pequenas variações de cor.
+    ctx.fillStyle = "#9b8954";
+    ctx.fillRect(x - 61, y - 76, 122, 152);
+    ctx.fillStyle = "#6f8747";
+    ctx.fillRect(x - 57, y - 72, 114, 144);
+    for (let row = 0; row < 9; row++) {
+      const yy = y - 62 + row * 15;
+      ctx.fillStyle = "#526f3d";
+      ctx.fillRect(x - 51, yy, 102, 3);
+      ctx.fillStyle = variant % 2 ? "#b1a45d" : "#a5a052";
+      for (let col = 0; col < 13; col++) ctx.fillRect(x - 48 + col * 8, yy - 4, 3, 4);
+    }
+    ctx.fillStyle = "#d0bd8b";
+    for (let px = -54; px <= 54; px += 18) {
+      ctx.fillRect(x + px, y - 80, 3, 5);
+      ctx.fillRect(x + px, y + 75, 3, 5);
+    }
+    ctx.fillRect(x - 61, y - 78, 122, 2);
+    ctx.fillRect(x - 61, y + 76, 122, 2);
+  }
+
+  function drawFarmBuilding(x, y) {
+    ctx.fillStyle = "#514637";
+    ctx.fillRect(x - 29, y - 20, 62, 47);
+    ctx.fillStyle = "#a64f3d";
+    ctx.fillRect(x - 27, y - 25, 56, 43);
+    ctx.fillStyle = "#c97851";
+    ctx.fillRect(x - 22, y - 21, 46, 8);
+    ctx.fillStyle = "#684638";
+    ctx.fillRect(x - 8, y - 2, 17, 20);
+    ctx.fillStyle = "#e1c58d";
+    ctx.fillRect(x - 24, y + 22, 50, 4);
+  }
+
+  function drawFarmAnimals(x, y) {
+    for (let i = 0; i < 3; i++) {
+      const ax = x + i * 19;
+      const ay = y + (i % 2) * 13;
+      ctx.fillStyle = "#eee6cf";
+      ctx.fillRect(ax - 6, ay - 4, 13, 9);
+      ctx.fillStyle = "#554b3e";
+      ctx.fillRect(ax - 5, ay - 4, 4, 4);
+      ctx.fillRect(ax + 3, ay + 1, 3, 3);
+      ctx.fillStyle = "#443d33";
+      ctx.fillRect(ax - 4, ay + 4, 2, 4);
+      ctx.fillRect(ax + 3, ay + 4, 2, 4);
+    }
+  }
+
+  function drawFarmRegion(cameraY) {
+    // Primeira região rural: os talhões ficam afastados da ferrovia.
+    const plots = [
+      { s: 1190, side: -1, variant: 0 },
+      { s: 1390, side: 1, variant: 1 },
+      { s: 1610, side: -1, variant: 1 },
+      { s: 1830, side: 1, variant: 0 }
+    ];
+    for (const plot of plots) {
+      const q = worldToScreen(trackPoint(plot.s), cameraY);
+      if (q.y < -110 || q.y > H + 110) continue;
+      drawFarmPlot(q.x + plot.side * 178, q.y, plot.variant);
+    }
+    const barn = worldToScreen(trackPoint(1510), cameraY);
+    if (barn.y > -70 && barn.y < H + 70) drawFarmBuilding(barn.x - 185, barn.y + 35);
+    const animals = worldToScreen(trackPoint(1300), cameraY);
+    if (animals.y > -50 && animals.y < H + 50) drawFarmAnimals(animals.x + 155, animals.y + 48);
+    const silo = worldToScreen(trackPoint(1770), cameraY);
+    if (silo.y > -70 && silo.y < H + 70) {
+      ctx.fillStyle = "#ddd5b9";
+      ctx.fillRect(silo.x + 190, silo.y - 24, 22, 43);
+      ctx.fillStyle = "#9b5943";
+      ctx.fillRect(silo.x + 187, silo.y - 29, 28, 9);
+      ctx.fillStyle = "#b4a98c";
+      ctx.fillRect(silo.x + 194, silo.y - 18, 4, 30);
+    }
+  }
+
   function drawScenery(cameraY) {
     const cameraWorld = cameraY - H * .56;
     const first = Math.floor((cameraWorld - 100) / 82);
@@ -236,6 +314,7 @@
     const cameraY = trackPoint(START_S + state.trackOffset).y;
     drawGround(cameraY);
     drawScenery(cameraY);
+    drawFarmRegion(cameraY);
     drawRails(cameraY);
     drawSignal(cameraY);
     drawTrain(cameraY);
@@ -265,7 +344,7 @@
     distanceValue.textContent=(state.distance/1000).toFixed(2).replace(".",",")+" km";
     const pct=Math.min(100,state.distance/TRACK_LENGTH*100);
     progressFill.style.width=pct+"%";progressText.textContent=Math.round(pct)+"% do trecho";
-    if(state.distance<650)regionName.textContent="Estação de partida";else if(state.distance<1400)regionName.textContent="Campo verde";else regionName.textContent="Trecho rural";
+    if(state.distance<650)regionName.textContent="Estação de partida";else if(state.distance<1400)regionName.textContent="Campo verde";else if(state.distance<2050)regionName.textContent="Fazendas e plantações";else regionName.textContent="Trecho rural";
     render();
   }
 
