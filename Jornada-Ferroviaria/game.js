@@ -266,13 +266,32 @@
   }
 
   function drawForestShrub(x, y, variant = 0) {
-    ctx.fillStyle = variant % 2 ? "#315d3b" : "#3d7042";
-    ctx.fillRect(x - 8, y - 3, 17, 9);
-    ctx.fillStyle = "#6c9652";
-    ctx.fillRect(x - 4, y - 5, 7, 4);
+    // Arbusto em camadas, com sombra e folhas iluminadas em pixel art 2.5D.
+    const tone = Math.abs(variant) % 3;
+    const dark = ["#285238", "#315b3b", "#294d35"][tone];
+    const mid = ["#477b48", "#52834a", "#3f7444"][tone];
+    const light = ["#80a95b", "#91b466", "#76a458"][tone];
+
+    ctx.fillStyle = "rgba(28, 48, 31, 0.25)";
+    ctx.fillRect(x - 12, y + 5, 26, 5);
+    ctx.fillStyle = dark;
+    ctx.fillRect(x - 11, y - 2, 23, 10);
+    ctx.fillRect(x - 7, y - 7, 16, 13);
+    ctx.fillRect(x - 15, y + 1, 7, 5);
+    ctx.fillRect(x + 8, y, 7, 5);
+    ctx.fillStyle = mid;
+    ctx.fillRect(x - 9, y - 5, 18, 10);
+    ctx.fillRect(x - 5, y - 9, 11, 10);
+    ctx.fillRect(x - 14, y, 7, 4);
+    ctx.fillStyle = light;
+    ctx.fillRect(x - 5, y - 8, 8, 4);
+    ctx.fillRect(x - 10, y - 3, 5, 3);
+    ctx.fillRect(x + 4, y - 4, 4, 3);
+    ctx.fillStyle = "#b4c875";
+    if (tone === 1) ctx.fillRect(x + 1, y - 7, 3, 2);
     if (variant % 3 === 0) {
-      ctx.fillStyle = "#d7bd72";
-      ctx.fillRect(x + 5, y - 4, 3, 3);
+      ctx.fillStyle = "#e2cb7b";
+      ctx.fillRect(x + 8, y - 3, 3, 3);
     }
   }
 
@@ -746,6 +765,19 @@
     }
   }
 
+  function drawInitialGrassTuft(x, y, variant = 0) {
+    // Pequenas touceiras para quebrar a repetição do gramado sem poluir a cena.
+    const shade = variant % 2 ? "#527a45" : "#5d8549";
+    ctx.fillStyle = "rgba(38, 59, 35, 0.18)";
+    ctx.fillRect(x - 5, y + 3, 13, 3);
+    ctx.fillStyle = shade;
+    ctx.fillRect(x - 4, y - 1, 2, 5);
+    ctx.fillRect(x, y - 4, 2, 8);
+    ctx.fillRect(x + 4, y, 2, 4);
+    ctx.fillStyle = "#a0b96a";
+    ctx.fillRect(x, y - 3, 2, 3);
+  }
+
   function drawScenery(cameraY) {
     // Vegetação própria do trecho inicial, posicionada em coordenadas do percurso.
     // Mantém árvores e arbustos visíveis dos dois lados sem invadir os trilhos.
@@ -773,6 +805,16 @@
         const shrubY = p.y + 35 + seeded(s * 17 + side * 53) * 28;
         if (shrubX > 12 && shrubX < W - 12) {
           drawForestShrub(shrubX, shrubY, Math.floor(s + side));
+        }
+
+        // Touceiras intermediárias criam uma transição mais natural entre grama e árvores.
+        for (let tuft = 0; tuft < 2; tuft++) {
+          const distance = 72 + seeded(s * 19 + side * 31 + tuft * 13) * 58;
+          const tuftX = p.x + side * distance;
+          const tuftY = p.y + (seeded(s * 23 + side * 47 + tuft * 17) - 0.5) * 76;
+          if (Math.abs(tuftX - p.x) > 66 && tuftX > 8 && tuftX < W - 8) {
+            drawInitialGrassTuft(tuftX, tuftY, Math.floor(s + tuft));
+          }
         }
       }
     }
