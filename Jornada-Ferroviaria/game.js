@@ -14,7 +14,7 @@
   const W = 800;
   const H = 800;
   const TRACK_SHIFT_X = 70;
-  const TRACK_LENGTH = 6800; // Percurso ampliado para incluir a pequena cidade do interior.
+  const TRACK_LENGTH = 8200; // Inclui a cidade e o bosque de cerejeiras no final do percurso.
   const START_S = 520; // Posição inicial da locomotiva junto à plataforma.
   const TRAIN_SPACING = 48;
   const PASSENGER_WAGON_COUNT = 8;
@@ -79,6 +79,7 @@
       else if (s >= 2665 && s < 2948) tint = "rgba(54, 91, 62, 0.20)";
       else if (s >= 2948 && s < 3260) tint = "rgba(72, 139, 166, 0.22)";
       else if (s >= 3260 && s < 5200) tint = "rgba(190, 150, 190, 0.17)";
+      else if (s >= 7380) tint = "rgba(211, 143, 174, 0.19)";
       else if (s >= 5200) tint = "rgba(164, 126, 101, 0.18)";
       const screenY = row * 32 - cameraWorld;
       ctx.fillStyle = tint;
@@ -415,6 +416,120 @@
     drawTownRoad(cameraY, 6680, false);
   }
 
+  function drawCherryTree(x, y, variant = 0) {
+    // Cerejeira vista de cima, com copa rosa em camadas e tronco discreto.
+    ctx.fillStyle = "rgba(55, 48, 49, 0.22)";
+    ctx.fillRect(x - 19, y + 13, 40, 8);
+    ctx.fillStyle = "#705443";
+    ctx.fillRect(x - 3, y + 1, 7, 15);
+    ctx.fillStyle = variant % 2 ? "#d987aa" : "#e69abb";
+    ctx.fillRect(x - 17, y - 13, 34, 27);
+    ctx.fillStyle = variant % 3 ? "#f0b4cb" : "#f4c1d3";
+    ctx.fillRect(x - 12, y - 19, 24, 24);
+    ctx.fillStyle = "#f8d9e4";
+    ctx.fillRect(x - 7, y - 15, 7, 6);
+    ctx.fillRect(x + 5, y - 5, 6, 5);
+  }
+
+  function drawParkBench(x, y) {
+    // Banco de madeira com encosto, visto de cima.
+    ctx.fillStyle = "rgba(40, 42, 35, .22)";
+    ctx.fillRect(x - 16, y + 5, 34, 5);
+    ctx.fillStyle = "#594331";
+    ctx.fillRect(x - 14, y - 7, 29, 5);
+    ctx.fillStyle = "#a8784d";
+    ctx.fillRect(x - 14, y - 1, 29, 8);
+    ctx.fillStyle = "#4c392b";
+    ctx.fillRect(x - 11, y + 7, 3, 6);
+    ctx.fillRect(x + 8, y + 7, 3, 6);
+  }
+
+  function drawChalet(x, y, variant = 0) {
+    // Chalé de madeira com telhado inclinado estilizado, varanda e janelas.
+    const roof = variant % 2 ? "#765044" : "#8a5145";
+    ctx.fillStyle = "rgba(40, 42, 35, .25)";
+    ctx.fillRect(x - 42, y - 24, 88, 67);
+    ctx.fillStyle = "#8d765b";
+    ctx.fillRect(x - 36, y - 18, 74, 53);
+    ctx.fillStyle = "#c7a77b";
+    ctx.fillRect(x - 31, y - 13, 64, 43);
+    ctx.fillStyle = roof;
+    ctx.beginPath();
+    ctx.moveTo(x - 43, y - 16);
+    ctx.lineTo(x, y - 43);
+    ctx.lineTo(x + 45, y - 16);
+    ctx.lineTo(x + 37, y + 1);
+    ctx.lineTo(x - 36, y + 1);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#d8b98b";
+    ctx.fillRect(x - 7, y + 7, 14, 23);
+    ctx.fillStyle = "#9fc4c5";
+    ctx.fillRect(x - 25, y + 5, 11, 10);
+    ctx.fillRect(x + 14, y + 5, 11, 10);
+    ctx.fillStyle = "#76533b";
+    ctx.fillRect(x - 22, y + 33, 44, 5);
+    ctx.fillRect(x - 17, y + 38, 4, 7);
+    ctx.fillRect(x + 13, y + 38, 4, 7);
+  }
+
+  function drawCherryGroveRegion(cameraY) {
+    // Bosque de cerejeiras após a cidade, com clareiras, bancos e pequenos chalés.
+    const cameraWorld = cameraY - H * .56;
+    const first = Math.floor((cameraWorld - 180) / 112);
+    const last = Math.ceil((cameraWorld + H + 180) / 112);
+
+    for (let row = first; row <= last; row++) {
+      const yWorld = row * 112 + 56;
+      const s = 690 - yWorld;
+      if (s < 7380 || s > 8170) continue;
+      const p = trackPoint(s);
+      const y = yWorld - cameraWorld;
+
+      for (const side of [-1, 1]) {
+        const jitter = seeded(row * 131 + side * 17);
+        const x1 = p.x + side * (178 + jitter * 30);
+        const x2 = p.x + side * (285 + seeded(row * 197 + side * 31) * 32);
+        if (x1 > 25 && x1 < W - 25) drawCherryTree(x1, y + (jitter - .5) * 28, row);
+        if (x2 > 25 && x2 < W - 25 && seeded(row * 89 + side * 43) > .22) {
+          drawCherryTree(x2, y + 28 + (jitter - .5) * 24, row + 1);
+        }
+        // Flores caídas formam pequenos tapetes nas clareiras.
+        const petalX = p.x + side * 125;
+        if (petalX > 8 && petalX < W - 8) {
+          ctx.fillStyle = "rgba(239, 170, 197, .85)";
+          for (let k = 0; k < 5; k++) {
+            const px = petalX + (seeded(row * 43 + k * 19 + side) - .5) * 55;
+            const py = y + (seeded(row * 61 + k * 23) - .5) * 46;
+            ctx.fillRect(px, py, 3, 3);
+          }
+        }
+      }
+    }
+
+    const benches = [
+      {s: 7480, side: -1, d: 112}, {s: 7660, side: 1, d: 120},
+      {s: 7890, side: -1, d: 118}, {s: 8070, side: 1, d: 112}
+    ];
+    for (const b of benches) {
+      const p = worldToScreen(trackPoint(b.s), cameraY);
+      if (p.y > -60 && p.y < H + 60) drawParkBench(p.x + b.side * b.d, p.y);
+    }
+
+    const chalets = [
+      {s: 7570, side: -1, d: 285, v: 0},
+      {s: 7780, side: 1, d: 292, v: 1},
+      {s: 8000, side: -1, d: 292, v: 1}
+    ];
+    for (const c of chalets) {
+      const p = worldToScreen(trackPoint(c.s), cameraY);
+      const x = p.x + c.side * c.d;
+      if (p.y > -100 && p.y < H + 100 && x > 55 && x < W - 55) {
+        drawChalet(x, p.y, c.v);
+      }
+    }
+  }
+
   function drawRiverLakeRegion(cameraY) {
     // Rio transversal ao vale, com margens irregulares e água em tons de azul.
     const riverS = 3468;
@@ -691,6 +806,7 @@
     drawForestRegion(cameraY);
     drawFlowerField(cameraY);
     drawTownRegion(cameraY);
+    drawCherryGroveRegion(cameraY);
     // Água é desenhada depois da vegetação para nunca deixar árvores sobre o rio ou o lago.
     drawRiverLakeRegion(cameraY);
     drawBridge(cameraY);
@@ -722,7 +838,7 @@
     distanceValue.textContent=(state.distance/1000).toFixed(2).replace(".",",")+" km";
     const pct=Math.min(100,state.distance/TRACK_LENGTH*100);
     progressFill.style.width=pct+"%";progressText.textContent=Math.round(pct)+"% do trecho";
-    if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else if(state.distance<3260)regionName.textContent="Rios, lagos e pontes";else if(state.distance<5200)regionName.textContent="Campos floridos";else regionName.textContent="Cidade do interior";
+    if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else if(state.distance<3260)regionName.textContent="Rios, lagos e pontes";else if(state.distance<5200)regionName.textContent="Campos floridos";else if(state.distance<7380)regionName.textContent="Cidade do interior";else regionName.textContent="Bosque de cerejeiras";
     render();
   }
 
