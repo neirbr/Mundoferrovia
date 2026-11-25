@@ -23,7 +23,7 @@
 
   // Traçado provisório do primeiro trecho. A geometria será refinada na etapa de construção do mapa.
   function trackPoint(s) {
-    const x = W / 2 - TRACK_SHIFT_X + Math.sin((s + 120) / 360) * 54 + Math.sin(s / 170) * 10;
+    const x = W / 2 + TRACK_SHIFT_X + Math.sin((s + 120) / 360) * 54 + Math.sin(s / 170) * 10;
     const y = 690 - s;
     const dx = (Math.cos((s + 120) / 360) * 54 / 360) + (Math.cos(s / 170) * 10 / 170);
     const length = Math.hypot(dx, -1);
@@ -156,7 +156,7 @@
     const stationS = START_S;
     const trackPosition = trackPoint(stationS);
     // A estação permanece no lugar; somente a ferrovia e a composição são deslocadas.
-    const p = worldToScreen({ ...trackPosition, x: trackPosition.x + TRACK_SHIFT_X }, cameraY);
+    const p = worldToScreen({ ...trackPosition, x: trackPosition.x - TRACK_SHIFT_X }, cameraY);
     if (p.y < -160 || p.y > H + 160) return;
     ctx.fillStyle = "#b7a47c";
     ctx.fillRect(p.x + 34, p.y - 125, 62, 235);
