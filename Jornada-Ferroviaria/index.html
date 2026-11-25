@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#172b24">
+  <meta name="description" content="Jornada Ferroviária — uma viagem ferroviária em pixel art.">
+  <title>Jornada Ferroviária</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game-shell">
+    <header class="topbar">
+      <a class="back-link" href="../index.html" aria-label="Voltar ao Mundo Ferroviário">←</a>
+      <div class="brand">
+        <span class="eyebrow">MUNDO FERROVIÁRIO APRESENTA</span>
+        <h1>Jornada <strong>Ferroviária</strong></h1>
+      </div>
+      <button id="pauseButton" class="icon-button" type="button" aria-label="Pausar jogo">Ⅱ</button>
+    </header>
+
+    <section class="status-row" aria-label="Informações da viagem">
+      <div><span class="status-label">REGIÃO</span><strong id="regionName">Estação de partida</strong></div>
+      <div><span class="status-label">VELOCIDADE</span><strong><span id="speedValue">0</span><small> km/h</small></strong></div>
+      <div><span class="status-label">PERCURSO</span><strong id="distanceValue">0,0 km</strong></div>
+    </section>
+
+    <section class="viewport-wrap" aria-label="Área do jogo">
+      <canvas id="gameCanvas" width="480" height="800">
+        Seu navegador não oferece suporte ao Canvas.
+      </canvas>
+      <div class="canvas-hint" id="canvasHint">Toque em ACELERAR para iniciar a viagem</div>
+      <div class="pause-overlay" id="pauseOverlay" hidden>
+        <div class="pause-card">
+          <span class="pause-symbol">Ⅱ</span>
+          <h2>Viagem pausada</h2>
+          <p>Seu trem está aguardando.</p>
+          <button id="resumeButton" class="primary-button" type="button">CONTINUAR</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard">
+      <div class="progress-line"><span id="progressFill"></span></div>
+      <div class="progress-caption"><span>PARTIDA</span><span id="progressText">Trecho de demonstração</span><span>DESTINO</span></div>
+      <div class="controls">
+        <button id="hornButton" class="control-button secondary" type="button"><span class="control-icon">♬</span><span>BUZINA</span></button>
+        <button id="brakeButton" class="control-button brake" type="button"><span class="control-icon">■</span><span>FREAR</span></button>
+        <button id="accelerateButton" class="control-button accelerate" type="button"><span class="control-icon">▲</span><span>ACELERAR</span></button>
+      </div>
+      <p class="help-text">No computador: ↑ acelera · ↓ freia · Espaço buzina</p>
+    </section>
+
+    <footer class="footer-note">PROTÓTIPO 01 · ESTAÇÃO E PRIMEIRO TRECHO</footer>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
