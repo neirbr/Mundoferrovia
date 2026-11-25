@@ -152,6 +152,77 @@
     }
   }
 
+  function drawForestTree(x, y, variant = 0) {
+    // Copa em camadas para dar mais densidade à floresta sem invadir a faixa ferroviária.
+    ctx.fillStyle = "rgba(35, 57, 37, 0.24)";
+    ctx.fillRect(x - 15, y + 13, 34, 8);
+    ctx.fillStyle = "#574936";
+    ctx.fillRect(x - 3, y + 3, 7, 15);
+    ctx.fillStyle = variant % 3 === 0 ? "#244b35" : variant % 3 === 1 ? "#2d5738" : "#315f3b";
+    ctx.fillRect(x - 15, y - 10, 30, 23);
+    ctx.fillStyle = variant % 2 ? "#477b46" : "#3d7042";
+    ctx.fillRect(x - 11, y - 17, 23, 22);
+    ctx.fillStyle = "#679253";
+    ctx.fillRect(x - 6, y - 18, 10, 7);
+    ctx.fillRect(x + 5, y - 7, 5, 6);
+  }
+
+  function drawForestShrub(x, y, variant = 0) {
+    ctx.fillStyle = variant % 2 ? "#315d3b" : "#3d7042";
+    ctx.fillRect(x - 8, y - 3, 17, 9);
+    ctx.fillStyle = "#6c9652";
+    ctx.fillRect(x - 4, y - 5, 7, 4);
+    if (variant % 3 === 0) {
+      ctx.fillStyle = "#d7bd72";
+      ctx.fillRect(x + 5, y - 4, 3, 3);
+    }
+  }
+
+  function drawForestRegion(cameraY) {
+    // A mata começa depois dos talhões e se adensa gradualmente ao longo do trecho final.
+    const cameraWorld = cameraY - H * .56;
+    const first = Math.floor((cameraWorld - 180) / 104);
+    const last = Math.ceil((cameraWorld + H + 180) / 104);
+
+    for (let row = first; row <= last; row++) {
+      const s = 690 - (row * 104 + 52);
+      if (s < 2540 || s > 3500) continue;
+      const p = trackPoint(s);
+      const y = row * 104 + 52 - cameraWorld;
+      const density = Math.min(1, Math.max(0.35, (s - 2540) / 360));
+
+      for (let side = -1; side <= 1; side += 2) {
+        for (let col = 0; col < 5; col++) {
+          const seed = row * 173 + (side + 1) * 991 + col * 67;
+          const r = seeded(seed);
+          if (r > density + 0.08) continue;
+
+          const distance = 112 + col * 43 + seeded(seed + 19) * 24;
+          const x = p.x + side * distance + (seeded(seed + 37) - 0.5) * 28;
+          if (x < 18 || x > W - 18) continue;
+
+          const treeY = y + (seeded(seed + 53) - 0.5) * 46;
+          drawForestTree(x, treeY, Math.floor(seed));
+          if (col % 2 === 0 && seeded(seed + 71) > 0.28) {
+            drawForestShrub(x + side * 21, treeY + 23, Math.floor(seed + 3));
+          }
+        }
+
+        // Pequenas clareiras e flores aparecem entre os grupos de árvores.
+        if (seeded(row * 211 + side * 41) > 0.42) {
+          const clearingX = p.x + side * (235 + seeded(row + side * 7) * 55);
+          if (clearingX > 16 && clearingX < W - 16) {
+            ctx.fillStyle = "#83a765";
+            ctx.fillRect(clearingX - 13, y + 25, 26, 12);
+            ctx.fillStyle = "#d8c77b";
+            ctx.fillRect(clearingX - 7, y + 27, 3, 3);
+            ctx.fillRect(clearingX + 5, y + 31, 3, 3);
+          }
+        }
+      }
+    }
+  }
+
   function drawScenery(cameraY) {
     const cameraWorld = cameraY - H * .56;
     const first = Math.floor((cameraWorld - 100) / 82);
@@ -315,6 +386,7 @@
     drawGround(cameraY);
     drawScenery(cameraY);
     drawFarmRegion(cameraY);
+    drawForestRegion(cameraY);
     drawRails(cameraY);
     drawSignal(cameraY);
     drawTrain(cameraY);
@@ -344,7 +416,7 @@
     distanceValue.textContent=(state.distance/1000).toFixed(2).replace(".",",")+" km";
     const pct=Math.min(100,state.distance/TRACK_LENGTH*100);
     progressFill.style.width=pct+"%";progressText.textContent=Math.round(pct)+"% do trecho";
-    if(state.distance<650)regionName.textContent="Estação de partida";else if(state.distance<1400)regionName.textContent="Campo verde";else if(state.distance<2050)regionName.textContent="Fazendas e plantações";else regionName.textContent="Trecho rural";
+    if(state.distance<650)regionName.textContent="Estação de partida";else if(state.distance<1400)regionName.textContent="Campo verde";else if(state.distance<2050)regionName.textContent="Fazendas e plantações";else regionName.textContent="Floresta";
     render();
   }
 
