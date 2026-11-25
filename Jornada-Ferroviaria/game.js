@@ -518,7 +518,8 @@
       if (p.y > -60 && p.y < H + 60) drawParkBench(p.x + b.side * b.d, p.y);
     }
 
-    // Os chalés foram retirados; permanecem somente as cerejeiras e os bancos.\n  }
+    // Os chalés foram retirados; permanecem somente as cerejeiras e os bancos.
+  }
 
   function drawFinalStationBuilding(x, y, variant = 0) {
     // Prédio amplo da estação, visto de cima, com saguão, cobertura e plataforma de acesso.
