@@ -14,7 +14,7 @@
   const W = 800;
   const H = 800;
   const TRACK_SHIFT_X = 70;
-  const TRACK_LENGTH = 4100; // Percurso ampliado para incluir a região dos campos floridos.
+  const TRACK_LENGTH = 5200; // Percurso ampliado para criar um campo florido extenso.
   const START_S = 520; // Posição inicial da locomotiva junto à plataforma.
   const TRAIN_SPACING = 48;
   const MAX_SPEED = 82;
@@ -224,28 +224,36 @@
   }
 
   function drawFlowerField(cameraY) {
-    // Campos floridos após a travessia do rio: manchas naturais dos dois lados da ferrovia.
-    for (let s = 3780; s <= 4500; s += 58) {
+    // Campo aberto e contínuo: somente flores e vegetação baixa, sem árvores.
+    const cameraWorld = cameraY - H * .56;
+    const firstRow = Math.floor((cameraWorld - 120) / 48);
+    const lastRow = Math.ceil((cameraWorld + H + 120) / 48);
+    const colors = ["#e7d45d", "#e9a4bd", "#f1eee0", "#b9a0d8", "#e28b55", "#f2c6df"];
+
+    for (let row = firstRow; row <= lastRow; row++) {
+      const yWorld = row * 48 + 24;
+      const s = 690 - yWorld;
+      if (s < 3780 || s > 5650) continue;
       const p = trackPoint(s);
-      const center = worldToScreen(p, cameraY);
-      if (center.y < -110 || center.y > H + 110) continue;
+      const y = yWorld - cameraWorld;
 
-      for (const side of [-1, 1]) {
-        const seed = Math.floor(s * 3 + side * 97);
-        const patchX = center.x + side * (150 + seeded(seed) * 95);
-        const patchY = center.y + (seeded(seed + 11) - 0.5) * 42;
-        if (patchX < 35 || patchX > W - 35) continue;
+      for (let col = 0; col < 20; col++) {
+        const seed = row * 251 + col * 83;
+        const x = col * 42 + (seeded(seed) - .5) * 24;
+        if (Math.abs(x - p.x) < 72 || x < 4 || x > W - 4) continue;
 
-        ctx.fillStyle = seeded(seed + 21) > 0.5 ? "#86a95b" : "#91ad61";
-        ctx.fillRect(patchX - 38, patchY - 21, 76, 42);
+        if (seeded(seed + 9) > .35) {
+          ctx.fillStyle = seeded(seed + 17) > .5 ? "#86a95b" : "#91ad61";
+          ctx.fillRect(x - 13, y - 9, 26, 18);
+        }
 
-        const colors = ["#e7d45d", "#e9a4bd", "#f1eee0", "#b9a0d8", "#e28b55"];
-        for (let i = 0; i < 19; i++) {
-          const fx = patchX + (seeded(seed + 30 + i * 5) - 0.5) * 68;
-          const fy = patchY + (seeded(seed + 31 + i * 7) - 0.5) * 34;
+        for (let i = 0; i < 5; i++) {
+          const fx = x + (seeded(seed + 30 + i * 7) - .5) * 38;
+          const fy = y + (seeded(seed + 31 + i * 11) - .5) * 32;
+          if (Math.abs(fx - p.x) < 67) continue;
           ctx.fillStyle = colors[Math.floor(seeded(seed + 32 + i * 13) * colors.length)];
           ctx.fillRect(fx, fy, 4, 4);
-          ctx.fillStyle = "#f5e9a2";
+          ctx.fillStyle = "#f8edb2";
           ctx.fillRect(fx + 1, fy - 2, 2, 2);
         }
       }
@@ -357,7 +365,10 @@
     const columns = [14, 78, 150, 224, 296];
     for (let row = first; row <= last; row++) {
       const yWorld = row * 82 + 38;
-      const p = trackPoint(690 - yWorld);
+      const s = 690 - yWorld;
+      // A região dos campos floridos é aberta: não desenhar árvores nesse trecho.
+      if (s >= 3780 && s <= 5650) continue;
+      const p = trackPoint(s);
       const y = yWorld - cameraWorld;
 
       for (let side = 0; side < 2; side++) {
@@ -544,7 +555,7 @@
     distanceValue.textContent=(state.distance/1000).toFixed(2).replace(".",",")+" km";
     const pct=Math.min(100,state.distance/TRACK_LENGTH*100);
     progressFill.style.width=pct+"%";progressText.textContent=Math.round(pct)+"% do trecho";
-    if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else if(state.distance<3350)regionName.textContent="Rios, lagos e pontes";else regionName.textContent="Campos floridos";
+    if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else if(state.distance<3260)regionName.textContent="Rios, lagos e pontes";else regionName.textContent="Campos floridos";
     render();
   }
 
