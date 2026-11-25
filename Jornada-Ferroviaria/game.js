@@ -22,11 +22,37 @@
   const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
   const state = {distance:0,trackOffset:0,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0};
 
-  // Traçado provisório do primeiro trecho. A geometria será refinada na etapa de construção do mapa.
+  // Traçado com curvas mais fechadas intercaladas por longas retas.
+  // Cada curva usa transição suave para manter a continuidade dos trilhos.
+  const TRACK_CURVES = [
+    { start: 700, end: 1150, from: 0, to: 125 },
+    { start: 2050, end: 2500, from: 125, to: -110 },
+    { start: 4200, end: 4650, from: -110, to: 120 },
+    { start: 5550, end: 6000, from: 120, to: -115 }
+  ];
+
+  function trackOffsetAt(s) {
+    let offset = 0;
+    let derivative = 0;
+    for (const curve of TRACK_CURVES) {
+      if (s < curve.start) break;
+      if (s <= curve.end) {
+        const t = (s - curve.start) / (curve.end - curve.start);
+        const change = curve.to - curve.from;
+        offset = curve.from + change * (1 - Math.cos(Math.PI * t)) / 2;
+        derivative = change * Math.PI * Math.sin(Math.PI * t) / (2 * (curve.end - curve.start));
+        return { offset, derivative };
+      }
+      offset = curve.to;
+    }
+    return { offset, derivative };
+  }
+
   function trackPoint(s) {
-    const x = W / 2 + TRACK_SHIFT_X + Math.sin((s + 120) / 360) * 54 + Math.sin(s / 170) * 10;
+    const track = trackOffsetAt(s);
+    const x = W / 2 + TRACK_SHIFT_X + track.offset;
     const y = 690 - s;
-    const dx = (Math.cos((s + 120) / 360) * 54 / 360) + (Math.cos(s / 170) * 10 / 170);
+    const dx = track.derivative;
     const length = Math.hypot(dx, -1);
     return { x, y, tx: dx / length, ty: -1 / length, nx: 1 / length, ny: dx / length };
   }
