@@ -245,6 +245,9 @@
     for (let row = first; row <= last; row++) {
       const s = 690 - (row * 104 + 52);
       if (s < 3146 || s > 3460) continue;
+      // Mantém uma faixa sem árvores junto ao rio e ao lago.
+      // A copa e a sombra das árvores não podem invadir a área da água.
+      if (s >= 3340 && s <= 3460) continue;
       const p = trackPoint(s);
       const y = row * 104 + 52 - cameraWorld;
       const density = Math.min(1, Math.max(0.35, (s - 3146) / 260));
