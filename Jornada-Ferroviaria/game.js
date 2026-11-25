@@ -630,7 +630,7 @@
   }
 
   function drawRiverLakeRegion(cameraY) {
-    // Rio transversal ao vale, com margens irregulares e água em tons de azul.
+    // Somente o rio transversal ao vale, passando sob a ponte.
     const riverS = 3468;
     const riverPoint = trackPoint(riverS);
     const riverY = worldToScreen({ x: 0, y: riverPoint.y }, cameraY).y;
@@ -668,23 +668,7 @@
       ctx.fillRect(x, y, 22 + (i % 3) * 7, 3);
     }
 
-    // Lago lateral, conectado visualmente ao mesmo vale.
-    const lake = worldToScreen(trackPoint(3560), cameraY);
-    const lakeX = lake.x + 225;
-    const lakeY = lake.y + 8;
-    if (lakeY > -190 && lakeY < H + 190 && lakeX > 75 && lakeX < W - 75) {
-      ctx.fillStyle = "#a49a70";
-      ctx.beginPath();
-      ctx.ellipse(lakeX, lakeY, 105, 76, -0.12, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#397f9a";
-      ctx.beginPath();
-      ctx.ellipse(lakeX, lakeY, 94, 65, -0.12, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "rgba(183, 220, 215, 0.55)";
-      ctx.fillRect(lakeX - 49, lakeY - 22, 37, 4);
-      ctx.fillRect(lakeX + 12, lakeY + 13, 28, 3);
-    }
+
   }
 
   function drawBridge(cameraY) {
