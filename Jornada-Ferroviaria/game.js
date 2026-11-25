@@ -268,7 +268,7 @@
     }else{
       state.speed=Math.max(0,state.speed-0.12*dt);
     }
-    if(state.speed>0&&state.direction!==0&&!state.emergency){
+    if(state.speed>0&&state.direction!==0){
       const moved=state.speed/3.6*13*dt*state.direction;
       state.trackOffset+=moved;state.distance+=Math.abs(moved);
     }
@@ -310,7 +310,7 @@
     if(state.emergency&&!state.emergencyStopped)brakeStatus.textContent="EMERGÊNCIA — frenagem em andamento";
     else if(!state.emergency&&!state.emergencyStopped)brakeStatus.textContent=state.brake?"Freio de serviço aplicado":"Freio aliviado";
   }
-  function chooseDirection(d){if(state.emergency||state.emergencyStopped)return;state.direction=d;refreshControls();}
+  function chooseDirection(d){if(state.emergency||state.emergencyStopped||state.speed>0.1){brakeStatus.textContent=state.speed>0.1?"Pare a composição antes de inverter o sentido":"Comandos bloqueados";return;}state.direction=d;refreshControls();}
   forwardButton.addEventListener("click",()=>chooseDirection(1));neutralButton.addEventListener("click",()=>chooseDirection(0));reverseButton.addEventListener("click",()=>chooseDirection(-1));
   throttleUp.addEventListener("click",()=>{if(!state.emergency&&!state.emergencyStopped){state.throttlePoint=Math.min(8,state.throttlePoint+1);refreshControls();}});
   throttleDown.addEventListener("click",()=>{if(!state.emergency&&!state.emergencyStopped){state.throttlePoint=Math.max(0,state.throttlePoint-1);refreshControls();}});
