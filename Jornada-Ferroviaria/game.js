@@ -518,19 +518,7 @@
       if (p.y > -60 && p.y < H + 60) drawParkBench(p.x + b.side * b.d, p.y);
     }
 
-    const chalets = [
-      {s: 7570, side: -1, d: 285, v: 0},
-      {s: 7780, side: 1, d: 292, v: 1},
-      {s: 8000, side: -1, d: 292, v: 1}
-    ];
-    for (const c of chalets) {
-      const p = worldToScreen(trackPoint(c.s), cameraY);
-      const x = p.x + c.side * c.d;
-      if (p.y > -100 && p.y < H + 100 && x > 55 && x < W - 55) {
-        drawChalet(x, p.y, c.v);
-      }
-    }
-  }
+    // Os chalés foram retirados; permanecem somente as cerejeiras e os bancos.\n  }
 
   function drawFinalStationBuilding(x, y, variant = 0) {
     // Prédio amplo da estação, visto de cima, com saguão, cobertura e plataforma de acesso.
