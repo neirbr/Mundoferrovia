@@ -58,3 +58,24 @@ h1 strong { color: var(--gold); }
   .viewport-wrap { height: clamp(220px, 38svh, 300px); }
   .control-button { min-height: 48px; }
 }
+/* Comandos de condução ferroviária */
+.driver-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.control-panel{min-width:0;padding:9px;border:1px solid #405447;border-radius:11px;background:#202f28}
+.panel-heading{color:var(--gold);font-size:9px;font-weight:900;letter-spacing:.7px;text-align:center}
+.reverser-readout{margin:5px 0;color:var(--cream);font-size:17px;font-weight:900;text-align:center}
+.reverser-buttons,.throttle-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.lever-button,.step-button{min-height:36px;border:1px solid #607263;border-radius:8px;background:#34483b;color:var(--cream);font-size:18px;font-weight:900;touch-action:manipulation}
+.lever-button.neutral-selected{background:#b28b3f;color:#211b10;border-color:var(--gold)}
+.lever-button.direction-selected{background:#477d50;border-color:#83bd7e}
+.panel-foot{margin-top:5px;color:var(--muted);font-size:8px;font-weight:800;text-align:center}
+.throttle-readout{text-align:center;line-height:1.1}.throttle-readout strong{font-size:28px;color:#9fd18b}.throttle-readout span{color:var(--muted);font-size:12px}
+.throttle-buttons{grid-template-columns:1fr 1fr}.step-button{min-height:32px;font-size:21px;background:#365b3b;border-color:#6d9c68}
+.lever-button:disabled,.step-button:disabled{opacity:.35}
+.brake-label{display:flex;justify-content:space-between;margin:6px 0 2px;color:var(--muted);font-size:9px}
+.brake-label strong{color:#ffd1c6}.brake-slider{width:100%;accent-color:#d77a61;touch-action:pan-x}
+.brake-scale{display:flex;justify-content:space-between;color:var(--muted);font-size:7px;font-weight:800}
+.emergency-button,.release-button,.horn-button{width:100%;min-height:32px;margin-top:6px;border:1px solid #a34f43;border-radius:8px;background:#713c35;color:#fff0e9;font-size:8px;font-weight:900}
+.release-button{border-color:#688b68;background:#35543a}.release-button:disabled{opacity:.35}
+.brake-status{min-height:12px;margin:4px 0 0;color:var(--muted);text-align:center;font-size:8px}
+.horn-panel{grid-column:1/-1;padding:5px 9px}.horn-button{margin:0;border-color:#617264;background:#34483b}
+@media(max-width:360px){.control-panel{padding:7px}.panel-heading{font-size:8px}}
