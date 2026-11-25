@@ -512,41 +512,32 @@
   }
 
   function drawScenery(cameraY) {
-    const cameraWorld = cameraY - H * .56;
-    const first = Math.floor((cameraWorld - 100) / 82);
-    const last = Math.ceil((cameraWorld + H + 100) / 82);
+    // Vegetação própria do trecho inicial, posicionada em coordenadas do percurso.
+    // Mantém árvores e arbustos visíveis dos dois lados sem invadir os trilhos.
+    for (let s = 90; s <= 1810; s += 105) {
+      const p = worldToScreen(trackPoint(s), cameraY);
+      if (p.y < -100 || p.y > H + 100) continue;
 
-    // Faixas de vegetação dos dois lados, distribuídas até as bordas do mapa.
-    const columns = [14, 78, 150, 224, 296];
-    for (let row = first; row <= last; row++) {
-      const yWorld = row * 82 + 38;
-      const s = 690 - yWorld;
-      // A vegetação genérica fica apenas no trecho inicial; fazendas, floresta,
-      // água, campos floridos e cidade usam seus próprios cenários.
-      if (s >= 1820 || s < 0) continue;
-      const p = trackPoint(s);
-      const y = yWorld - cameraWorld;
+      for (const side of [-1, 1]) {
+        const variation = seeded(s * 3 + side * 71);
+        const baseDistance = 150 + variation * 45;
+        const treeX = p.x + side * baseDistance;
+        const treeY = p.y + (seeded(s + side * 113) - 0.5) * 42;
+        if (treeX > 24 && treeX < W - 24) {
+          drawTree(treeX, treeY, Math.floor(s + side));
+        }
 
-      for (let side = 0; side < 2; side++) {
-        for (let col = 0; col < columns.length; col++) {
-          const seed = row * 97 + side * 777 + col * 131;
-          const r = seeded(seed);
-          const offset = (r - .5) * 22;
-          const baseX = columns[col];
-          const x = side === 0 ? baseX + offset : W - baseX - offset;
+        const secondDistance = 235 + seeded(s * 7 + side * 29) * 55;
+        const secondX = p.x + side * secondDistance;
+        const secondY = p.y + (seeded(s * 11 + side * 37) - 0.5) * 58;
+        if (secondX > 20 && secondX < W - 20) {
+          drawTree(secondX, secondY, Math.floor(s + side + 5));
+        }
 
-          // Mantém uma faixa livre junto aos trilhos e à composição.
-          if (Math.abs(x - p.x) > 65) {
-            drawTree(x, y + (col % 2 ? 12 : 0), row + side + col);
-          }
-
-          if (r > .42) {
-            const flowerX = x + (side ? -19 : 19);
-            ctx.fillStyle = "#d9c16c";
-            ctx.fillRect(flowerX, y + 22, 5, 5);
-            ctx.fillStyle = "#e9e0b0";
-            ctx.fillRect(flowerX + (side ? -5 : 5), y + 29, 4, 4);
-          }
+        const shrubX = p.x + side * (105 + seeded(s * 13 + side * 43) * 25);
+        const shrubY = p.y + 35 + seeded(s * 17 + side * 53) * 28;
+        if (shrubX > 12 && shrubX < W - 12) {
+          drawForestShrub(shrubX, shrubY, Math.floor(s + side));
         }
       }
     }
