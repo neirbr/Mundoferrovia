@@ -29,7 +29,7 @@
       <canvas id="gameCanvas" width="480" height="800">
         Seu navegador não oferece suporte ao Canvas.
       </canvas>
-      <div class="canvas-hint" id="canvasHint">Toque em ACELERAR para iniciar a viagem</div>
+      <div class="canvas-hint" id="canvasHint">Selecione FRENTE e aumente os pontos de aceleração para partir</div>
       <div class="pause-overlay" id="pauseOverlay" hidden>
         <div class="pause-card">
           <span class="pause-symbol">Ⅱ</span>
@@ -43,12 +43,30 @@
     <section class="dashboard">
       <div class="progress-line"><span id="progressFill"></span></div>
       <div class="progress-caption"><span>PARTIDA</span><span id="progressText">Trecho de demonstração</span><span>DESTINO</span></div>
-      <div class="controls">
-        <button id="hornButton" class="control-button secondary" type="button"><span class="control-icon">♬</span><span>BUZINA</span></button>
-        <button id="brakeButton" class="control-button brake" type="button"><span class="control-icon">■</span><span>FREAR</span></button>
-        <button id="accelerateButton" class="control-button accelerate" type="button"><span class="control-icon">▲</span><span>ACELERAR</span></button>
-      </div>
-      <p class="help-text">No computador: ↑ acelera · ↓ freia · Espaço buzina</p>
+      <div class="driver-controls">
+        <section class="control-panel">
+          <div class="panel-heading">REVERSORA</div><div class="reverser-readout" id="directionValue">NEUTRO</div>
+          <div class="reverser-buttons">
+            <button id="forwardButton" class="lever-button" type="button" aria-label="Frente">▲</button>
+            <button id="neutralButton" class="lever-button neutral-selected" type="button" aria-label="Neutro">●</button>
+            <button id="reverseButton" class="lever-button" type="button" aria-label="Ré">▼</button>
+          </div><div class="panel-foot">FRENTE · N · RÉ</div>
+        </section>
+        <section class="control-panel">
+          <div class="panel-heading">PONTO DE ACELERAÇÃO</div><div class="throttle-readout"><strong id="throttleValue">0</strong><span> / 8</span></div>
+          <div class="throttle-buttons"><button id="throttleUp" class="step-button" type="button">＋</button><button id="throttleDown" class="step-button" type="button">−</button></div>
+          <div class="panel-foot" id="limitValue">TRAÇÃO DESLIGADA</div>
+        </section>
+        <section class="control-panel brake-panel">
+          <div class="panel-heading">FREIO</div><label class="brake-label" for="brakeSlider">Pressão <strong id="brakeValue">0%</strong></label>
+          <input id="brakeSlider" class="brake-slider" type="range" min="0" max="100" value="0">
+          <div class="brake-scale"><span>ALÍVIO</span><span>FREIO MÁX.</span></div>
+          <button id="emergencyButton" class="emergency-button" type="button">FREIO DE EMERGÊNCIA</button>
+          <button id="releaseEmergencyButton" class="release-button" type="button" disabled>ALIVIAR FREIO</button>
+          <p id="brakeStatus" class="brake-status">Freio aliviado</p>
+        </section>
+        <section class="control-panel horn-panel"><button id="hornButton" class="horn-button" type="button">♬ BUZINA</button></section>
+      </div><p class="help-text">A reversora define o sentido; os pontos regulam a tração; o freio atua progressivamente.</p>
     </section>
 
     <footer class="footer-note">PROTÓTIPO 01 · ESTAÇÃO E PRIMEIRO TRECHO</footer>
