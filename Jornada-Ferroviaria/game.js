@@ -14,6 +14,7 @@
   const W = 480;
   const H = 800;
   const TRACK_LENGTH = 2400;
+  const START_S = 520; // Posição inicial da locomotiva junto à plataforma.
   const TRAIN_SPACING = 48;
   const MAX_SPEED = 82;
   const state = { distance: 0, speed: 0, throttle: false, braking: false, paused: false, lastTime: 0, hornFlash: 0 };
@@ -88,8 +89,9 @@
   }
 
   function drawRails(cameraY) {
-    const start = Math.max(0, state.distance - 500);
-    const end = Math.min(TRACK_LENGTH + 700, state.distance + 700);
+    const trainS = START_S + state.distance;
+    const start = Math.max(0, trainS - 500);
+    const end = Math.min(START_S + TRACK_LENGTH + 700, trainS + 700);
     ctx.lineCap = "square";
     // Lastro
     ctx.beginPath();
@@ -134,7 +136,7 @@
   }
 
   function drawStation(cameraY) {
-    const stationS = 280;
+    const stationS = START_S;
     const p = worldToScreen(trackPoint(stationS), cameraY);
     if (p.y < -160 || p.y > H + 160) return;
     ctx.fillStyle = "#b7a47c";
@@ -214,8 +216,9 @@
 
   function drawTrain(cameraY) {
     // Os vagões seguem pontos anteriores do mesmo traçado, cada um com orientação própria.
-    for (let i = 8; i >= 1; i--) drawWagon(state.distance - i * TRAIN_SPACING, i, cameraY);
-    drawLocomotive(state.distance, cameraY);
+    const trainS = START_S + state.distance;
+    for (let i = 8; i >= 1; i--) drawWagon(trainS - i * TRAIN_SPACING, i, cameraY);
+    drawLocomotive(trainS, cameraY);
   }
 
   function drawSignal(cameraY) {
@@ -233,7 +236,7 @@
   }
 
   function render() {
-    const cameraY = trackPoint(state.distance).y;
+    const cameraY = trackPoint(START_S + state.distance).y;
     drawGround(cameraY);
     drawScenery(cameraY);
     drawStation(cameraY);
