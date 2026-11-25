@@ -11,7 +11,7 @@
   const hint = document.getElementById("canvasHint");
   const pauseOverlay = document.getElementById("pauseOverlay");
 
-  const W = 480;
+  const W = 800;
   const H = 800;
   const TRACK_LENGTH = 2400;
   const START_S = 520; // Posição inicial da locomotiva junto à plataforma.
@@ -22,7 +22,7 @@
 
   // Traçado provisório do primeiro trecho. A geometria será refinada na etapa de construção do mapa.
   function trackPoint(s) {
-    const x = 240 + Math.sin((s + 120) / 360) * 54 + Math.sin(s / 170) * 10;
+    const x = W / 2 + Math.sin((s + 120) / 360) * 54 + Math.sin(s / 170) * 10;
     const y = 690 - s;
     const dx = (Math.cos((s + 120) / 360) * 54 / 360) + (Math.cos(s / 170) * 10 / 170);
     const length = Math.hypot(dx, -1);
@@ -76,7 +76,7 @@
         const r = seeded(row * 13 + side * 777);
         const yWorld = row * 115 + 45;
         const p = trackPoint(690 - yWorld);
-        const x = side === 0 ? 35 + r * 65 : 415 - r * 65;
+        const x = side === 0 ? 35 + r * 105 : W - 35 - r * 105;
         const y = yWorld - cameraWorld;
         if (Math.abs(x - p.x) > 65) drawTree(x, y, row + side);
         if (r > .62) {
