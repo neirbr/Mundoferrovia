@@ -1404,35 +1404,131 @@
     ctx.fillRect(x + 13, y + 38, 4, 7);
   }
 
-  function drawCherryGroveRegion(cameraY) {
-    // Bosque de cerejeiras após a cidade, com clareiras, bancos e pequenos chalés.
+  function drawCherryGroveRoad(cameraY) {
+    // Rua vertical de paralelepípedos ligando o bosque ao bairro urbano.
+    const anchor = worldToScreen(trackPoint(7775), cameraY);
+    const x = anchor.x - 350;
+    const top = 690 - 7380 - cameraY + H * .56;
+    const bottom = 690 - 8170 - cameraY + H * .56;
+    const roadWidth = 58;
+
+    // Sombra, calçadas, meio-fios e leito da rua.
+    ctx.fillStyle = "rgba(27,31,28,.24)";
+    ctx.fillRect(x - 47, top, 94, bottom - top);
+    ctx.fillStyle = "#c5c0b1";
+    ctx.fillRect(x - 46, top, 92, bottom - top);
+    ctx.fillStyle = "#555951";
+    ctx.fillRect(x - roadWidth / 2 - 3, top, roadWidth + 6, bottom - top);
+    ctx.fillStyle = "#827f73";
+    ctx.fillRect(x - roadWidth / 2, top, roadWidth, bottom - top);
+
+    // Pedras em fiadas alternadas, mantendo o desenho da rua vertical.
+    const firstRow = Math.floor((cameraY - H * .56 + 7380) / 9);
+    const lastRow = Math.ceil((cameraY - H * .56 + 8170) / 9);
+    for (let row = firstRow; row <= lastRow; row++) {
+      const worldS = row * 9;
+      const sy = 690 - worldS - cameraY + H * .56;
+      if (sy < top - 10 || sy > bottom + 10) continue;
+      const offset = row % 2 ? 7 : 0;
+      for (let col = 0; col < 4; col++) {
+        const sx = x - roadWidth / 2 + 2 + col * 14 + offset;
+        if (sx > x + roadWidth / 2 - 2) continue;
+        const colors = ["#999487", "#8d897d", "#a29d8e", "#858276", "#969183"];
+        const tone = (row * 7 + col * 11) % colors.length;
+        ctx.fillStyle = "rgba(39,42,38,.38)";
+        ctx.fillRect(sx + 1, sy + 1, 12, 7);
+        ctx.fillStyle = colors[tone];
+        ctx.fillRect(sx, sy, 11, 6);
+        ctx.fillStyle = "rgba(232,225,207,.22)";
+        ctx.fillRect(sx + 1, sy, 8, 1);
+      }
+    }
+
+    // Guias claras nas bordas e passeios laterais.
+    for (const side of [-1, 1]) {
+      const curbX = x + side * (roadWidth / 2 + 2);
+      ctx.fillStyle = "#555b54";
+      ctx.fillRect(curbX - 2, top, 5, bottom - top);
+      ctx.fillStyle = "#e0dacb";
+      ctx.fillRect(curbX + side * 3, top, 12, bottom - top);
+      ctx.fillStyle = "#c2bdae";
+      ctx.fillRect(curbX + side * 3, top, 12, bottom - top);
+      ctx.fillStyle = "rgba(105,103,91,.32)";
+      for (let y = top; y < bottom; y += 24) {
+        ctx.fillRect(curbX + side * 3, y, 12, 1);
+      }
+    }
+  }
+
+  function drawCherryFloatingPetals(cameraY) {
+    // Pétalas em suspensão: brisa constante e turbulência adicional provocada pelo trem.
     const cameraWorld = cameraY - H * .56;
-    const first = Math.floor((cameraWorld - 180) / 112);
-    const last = Math.ceil((cameraWorld + H + 180) / 112);
+    const visibleStartS = 690 - (cameraWorld + H);
+    const visibleEndS = 690 - cameraWorld;
+    if (visibleEndS < 7380 || visibleStartS > 8170) return;
+
+    const t = (state.lastTime || 0) / 1000;
+    const trainWake = Math.min(1, state.speed / 55);
+    const travel = state.direction === 0 ? 0 : state.direction;
+    for (let i = 0; i < 46; i++) {
+      const seedX = seeded(i * 17 + 5);
+      const seedY = seeded(i * 31 + 9);
+      const sway = Math.sin(t * (1.1 + seedX) + i) * (9 + trainWake * 13);
+      const driftX = t * (8 + trainWake * 27) * (i % 2 ? 1 : -1);
+      const driftY = t * (11 + trainWake * 22) * (travel || 1);
+      const x = ((seedX * (W + 36) + driftX + sway + 18) % (W + 36) + (W + 36)) % (W + 36) - 18;
+      const y = ((seedY * (H + 36) + driftY + 18) % (H + 36) + (H + 36)) % (H + 36) - 18;
+      const size = 2 + seeded(i * 47) * 2.2;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(Math.sin(t * 1.7 + i * 2) * .9);
+      ctx.fillStyle = i % 4 === 0 ? "rgba(255,226,237,.94)" : "rgba(239,158,190,.9)";
+      ctx.beginPath();
+      ctx.ellipse(0, 0, size * 1.35, size * .7, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function drawCherryGroveRegion(cameraY) {
+    // Bosque mais denso de cerejeiras, com rua vertical, bancos e pétalas caídas.
+    const cameraWorld = cameraY - H * .56;
+    const first = Math.floor((cameraWorld - 180) / 78);
+    const last = Math.ceil((cameraWorld + H + 180) / 78);
+
+    // A rua fica no lado esquerdo do bosque e encontra a malha urbana na entrada.
+    drawCherryGroveRoad(cameraY);
 
     for (let row = first; row <= last; row++) {
-      const yWorld = row * 112 + 56;
+      const yWorld = row * 78 + 39;
       const s = 690 - yWorld;
       if (s < 7380 || s > 8170) continue;
       const p = trackPoint(s);
       const y = yWorld - cameraWorld;
+      const roadX = p.x - 350;
 
       for (const side of [-1, 1]) {
         const jitter = seeded(row * 131 + side * 17);
         const x1 = p.x + side * (178 + jitter * 30);
         const x2 = p.x + side * (285 + seeded(row * 197 + side * 31) * 32);
         if (x1 > 25 && x1 < W - 25) drawCherryTree(x1, y + (jitter - .5) * 28, row);
-        if (x2 > 25 && x2 < W - 25 && seeded(row * 89 + side * 43) > .22) {
-          drawCherryTree(x2, y + 28 + (jitter - .5) * 24, row + 1);
+        if (x2 > 25 && x2 < W - 25 && seeded(row * 89 + side * 43) > .12) {
+          // Mantém uma faixa livre junto à rua para não cobrir o paralelepípedo.
+          if (Math.abs(x2 - roadX) > 58) drawCherryTree(x2, y + 28 + (jitter - .5) * 24, row + 1);
         }
-        // Flores caídas formam pequenos tapetes nas clareiras.
+
+        // Tapetes mais abundantes de pétalas no chão, em pequenas clareiras.
         const petalX = p.x + side * 125;
         if (petalX > 8 && petalX < W - 8) {
-          ctx.fillStyle = "rgba(239, 170, 197, .85)";
-          for (let k = 0; k < 5; k++) {
-            const px = petalX + (seeded(row * 43 + k * 19 + side) - .5) * 55;
-            const py = y + (seeded(row * 61 + k * 23) - .5) * 46;
-            ctx.fillRect(px, py, 3, 3);
+          for (let k = 0; k < 18; k++) {
+            const px = petalX + (seeded(row * 43 + k * 19 + side) - .5) * 72;
+            const py = y + (seeded(row * 61 + k * 23) - .5) * 62;
+            ctx.fillStyle = k % 3 === 0 ? "rgba(255,218,232,.9)" : "rgba(232,145,179,.88)";
+            ctx.save();
+            ctx.translate(px, py);
+            ctx.rotate(seeded(row * 71 + k * 13) * Math.PI);
+            ctx.fillRect(-2, -1, 4, 2.5);
+            ctx.restore();
           }
         }
       }
@@ -1447,7 +1543,8 @@
       if (p.y > -60 && p.y < H + 60) drawParkBench(p.x + b.side * b.d, p.y);
     }
 
-    // Os chalés foram retirados; permanecem somente as cerejeiras e os bancos.
+    drawCherryFloatingPetals(cameraY);
+    // Os chalés foram retirados; permanecem somente as cerejeiras, bancos e a nova rua.
   }
 
   function drawFinalStationBuilding(x, y, variant = 0) {
