@@ -563,7 +563,7 @@
     const colors = ["#e7d45d", "#e9a4bd", "#f1eee0", "#b9a0d8", "#e28b55", "#f2c6df"];
 
     for (let row = firstRow; row <= lastRow; row++) {
-      const yWorld = row * 48 + 24;
+      const yWorld = row * 38 + 19;
       const s = 690 - yWorld;
       if (s < 3780 || s > 5650) continue;
       const p = trackPoint(s);
@@ -1414,11 +1414,7 @@
     const bottom = Math.max(edgeA, edgeB);
     const roadWidth = 58;
 
-    // Sombra, calçadas, meio-fios e leito da rua.
-    ctx.fillStyle = "rgba(27,31,28,.24)";
-    ctx.fillRect(x - 47, top, 94, bottom - top);
-    ctx.fillStyle = "#c5c0b1";
-    ctx.fillRect(x - 46, top, 92, bottom - top);
+    // Leito da rua sem calçadas laterais.
     ctx.fillStyle = "#555951";
     ctx.fillRect(x - roadWidth / 2 - 3, top, roadWidth + 6, bottom - top);
     ctx.fillStyle = "#827f73";
@@ -1446,44 +1442,7 @@
       }
     }
 
-    // Guias claras nas bordas e passeios laterais.
-    for (const side of [-1, 1]) {
-      const curbX = x + side * (roadWidth / 2 + 2);
-      ctx.fillStyle = "#555b54";
-      ctx.fillRect(curbX - 2, top, 5, bottom - top);
-      ctx.fillStyle = "#e0dacb";
-      ctx.fillRect(curbX + side * 3, top, 12, bottom - top);
-      ctx.fillStyle = "#c2bdae";
-      ctx.fillRect(curbX + side * 3, top, 12, bottom - top);
-      ctx.fillStyle = "rgba(105,103,91,.32)";
-      for (let y = top; y < bottom; y += 24) {
-        ctx.fillRect(curbX + side * 3, y, 12, 1);
-      }
-    }
-  }
-
-  function drawCherryGroveOuterSidewalk(cameraY) {
-    // Calçada longitudinal no lado oposto do bosque, contornando a fileira externa.
-    const anchor = worldToScreen(trackPoint(7775), cameraY);
-    const x = anchor.x + 365;
-    const edgeA = 690 - 7380 - cameraY + H * .56;
-    const edgeB = 690 - 8170 - cameraY + H * .56;
-    const top = Math.min(edgeA, edgeB);
-    const bottom = Math.max(edgeA, edgeB);
-
-    ctx.fillStyle = "rgba(27,31,28,.2)";
-    ctx.fillRect(x - 12, top, 28, bottom - top);
-    ctx.fillStyle = "#c5c0b1";
-    ctx.fillRect(x - 10, top, 24, bottom - top);
-    ctx.fillStyle = "#e2ddcf";
-    ctx.fillRect(x - 9, top, 2, bottom - top);
-    ctx.fillStyle = "#aaa596";
-    for (let y = top + 8; y < bottom; y += 22) {
-      ctx.fillRect(x - 9, y, 22, 1);
-    }
-    ctx.fillStyle = "#77796f";
-    ctx.fillRect(x - 12, top, 2, bottom - top);
-    ctx.fillRect(x + 14, top, 2, bottom - top);
+    // Calçadas e guias removidas; a rua de paralelepípedos permanece.
   }
 
   function drawCherryFloatingPetals(cameraY) {
@@ -1496,7 +1455,7 @@
     const t = (state.lastTime || 0) / 1000;
     const trainWake = Math.min(1, state.speed / 55);
     const travel = state.direction === 0 ? 0 : state.direction;
-    for (let i = 0; i < 46; i++) {
+    for (let i = 0; i < 110; i++) {
       const seedX = seeded(i * 17 + 5);
       const seedY = seeded(i * 31 + 9);
       const sway = Math.sin(t * (1.1 + seedX) + i) * (9 + trainWake * 13);
@@ -1519,12 +1478,11 @@
   function drawCherryGroveRegion(cameraY) {
     // Bosque muito mais fechado de cerejeiras, com rua vertical e pétalas caídas.
     const cameraWorld = cameraY - H * .56;
-    const first = Math.floor((cameraWorld - 180) / 48);
-    const last = Math.ceil((cameraWorld + H + 180) / 48);
+    const first = Math.floor((cameraWorld - 180) / 38);
+    const last = Math.ceil((cameraWorld + H + 180) / 38);
 
-    // Rua de paralelepípedos no lado esquerdo e calçada externa no lado oposto do bosque.
+    // Mantém a rua de paralelepípedos, sem calçadas no bosque.
     drawCherryGroveRoad(cameraY);
-    drawCherryGroveOuterSidewalk(cameraY);
 
     for (let row = first; row <= last; row++) {
       const yWorld = row * 48 + 24;
@@ -1536,12 +1494,13 @@
 
       for (const side of [-1, 1]) {
         const jitter = seeded(row * 131 + side * 17);
-        // Quatro fileiras escalonadas por lado para criar um bosque bem mais abundante.
-        const distances = [178, 235, 295, 350];
+        // Cinco fileiras escalonadas por lado, com árvores mais próximas e densas.
+        const distances = [165, 210, 255, 300, 345];
         for (let layer = 0; layer < distances.length; layer++) {
           const variation = (seeded(row * 197 + side * 31 + layer * 53) - .5) * 34;
           const x = p.x + side * (distances[layer] + variation);
-          const probability = layer === 0 ? .96 : layer === 1 ? .92 : layer === 2 ? .86 : .72;
+          const probabilities = [.98, .96, .92, .84, .72];
+          const probability = probabilities[layer];
           const allowed = x > 22 && x < W - 22 && Math.abs(x - roadX) > 66;
           if (allowed && seeded(row * 89 + side * 43 + layer * 17) < probability) {
             const offsetY = (seeded(row * 71 + layer * 29 + side) - .5) * 36;
@@ -1567,7 +1526,7 @@
     }
 
     drawCherryFloatingPetals(cameraY);
-    // Bancos removidos a pedido; permanecem as cerejeiras, calçadas e a rua.
+    // Bancos e calçadas removidos; permanecem o bosque, a rua e as pétalas.
   }
 
   function drawFinalStationBuilding(x, y, variant = 0) {
