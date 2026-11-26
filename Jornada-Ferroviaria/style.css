@@ -139,3 +139,9 @@ h1 strong { color: var(--gold); }
 
 /* Garante que a antiga instrução não cubra o cenário, mesmo em HTML em cache. */
 .canvas-hint { display: none !important; }
+
+/* Operação de desembarque na estação */
+.station-actions{display:flex;flex-direction:column;gap:5px;align-items:center;padding:8px 10px;border:1px solid #405447;border-radius:12px;background:linear-gradient(180deg,#263a30 0%,#1d2c25 100%)}
+.door-button{width:100%;min-height:42px;border:1px solid #9b8148;border-radius:9px;background:linear-gradient(180deg,#e8c66e,#c99c43);color:#241d10;font-size:12px;font-weight:950;letter-spacing:.8px}
+.door-button:disabled{opacity:.42;filter:saturate(.45)}
+.door-status{min-height:12px;margin:0;color:var(--muted);font-size:9px;text-align:center}
