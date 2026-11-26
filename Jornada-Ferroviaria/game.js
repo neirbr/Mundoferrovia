@@ -2764,7 +2764,7 @@
   function update(dt) {
     if(state.paused)return;
     const limit=state.direction===0||state.throttlePoint===0?0:SPEED_LIMITS[state.throttlePoint];
-    const traction=state.direction!==0&&state.throttlePoint>0&&!state.emergency;
+    const traction=state.direction!==0&&state.throttlePoint>0&&!state.emergency&&!state.doorsOpen;
     if(state.emergency){
       state.speed=Math.max(0,state.speed-7.5*dt);
       if(state.speed<=0.05){state.speed=0;state.emergencyStopped=true;brakeStatus.textContent="Composição parada — alivie o freio";}
@@ -2823,6 +2823,8 @@
     } else {
       state.doorsOpen=true;
       state.passengerProgress=0;
+      state.throttlePoint=0;
+      refreshControls();
     }
   });
   function refreshControls(){
@@ -2831,13 +2833,13 @@
     if(state.direction>0)forwardButton.classList.add("direction-selected");else if(state.direction<0)reverseButton.classList.add("direction-selected");else neutralButton.classList.add("neutral-selected");
     throttleValue.textContent=state.throttlePoint;limitValue.textContent=state.throttlePoint? "LIMITE "+SPEED_LIMITS[state.throttlePoint]+" KM/H":"TRAÇÃO DESLIGADA";
     brakeValue.textContent=state.brake+"%";brakeSlider.value=state.brake;
-    const locked=state.emergency||state.emergencyStopped;
+    const locked=state.emergency||state.emergencyStopped||state.doorsOpen;
     [forwardButton,neutralButton,reverseButton,throttleUp,throttleDown,brakeSlider].forEach(b=>b.disabled=locked);
     emergencyButton.disabled=locked;releaseEmergencyButton.disabled=!state.emergencyStopped;
     if(state.emergency&&!state.emergencyStopped)brakeStatus.textContent="EMERGÊNCIA — frenagem em andamento";
     else if(!state.emergency&&!state.emergencyStopped)brakeStatus.textContent=state.brake?"Freio de serviço aplicado":"Freio aliviado";
   }
-  function chooseDirection(d){if(state.emergency||state.emergencyStopped||state.speed>0.1){brakeStatus.textContent=state.speed>0.1?"Pare a composição antes de inverter o sentido":"Comandos bloqueados";return;}state.direction=d;refreshControls();}
+  function chooseDirection(d){if(state.emergency||state.emergencyStopped||state.doorsOpen||state.speed>0.1){brakeStatus.textContent=state.speed>0.1?"Pare a composição antes de inverter o sentido":"Comandos bloqueados";return;}state.direction=d;refreshControls();}
   forwardButton.addEventListener("click",()=>chooseDirection(1));neutralButton.addEventListener("click",()=>chooseDirection(0));reverseButton.addEventListener("click",()=>chooseDirection(-1));
   throttleUp.addEventListener("click",()=>{if(!state.emergency&&!state.emergencyStopped){state.throttlePoint=Math.min(8,state.throttlePoint+1);refreshControls();}});
   throttleDown.addEventListener("click",()=>{if(!state.emergency&&!state.emergencyStopped){state.throttlePoint=Math.max(0,state.throttlePoint-1);refreshControls();}});
