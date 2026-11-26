@@ -880,7 +880,7 @@
 
     // A praça ocupa um lote próprio entre as quadras centrais.
     const parkPoint = worldToScreen(trackPoint(6720), cameraY);
-    const parkX = parkPoint.x - 315;
+    const parkX = parkPoint.x - 250;
     if (parkPoint.y > -180 && parkPoint.y < H + 180 && parkX > 90 && parkX < W - 90) {
       drawTownPark(parkX, parkPoint.y);
     }
