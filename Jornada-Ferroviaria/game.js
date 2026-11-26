@@ -1652,17 +1652,21 @@
       }
     }
 
-    // Um único edifício principal de estação; as quatro antigas casas foram retiradas.
+    // Duas estações de desembarque, uma em cada lado da ferrovia.
     const buildingPoint = worldToScreen(trackPoint(8440), cameraY);
     const leftBuildingX = buildingPoint.x - 175;
-    const rightBuildingX = buildingPoint.x + 175;
+    const rightBuildingX = buildingPoint.x + 220;
     if (buildingPoint.y > -430 && buildingPoint.y < H + 430) {
-      if (leftBuildingX > 110 && leftBuildingX < W - 110) {
+      if (leftBuildingX > 90 && leftBuildingX < W - 90) {
         drawFinalStationBuilding(leftBuildingX, buildingPoint.y, 0);
       }
-      // Segunda estação, do lado oposto da ferrovia, mantendo o mesmo padrão arquitetônico.
-      if (rightBuildingX > 110 && rightBuildingX < W - 110) {
+      // A segunda construção é espelhada para que a entrada principal também fique voltada para os trilhos.
+      if (rightBuildingX > 90 && rightBuildingX < W - 90) {
+        ctx.save();
+        ctx.translate(rightBuildingX * 2, 0);
+        ctx.scale(-1, 1);
         drawFinalStationBuilding(rightBuildingX, buildingPoint.y, 1);
+        ctx.restore();
       }
     }
   }
