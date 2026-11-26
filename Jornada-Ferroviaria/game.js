@@ -831,6 +831,76 @@
     }
   }
 
+
+  function drawRock(x, y, variant = 0) {
+    // Pedras pequenas em pixel art, com sombra e faces iluminadas.
+    const size = 0.72 + (Math.abs(variant) % 4) * 0.16;
+    const w = 5.5 * size, h = 3.8 * size;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.fillStyle = "rgba(25, 39, 24, .28)";
+    ctx.beginPath(); ctx.ellipse(2, h + 2, w + 2, h * .62, -.12, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = ["#686b5c", "#77796a", "#817d70", "#656f68"][Math.abs(variant) % 4];
+    ctx.beginPath();
+    ctx.moveTo(-w, 1); ctx.lineTo(-w * .58, -h * .72); ctx.lineTo(w * .18, -h);
+    ctx.lineTo(w, -h * .25); ctx.lineTo(w * .72, h * .62); ctx.lineTo(-w * .55, h * .72);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "rgba(220, 218, 190, .48)";
+    ctx.beginPath(); ctx.moveTo(-w * .58, -h * .72); ctx.lineTo(w * .18, -h);
+    ctx.lineTo(w * .48, -h * .34); ctx.lineTo(-w * .25, -h * .18); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "rgba(42, 52, 43, .28)";
+    ctx.fillRect(-w * .25, h * .2, w * .9, Math.max(1, h * .22));
+    ctx.restore();
+  }
+
+  function drawSmallPlant(x, y, variant = 0) {
+    // Plantas baixas com folhas em direções variadas e brilho discreto.
+    const tone = Math.abs(variant) % 3;
+    const greens = ["#5e913f", "#6c9c45", "#789f4d"];
+    ctx.save(); ctx.translate(x, y);
+    ctx.fillStyle = "rgba(31, 54, 28, .22)";
+    ctx.beginPath(); ctx.ellipse(1, 4, 7, 3, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = greens[tone]; ctx.lineWidth = 2; ctx.lineCap = "round";
+    const leaves = [[-5, 1, -8, -5], [-2, 1, -3, -8], [1, 1, 4, -7], [3, 2, 8, -4]];
+    for (const leaf of leaves) {
+      ctx.beginPath(); ctx.moveTo(0, 3);
+      ctx.quadraticCurveTo(leaf[0], leaf[1], leaf[2], leaf[3]); ctx.stroke();
+    }
+    ctx.strokeStyle = "rgba(190, 220, 128, .72)"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(-2, 1); ctx.lineTo(-3, -6); ctx.moveTo(3, 2); ctx.lineTo(7, -3); ctx.stroke();
+    if (variant % 5 === 0) { ctx.fillStyle = "#e6d17b"; ctx.fillRect(-1, -9, 3, 3); }
+    ctx.restore();
+  }
+
+  function drawGroundDetails(cameraY) {
+    // Detalhes decorativos em áreas verdes; posições determinísticas para não piscar.
+    const cameraWorld = cameraY - H * .56;
+    const first = Math.floor((cameraWorld - 130) / 76);
+    const last = Math.ceil((cameraWorld + H + 130) / 76);
+    for (let row = first; row <= last; row++) {
+      const worldY = row * 76 + 38;
+      const s = 690 - worldY;
+      const inOpeningField = s >= 110 && s <= 1760;
+      const inFlowerField = s >= 3780 && s <= 5650;
+      const inForestEdge = s >= 3146 && s <= 3400;
+      if (!inOpeningField && !inFlowerField && !inForestEdge) continue;
+      const p = trackPoint(s), screenY = worldY - cameraWorld;
+      for (const side of [-1, 1]) {
+        const seed = row * 313 + side * 977;
+        const distance = 88 + seeded(seed + 3) * 132;
+        const x = p.x + side * distance + (seeded(seed + 5) - .5) * 25;
+        const y = screenY + (seeded(seed + 7) - .5) * 42;
+        if (x < 12 || x > W - 12 || Math.abs(x - p.x) < 78) continue;
+        if (seeded(seed + 11) > .46) drawRock(x, y, Math.floor(seed + 13));
+        if (seeded(seed + 17) > .25) {
+          const plantX = x + side * (10 + seeded(seed + 19) * 18);
+          const plantY = y + 8 + seeded(seed + 23) * 13;
+          if (plantX > 10 && plantX < W - 10) drawSmallPlant(plantX, plantY, Math.floor(seed + 29));
+        }
+      }
+    }
+  }
+
   function drawRails(cameraY) {
     const trainS = START_S + state.trackOffset;
     const start = Math.max(0, trainS - 500);
@@ -973,6 +1043,7 @@
     const cameraY = trackPoint(START_S + state.trackOffset).y;
     drawGround(cameraY);
     drawLateralAtmosphere(cameraY);
+    drawGroundDetails(cameraY);
     // Vegetação inicial restaurada; as demais regiões mantêm seus cenários próprios.
     drawScenery(cameraY);
     drawFarmRegion(cameraY);
