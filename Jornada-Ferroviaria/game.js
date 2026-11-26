@@ -1197,6 +1197,59 @@
     ctx.fillStyle = "#e8dfc8";
     ctx.fillRect(x-7,y+61,15,3);
   }
+  function drawTownLongSidewalk(cameraY, side) {
+    // Calçada longitudinal acompanhando a ferrovia, em frente às casas do bairro.
+    const start = 5730, end = 7330, step = 18, halfWidth = 7;
+    const inner = [], outer = [];
+    for (let s = start; s <= end; s += step) {
+      const p = trackPoint(s);
+      const offset = side * 126;
+      const cx = p.x + p.nx * offset;
+      const cy = p.y + p.ny * offset - cameraY + H * .56;
+      inner.push({x:cx-p.nx*halfWidth,y:cy-p.ny*halfWidth});
+      outer.push({x:cx+p.nx*halfWidth,y:cy+p.ny*halfWidth});
+    }
+    ctx.beginPath();
+    ctx.moveTo(inner[0].x, inner[0].y);
+    for (const p of inner.slice(1)) ctx.lineTo(p.x,p.y);
+    for (let i=outer.length-1;i>=0;i--) ctx.lineTo(outer[i].x,outer[i].y);
+    ctx.closePath();
+    ctx.fillStyle = "rgba(35,39,35,.25)";
+    ctx.translate(0,0);
+    ctx.fill();
+    ctx.strokeStyle = "#77796f";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // Piso claro, placas e juntas transversais.
+    ctx.beginPath();
+    ctx.moveTo(inner[0].x,inner[0].y);
+    for (const p of inner.slice(1)) ctx.lineTo(p.x,p.y);
+    for (let i=outer.length-1;i>=0;i--) ctx.lineTo(outer[i].x,outer[i].y);
+    ctx.closePath();
+    ctx.fillStyle = "#c9c4b3";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(239,233,218,.75)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    for (let s=start+22;s<end;s+=22) {
+      const p=trackPoint(s);
+      const x=p.x+ p.nx*side*126;
+      const y=p.y+ p.ny*side*126-cameraY+H*.56;
+      ctx.strokeStyle="rgba(91,91,82,.32)";
+      ctx.lineWidth=1;
+      ctx.beginPath();
+      ctx.moveTo(x-p.nx*halfWidth,y-p.ny*halfWidth);
+      ctx.lineTo(x+p.nx*halfWidth,y+p.ny*halfWidth);
+      ctx.stroke();
+    }
+    // Guia tátil discreta junto ao lado voltado para a rua.
+    ctx.strokeStyle="#e5dfd0";
+    ctx.lineWidth=1.5;
+    ctx.beginPath();
+    for(let i=0;i<outer.length;i++){const p=outer[i];if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);}
+    ctx.stroke();
+  }
+
   function drawTownRegion(cameraY) {
     // Bairro mais povoado: duas fileiras de lotes, comércio, praça e ruas.
     const buildings = [
@@ -1231,6 +1284,10 @@
       drawTownPark(parkX, parkPoint.y);
     }
 
+    // Calçadas longitudinais ligam os trechos de passeio entre as casas e as ruas.
+    drawTownLongSidewalk(cameraY, -1);
+    drawTownLongSidewalk(cameraY, 1);
+
     for (let i = 0; i < buildings.length; i++) {
       const b = buildings[i];
       const p = worldToScreen(trackPoint(b.s), cameraY);
@@ -1242,7 +1299,7 @@
     }
 
     // Ruas do bairro e passagem de nível original.
-    drawTownRoad(cameraY, 5920, false);
+    drawTownRoad(cameraY, 5920, true);
     drawTownRoad(cameraY, 6300, true);
     drawTownRoad(cameraY, 6680, false);
 
@@ -2436,6 +2493,7 @@
     drawRiverLakeRegion(cameraY);
     drawBridge(cameraY);
     drawRails(cameraY);
+    drawTownCrossingDeck(cameraY, 5920);
     drawTownCrossingDeck(cameraY, 6300);
     drawSignal(cameraY);
     drawTrain(cameraY);
