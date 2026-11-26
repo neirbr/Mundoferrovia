@@ -1511,6 +1511,45 @@
     const top = y - 275;
     const bottom = y + 275;
 
+    // Volume 2.5D: fundação projetada, paredes laterais e sombra deslocada.
+    // A projeção acrescenta altura ao edifício sem mover sua posição no mapa.
+    ctx.fillStyle = "rgba(16, 25, 22, .38)";
+    ctx.beginPath();
+    ctx.moveTo(x - 96, top + 8);
+    ctx.lineTo(x + 96, top + 8);
+    ctx.lineTo(x + 119, top + 31);
+    ctx.lineTo(x + 119, bottom + 23);
+    ctx.lineTo(x - 73, bottom + 23);
+    ctx.lineTo(x - 96, bottom);
+    ctx.closePath();
+    ctx.fill();
+
+    // Fachada lateral direita, mais escura para separar o volume do telhado.
+    ctx.fillStyle = "#777365";
+    ctx.beginPath();
+    ctx.moveTo(x + 88, top + 8);
+    ctx.lineTo(x + 108, top + 27);
+    ctx.lineTo(x + 108, bottom + 17);
+    ctx.lineTo(x + 88, bottom);
+    ctx.closePath();
+    ctx.fill();
+
+    // Fachada de extremidade com degraus de profundidade e luz ambiente.
+    ctx.fillStyle = "#a99d83";
+    ctx.beginPath();
+    ctx.moveTo(x - 96, bottom - 8);
+    ctx.lineTo(x + 88, bottom - 8);
+    ctx.lineTo(x + 108, bottom + 17);
+    ctx.lineTo(x - 76, bottom + 17);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "rgba(238, 225, 194, .42)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x - 88, bottom - 5);
+    ctx.lineTo(x + 84, bottom - 5);
+    ctx.stroke();
+
     // Sombra e base estrutural.
     ctx.fillStyle = "rgba(25, 32, 30, .34)";
     ctx.fillRect(x - 101, top + 9, 202, 552);
