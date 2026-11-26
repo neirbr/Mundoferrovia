@@ -57,6 +57,32 @@
     return { x, y, tx: dx / length, ty: -1 / length, nx: 1 / length, ny: dx / length };
   }
 
+  // Mede a distância real percorrida sobre a curva, não apenas a diferença vertical.
+  function trackArcLength(a, b) {
+    const steps = 16;
+    const step = (b - a) / steps;
+    let total = 0;
+    for (let i = 0; i <= steps; i++) {
+      const s = a + step * i;
+      const derivative = trackOffsetAt(s).derivative;
+      const weight = (i === 0 || i === steps) ? 1 : (i % 2 ? 4 : 2);
+      total += weight * Math.hypot(1, derivative);
+    }
+    return Math.abs(step) * total / 3;
+  }
+
+  // Encontra o ponto anterior que mantém o mesmo comprimento de engate nas curvas.
+  function trackSBehind(frontS, distance) {
+    let low = frontS - distance * 2;
+    let high = frontS;
+    for (let i = 0; i < 28; i++) {
+      const mid = (low + high) / 2;
+      if (trackArcLength(mid, frontS) > distance) low = mid;
+      else high = mid;
+    }
+    return (low + high) / 2;
+  }
+
   function worldToScreen(p, cameraY) {
     return { x: p.x, y: p.y - cameraY + H * 0.56 };
   }
@@ -1540,13 +1566,30 @@
     ctx.fillRect(-8, -21, 16, .7);
     ctx.fillRect(-8, 20.3, 16, .7);
 
-    // Engates compactos, sem alterar o espaçamento entre os veículos.
-    ctx.fillStyle = "#202a2b";
-    ctx.fillRect(-4, -24, 8, 3);
-    ctx.fillRect(-4, 21, 8, 3);
-    ctx.fillStyle = "#a7aaa0";
-    ctx.fillRect(-2, -25, 4, 2);
-    ctx.fillRect(-2, 23, 4, 2);
+    // Engates centrais visíveis na vista superior, com haste, cabeça e pino metálico.
+    for (const end of [-1, 1]) {
+      const y0 = end * 21;
+      const y1 = end * 27;
+      ctx.strokeStyle = "rgba(0,0,0,.48)";
+      ctx.lineWidth = 4;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(0, y0);
+      ctx.lineTo(0, y1);
+      ctx.stroke();
+      ctx.strokeStyle = "#303a39";
+      ctx.lineWidth = 2.6;
+      ctx.beginPath();
+      ctx.moveTo(0, y0);
+      ctx.lineTo(0, y1);
+      ctx.stroke();
+      ctx.fillStyle = "#aeb5aa";
+      ctx.beginPath();
+      ctx.roundRect(-2.2, y1 - end * 1.8, 4.4, 3.6, 1);
+      ctx.fill();
+      ctx.fillStyle = "#e0d9c5";
+      ctx.fillRect(-.65, y1 - end * 1.2, 1.3, 1.5);
+    }
 
     ctx.restore();
   }
@@ -1720,12 +1763,19 @@
       ctx.fillRect(x - .7, -33, 1.4, 1);
     }
 
-    // Engates e para-choques compactos nas extremidades.
+    // Engate traseiro reforçado e engate dianteiro, visíveis de cima.
+    ctx.fillStyle = "rgba(0,0,0,.48)";
+    ctx.fillRect(-5, 28, 10, 9);
+    ctx.fillStyle = "#252f30";
+    ctx.fillRect(-3.2, 28, 6.4, 8);
+    ctx.fillStyle = "#aeb5aa";
+    ctx.fillRect(-2.2, 33, 4.4, 3);
+    ctx.fillStyle = "#d8d4c4";
+    ctx.fillRect(-.7, 33.5, 1.4, 1.4);
     ctx.fillStyle = "#303a38";
-    ctx.fillRect(-8, 29, 16, 3);
-    ctx.fillRect(-5, -31, 10, 2);
-    ctx.fillStyle = "#9ba096";
-    ctx.fillRect(-3, 31, 6, 2);
+    ctx.fillRect(-3, -35, 6, 5);
+    ctx.fillStyle = "#aeb5aa";
+    ctx.fillRect(-2, -36, 4, 2);
     ctx.fillStyle = "#d0ad63";
     ctx.fillRect(-12, 26, 3, 2);
     ctx.fillRect(9, 26, 3, 2);
@@ -1734,9 +1784,14 @@
   }
 
   function drawTrain(cameraY) {
-    // Os vagões seguem pontos anteriores do mesmo traçado, cada um com orientação própria.
+    // O primeiro vagão respeita o comprimento maior da locomotiva; os demais
+    // mantêm 48 unidades de distância real ao longo do trilho, inclusive nas curvas.
     const trainS = START_S + state.trackOffset;
-    for (let i = PASSENGER_WAGON_COUNT; i >= 1; i--) drawWagon(trainS - i * TRAIN_SPACING, i, cameraY);
+    for (let i = PASSENGER_WAGON_COUNT; i >= 1; i--) {
+      const distanceBehind = 54 + (i - 1) * TRAIN_SPACING;
+      const wagonS = trackSBehind(trainS, distanceBehind);
+      drawWagon(wagonS, i, cameraY);
+    }
     drawLocomotive(trainS, cameraY);
   }
 
