@@ -13,7 +13,7 @@
   const W = 800;
   const H = 800;
   const TRACK_SHIFT_X = 70;
-  const TRACK_LENGTH = 10400; // Inclui a cidade, o bosque, a estação final e a rodoviária.
+  const TRACK_LENGTH = 10400; // Extensão reservada para a linha e futuras regiões após a estação final.
   const START_S = 520; // Posição inicial original da locomotiva junto à plataforma.
   // MODO TEMPORÁRIO: inicia diretamente na estação final. Desative para voltar ao início normal.
   const TEST_URBAN_MODE = true;
@@ -1671,58 +1671,6 @@
     }
   }
 
-  function drawBusTerminalBuilding(x, y) {
-    // Rodoviária rural com cobertura ampla, saguão e baias para ônibus.
-    ctx.fillStyle = "rgba(39, 43, 37, .28)";
-    ctx.fillRect(x - 100, y - 75, 204, 154);
-    ctx.fillStyle = "#c9b995";
-    ctx.fillRect(x - 96, y - 72, 196, 145);
-    ctx.fillStyle = "#d9d2bd";
-    ctx.fillRect(x - 86, y - 61, 176, 123);
-    ctx.fillStyle = "#49636b";
-    ctx.fillRect(x - 91, y - 66, 186, 48);
-    ctx.fillStyle = "#e0c99c";
-    ctx.fillRect(x - 80, y - 57, 164, 7);
-    ctx.fillStyle = "#394b4c";
-    ctx.fillRect(x - 22, y + 3, 44, 59);
-    ctx.fillStyle = "#9fc4c5";
-    ctx.fillRect(x - 72, y - 7, 34, 28);
-    ctx.fillRect(x + 38, y - 7, 34, 28);
-    for (let i = 0; i < 2; i++) {
-      const bx = x + 112 + i * 39;
-      ctx.fillStyle = "#6f776e";
-      ctx.fillRect(bx - 15, y - 67, 30, 137);
-      ctx.fillStyle = i ? "#d9b34f" : "#4d8290";
-      ctx.fillRect(bx - 11, y - 55, 22, 112);
-      ctx.fillStyle = "#263d45";
-      for (let wy = -43; wy <= 30; wy += 19) ctx.fillRect(bx - 9, y + wy, 18, 10);
-      ctx.fillStyle = "#e8e0c9";
-      ctx.fillRect(bx - 11, y - 57, 22, 5);
-    }
-  }
-
-  function drawBusTerminalRegion(cameraY) {
-    // Estrada de chão horizontal atravessando a área da rodoviária.
-    const road = worldToScreen(trackPoint(9460), cameraY);
-    if (road.y > -90 && road.y < H + 90) {
-      ctx.fillStyle = "#8b7655";
-      ctx.fillRect(0, road.y - 38, W, 76);
-      ctx.fillStyle = "#b39a70";
-      ctx.fillRect(0, road.y - 38, W, 6);
-      ctx.fillRect(0, road.y + 32, W, 6);
-      ctx.fillStyle = "rgba(226, 207, 165, .55)";
-      for (let x = 20; x < W; x += 82) ctx.fillRect(x, road.y - 2, 42, 4);
-      ctx.fillStyle = "rgba(91, 73, 49, .28)";
-      ctx.fillRect(0, road.y - 17, W, 3);
-      ctx.fillRect(0, road.y + 14, W, 3);
-    }
-    const terminal = worldToScreen(trackPoint(9600), cameraY);
-    const terminalX = terminal.x - 225;
-    if (terminal.y > -180 && terminal.y < H + 180 && terminalX > 120 && terminalX < W - 180) {
-      drawBusTerminalBuilding(terminalX, terminal.y);
-    }
-  }
-
   function drawRiverLakeRegion(cameraY) {
     // Rio transversal ao vale, com margens irregulares, leito profundo e correnteza para a direita.
     const riverS = 3468;
@@ -2655,7 +2603,6 @@
     drawTownRegion(cameraY);
     drawCherryGroveRegion(cameraY);
     drawFinalStationRegion(cameraY);
-    drawBusTerminalRegion(cameraY);
     // Água é desenhada depois da vegetação para nunca deixar árvores sobre o rio ou o lago.
     drawRiverLakeRegion(cameraY);
     drawBridge(cameraY);
@@ -2688,7 +2635,7 @@
     distanceValue.textContent=(state.distance/1000).toFixed(2).replace(".",",")+" km";
     const pct=Math.min(100,state.distance/TRACK_LENGTH*100);
     progressFill.style.width=pct+"%";progressText.textContent=Math.round(pct)+"% do trecho";
-    if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else if(state.distance<3260)regionName.textContent="Rios, lagos e pontes";else if(state.distance<5200)regionName.textContent="Campos floridos";else if(state.distance<7380)regionName.textContent="Cidade do interior";else if(state.distance<7800)regionName.textContent="Bosque de cerejeiras";else if(state.distance<8900)regionName.textContent="Estação final";else regionName.textContent="Rodoviária";
+    if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else if(state.distance<3260)regionName.textContent="Rios, lagos e pontes";else if(state.distance<5200)regionName.textContent="Campos floridos";else if(state.distance<7380)regionName.textContent="Cidade do interior";else if(state.distance<7800)regionName.textContent="Bosque de cerejeiras";else if(state.distance<8900)regionName.textContent="Estação final";else regionName.textContent="Trecho após a estação";
     render(dt);
   }
 
