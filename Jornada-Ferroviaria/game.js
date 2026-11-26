@@ -926,7 +926,8 @@
     drawBed(31, "#a09378");
 
     // Textura discreta de brita, distribuída ao redor do eixo sem invadir os trilhos.
-    for (let s = start; s <= end; s += 13) {
+    const firstGravelS = Math.ceil(start / 13) * 13;
+    for (let s = firstGravelS; s <= end; s += 13) {
       const p = trackPoint(s);
       const q = worldToScreen(p, cameraY);
       for (const side of [-1, 1]) {
@@ -943,7 +944,8 @@
     }
 
     // Dormentes de madeira: corpo facetado, bordas suavizadas e veio discreto.
-    for (let s = start; s <= end; s += 18) {
+    const firstSleeperS = Math.ceil(start / 18) * 18;
+    for (let s = firstSleeperS; s <= end; s += 18) {
       const p = trackPoint(s);
       const q = worldToScreen(p, cameraY);
       ctx.save();
