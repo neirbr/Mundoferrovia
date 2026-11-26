@@ -924,23 +924,100 @@
   }
   function drawTownRoad(cameraY, s, crossing = false) {
     const p = worldToScreen(trackPoint(s), cameraY);
-    // Rua transversal; trilhos são desenhados depois e permanecem intactos.
-    ctx.fillStyle = "rgba(35,38,34,.18)";
-    ctx.fillRect(0, p.y - (crossing ? 37 : 30), W, crossing ? 74 : 60);
-    ctx.fillStyle = "#777970";
-    ctx.fillRect(0, p.y - (crossing ? 31 : 24), W, crossing ? 62 : 48);
-    ctx.fillStyle = "#aaa995";
-    ctx.fillRect(0, p.y - (crossing ? 35 : 28), W, 5);
-    ctx.fillRect(0, p.y + (crossing ? 30 : 23), W, 5);
-    ctx.fillStyle = "#d6c99f";
-    for (let x = 18; x < W; x += 76) ctx.fillRect(x, p.y - 1, 34, 3);
-    // Sarjetas e pequenas bocas de lobo.
-    ctx.fillStyle = "#686b63";
-    for (let x = 55; x < W; x += 170) {
-      ctx.fillRect(x, p.y - (crossing ? 39 : 33), 12, 3);
-      ctx.fillRect(x + 2, p.y + (crossing ? 34 : 28), 12, 3);
+    const half = crossing ? 31 : 24;
+    // Rua de paralelepípedos com base, meio-fio e pedras assentadas individualmente.
+    ctx.fillStyle = "rgba(25,29,27,.22)";
+    ctx.fillRect(0, p.y - half - 5, W, (half + 5) * 2);
+    ctx.fillStyle = "#555951";
+    ctx.fillRect(0, p.y - half - 2, W, half * 2 + 4);
+    ctx.fillStyle = "#827f73";
+    ctx.fillRect(0, p.y - half, W, half * 2);
+    for (let row = -half + 2, r = 0; row < half - 1; row += 8, r++) {
+      const offset = r % 2 ? 7 : 0;
+      for (let x = -12 + offset; x < W + 12; x += 16) {
+        const tone = (Math.floor((x + 12) / 16) * 7 + r * 11 + Math.round(s)) % 5;
+        const colors = ["#999487","#8d897d","#a29d8e","#858276","#969183"];
+        ctx.fillStyle = "rgba(39,42,38,.42)";
+        ctx.fillRect(x + 1, p.y + row + 1, 14, 6);
+        ctx.fillStyle = colors[(tone + 5) % 5];
+        ctx.fillRect(x, p.y + row, 13, 5.5);
+        ctx.fillStyle = "rgba(232,225,207,.22)";
+        ctx.fillRect(x + 1, p.y + row, 10, 1);
+      }
     }
-    if (crossing) drawTownCrossingEquipment(p, s);
+    // Meio-fio e calçadas contínuas dos dois lados da rua.
+    for (const side of [-1, 1]) {
+      const curbY = p.y + side * (half + 2);
+      ctx.fillStyle = "#565b54";
+      ctx.fillRect(0, curbY - 2, W, 5);
+      ctx.fillStyle = "#c2bdae";
+      ctx.fillRect(0, curbY + side * 3, W, 12);
+      ctx.fillStyle = "#e0dacb";
+      ctx.fillRect(0, curbY + side * 3, W, 2);
+      for (let x = 0; x < W; x += 24) {
+        ctx.fillStyle = "rgba(105,103,91,.35)";
+        ctx.fillRect(x, curbY + side * 7, 1, 8);
+      }
+      ctx.fillStyle = "#8c8a7d";
+      ctx.fillRect(0, curbY - 1, W, 1);
+    }
+    // Sarjetas e grelhas de drenagem.
+    ctx.fillStyle = "#4c514b";
+    for (let x = 55; x < W; x += 170) {
+      const gy = p.y - half - 5;
+      ctx.fillRect(x, gy, 13, 4);
+      ctx.fillRect(x + 2, gy + 1, 9, 1);
+      ctx.fillRect(x + 2, p.y + half + 2, 13, 4);
+    }
+    if (crossing) {
+      // Faixas de retenção antes da passagem, sem interferir na geometria da via.
+      ctx.fillStyle = "rgba(246,239,218,.86)";
+      ctx.fillRect(0, p.y - half - 1, W, 2);
+      ctx.fillRect(0, p.y + half - 1, W, 2);
+      drawTownCrossingEquipment(p, s);
+    }
+  }
+
+  function drawTownCrossingDeck(cameraY, s) {
+    // Painéis de concreto/asfalto assentados ao redor dos trilhos na passagem de nível.
+    // A placa é desenhada sobre o lastro e os dois trilhos são redesenhados por cima.
+    const raw = trackPoint(s);
+    const p = worldToScreen(raw, cameraY);
+    const angle = Math.atan2(raw.ty, raw.tx);
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(angle);
+    ctx.fillStyle = "rgba(22,25,23,.35)";
+    ctx.fillRect(-39, -40, 78, 80);
+    ctx.fillStyle = "#686b64";
+    ctx.fillRect(-37, -38, 74, 76);
+    ctx.fillStyle = "#aaa99d";
+    ctx.fillRect(-35, -36, 70, 72);
+    // Painéis segmentados e juntas de dilatação.
+    for (let x = -32; x <= 24; x += 14) {
+      ctx.fillStyle = x % 2 ? "#b8b5a8" : "#a6a69b";
+      ctx.fillRect(x, -34, 12, 68);
+      ctx.fillStyle = "rgba(65,69,64,.3)";
+      ctx.fillRect(x + 12, -34, 1, 68);
+    }
+    // Canaletas de proteção e flangeways junto aos trilhos.
+    for (const railY of [-11, 11]) {
+      ctx.fillStyle = "#454b48";
+      ctx.fillRect(-36, railY - 4, 72, 2);
+      ctx.fillRect(-36, railY + 3, 72, 2);
+      ctx.fillStyle = "#c3c7bd";
+      ctx.fillRect(-36, railY - 1.5, 72, 3);
+      ctx.fillStyle = "#f0eee2";
+      ctx.fillRect(-34, railY - 1.5, 68, .8);
+      ctx.fillStyle = "#343b39";
+      for (let x = -29; x <= 29; x += 14) {
+        ctx.fillRect(x, railY - 5, 3, 10);
+      }
+    }
+    ctx.strokeStyle = "rgba(245,239,220,.65)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(-35, -36, 70, 72);
+    ctx.restore();
   }
 
   function drawTownCrossingEquipment(p, crossingS) {
@@ -2359,6 +2436,7 @@
     drawRiverLakeRegion(cameraY);
     drawBridge(cameraY);
     drawRails(cameraY);
+    drawTownCrossingDeck(cameraY, 6300);
     drawSignal(cameraY);
     drawTrain(cameraY);
   }
