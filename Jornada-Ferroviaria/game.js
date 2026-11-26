@@ -905,45 +905,147 @@
     const trainS = START_S + state.trackOffset;
     const start = Math.max(0, trainS - 500);
     const end = Math.min(START_S + TRACK_LENGTH + 700, trainS + 700);
-    ctx.lineCap = "square";
-    // Lastro
-    ctx.beginPath();
-    for (let s = start; s <= end; s += 8) {
+
+    // Lastro: camadas suaves acompanham exatamente o eixo ferroviário existente.
+    // A geometria do traçado e os pontos de referência não são modificados.
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    const drawBed = (width, color) => {
+      ctx.beginPath();
+      for (let s = start; s <= end; s += 5) {
+        const q = worldToScreen(trackPoint(s), cameraY);
+        if (s === start) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
+      }
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.stroke();
+    };
+    drawBed(46, "rgba(28, 31, 27, .20)");
+    drawBed(42, "#756b58");
+    drawBed(37, "#91846b");
+    drawBed(31, "#a09378");
+
+    // Textura discreta de brita, distribuída ao redor do eixo sem invadir os trilhos.
+    for (let s = start; s <= end; s += 13) {
       const p = trackPoint(s);
       const q = worldToScreen(p, cameraY);
-      if (s === start) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
+      for (const side of [-1, 1]) {
+        const seed = Math.floor(s * .73 + (side + 2) * 41);
+        const lateral = side * (16 + ((seed * 17) % 9));
+        const along = ((seed * 7) % 7) - 3;
+        const x = q.x + p.nx * lateral + p.tx * along;
+        const y = q.y + p.ny * lateral + p.ty * along;
+        ctx.fillStyle = seed % 3 === 0 ? "rgba(224,211,181,.48)" : "rgba(48,48,40,.24)";
+        ctx.beginPath();
+        ctx.ellipse(x, y, 1.5 + (seed % 2) * .5, 1, Math.atan2(p.ty,p.tx), 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
-    ctx.strokeStyle = "#8c8065";
-    ctx.lineWidth = 38;
-    ctx.stroke();
 
-    // Dormentes
+    // Dormentes de madeira: corpo facetado, bordas suavizadas e veio discreto.
     for (let s = start; s <= end; s += 18) {
       const p = trackPoint(s);
       const q = worldToScreen(p, cameraY);
       ctx.save();
       ctx.translate(q.x, q.y);
       ctx.rotate(Math.atan2(p.ty, p.tx) + Math.PI / 2);
-      ctx.fillStyle = "#604b36";
-      ctx.fillRect(-23, -3, 46, 6);
-      ctx.fillStyle = "#92704c";
-      ctx.fillRect(-21, -3, 42, 2);
+
+      ctx.fillStyle = "rgba(20, 20, 16, .30)";
+      ctx.beginPath();
+      ctx.roundRect(-24, -4, 48, 9, 2);
+      ctx.fill();
+
+      const wood = ctx.createLinearGradient(0, -4, 0, 4);
+      wood.addColorStop(0, "#493a2c");
+      wood.addColorStop(.24, "#806044");
+      wood.addColorStop(.68, "#684d37");
+      wood.addColorStop(1, "#3d3329");
+      ctx.fillStyle = wood;
+      ctx.beginPath();
+      ctx.roundRect(-23, -4, 46, 8, 1.8);
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(205, 165, 111, .48)";
+      ctx.lineWidth = .7;
+      ctx.beginPath();
+      ctx.moveTo(-19, -2.5);
+      ctx.lineTo(19, -2.5);
+      ctx.moveTo(-15, 1.5);
+      ctx.lineTo(15, 1.5);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(24, 24, 20, .45)";
+      ctx.beginPath();
+      ctx.moveTo(-20, 3);
+      ctx.lineTo(20, 3);
+      ctx.stroke();
+
+      // Placas metálicas e grampos de fixação em cada apoio do trilho.
+      for (const side of [-1, 1]) {
+        const x = side * 11;
+        ctx.fillStyle = "#303a39";
+        ctx.beginPath();
+        ctx.roundRect(x - 3.8, -3.3, 7.6, 6.6, 1);
+        ctx.fill();
+        const plate = ctx.createLinearGradient(x - 3, -3, x + 3, 3);
+        plate.addColorStop(0, "#c0c4b9");
+        plate.addColorStop(.45, "#737e79");
+        plate.addColorStop(1, "#394542");
+        ctx.fillStyle = plate;
+        ctx.beginPath();
+        ctx.roundRect(x - 3, -2.5, 6, 5, .8);
+        ctx.fill();
+        ctx.fillStyle = "#d7d5c8";
+        ctx.fillRect(x - 2, -2, 1.2, 1.2);
+        ctx.fillRect(x + 1, 1, 1.2, 1.2);
+        ctx.strokeStyle = "#252d2c";
+        ctx.lineWidth = 1.1;
+        ctx.beginPath();
+        ctx.moveTo(x - 2.2, -1.5);
+        ctx.lineTo(x - 1.2, -2.7);
+        ctx.moveTo(x + 2.2, 1.5);
+        ctx.lineTo(x + 1.2, 2.7);
+        ctx.stroke();
+      }
       ctx.restore();
     }
 
-    // Trilhos metálicos
+    // Trilhos: sombra, alma escura, patim e boleto com reflexo longitudinal.
     for (const side of [-1, 1]) {
-      ctx.beginPath();
-      for (let s = start; s <= end; s += 8) {
-        const p = trackPoint(s);
-        const q = worldToScreen({ x: p.x + p.nx * side * 11, y: p.y + p.ny * side * 11 }, cameraY);
-        if (s === start) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
-      }
-      ctx.strokeStyle = "#3f4543";
-      ctx.lineWidth = 5;
+      const railPath = (offset) => {
+        ctx.beginPath();
+        for (let s = start; s <= end; s += 5) {
+          const p = trackPoint(s);
+          const q = worldToScreen({
+            x: p.x + p.nx * side * offset,
+            y: p.y + p.ny * side * offset
+          }, cameraY);
+          if (s === start) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
+        }
+      };
+
+      railPath(11);
+      ctx.strokeStyle = "rgba(17, 22, 22, .55)";
+      ctx.lineWidth = 8;
       ctx.stroke();
-      ctx.strokeStyle = "#c4c6bd";
-      ctx.lineWidth = 2;
+
+      railPath(11);
+      ctx.strokeStyle = "#303b3d";
+      ctx.lineWidth = 6;
+      ctx.stroke();
+
+      railPath(11);
+      const steel = ctx.createLinearGradient(0, 0, 0, 1);
+      steel.addColorStop(0, "#e0e2d9");
+      steel.addColorStop(.24, "#aeb8b4");
+      steel.addColorStop(.62, "#737f7d");
+      steel.addColorStop(1, "#394647");
+      ctx.strokeStyle = steel;
+      ctx.lineWidth = 3.4;
+      ctx.stroke();
+
+      railPath(11);
+      ctx.strokeStyle = "rgba(255,255,245,.72)";
+      ctx.lineWidth = .85;
       ctx.stroke();
     }
   }
