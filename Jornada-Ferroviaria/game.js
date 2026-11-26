@@ -953,6 +953,80 @@
       ctx.arc(x, y, 3 + (i % 3), .15, Math.PI * .9);
       ctx.stroke();
     }
+
+    // Deck de madeira na margem, com dois pescadores voltados para a correnteza.
+    const dockX = 112;
+    const dockY = riverY + 35;
+    ctx.fillStyle = "rgba(22,34,30,.32)";
+    ctx.beginPath();
+    ctx.ellipse(dockX + 83, dockY + 31, 91, 17, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Estrutura elevada, suportes e tábuas individuais.
+    ctx.fillStyle = "#514332";
+    ctx.fillRect(dockX + 8, dockY + 12, 150, 9);
+    ctx.fillRect(dockX + 15, dockY + 51, 7, 17);
+    ctx.fillRect(dockX + 145, dockY + 51, 7, 17);
+    ctx.fillStyle = "#956d45";
+    ctx.beginPath();
+    ctx.moveTo(dockX, dockY + 3);
+    ctx.lineTo(dockX + 166, dockY + 3);
+    ctx.lineTo(dockX + 153, dockY + 53);
+    ctx.lineTo(dockX + 12, dockY + 53);
+    ctx.closePath();
+    ctx.fill();
+    for (let i = 0; i < 7; i++) {
+      const yy = dockY + 8 + i * 6;
+      ctx.strokeStyle = i % 2 ? "#c49a65" : "#6e5138";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(dockX + 5 + i * .8, yy);
+      ctx.lineTo(dockX + 161 - i * .8, yy);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(42,32,23,.35)";
+      ctx.fillRect(dockX + 28, yy + 2, 2, 2);
+      ctx.fillRect(dockX + 126, yy + 2, 2, 2);
+    }
+    // Dois pescadores com roupas diferentes, chapéus, braços e varas lançadas sobre a água.
+    const anglers = [
+      {x:dockX+49, y:dockY+26, shirt:"#d5a34f", pants:"#354b50", hat:"#59452f", rod:-24},
+      {x:dockX+112, y:dockY+27, shirt:"#668b70", pants:"#39434a", hat:"#b18a50", rod:18}
+    ];
+    for (const person of anglers) {
+      ctx.save();
+      ctx.translate(person.x, person.y);
+      // Sombra dos pés sobre as tábuas.
+      ctx.fillStyle = "rgba(31,29,23,.3)";
+      ctx.beginPath(); ctx.ellipse(0,17,9,3,0,0,Math.PI*2); ctx.fill();
+      // Pernas e botas.
+      ctx.strokeStyle = person.pants; ctx.lineWidth = 4; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(-3,7); ctx.lineTo(-5,16); ctx.moveTo(3,7); ctx.lineTo(5,16); ctx.stroke();
+      ctx.fillStyle = "#302f2a";
+      ctx.fillRect(-8,15,6,3); ctx.fillRect(3,15,6,3);
+      // Tronco e cabeça.
+      ctx.fillStyle = person.shirt;
+      ctx.beginPath(); ctx.roundRect(-7,-5,14,14,3); ctx.fill();
+      ctx.fillStyle = "#c58e68";
+      ctx.beginPath(); ctx.arc(0,-11,5,0,Math.PI*2); ctx.fill();
+      // Chapéu de pescador.
+      ctx.fillStyle = person.hat;
+      ctx.beginPath(); ctx.ellipse(0,-15,8,2.5,0,0,Math.PI*2); ctx.fill();
+      ctx.fillRect(-5,-19,10,4);
+      // Braço estendido segurando a vara.
+      ctx.strokeStyle = person.shirt; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(4,-1); ctx.lineTo(10,-6); ctx.stroke();
+      const tipX = person.rod;
+      const tipY = -48;
+      ctx.strokeStyle = "#493b2c"; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.moveTo(8,-6); ctx.quadraticCurveTo(tipX*.45,-28,tipX,tipY); ctx.stroke();
+      ctx.strokeStyle = "rgba(225,235,218,.8)"; ctx.lineWidth = .8;
+      ctx.beginPath(); ctx.moveTo(tipX,tipY); ctx.lineTo(tipX+7,tipY+34); ctx.stroke();
+      ctx.restore();
+    }
+    // Pequenas boias sobre a água, alinhadas às linhas de pesca.
+    ctx.fillStyle = "#e9d5a0";
+    ctx.beginPath(); ctx.ellipse(dockX+56,riverY+7,2,4,0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(dockX+130,riverY+15,2,4,0,0,Math.PI*2); ctx.fill();
   }
 
   function drawBridge(cameraY) {
