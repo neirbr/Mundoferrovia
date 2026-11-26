@@ -1107,7 +1107,8 @@
       const pivotX = x;
       // Os braços abertos apontam para o centro da rua; ao fechar, ambos descem.
       const openAngle = side < 0 ? 0 : Math.PI;
-      const closedAngle = Math.PI / 2;
+      // Teste de orientação: o braço do lado esquerdo usa rotação inversa.
+      const closedAngle = side < 0 ? -Math.PI / 2 : Math.PI / 2;
       const angle = openAngle + (closedAngle - openAngle) * closed;
       ctx.save();
       ctx.translate(pivotX, p.y - 13);
