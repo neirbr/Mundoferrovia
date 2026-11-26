@@ -1105,7 +1105,8 @@
 
       // Braço: horizontal quando aberto e transversal à rua quando fechado.
       const pivotX = x;
-      const openAngle = side < 0 ? Math.PI : 0;
+      // Os braços abertos apontam para o centro da rua; ao fechar, ambos descem.
+      const openAngle = side < 0 ? 0 : Math.PI;
       const closedAngle = Math.PI / 2;
       const angle = openAngle + (closedAngle - openAngle) * closed;
       ctx.save();
