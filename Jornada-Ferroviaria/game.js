@@ -940,20 +940,121 @@
       ctx.fillRect(x, p.y - (crossing ? 39 : 33), 12, 3);
       ctx.fillRect(x + 2, p.y + (crossing ? 34 : 28), 12, 3);
     }
-    if (crossing) {
-      // Marcas de alerta e postes da passagem de nível, fora do eixo ferroviário.
-      for (const side of [-1, 1]) {
-        const x = p.x + side * 52;
-        ctx.fillStyle = "#e8dfc8";
-        ctx.fillRect(x - 15, p.y - 28, 7, 22);
-        ctx.fillRect(x - 5, p.y - 28, 7, 22);
-        ctx.fillRect(x + 5, p.y - 28, 7, 22);
-        ctx.fillStyle = "#d7b34f";
-        ctx.fillRect(x - 4, p.y - 48, 8, 18);
-        ctx.fillStyle = "#b4483b";
-        ctx.fillRect(x - 3, p.y - 45, 6, 5);
+    if (crossing) drawTownCrossingEquipment(p, s);
+  }
+
+  function drawTownCrossingEquipment(p, crossingS) {
+    // Cancelas duplas com braços listrados, acionamento mecânico e luzes intermitentes.
+    // O fechamento acompanha a aproximação do trem sem alterar trilhos ou circulação.
+    const trainS = START_S + state.trackOffset;
+    const distance = Math.abs(trainS - crossingS);
+    const amount = Math.max(0, Math.min(1, (470 - distance) / 190));
+    const closed = amount * amount * (3 - 2 * amount);
+    const blink = Math.floor((state.lastTime || 0) / 360) % 2 === 0;
+
+    // Linhas de retenção dos veículos, uma de cada lado da ferrovia.
+    ctx.fillStyle = "rgba(244,239,218,.9)";
+    ctx.fillRect(p.x - 105, p.y - 29, 3, 58);
+    ctx.fillRect(p.x + 102, p.y - 29, 3, 58);
+    ctx.fillStyle = "rgba(45,48,43,.28)";
+    ctx.fillRect(p.x - 109, p.y - 29, 2, 58);
+    ctx.fillRect(p.x + 105, p.y - 29, 2, 58);
+
+    for (const side of [-1, 1]) {
+      const x = p.x + side * 57;
+
+      // Base de concreto e pedestal amarelo/preto.
+      ctx.fillStyle = "rgba(20,25,24,.28)";
+      ctx.beginPath();
+      ctx.ellipse(x + 2, p.y + 5, 19, 13, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#777a70";
+      ctx.fillRect(x - 12, p.y - 12, 24, 25);
+      ctx.fillStyle = "#c8c8b8";
+      ctx.fillRect(x - 10, p.y - 10, 20, 19);
+      ctx.fillStyle = "#d5a92f";
+      ctx.fillRect(x - 8, p.y - 8, 16, 15);
+      ctx.fillStyle = "#343b38";
+      ctx.fillRect(x - 8, p.y - 2, 16, 4);
+
+      // Caixa do motor e articulação do braço.
+      ctx.fillStyle = "#303b3b";
+      ctx.fillRect(x - 13, p.y - 21, 26, 14);
+      ctx.fillStyle = "#697775";
+      ctx.fillRect(x - 11, p.y - 20, 22, 4);
+      ctx.fillStyle = "#202a2a";
+      ctx.fillRect(x - 4, p.y - 18, 8, 11);
+      ctx.fillStyle = "#d7d9ca";
+      ctx.fillRect(x - 2, p.y - 16, 4, 7);
+
+      // Poste de advertência com cruz de Santo André.
+      ctx.fillStyle = "rgba(25,29,26,.25)";
+      ctx.fillRect(x + side * 24 - 5, p.y - 63, 12, 69);
+      ctx.fillStyle = "#e8e4d4";
+      ctx.fillRect(x + side * 24 - 3, p.y - 65, 8, 67);
+      ctx.fillStyle = "#b53d32";
+      ctx.fillRect(x + side * 24 - 3, p.y - 54, 8, 7);
+      ctx.fillRect(x + side * 24 - 3, p.y - 39, 8, 7);
+      ctx.fillStyle = "#f0e8d2";
+      ctx.fillRect(x + side * 24 - 13, p.y - 61, 28, 6);
+      ctx.fillRect(x + side * 24 - 13, p.y - 49, 28, 6);
+      ctx.save();
+      ctx.translate(x + side * 24 + 1, p.y - 55);
+      ctx.rotate(-Math.PI / 4);
+      ctx.fillStyle = "#f2eee0";
+      ctx.fillRect(-3, -17, 6, 34);
+      ctx.fillStyle = "#b83e34";
+      ctx.fillRect(-3, -17, 6, 7);
+      ctx.fillRect(-3, 10, 6, 7);
+      ctx.restore();
+
+      // Faróis vermelhos alternados.
+      ctx.fillStyle = "#252c2a";
+      ctx.fillRect(x - 13, p.y - 35, 26, 12);
+      ctx.fillStyle = blink && closed > .02 ? "#ff4b3e" : "#7d2926";
+      ctx.beginPath();
+      ctx.arc(x - 7, p.y - 29, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = !blink && closed > .02 ? "#ff4b3e" : "#7d2926";
+      ctx.beginPath();
+      ctx.arc(x + 7, p.y - 29, 4, 0, Math.PI * 2);
+      ctx.fill();
+      if (closed > .02) {
+        ctx.fillStyle = blink ? "rgba(255,65,48,.16)" : "rgba(255,65,48,.08)";
+        ctx.beginPath();
+        ctx.arc(x - 7, p.y - 29, 11, 0, Math.PI * 2);
+        ctx.fill();
       }
+
+      // Braço: horizontal quando aberto e transversal à rua quando fechado.
+      const pivotX = x;
+      const openAngle = side < 0 ? Math.PI : 0;
+      const closedAngle = side < 0 ? Math.PI / 2 : -Math.PI / 2;
+      const angle = openAngle + (closedAngle - openAngle) * closed;
+      ctx.save();
+      ctx.translate(pivotX, p.y - 13);
+      ctx.rotate(angle);
+      ctx.fillStyle = "rgba(20,24,22,.3)";
+      ctx.fillRect(1, -4, 79, 11);
+      ctx.fillStyle = "#eee9d8";
+      ctx.fillRect(0, -5, 78, 9);
+      ctx.fillStyle = "#c23d32";
+      for (let stripe = 0; stripe < 5; stripe++) {
+        ctx.beginPath();
+        ctx.moveTo(8 + stripe * 14, -5);
+        ctx.lineTo(16 + stripe * 14, -5);
+        ctx.lineTo(10 + stripe * 14, 4);
+        ctx.lineTo(2 + stripe * 14, 4);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.fillStyle = "#f7f0dc";
+      ctx.fillRect(74, -6, 5, 11);
+      ctx.fillStyle = "#303936";
+      ctx.fillRect(-3, -7, 8, 14);
+      ctx.restore();
     }
+  }
   }
 
   function drawTownPark(x, y) {
