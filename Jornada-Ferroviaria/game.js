@@ -593,23 +593,47 @@
   }
 
 
-  function drawTownHouse(x, y, variant = 0) {
-    // Casa de bairro com fundação, paredes laterais e telhado em planos.
+  function drawTownHouse(x, y, variant = 0, garage = false) {
+    // Casa de bairro com quintal ampliado, calçada e garagem opcional.
     const wall = ["#d8c49a", "#c9d1bd", "#d6b2a0", "#d7cfaa"][variant % 4];
     const roof = ["#a64f3d", "#8b6650", "#687782", "#b47a45"][variant % 4];
     const darkRoof = ["#74392f", "#634a3c", "#48565f", "#80542f"][variant % 4];
 
-    // Quintal, sombra e caminho de acesso.
-    ctx.fillStyle = "rgba(28, 43, 31, .24)";
-    ctx.fillRect(x - 43, y - 34, 91, 76);
+    // Lote, jardim e calçada frontal.
+    ctx.fillStyle = "rgba(28,43,31,.24)";
+    ctx.fillRect(x - 57, y - 43, garage ? 139 : 112, 96);
     ctx.fillStyle = "#78965b";
-    ctx.fillRect(x - 47, y - 39, 94, 78);
-    ctx.fillStyle = "#9a987c";
-    ctx.fillRect(x - 8, y + 20, 16, 24);
-    ctx.fillStyle = "#c7b99a";
-    ctx.fillRect(x - 5, y + 20, 10, 22);
+    ctx.fillRect(x - 60, y - 47, garage ? 143 : 116, 94);
+    ctx.fillStyle = "#c9c4b3";
+    ctx.fillRect(x - 61, y + 40, garage ? 145 : 118, 9);
+    ctx.fillStyle = "#e3ddcc";
+    ctx.fillRect(x - 61, y + 40, garage ? 145 : 118, 2);
+    for (let tile = 0; tile < (garage ? 9 : 7); tile++) {
+      ctx.fillStyle = "#aaa797";
+      ctx.fillRect(x - 56 + tile * 16, y + 43, 1, 5);
+    }
 
-    // Base e paredes: a faixa inferior cria a leitura de volume.
+    // Caminho de entrada.
+    ctx.fillStyle = "#b9ad91";
+    ctx.fillRect(x - 8, y + 19, 17, 25);
+    ctx.fillStyle = "#d1c4a5";
+    ctx.fillRect(x - 5, y + 20, 11, 22);
+
+    // Garagem separada, com portão e rampa de acesso.
+    if (garage) {
+      ctx.fillStyle = "#6d695e";
+      ctx.fillRect(x + 39, y - 1, 34, 39);
+      ctx.fillStyle = "#d4cbb6";
+      ctx.fillRect(x + 42, y - 4, 29, 35);
+      ctx.fillStyle = "#8c8c83";
+      ctx.fillRect(x + 44, y + 13, 25, 16);
+      ctx.fillStyle = "#b9b9ad";
+      for (let line = 0; line < 4; line++) ctx.fillRect(x + 45, y + 16 + line * 3, 23, 1);
+      ctx.fillStyle = "#b9ad91";
+      ctx.fillRect(x + 49, y + 30, 15, 14);
+    }
+
+    // Base e paredes com sombras laterais.
     ctx.fillStyle = "#786e5c";
     ctx.fillRect(x - 34, y - 25, 69, 55);
     ctx.fillStyle = wall;
@@ -619,7 +643,7 @@
     ctx.fillStyle = "rgba(65,55,45,.22)";
     ctx.fillRect(x + 27, y - 26, 5, 47);
 
-    // Telhado com duas águas e beiral, em desenho superior estilizado.
+    // Telhado em planos, com beiral e cumeeira.
     ctx.fillStyle = "rgba(35,35,31,.25)";
     ctx.fillRect(x - 38, y - 35, 77, 47);
     ctx.fillStyle = darkRoof;
@@ -633,7 +657,7 @@
     ctx.fillStyle = "rgba(255,255,255,.12)";
     ctx.fillRect(x - 29, y - 27, 57, 2);
 
-    // Chaminé, janelas e porta voltadas para a rua.
+    // Chaminé, janelas e porta.
     ctx.fillStyle = "#665b4e";
     ctx.fillRect(x + 19, y - 31, 9, 9);
     ctx.fillStyle = "#b8d6d1";
@@ -647,19 +671,20 @@
     ctx.fillStyle = "#d7b65f";
     ctx.fillRect(x + 3, y + 11, 2, 2);
 
-    // Cerca baixa e arbustos no quintal.
+    // Cerca, arbustos e canteiro.
     ctx.fillStyle = "#e0d0ad";
-    for (let fx = -43; fx <= 37; fx += 16) {
-      ctx.fillRect(x + fx, y + 36, 3, 7);
-      ctx.fillRect(x + fx, y + 35, 3, 2);
+    for (let fx = -54; fx <= (garage ? 69 : 50); fx += 16) {
+      if (garage && fx > 34 && fx < 76) continue;
+      ctx.fillRect(x + fx, y + 35, 3, 7);
+      ctx.fillRect(x + fx, y + 34, 3, 2);
     }
-    ctx.fillRect(x - 45, y + 36, 86, 2);
+    ctx.fillRect(x - 56, y + 35, garage ? 91 : 108, 2);
     ctx.fillStyle = "#3f7548";
-    ctx.fillRect(x + 35, y - 26, 14, 13);
+    ctx.fillRect(x - 51, y - 27, 14, 13);
     ctx.fillStyle = "#78a65d";
-    ctx.fillRect(x + 38, y - 30, 10, 8);
+    ctx.fillRect(x - 48, y - 31, 10, 8);
     ctx.fillStyle = "#477d4d";
-    ctx.fillRect(x - 43, y - 29, 10, 10);
+    ctx.fillRect(x + (garage ? 76 : 43), y - 27, 11, 12);
   }
 
   function drawTownShop(x, y, variant = 0) {
@@ -786,34 +811,113 @@
     }
   }
 
+  function drawTownPark(x, y) {
+    // Praça de bairro com caminhos, jardim central, bancos e árvores.
+    ctx.fillStyle = "rgba(24,35,28,.25)";
+    ctx.fillRect(x - 76, y - 72, 154, 150);
+    ctx.fillStyle = "#c9c5ad";
+    ctx.fillRect(x - 80, y - 78, 154, 150);
+    ctx.fillStyle = "#6f9658";
+    ctx.fillRect(x - 73, y - 71, 140, 136);
+    // Caminhos em cruz e canteiro central.
+    ctx.fillStyle = "#d5c8a8";
+    ctx.fillRect(x - 8, y - 67, 17, 127);
+    ctx.fillRect(x - 68, y - 8, 130, 17);
+    ctx.fillStyle = "#e5d9bd";
+    ctx.fillRect(x - 4, y - 65, 3, 123);
+    ctx.fillRect(x - 65, y - 4, 124, 3);
+    // Jardim central com fonte.
+    ctx.fillStyle = "#47794b";
+    ctx.fillRect(x - 28, y - 28, 57, 57);
+    ctx.fillStyle = "#8eb36a";
+    ctx.fillRect(x - 23, y - 23, 47, 47);
+    ctx.fillStyle = "#6b9da0";
+    ctx.fillRect(x - 11, y - 11, 23, 23);
+    ctx.fillStyle = "#b9e0d8";
+    ctx.fillRect(x - 6, y - 6, 12, 12);
+    ctx.fillStyle = "#e6e1c8";
+    ctx.fillRect(x - 2, y - 15, 4, 5);
+    // Bancos e árvores nos quatro cantos.
+    drawParkBench(x - 43, y - 42);
+    drawParkBench(x + 43, y + 43);
+    drawTownTree(x - 48, y + 43, 1);
+    drawTownTree(x + 47, y - 43, 0);
+    // Lixeira e postes da praça.
+    ctx.fillStyle = "#4b6660";
+    ctx.fillRect(x + 48, y + 8, 8, 11);
+    ctx.fillStyle = "#d7d2bd";
+    ctx.fillRect(x + 47, y + 6, 10, 3);
+    drawTownLamp(x - 51, y - 5);
+    drawTownLamp(x + 51, y - 5);
+  }
+
   function drawTownRegion(cameraY) {
-    // Bairro interiorano: lotes, casas, comércio, ruas e mobiliário urbano.
+    // Bairro mais povoado: duas fileiras de lotes, comércio, praça e ruas.
     const buildings = [
-      {s:5740,side:-1,d:160,v:0},{s:5825,side:1,d:175,v:1},
-      {s:5940,side:-1,d:260,v:2},{s:6035,side:1,d:265,v:3},
+      // Primeira fileira: casas e lojas próximas às ruas locais.
+      {s:5740,side:-1,d:160,v:0,garage:true},{s:5825,side:1,d:175,v:1,garage:true},
+      {s:5940,side:-1,d:260,v:2,garage:true},{s:6035,side:1,d:265,v:3,garage:true},
       {s:6160,side:-1,d:165,shop:true,v:0},{s:6285,side:1,d:170,shop:true,v:1},
-      {s:6410,side:-1,d:270,v:1},{s:6515,side:1,d:260,v:2},
-      {s:6650,side:-1,d:170,v:3},{s:6750,side:1,d:175,v:0},
-      {s:6900,side:-1,d:260,v:2},{s:7010,side:1,d:265,v:1},
-      {s:7140,side:-1,d:165,v:1},{s:7220,side:1,d:175,v:3}
+      {s:6410,side:-1,d:270,v:1,garage:true},{s:6515,side:1,d:260,v:2,garage:true},
+      {s:6650,side:-1,d:170,v:3,garage:true},{s:6750,side:1,d:175,v:0,garage:true},
+      {s:6900,side:-1,d:260,v:2,garage:true},{s:7010,side:1,d:265,v:1,garage:true},
+      {s:7140,side:-1,d:165,v:1,garage:true},{s:7220,side:1,d:175,v:3,garage:true},
+      // Casas adicionais para preencher o bairro.
+      {s:5850,side:-1,d:175,v:2,garage:true},{s:5915,side:1,d:180,v:3,garage:true},
+      {s:6090,side:-1,d:180,v:1,garage:true},{s:6135,side:1,d:185,v:0,garage:true},
+      {s:6350,side:-1,d:185,v:0,garage:true},{s:6385,side:1,d:185,v:2,garage:true},
+      {s:6580,side:-1,d:180,v:2,garage:true},{s:6615,side:1,d:185,v:3,garage:true},
+      {s:6820,side:-1,d:185,v:0,garage:true},{s:6860,side:1,d:185,v:1,garage:true},
+      {s:7060,side:-1,d:180,v:3,garage:true},{s:7100,side:1,d:185,v:2,garage:true},
+      {s:7270,side:-1,d:185,v:1,garage:true},{s:7310,side:1,d:185,v:0,garage:true},
+      // Segunda fileira de casas, dando profundidade ao bairro.
+      {s:5790,side:-1,d:315,v:3},{s:5895,side:1,d:320,v:0},
+      {s:6060,side:-1,d:320,v:2},{s:6200,side:1,d:320,v:1},
+      {s:6440,side:-1,d:325,v:3},{s:6560,side:1,d:325,v:0},
+      {s:6780,side:-1,d:320,v:1},{s:6970,side:1,d:325,v:2},
+      {s:7180,side:-1,d:320,v:0},{s:7290,side:1,d:320,v:3}
     ];
+
+    // A praça ocupa um lote próprio entre as quadras centrais.
+    const parkPoint = worldToScreen(trackPoint(6720), cameraY);
+    const parkX = parkPoint.x - 315;
+    if (parkPoint.y > -180 && parkPoint.y < H + 180 && parkX > 90 && parkX < W - 90) {
+      drawTownPark(parkX, parkPoint.y);
+    }
+
     for (let i = 0; i < buildings.length; i++) {
       const b = buildings[i];
       const p = worldToScreen(trackPoint(b.s), cameraY);
-      if (p.y < -150 || p.y > H + 150) continue;
+      if (p.y < -180 || p.y > H + 180) continue;
       const x = p.x + b.side * b.d;
-      if (x < 65 || x > W - 65) continue;
-      // Pátios e caminhos ficam atrás das construções.
+      if (x < 75 || x > W - 75) continue;
       if (b.shop) drawTownShop(x, p.y, b.v);
-      else drawTownHouse(x, p.y, b.v);
+      else drawTownHouse(x, p.y, b.v, !!b.garage);
     }
 
-    // Ruas do bairro e passagem de nível existente.
+    // Ruas do bairro e passagem de nível original.
     drawTownRoad(cameraY, 5920, false);
     drawTownRoad(cameraY, 6300, true);
     drawTownRoad(cameraY, 6680, false);
 
-    // Árvores, postes e veículos estacionados em posições fixas do mapa.
+    // Pequenos trechos de calçada conectam as entradas dos lotes às ruas.
+    const sidewalks = [
+      {s:5800,side:-1,d:110},{s:5900,side:1,d:115},{s:6070,side:-1,d:115},
+      {s:6180,side:1,d:115},{s:6420,side:-1,d:115},{s:6540,side:1,d:115},
+      {s:6760,side:-1,d:115},{s:6880,side:1,d:115},{s:7080,side:-1,d:115},
+      {s:7200,side:1,d:115}
+    ];
+    for (const item of sidewalks) {
+      const p = worldToScreen(trackPoint(item.s), cameraY);
+      const x = p.x + item.side * item.d;
+      if (p.y < -40 || p.y > H + 40 || x < 10 || x > W - 110) continue;
+      ctx.fillStyle = "#c9c4b3";
+      ctx.fillRect(x - 24, p.y - 5, 48, 10);
+      ctx.fillStyle = "#e3ddcc";
+      ctx.fillRect(x - 24, p.y - 5, 48, 2);
+    }
+
+    // Árvores, postes e veículos estacionados pelo bairro.
     const props = [
       {s:5780,side:-1,d:72,type:"tree"},{s:5880,side:1,d:82,type:"tree"},
       {s:6000,side:-1,d:92,type:"lamp"},{s:6080,side:1,d:88,type:"tree"},
@@ -821,12 +925,15 @@
       {s:6400,side:-1,d:92,type:"tree"},{s:6550,side:1,d:92,type:"car"},
       {s:6630,side:-1,d:86,type:"lamp"},{s:6780,side:1,d:90,type:"tree"},
       {s:6910,side:-1,d:92,type:"car"},{s:7060,side:1,d:90,type:"lamp"},
-      {s:7160,side:-1,d:82,type:"tree"},{s:7240,side:1,d:86,type:"tree"}
+      {s:7160,side:-1,d:82,type:"tree"},{s:7240,side:1,d:86,type:"tree"},
+      {s:5960,side:1,d:335,type:"tree"},{s:6120,side:-1,d:345,type:"tree"},
+      {s:6460,side:1,d:345,type:"lamp"},{s:6600,side:-1,d:345,type:"tree"},
+      {s:7000,side:-1,d:345,type:"lamp"},{s:7150,side:1,d:345,type:"tree"}
     ];
     for (let i = 0; i < props.length; i++) {
       const item = props[i];
       const p = worldToScreen(trackPoint(item.s), cameraY);
-      if (p.y < -80 || p.y > H + 80) continue;
+      if (p.y < -100 || p.y > H + 100) continue;
       const x = p.x + item.side * item.d;
       if (x < 18 || x > W - 18) continue;
       if (item.type === "tree") drawTownTree(x,p.y,i);
