@@ -1408,8 +1408,10 @@
     // Rua vertical de paralelepípedos ligando o bosque ao bairro urbano.
     const anchor = worldToScreen(trackPoint(7775), cameraY);
     const x = anchor.x - 350;
-    const top = 690 - 7380 - cameraY + H * .56;
-    const bottom = 690 - 8170 - cameraY + H * .56;
+    const edgeA = 690 - 7380 - cameraY + H * .56;
+    const edgeB = 690 - 8170 - cameraY + H * .56;
+    const top = Math.min(edgeA, edgeB);
+    const bottom = Math.max(edgeA, edgeB);
     const roadWidth = 58;
 
     // Sombra, calçadas, meio-fios e leito da rua.
@@ -1423,8 +1425,8 @@
     ctx.fillRect(x - roadWidth / 2, top, roadWidth, bottom - top);
 
     // Pedras em fiadas alternadas, mantendo o desenho da rua vertical.
-    const firstRow = Math.floor((cameraY - H * .56 + 7380) / 9);
-    const lastRow = Math.ceil((cameraY - H * .56 + 8170) / 9);
+    const firstRow = Math.floor(7380 / 9);
+    const lastRow = Math.ceil(8170 / 9);
     for (let row = firstRow; row <= lastRow; row++) {
       const worldS = row * 9;
       const sy = 690 - worldS - cameraY + H * .56;
