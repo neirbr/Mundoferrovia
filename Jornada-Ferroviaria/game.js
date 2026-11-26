@@ -923,59 +923,71 @@
     ctx.fillRect(x+8,y+7,2,3);
   }
   function drawTownRoad(cameraY, s, crossing = false) {
-    const p = worldToScreen(trackPoint(s), cameraY);
+    const raw = trackPoint(s);
+    const p = worldToScreen(raw, cameraY);
+    const angle = Math.atan2(raw.ty, raw.tx);
     const half = crossing ? 31 : 24;
-    // Rua de paralelepípedos com base, meio-fio e pedras assentadas individualmente.
+    // A rua é perpendicular ao eixo ferroviário e gira junto com a curva.
+    // Coordenadas locais: X acompanha o trilho; Y atravessa a ferrovia.
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(angle);
+    const span = W * 1.15;
     ctx.fillStyle = "rgba(25,29,27,.22)";
-    ctx.fillRect(0, p.y - half - 5, W, (half + 5) * 2);
+    ctx.fillRect(-half-5, -span, (half+5)*2, span*2);
     ctx.fillStyle = "#555951";
-    ctx.fillRect(0, p.y - half - 2, W, half * 2 + 4);
+    ctx.fillRect(-half-2, -span, half*2+4, span*2);
     ctx.fillStyle = "#827f73";
-    ctx.fillRect(0, p.y - half, W, half * 2);
-    for (let row = -half + 2, r = 0; row < half - 1; row += 8, r++) {
-      const offset = r % 2 ? 7 : 0;
-      for (let x = -12 + offset; x < W + 12; x += 16) {
-        const tone = (Math.floor((x + 12) / 16) * 7 + r * 11 + Math.round(s)) % 5;
-        const colors = ["#999487","#8d897d","#a29d8e","#858276","#969183"];
-        ctx.fillStyle = "rgba(39,42,38,.42)";
-        ctx.fillRect(x + 1, p.y + row + 1, 14, 6);
-        ctx.fillStyle = colors[(tone + 5) % 5];
-        ctx.fillRect(x, p.y + row, 13, 5.5);
-        ctx.fillStyle = "rgba(232,225,207,.22)";
-        ctx.fillRect(x + 1, p.y + row, 10, 1);
+    ctx.fillRect(-half, -span, half*2, span*2);
+
+    // Paralelepípedos assentados em fiadas transversais à rua.
+    for (let row=-half+2, r=0; row<half-1; row+=8,r++) {
+      const offset = r%2 ? 7 : 0;
+      for(let y=-span+offset;y<span;y+=16) {
+        const tone=(Math.floor((y+span)/16)*7+r*11+Math.round(s))%5;
+        const colors=["#999487","#8d897d","#a29d8e","#858276","#969183"];
+        ctx.fillStyle="rgba(39,42,38,.42)";
+        ctx.fillRect(row+1,y+1,6,14);
+        ctx.fillStyle=colors[(tone+5)%5];
+        ctx.fillRect(row,y,5.5,13);
+        ctx.fillStyle="rgba(232,225,207,.22)";
+        ctx.fillRect(row,y+1,1,10);
       }
     }
-    // Meio-fio e calçadas contínuas dos dois lados da rua.
-    for (const side of [-1, 1]) {
-      const curbY = p.y + side * (half + 2);
-      ctx.fillStyle = "#565b54";
-      ctx.fillRect(0, curbY - 2, W, 5);
-      ctx.fillStyle = "#c2bdae";
-      ctx.fillRect(0, curbY + side * 3, W, 12);
-      ctx.fillStyle = "#e0dacb";
-      ctx.fillRect(0, curbY + side * 3, W, 2);
-      for (let x = 0; x < W; x += 24) {
-        ctx.fillStyle = "rgba(105,103,91,.35)";
-        ctx.fillRect(x, curbY + side * 7, 1, 8);
+
+    // Meio-fio, calçadas e juntas acompanham a mesma rotação da rua.
+    for(const side of [-1,1]) {
+      const curbX=side*(half+2);
+      ctx.fillStyle="#565b54";
+      ctx.fillRect(curbX-2,-span,5,span*2);
+      ctx.fillStyle="#c2bdae";
+      ctx.fillRect(curbX+side*3,-span,12,span*2);
+      ctx.fillStyle="#e0dacb";
+      ctx.fillRect(curbX+side*3,-span,2,span*2);
+      for(let y=-span;y<span;y+=24) {
+        ctx.fillStyle="rgba(105,103,91,.35)";
+        ctx.fillRect(curbX+side*7,y,8,1);
       }
-      ctx.fillStyle = "#8c8a7d";
-      ctx.fillRect(0, curbY - 1, W, 1);
+      ctx.fillStyle="#8c8a7d";
+      ctx.fillRect(curbX-1,-span,1,span*2);
     }
-    // Sarjetas e grelhas de drenagem.
-    ctx.fillStyle = "#4c514b";
-    for (let x = 55; x < W; x += 170) {
-      const gy = p.y - half - 5;
-      ctx.fillRect(x, gy, 13, 4);
-      ctx.fillRect(x + 2, gy + 1, 9, 1);
-      ctx.fillRect(x + 2, p.y + half + 2, 13, 4);
+
+    // Sarjetas e grelhas distribuídas ao longo das duas margens.
+    ctx.fillStyle="#4c514b";
+    for(let y=-span+55;y<span;y+=170) {
+      ctx.fillRect(-half-5,y,4,13);
+      ctx.fillRect(-half-4,y+2,2,9);
+      ctx.fillRect(half+2,y,4,13);
     }
-    if (crossing) {
-      // Faixas de retenção antes da passagem, sem interferir na geometria da via.
-      ctx.fillStyle = "rgba(246,239,218,.86)";
-      ctx.fillRect(0, p.y - half - 1, W, 2);
-      ctx.fillRect(0, p.y + half - 1, W, 2);
-      drawTownCrossingEquipment(p, s);
+
+    if(crossing) {
+      // Linhas de retenção paralelas à passagem e equipamentos orientados com ela.
+      ctx.fillStyle="rgba(246,239,218,.86)";
+      ctx.fillRect(-half-1,-span,2,span*2);
+      ctx.fillRect(half-1,-span,2,span*2);
+      drawTownCrossingEquipment({x:0,y:0},s);
     }
+    ctx.restore();
   }
 
   function drawTownCrossingDeck(cameraY, s) {
