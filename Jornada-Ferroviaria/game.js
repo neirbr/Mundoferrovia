@@ -1476,7 +1476,7 @@
   }
 
   function drawCherryGroveRegion(cameraY) {
-    // Bosque muito mais fechado de cerejeiras, com rua vertical e pétalas caídas.
+    // Bosque de cerejeiras: fileiras regulares, sem calçadas e com pétalas ao vento.
     const cameraWorld = cameraY - H * .56;
     const first = Math.floor((cameraWorld - 180) / 38);
     const last = Math.ceil((cameraWorld + H + 180) / 38);
@@ -1485,7 +1485,7 @@
     drawCherryGroveRoad(cameraY);
 
     for (let row = first; row <= last; row++) {
-      const yWorld = row * 48 + 24;
+      const yWorld = row * 38 + 19;
       const s = 690 - yWorld;
       if (s < 7380 || s > 8170) continue;
       const p = trackPoint(s);
@@ -1526,7 +1526,7 @@
     }
 
     drawCherryFloatingPetals(cameraY);
-    // Bancos e calçadas removidos; permanecem o bosque, a rua e as pétalas.
+    // Bancos e calçadas removidos; permanecem apenas o bosque, a rua e as pétalas.
   }
 
   function drawFinalStationBuilding(x, y, variant = 0) {
