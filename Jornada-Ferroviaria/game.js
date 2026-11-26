@@ -594,142 +594,256 @@
 
 
   function drawTownHouse(x, y, variant = 0, garage = false) {
-    // Casa de bairro com quintal ampliado, calçada e garagem opcional.
-    const wall = ["#d8c49a", "#c9d1bd", "#d6b2a0", "#d7cfaa"][variant % 4];
-    const roof = ["#a64f3d", "#8b6650", "#687782", "#b47a45"][variant % 4];
-    const darkRoof = ["#74392f", "#634a3c", "#48565f", "#80542f"][variant % 4];
+    // Residência vista de cima com telhado de telhas, beirais, varanda e garagem.
+    const walls = ["#d9c49e","#c7d0bd","#d8b5a2","#d8d0ad"];
+    const roofs = ["#a95543","#876653","#667985","#b57a49"];
+    const wall = walls[variant % walls.length];
+    const roof = roofs[variant % roofs.length];
+    const shadow = "rgba(25,31,27,.28)";
 
-    // Lote, jardim e calçada frontal.
-    ctx.fillStyle = "rgba(28,43,31,.24)";
-    ctx.fillRect(x - 57, y - 43, garage ? 139 : 112, 96);
-    ctx.fillStyle = "#78965b";
-    ctx.fillRect(x - 60, y - 47, garage ? 143 : 116, 94);
-    ctx.fillStyle = "#c9c4b3";
-    ctx.fillRect(x - 61, y + 40, garage ? 145 : 118, 9);
-    ctx.fillStyle = "#e3ddcc";
-    ctx.fillRect(x - 61, y + 40, garage ? 145 : 118, 2);
-    for (let tile = 0; tile < (garage ? 9 : 7); tile++) {
-      ctx.fillStyle = "#aaa797";
-      ctx.fillRect(x - 56 + tile * 16, y + 43, 1, 5);
+    // Lote gramado e sombra geral da construção.
+    ctx.fillStyle = shadow;
+    ctx.fillRect(x-61,y-45,garage?145:116,99);
+    ctx.fillStyle = variant%2 ? "#78945d" : "#719052";
+    ctx.fillRect(x-60,y-48,garage?143:116,94);
+    // Pequenos canteiros laterais e grama em manchas.
+    ctx.fillStyle = "#8eaa69";
+    ctx.fillRect(x-54,y-42,18,8);
+    ctx.fillRect(x+18,y+25,24,8);
+    ctx.fillStyle = "#66864d";
+    ctx.fillRect(x-50,y-39,9,3);
+    ctx.fillRect(x+27,y+29,11,3);
+
+    // Calçada frontal segmentada e guia de concreto.
+    ctx.fillStyle = "#aaa99d";
+    ctx.fillRect(x-62,y+39,garage?147:119,12);
+    ctx.fillStyle = "#d8d4c6";
+    ctx.fillRect(x-62,y+39,garage?147:119,3);
+    ctx.fillStyle = "#b9b6a8";
+    for(let t=0;t<(garage?9:7);t++) ctx.fillRect(x-56+t*16,y+44,1,6);
+    // Rampa de acesso ao portão.
+    if(garage){
+      ctx.fillStyle = "#b6ae99";
+      ctx.fillRect(x+43,y+28,27,17);
+      ctx.fillStyle = "#d0c8b4";
+      ctx.fillRect(x+46,y+30,21,13);
+      ctx.fillStyle = "rgba(80,75,64,.18)";
+      ctx.fillRect(x+48,y+32,17,2);
     }
 
-    // Caminho de entrada.
-    ctx.fillStyle = "#b9ad91";
-    ctx.fillRect(x - 8, y + 19, 17, 25);
-    ctx.fillStyle = "#d1c4a5";
-    ctx.fillRect(x - 5, y + 20, 11, 22);
-
-    // Garagem separada, com portão e rampa de acesso.
-    if (garage) {
-      ctx.fillStyle = "#6d695e";
-      ctx.fillRect(x + 39, y - 1, 34, 39);
-      ctx.fillStyle = "#d4cbb6";
-      ctx.fillRect(x + 42, y - 4, 29, 35);
-      ctx.fillStyle = "#8c8c83";
-      ctx.fillRect(x + 44, y + 13, 25, 16);
-      ctx.fillStyle = "#b9b9ad";
-      for (let line = 0; line < 4; line++) ctx.fillRect(x + 45, y + 16 + line * 3, 23, 1);
-      ctx.fillStyle = "#b9ad91";
-      ctx.fillRect(x + 49, y + 30, 15, 14);
+    // Garagem integrada à casa, com cobertura e portão basculante detalhado.
+    if(garage){
+      ctx.fillStyle = "#655f54";
+      ctx.fillRect(x+36,y-8,39,44);
+      ctx.fillStyle = "#c9c0aa";
+      ctx.fillRect(x+39,y-10,34,39);
+      ctx.fillStyle = "#817f76";
+      ctx.fillRect(x+42,y+9,28,19);
+      ctx.fillStyle = "#a9a79d";
+      for(let k=0;k<5;k++) ctx.fillRect(x+43,y+11+k*3,26,1);
+      ctx.fillStyle = "#e2d8c2";
+      ctx.fillRect(x+40,y-9,32,3);
+      ctx.fillStyle = "#4b4b45";
+      ctx.fillRect(x+53,y+5,5,2);
+      // Arandela sobre a garagem.
+      ctx.fillStyle = "#e8d79a";
+      ctx.fillRect(x+52,y-14,7,3);
     }
 
-    // Base e paredes com sombras laterais.
-    ctx.fillStyle = "#786e5c";
-    ctx.fillRect(x - 34, y - 25, 69, 55);
+    // Fundação e paredes com face iluminada e face em sombra.
+    ctx.fillStyle = "#756b5a";
+    ctx.fillRect(x-36,y-27,74,57);
     ctx.fillStyle = wall;
-    ctx.fillRect(x - 32, y - 30, 64, 53);
-    ctx.fillStyle = "rgba(255,255,255,.22)";
-    ctx.fillRect(x - 30, y - 28, 4, 47);
-    ctx.fillStyle = "rgba(65,55,45,.22)";
-    ctx.fillRect(x + 27, y - 26, 5, 47);
+    ctx.fillRect(x-33,y-31,68,53);
+    ctx.fillStyle = "rgba(255,255,255,.24)";
+    ctx.fillRect(x-31,y-29,5,47);
+    ctx.fillStyle = "rgba(63,52,43,.24)";
+    ctx.fillRect(x+29,y-27,5,46);
+    // Rodapé de pedra e pequenas marcas de alvenaria.
+    ctx.fillStyle = "#9c927e";
+    ctx.fillRect(x-32,y+16,64,5);
+    ctx.fillStyle = "rgba(255,255,255,.17)";
+    for(let k=0;k<4;k++) ctx.fillRect(x-27+k*16,y+18,8,1);
 
-    // Telhado em planos, com beiral e cumeeira.
-    ctx.fillStyle = "rgba(35,35,31,.25)";
-    ctx.fillRect(x - 38, y - 35, 77, 47);
-    ctx.fillStyle = darkRoof;
-    ctx.fillRect(x - 37, y - 37, 74, 45);
+    // Telhado com duas águas, beirais espessos e textura de telhas.
+    ctx.fillStyle = shadow;
+    ctx.fillRect(x-41,y-41,83,54);
+    ctx.fillStyle = "#55483e";
+    ctx.fillRect(x-40,y-43,80,50);
     ctx.fillStyle = roof;
-    ctx.fillRect(x - 34, y - 36, 68, 35);
-    ctx.fillStyle = "rgba(255,220,180,.2)";
-    ctx.fillRect(x - 31, y - 34, 61, 4);
-    ctx.fillStyle = "rgba(25,25,25,.2)";
-    ctx.fillRect(x - 3, y - 35, 5, 42);
-    ctx.fillStyle = "rgba(255,255,255,.12)";
-    ctx.fillRect(x - 29, y - 27, 57, 2);
+    ctx.fillRect(x-37,y-42,74,42);
+    ctx.fillStyle = "rgba(255,220,183,.24)";
+    ctx.fillRect(x-34,y-40,68,4);
+    ctx.fillStyle = "rgba(40,32,29,.23)";
+    ctx.fillRect(x-37,y-3,74,4);
+    // Fiadas de telhas, com alternância para não parecer uma superfície lisa.
+    for(let row=0;row<5;row++){
+      const yy=y-34+row*7;
+      ctx.fillStyle = row%2 ? "rgba(45,30,25,.18)" : "rgba(255,205,165,.13)";
+      ctx.fillRect(x-34,yy,68,2);
+      for(let col=0;col<8;col++){
+        const xx=x-32+col*9+(row%2?4:0);
+        if(xx<x+33) ctx.fillRect(xx,yy+2,1,3);
+      }
+    }
+    // Cumeeira e calhas.
+    ctx.fillStyle = "#59483d";
+    ctx.fillRect(x-3,y-42,6,42);
+    ctx.fillStyle = "rgba(255,231,194,.35)";
+    ctx.fillRect(x-2,y-40,2,37);
+    ctx.fillStyle = "#77756c";
+    ctx.fillRect(x-39,y+1,78,2);
 
-    // Chaminé, janelas e porta.
-    ctx.fillStyle = "#665b4e";
-    ctx.fillRect(x + 19, y - 31, 9, 9);
-    ctx.fillStyle = "#b8d6d1";
-    ctx.fillRect(x - 25, y - 17, 10, 9);
-    ctx.fillRect(x + 15, y - 17, 10, 9);
-    ctx.fillStyle = "#e7e0c8";
-    ctx.fillRect(x - 26, y - 18, 12, 2);
-    ctx.fillRect(x + 14, y - 18, 12, 2);
+    // Chaminé, caixa d'água/ventilação e claraboia.
+    ctx.fillStyle = "#51483f";
+    ctx.fillRect(x+18,y-35,11,11);
+    ctx.fillStyle = "#8e8371";
+    ctx.fillRect(x+20,y-34,7,7);
+    ctx.fillStyle = "#6b7773";
+    ctx.fillRect(x-27,y-30,12,8);
+    ctx.fillStyle = "#a9c0bd";
+    ctx.fillRect(x-25,y-29,8,5);
+
+    // Janelas com moldura, vidro refletivo e divisórias.
+    for(const wx of [x-25,x+14]){
+      ctx.fillStyle = "#675d4e";
+      ctx.fillRect(wx-2,y-16,14,13);
+      ctx.fillStyle = "#9fc5c7";
+      ctx.fillRect(wx,y-15,10,10);
+      ctx.fillStyle = "rgba(255,255,255,.48)";
+      ctx.fillRect(wx+1,y-14,3,7);
+      ctx.fillStyle = "#e8dfc8";
+      ctx.fillRect(wx+4,y-15,1,10);
+      ctx.fillRect(wx,y-10,10,1);
+    }
+    // Porta, pequeno alpendre e degrau.
+    ctx.fillStyle = "#8b7659";
+    ctx.fillRect(x-7,y-1,16,25);
     ctx.fillStyle = "#51483b";
-    ctx.fillRect(x - 6, y + 1, 13, 22);
-    ctx.fillStyle = "#d7b65f";
-    ctx.fillRect(x + 3, y + 11, 2, 2);
+    ctx.fillRect(x-5,y+1,12,21);
+    ctx.fillStyle = "#c5a45d";
+    ctx.fillRect(x+4,y+10,2,3);
+    ctx.fillStyle = "#d0c5ad";
+    ctx.fillRect(x-10,y+22,22,5);
+    // Vasos junto à entrada.
+    ctx.fillStyle = "#9b684e";
+    ctx.fillRect(x-15,y+18,5,6);
+    ctx.fillRect(x+14,y+18,5,6);
+    ctx.fillStyle = "#5e8b4f";
+    ctx.fillRect(x-15,y+15,5,4);
+    ctx.fillRect(x+14,y+15,5,4);
 
-    // Cerca, arbustos e canteiro.
-    ctx.fillStyle = "#e0d0ad";
-    for (let fx = -54; fx <= (garage ? 69 : 50); fx += 16) {
-      if (garage && fx > 34 && fx < 76) continue;
-      ctx.fillRect(x + fx, y + 35, 3, 7);
-      ctx.fillRect(x + fx, y + 34, 3, 2);
+    // Muro baixo, pilares e portão de pedestres na frente do lote.
+    ctx.fillStyle = "#d7cfb9";
+    ctx.fillRect(x-58,y+34,garage?92:111,3);
+    for(let post=-57;post<=(garage?31:52);post+=18){
+      ctx.fillStyle = "#eee5d1";
+      ctx.fillRect(x+post,y+31,4,8);
+      ctx.fillStyle = "#b6ad98";
+      ctx.fillRect(x+post,y+31,4,2);
     }
-    ctx.fillRect(x - 56, y + 35, garage ? 91 : 108, 2);
-    ctx.fillStyle = "#3f7548";
-    ctx.fillRect(x - 51, y - 27, 14, 13);
-    ctx.fillStyle = "#78a65d";
-    ctx.fillRect(x - 48, y - 31, 10, 8);
-    ctx.fillStyle = "#477d4d";
-    ctx.fillRect(x + (garage ? 76 : 43), y - 27, 11, 12);
+    // Arbustos e pequenas flores.
+    ctx.fillStyle = "#3e7548";
+    ctx.fillRect(x-53,y-26,13,12);
+    ctx.fillRect(x+ (garage?77:43),y-26,12,13);
+    ctx.fillStyle = "#86ae61";
+    ctx.fillRect(x-50,y-29,8,7);
+    ctx.fillRect(x+(garage?80:46),y-29,7,7);
+    ctx.fillStyle = "#e7c1a0";
+    ctx.fillRect(x-48,y-21,2,2);
+    ctx.fillRect(x+ (garage?82:48),y-21,2,2);
   }
-
   function drawTownShop(x, y, variant = 0) {
-    // Comércio de esquina com marquise, vitrine e letreiro.
-    const awning = variant % 2 ? "#477b85" : "#b45d45";
-    ctx.fillStyle = "rgba(25,38,34,.25)";
-    ctx.fillRect(x - 47, y - 35, 99, 79);
+    // Fachada comercial com cobertura, marquise, vitrines e calçada larga.
+    const awning = variant%2 ? "#477b85" : "#b45d45";
+    const wall = variant%2 ? "#d7d0b8" : "#e0cba7";
+    ctx.fillStyle = "rgba(22,31,27,.3)";
+    ctx.fillRect(x-52,y-42,108,88);
     ctx.fillStyle = "#78945b";
-    ctx.fillRect(x - 49, y - 39, 99, 77);
-    ctx.fillStyle = "#776d5c";
-    ctx.fillRect(x - 39, y - 28, 81, 62);
-    ctx.fillStyle = "#d8c9a7";
-    ctx.fillRect(x - 37, y - 33, 76, 61);
-    ctx.fillStyle = "rgba(255,255,255,.2)";
-    ctx.fillRect(x - 34, y - 29, 4, 52);
-    ctx.fillStyle = "#514c43";
-    ctx.fillRect(x - 42, y - 40, 86, 28);
-    ctx.fillStyle = awning;
-    ctx.fillRect(x - 40, y - 39, 82, 23);
-    for (let i = 0; i < 6; i++) {
-      ctx.fillStyle = i % 2 ? "#f0dfb4" : awning;
-      ctx.fillRect(x - 38 + i * 13, y - 17, 12, 7);
+    ctx.fillRect(x-54,y-45,108,84);
+    // Passeio em frente à loja.
+    ctx.fillStyle = "#bdb9aa";
+    ctx.fillRect(x-55,y+33,110,12);
+    ctx.fillStyle = "#e2ddce";
+    ctx.fillRect(x-55,y+33,110,3);
+    for(let i=0;i<8;i++){
+      ctx.fillStyle = "#a5a293";
+      ctx.fillRect(x-49+i*14,y+39,1,5);
     }
-    // Letreiro e vitrines.
+    // Corpo do prédio e paredes laterais com sombra.
+    ctx.fillStyle = "#756b5c";
+    ctx.fillRect(x-43,y-31,88,67);
+    ctx.fillStyle = wall;
+    ctx.fillRect(x-40,y-35,82,65);
+    ctx.fillStyle = "rgba(255,255,255,.2)";
+    ctx.fillRect(x-38,y-32,5,56);
+    ctx.fillStyle = "rgba(55,47,38,.2)";
+    ctx.fillRect(x+36,y-30,5,55);
+    // Telhado plano com platibanda e equipamento no topo.
+    ctx.fillStyle = "#4d5351";
+    ctx.fillRect(x-45,y-44,91,17);
+    ctx.fillStyle = "#727a75";
+    ctx.fillRect(x-42,y-43,85,11);
+    ctx.fillStyle = "rgba(255,255,255,.25)";
+    ctx.fillRect(x-39,y-41,78,2);
+    ctx.fillStyle = "#9a9b8e";
+    ctx.fillRect(x+22,y-40,12,7);
+    ctx.fillStyle = "#535b59";
+    ctx.fillRect(x+25,y-38,6,3);
+    // Marquise saliente e toldo listrado.
+    ctx.fillStyle = "rgba(25,29,27,.28)";
+    ctx.fillRect(x-44,y-17,89,12);
+    ctx.fillStyle = awning;
+    ctx.fillRect(x-43,y-20,87,10);
+    for(let i=0;i<7;i++){
+      ctx.fillStyle = i%2 ? "#f0dfb4" : awning;
+      ctx.fillRect(x-41+i*12,y-10,11,7);
+    }
+    // Letreiro com moldura e pequenas letras simuladas.
+    ctx.fillStyle = "#51483e";
+    ctx.fillRect(x-26,y-32,53,10);
     ctx.fillStyle = "#f2e5bd";
-    ctx.fillRect(x - 24, y - 34, 48, 7);
+    ctx.fillRect(x-24,y-31,49,7);
     ctx.fillStyle = "#6b5a43";
-    ctx.fillRect(x - 17, y - 32, 34, 2);
-    ctx.fillStyle = "#9fc8c8";
-    ctx.fillRect(x - 29, y - 7, 19, 19);
-    ctx.fillRect(x + 11, y - 7, 19, 19);
-    ctx.fillStyle = "rgba(255,255,255,.5)";
-    ctx.fillRect(x - 27, y - 5, 3, 14);
-    ctx.fillRect(x + 13, y - 5, 3, 14);
-    ctx.fillStyle = "#354b4b";
-    ctx.fillRect(x - 7, y + 4, 15, 24);
-    ctx.fillStyle = "#d7b65f";
-    ctx.fillRect(x + 3, y + 15, 2, 2);
-    // Calçada frontal.
-    ctx.fillStyle = "#c9c1aa";
-    ctx.fillRect(x - 43, y + 31, 88, 6);
-    ctx.fillStyle = "#e1d9c5";
-    ctx.fillRect(x - 43, y + 31, 88, 2);
+    for(let i=0;i<5;i++) ctx.fillRect(x-18+i*8,y-29,4,3);
+    // Vitrines com reflexo, moldura e divisórias.
+    for(const wx of [x-31,x+11]){
+      ctx.fillStyle = "#4d5551";
+      ctx.fillRect(wx-2,y-5,22,23);
+      ctx.fillStyle = "#91b9bb";
+      ctx.fillRect(wx,y-3,18,19);
+      ctx.fillStyle = "rgba(255,255,255,.52)";
+      ctx.fillRect(wx+2,y-2,4,15);
+      ctx.fillStyle = "#d9d4c5";
+      ctx.fillRect(wx+9,y-3,1,19);
+      // Prateleiras e produtos coloridos no interior.
+      ctx.fillStyle = "#d9b36c";
+      ctx.fillRect(wx+2,y+8,4,3);
+      ctx.fillStyle = "#b66b4d";
+      ctx.fillRect(wx+10,y+3,5,4);
+    }
+    // Porta de vidro, puxador e degrau.
+    ctx.fillStyle = "#394b4b";
+    ctx.fillRect(x-7,y+1,14,28);
+    ctx.fillStyle = "#83aeb1";
+    ctx.fillRect(x-5,y+3,10,23);
+    ctx.fillStyle = "rgba(255,255,255,.4)";
+    ctx.fillRect(x-4,y+4,2,17);
+    ctx.fillStyle = "#d6bd7c";
+    ctx.fillRect(x+2,y+14,2,3);
+    ctx.fillStyle = "#aaa493";
+    ctx.fillRect(x-11,y+28,22,4);
+    // Arandelas e vasos na fachada.
+    ctx.fillStyle = "#f3d991";
+    ctx.fillRect(x-36,y-24,4,4);
+    ctx.fillRect(x+34,y-24,4,4);
+    ctx.fillStyle = "#a06c4f";
+    ctx.fillRect(x-39,y+22,7,7);
+    ctx.fillRect(x+32,y+22,7,7);
+    ctx.fillStyle = "#4f824b";
+    ctx.fillRect(x-38,y+18,5,5);
+    ctx.fillRect(x+33,y+18,5,5);
   }
-
   function drawTownTree(x, y, variant = 0) {
     // Copa em camadas e sombra deslocada para dar altura ao paisagismo.
     ctx.fillStyle = "rgba(30,42,29,.25)";
