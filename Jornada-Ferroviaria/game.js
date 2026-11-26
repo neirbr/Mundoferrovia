@@ -15,9 +15,9 @@
   const TRACK_SHIFT_X = 70;
   const TRACK_LENGTH = 10400; // Inclui a cidade, o bosque, a estação final e a rodoviária.
   const START_S = 520; // Posição inicial original da locomotiva junto à plataforma.
-  // MODO TEMPORÁRIO DE TESTE URBANO: altere para false para voltar ao início normal.
+  // MODO TEMPORÁRIO: inicia diretamente na estação final. Desative para voltar ao início normal.
   const TEST_URBAN_MODE = true;
-  const TEST_URBAN_START = 5200;
+  const TEST_URBAN_START = 7920;
   const TRAIN_SPACING = 48;
   const PASSENGER_WAGON_COUNT = 8;
   const MAX_SPEED = 82;
