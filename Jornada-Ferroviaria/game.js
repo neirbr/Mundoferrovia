@@ -1201,7 +1201,7 @@
   }
   function drawTownLongSidewalk(cameraY, side) {
     // Calçada longitudinal acompanhando a ferrovia, em frente às casas do bairro.
-    const start = 5730, end = 7330, step = 18, halfWidth = 7;
+    const start = 5730, end = 7200, step = 18, halfWidth = 7;
     const inner = [], outer = [];
     for (let s = start; s <= end; s += step) {
       const p = trackPoint(s);
@@ -1309,8 +1309,7 @@
     const sidewalks = [
       {s:5800,side:-1,d:110},{s:5900,side:1,d:115},{s:6070,side:-1,d:115},
       {s:6180,side:1,d:115},{s:6420,side:-1,d:115},{s:6540,side:1,d:115},
-      {s:6760,side:-1,d:115},{s:6880,side:1,d:115},{s:7080,side:-1,d:115},
-      {s:7200,side:1,d:115}
+      {s:6760,side:-1,d:115},{s:6880,side:1,d:115},{s:7080,side:-1,d:115}
     ];
     for (const item of sidewalks) {
       const p = worldToScreen(trackPoint(item.s), cameraY);
