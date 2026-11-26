@@ -194,52 +194,106 @@
     ctx.restore();
   }
   function drawFarmPlot(x, y, variant) {
-    // Talhão visto de cima, com linhas de cultivo e pequenas variações de cor.
-    ctx.fillStyle = "#9b8954";
-    ctx.fillRect(x - 61, y - 76, 122, 152);
-    ctx.fillStyle = "#6f8747";
-    ctx.fillRect(x - 57, y - 72, 114, 144);
+    // Talhão rural em pixel art: terra aparente, sulcos, cultivos variados e cerca de madeira.
+    ctx.fillStyle = "rgba(28, 37, 24, .28)";
+    ctx.beginPath(); ctx.roundRect(x - 65, y - 78, 130, 160, 5); ctx.fill();
+    ctx.fillStyle = "#8b7950";
+    ctx.beginPath(); ctx.roundRect(x - 62, y - 78, 124, 156, 4); ctx.fill();
+    ctx.fillStyle = variant % 2 ? "#6f8747" : "#758b49";
+    ctx.beginPath(); ctx.roundRect(x - 57, y - 72, 114, 144, 3); ctx.fill();
+
+    // Faixas de solo e fileiras de cultivo com pequenas diferenças de altura e cor.
     for (let row = 0; row < 9; row++) {
-      const yy = y - 62 + row * 15;
-      ctx.fillStyle = "#526f3d";
-      ctx.fillRect(x - 51, yy, 102, 3);
-      ctx.fillStyle = variant % 2 ? "#b1a45d" : "#a5a052";
-      for (let col = 0; col < 13; col++) ctx.fillRect(x - 48 + col * 8, yy - 4, 3, 4);
+      const yy = y - 63 + row * 15.5;
+      ctx.fillStyle = "rgba(52, 65, 37, .48)";
+      ctx.fillRect(x - 51, yy + 3, 102, 4);
+      ctx.fillStyle = row % 2 ? "#9b9a50" : (variant % 2 ? "#b4a35d" : "#a6a052");
+      for (let col = 0; col < 13; col++) {
+        const cx = x - 48 + col * 8;
+        const offset = ((row + col + variant) % 3) - 1;
+        ctx.fillRect(cx, yy - 3 + offset, 3, 5);
+        if ((row + col) % 4 === 0) {
+          ctx.fillStyle = "rgba(207, 194, 111, .72)";
+          ctx.fillRect(cx + 1, yy - 5 + offset, 1, 2);
+          ctx.fillStyle = row % 2 ? "#9b9a50" : (variant % 2 ? "#b4a35d" : "#a6a052");
+        }
+      }
+      ctx.strokeStyle = "rgba(221, 205, 151, .32)";
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x - 51, yy + 8); ctx.lineTo(x + 51, yy + 8); ctx.stroke();
     }
-    ctx.fillStyle = "#d0bd8b";
+
+    // Pequena faixa de terra batida na entrada do talhão.
+    ctx.fillStyle = "#b39b6b";
+    ctx.fillRect(x - 8, y + 69, 16, 8);
+    ctx.fillStyle = "rgba(238, 216, 164, .45)";
+    ctx.fillRect(x - 6, y + 70, 12, 2);
+
+    // Cerca rústica, com mourões e travessas visíveis em vista superior.
+    ctx.strokeStyle = "#604a31"; ctx.lineWidth = 3;
+    ctx.strokeRect(x - 62, y - 78, 124, 156);
+    ctx.strokeStyle = "#c0a276"; ctx.lineWidth = 1.4;
     for (let px = -54; px <= 54; px += 18) {
-      ctx.fillRect(x + px, y - 80, 3, 5);
-      ctx.fillRect(x + px, y + 75, 3, 5);
+      ctx.beginPath(); ctx.moveTo(x + px, y - 78); ctx.lineTo(x + px, y - 72); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x + px, y + 72); ctx.lineTo(x + px, y + 78); ctx.stroke();
     }
-    ctx.fillRect(x - 61, y - 78, 122, 2);
-    ctx.fillRect(x - 61, y + 76, 122, 2);
+    for (let py = -62; py <= 62; py += 18) {
+      ctx.beginPath(); ctx.moveTo(x - 62, y + py); ctx.lineTo(x - 56, y + py); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x + 56, y + py); ctx.lineTo(x + 62, y + py); ctx.stroke();
+    }
+    ctx.fillStyle = "#d0b58a";
+    for (const p of [[-62,-78],[62,-78],[-62,78],[62,78]]) {
+      ctx.fillRect(x + p[0] - 2, y + p[1] - 2, 4, 4);
+      ctx.fillStyle = "#6b5236";
+      ctx.fillRect(x + p[0] - 1, y + p[1] - 1, 2, 2);
+      ctx.fillStyle = "#d0b58a";
+    }
   }
 
   function drawFarmBuilding(x, y) {
-    ctx.fillStyle = "#514637";
-    ctx.fillRect(x - 29, y - 20, 62, 47);
-    ctx.fillStyle = "#a64f3d";
-    ctx.fillRect(x - 27, y - 25, 56, 43);
-    ctx.fillStyle = "#c97851";
-    ctx.fillRect(x - 22, y - 21, 46, 8);
-    ctx.fillStyle = "#684638";
-    ctx.fillRect(x - 8, y - 2, 17, 20);
-    ctx.fillStyle = "#e1c58d";
-    ctx.fillRect(x - 24, y + 22, 50, 4);
+    // Casa de fazenda com telhado em duas águas, beiral, varanda e sombra projetada.
+    ctx.fillStyle = "rgba(22, 30, 23, .34)";
+    ctx.beginPath(); ctx.ellipse(x + 5, y + 22, 42, 25, -.08, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#8d795c";
+    ctx.fillRect(x - 34, y - 15, 70, 49);
+    ctx.fillStyle = "#d6c29a";
+    ctx.fillRect(x - 29, y - 20, 60, 48);
+    ctx.fillStyle = "#a34e3b";
+    ctx.beginPath();
+    ctx.moveTo(x - 36, y - 18); ctx.lineTo(x, y - 43); ctx.lineTo(x + 38, y - 18);
+    ctx.lineTo(x + 32, y + 1); ctx.lineTo(x - 31, y + 1); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#c87550";
+    ctx.beginPath(); ctx.moveTo(x - 30, y - 19); ctx.lineTo(x, y - 39); ctx.lineTo(x + 31, y - 19); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "rgba(245, 190, 133, .65)"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x, y - 38); ctx.lineTo(x, y - 19); ctx.stroke();
+    ctx.fillStyle = "#72513a"; ctx.fillRect(x - 9, y + 1, 18, 27);
+    ctx.fillStyle = "#a8c4bd"; ctx.fillRect(x - 25, y - 10, 10, 11); ctx.fillRect(x + 15, y - 10, 10, 11);
+    ctx.strokeStyle = "#eee0bf"; ctx.lineWidth = 2;
+    ctx.strokeRect(x - 25, y - 10, 10, 11); ctx.strokeRect(x + 15, y - 10, 10, 11);
+    ctx.fillStyle = "#8a795e"; ctx.fillRect(x - 34, y + 28, 70, 5);
+    ctx.fillStyle = "#d7c39c"; ctx.fillRect(x - 27, y + 33, 55, 4);
+    // Chaminé e pequeno caminho de acesso.
+    ctx.fillStyle = "#6a5140"; ctx.fillRect(x + 18, y - 36, 8, 15);
+    ctx.fillStyle = "#b7a28a"; ctx.fillRect(x + 16, y - 38, 12, 3);
+    ctx.fillStyle = "#b49a70";
+    ctx.beginPath(); ctx.moveTo(x - 5, y + 37); ctx.lineTo(x + 8, y + 37); ctx.lineTo(x + 24, y + 66); ctx.lineTo(x - 22, y + 66); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "rgba(236, 216, 174, .5)"; ctx.fillRect(x - 13, y + 44, 25, 2);
   }
 
   function drawFarmAnimals(x, y) {
+    // Pequeno rebanho com corpo, cabeça, patas e manchas vistos de cima.
     for (let i = 0; i < 3; i++) {
-      const ax = x + i * 19;
-      const ay = y + (i % 2) * 13;
-      ctx.fillStyle = "#eee6cf";
-      ctx.fillRect(ax - 6, ay - 4, 13, 9);
-      ctx.fillStyle = "#554b3e";
-      ctx.fillRect(ax - 5, ay - 4, 4, 4);
-      ctx.fillRect(ax + 3, ay + 1, 3, 3);
-      ctx.fillStyle = "#443d33";
-      ctx.fillRect(ax - 4, ay + 4, 2, 4);
-      ctx.fillRect(ax + 3, ay + 4, 2, 4);
+      const ax = x + i * 22;
+      const ay = y + (i % 2) * 15;
+      ctx.fillStyle = "rgba(25, 34, 22, .25)";
+      ctx.beginPath(); ctx.ellipse(ax + 2, ay + 5, 9, 6, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#e8e0c9";
+      ctx.beginPath(); ctx.ellipse(ax, ay, 8, 5.5, .12, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#665548";
+      ctx.beginPath(); ctx.ellipse(ax + 6, ay - 1, 3.5, 3, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillRect(ax - 5, ay - 4, 3, 3); ctx.fillRect(ax + 1, ay + 1, 3, 2);
+      ctx.fillStyle = "#514638";
+      for (const leg of [[-5,3],[3,3]]) ctx.fillRect(ax + leg[0], ay + leg[1], 2, 4);
     }
   }
 
@@ -260,6 +314,39 @@
     if (barn.y > -70 && barn.y < H + 70) drawFarmBuilding(barn.x - 185, barn.y + 35);
     const animals = worldToScreen(trackPoint(2380), cameraY);
     if (animals.y > -50 && animals.y < H + 50) drawFarmAnimals(animals.x + 155, animals.y + 48);
+    // Árvores isoladas, arbustos e pedras espalhados pelas margens da propriedade.
+    for (let s = 1900; s <= 3070; s += 138) {
+      const p = worldToScreen(trackPoint(s), cameraY);
+      if (p.y < -120 || p.y > H + 120) continue;
+      for (const side of [-1, 1]) {
+        const seed = Math.floor(s * 1.7 + side * 83);
+        const x = p.x + side * (250 + seeded(seed) * 70);
+        const y = p.y + (seeded(seed + 9) - .5) * 54;
+        if (x > 35 && x < W - 35) {
+          if (seeded(seed + 13) > .34) drawTree(x, y, seed);
+          else drawForestShrub(x, y, seed);
+          drawSmallPlant(x - side * 25, y + 24, seed + 5);
+          if (seeded(seed + 21) > .52) drawRock(x + side * 18, y + 31, seed + 7);
+        }
+      }
+    }
+
+    // Caminhos de terra ligam a casa aos talhões, sem cruzar a faixa ferroviária.
+    const pathPoints = [
+      {s: 2652, side: -1, d: 185, length: 92},
+      {s: 2380, side: 1, d: 178, length: 82},
+      {s: 2990, side: 1, d: 178, length: 74}
+    ];
+    for (const item of pathPoints) {
+      const p = worldToScreen(trackPoint(item.s), cameraY);
+      if (p.y < -120 || p.y > H + 120) continue;
+      const x = p.x + item.side * item.d;
+      ctx.fillStyle = "#927b55";
+      ctx.beginPath(); ctx.ellipse(x, p.y + 93, 17, item.length / 2, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "rgba(207, 181, 132, .42)";
+      ctx.beginPath(); ctx.ellipse(x - 3, p.y + 92, 8, item.length / 2 - 5, 0, 0, Math.PI * 2); ctx.fill();
+    }
+
     const silo = worldToScreen(trackPoint(2990), cameraY);
     if (silo.y > -70 && silo.y < H + 70) {
       ctx.fillStyle = "#ddd5b9";
