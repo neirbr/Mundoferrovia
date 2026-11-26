@@ -1055,7 +1055,6 @@
       ctx.restore();
     }
   }
-  }
 
   function drawTownPark(x, y) {
     // Praça pública com passeio perimetral, caminhos, canteiros e mobiliário.
