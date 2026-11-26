@@ -20,7 +20,7 @@
   const PASSENGER_WAGON_COUNT = 8;
   const MAX_SPEED = 82;
   const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
-  const state = {distance:0,trackOffset:0,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0};
+  const state = {distance:0,trackOffset:0,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null};
 
   // Traçado com curvas mais fechadas intercaladas por longas retas.
   // Cada curva usa transição suave para manter a continuidade dos trilhos.
@@ -1809,8 +1809,14 @@
     ctx.fillRect(p.x + 31, p.y - 12, 11, 5);
   }
 
-  function render() {
-    const cameraY = trackPoint(START_S + state.trackOffset).y;
+  function render(dt = 1 / 60) {
+    const targetCameraY = trackPoint(START_S + state.trackOffset).y;
+    // Suavização independente da taxa de quadros: reduz pequenas variações
+    // no deslocamento vertical sem alterar a velocidade real do trem.
+    if (state.cameraY === null) state.cameraY = targetCameraY;
+    const cameraBlend = 1 - Math.exp(-28 * Math.max(0, dt));
+    state.cameraY += (targetCameraY - state.cameraY) * cameraBlend;
+    const cameraY = state.cameraY;
     drawGround(cameraY);
     drawLateralAtmosphere(cameraY);
     drawGroundDetails(cameraY);
@@ -1855,7 +1861,7 @@
     const pct=Math.min(100,state.distance/TRACK_LENGTH*100);
     progressFill.style.width=pct+"%";progressText.textContent=Math.round(pct)+"% do trecho";
     if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else if(state.distance<3260)regionName.textContent="Rios, lagos e pontes";else if(state.distance<5200)regionName.textContent="Campos floridos";else if(state.distance<7380)regionName.textContent="Cidade do interior";else if(state.distance<7800)regionName.textContent="Bosque de cerejeiras";else if(state.distance<8900)regionName.textContent="Estação final";else regionName.textContent="Rodoviária";
-    render();
+    render(dt);
   }
 
   function frame(time) {
