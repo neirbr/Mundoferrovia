@@ -871,49 +871,92 @@
   }
 
   function drawRiverLakeRegion(cameraY) {
-    // Somente o rio transversal ao vale, passando sob a ponte.
+    // Rio transversal ao vale, com margens irregulares, leito profundo e correnteza para a direita.
     const riverS = 3468;
     const riverPoint = trackPoint(riverS);
     const riverY = worldToScreen({ x: 0, y: riverPoint.y }, cameraY).y;
-    ctx.fillStyle = "#9b956d";
+    const t = (state.lastTime || 0) * 0.001;
+    const flow = (t * 58) % 96;
+
+    // Margem de terra úmida e barrancos com recortes naturais.
+    ctx.fillStyle = "#756b4d";
     ctx.beginPath();
-    ctx.moveTo(0, riverY - 82);
-    for (let x = 0; x <= W; x += 40) {
-      const wave = Math.sin(x * 0.018) * 9 + Math.sin(x * 0.043) * 4;
-      ctx.lineTo(x, riverY - 67 + wave);
+    ctx.moveTo(0, riverY - 105);
+    for (let x = 0; x <= W; x += 24) {
+      const edge = Math.sin(x * .021) * 8 + Math.sin(x * .057) * 4;
+      ctx.lineTo(x, riverY - 70 + edge);
     }
-    for (let x = W; x >= 0; x -= 40) {
-      const wave = Math.sin(x * 0.016 + 1.4) * 10 + Math.sin(x * 0.039) * 4;
-      ctx.lineTo(x, riverY + 72 + wave);
+    for (let x = W; x >= 0; x -= 24) {
+      const edge = Math.sin(x * .018 + 1.2) * 10 + Math.sin(x * .049) * 4;
+      ctx.lineTo(x, riverY + 76 + edge);
     }
     ctx.closePath();
     ctx.fill();
 
-    ctx.fillStyle = "#397f9a";
+    // Faixa de areia, cascalho e terra exposta nas duas margens.
+    for (let x = 8; x < W; x += 43) {
+      const wobble = Math.sin(x * .13) * 5;
+      ctx.fillStyle = x % 3 ? "#a99a70" : "#c0ad7d";
+      ctx.beginPath();
+      ctx.ellipse(x, riverY - 66 + wobble, 9 + (x % 4), 3.2, -.12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(x + 19, riverY + 69 - wobble, 7 + (x % 3), 2.8, .1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Água em camadas: borda rasa turquesa, corpo azul e canal central mais escuro.
+    ctx.fillStyle = "#4d9b9d";
     ctx.beginPath();
-    ctx.moveTo(0, riverY - 67);
-    for (let x = 0; x <= W; x += 40) {
-      ctx.lineTo(x, riverY - 57 + Math.sin(x * 0.018) * 9 + Math.sin(x * 0.043) * 4);
-    }
-    for (let x = W; x >= 0; x -= 40) {
-      ctx.lineTo(x, riverY + 59 + Math.sin(x * 0.016 + 1.4) * 10 + Math.sin(x * 0.039) * 4);
-    }
+    ctx.moveTo(0, riverY - 72);
+    for (let x = 0; x <= W; x += 20) ctx.lineTo(x, riverY - 59 + Math.sin(x * .018) * 8 + Math.sin(x * .043) * 3);
+    for (let x = W; x >= 0; x -= 20) ctx.lineTo(x, riverY + 61 + Math.sin(x * .016 + 1.4) * 9 + Math.sin(x * .039) * 3);
     ctx.closePath();
     ctx.fill();
 
-    // Reflexos simples sobre a água.
-    ctx.fillStyle = "rgba(183, 220, 215, 0.55)";
-    for (let i = 0; i < 13; i++) {
-      const x = 28 + i * 61;
-      const y = riverY + Math.sin(i * 2.1) * 28;
-      ctx.fillRect(x, y, 22 + (i % 3) * 7, 3);
+    const waterGradient = ctx.createLinearGradient(0, riverY - 54, 0, riverY + 56);
+    waterGradient.addColorStop(0, "#438e9e");
+    waterGradient.addColorStop(.34, "#28758e");
+    waterGradient.addColorStop(.72, "#24647f");
+    waterGradient.addColorStop(1, "#397f91");
+    ctx.fillStyle = waterGradient;
+    ctx.beginPath();
+    ctx.moveTo(0, riverY - 58);
+    for (let x = 0; x <= W; x += 20) ctx.lineTo(x, riverY - 49 + Math.sin(x * .018) * 8 + Math.sin(x * .043) * 3);
+    for (let x = W; x >= 0; x -= 20) ctx.lineTo(x, riverY + 51 + Math.sin(x * .016 + 1.4) * 9 + Math.sin(x * .039) * 3);
+    ctx.closePath();
+    ctx.fill();
+
+    // Faixas de correnteza: cada segmento avança continuamente da esquerda para a direita.
+    for (let row = 0; row < 9; row++) {
+      const y = riverY - 42 + row * 10 + Math.sin(row * 1.7) * 3;
+      const offset = (flow + row * 17) % 112;
+      for (let n = -1; n < 9; n++) {
+        const x = n * 112 + offset;
+        const length = 22 + ((row * 13 + n * 7 + 300) % 34);
+        ctx.strokeStyle = row % 3 === 0 ? "rgba(188,232,222,.48)" : "rgba(116,194,195,.32)";
+        ctx.lineWidth = row % 3 === 0 ? 2 : 1.4;
+        ctx.beginPath();
+        ctx.moveTo(x, y + Math.sin((x + t * 28) * .035) * 1.8);
+        ctx.quadraticCurveTo(x + length * .48, y - 1.5, x + length, y + Math.sin((x + length) * .025) * 1.4);
+        ctx.stroke();
+      }
     }
 
-
+    // Pequenas ondulações e espuma junto às pedras das margens.
+    for (let i = 0; i < 18; i++) {
+      const x = (i * 53 + flow * .72) % (W + 35) - 15;
+      const y = riverY + Math.sin(i * 2.4) * 48;
+      ctx.strokeStyle = "rgba(205,235,220,.42)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(x, y, 3 + (i % 3), .15, Math.PI * .9);
+      ctx.stroke();
+    }
   }
 
   function drawBridge(cameraY) {
-    // Tabuleiro acompanha a geometria existente da ferrovia; os trilhos permanecem intactos.
+    // Ponte ferroviária reforçada; usa o traçado original sem deslocar trilhos ou composição.
     const centerS = 3468;
     const a = trackPoint(centerS - 88);
     const b = trackPoint(centerS + 88);
@@ -924,29 +967,78 @@
       { x: a.x - a.nx * 34, y: a.y - a.ny * 34 }
     ].map(p => worldToScreen(p, cameraY));
 
-    ctx.fillStyle = "#554c3d";
-    ctx.beginPath();
-    ctx.moveTo(corners[0].x, corners[0].y);
-    for (let i = 1; i < corners.length; i++) ctx.lineTo(corners[i].x, corners[i].y);
-    ctx.closePath();
-    ctx.fill();
+    const polygon = (points, fill) => {
+      ctx.fillStyle = fill;
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
+      ctx.closePath();
+      ctx.fill();
+    };
 
-    ctx.fillStyle = "#88785c";
-    ctx.beginPath();
-    ctx.moveTo(corners[0].x + 5, corners[0].y);
-    ctx.lineTo(corners[1].x + 5, corners[1].y);
-    ctx.lineTo(corners[2].x - 5, corners[2].y);
-    ctx.lineTo(corners[3].x - 5, corners[3].y);
-    ctx.closePath();
-    ctx.fill();
+    // Sombra projetada e maciço inferior da estrutura.
+    polygon(corners.map(p => ({x:p.x+7,y:p.y+9})), "rgba(24,35,34,.38)");
+    polygon(corners, "#39494a");
 
-    // Travessas estruturais nas extremidades da ponte.
-    for (const s of [centerS - 72, centerS + 72]) {
-      const p = worldToScreen(trackPoint(s), cameraY);
-      ctx.fillStyle = "#4b4438";
-      ctx.fillRect(p.x - 39, p.y - 5, 78, 10);
-      ctx.fillStyle = "#b49a70";
-      ctx.fillRect(p.x - 34, p.y - 4, 68, 3);
+    // Longarinas laterais em aço escuro e faces superiores iluminadas.
+    for (const side of [-1, 1]) {
+      const p1 = worldToScreen({x:a.x+a.nx*side*34,y:a.y+a.ny*side*34},cameraY);
+      const p2 = worldToScreen({x:b.x+b.nx*side*34,y:b.y+b.ny*side*34},cameraY);
+      ctx.strokeStyle = "#293b40"; ctx.lineWidth = 8; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+      ctx.strokeStyle = "#82908a"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(p1.x+side*2,p1.y); ctx.lineTo(p2.x+side*2,p2.y); ctx.stroke();
+    }
+
+    // Piso de concreto/aço com placas e juntas regulares.
+    const deck = corners.map((p,i) => ({x:p.x+(i===0||i===3?5:-5),y:p.y}));
+    polygon(deck, "#77796f");
+    for (let i = 0; i <= 10; i++) {
+      const t = i / 10;
+      const left = {x:corners[0].x+(corners[1].x-corners[0].x)*t,y:corners[0].y+(corners[1].y-corners[0].y)*t};
+      const right = {x:corners[3].x+(corners[2].x-corners[3].x)*t,y:corners[3].y+(corners[2].y-corners[3].y)*t};
+      ctx.strokeStyle = i % 2 ? "rgba(31,43,43,.35)" : "rgba(208,196,164,.28)";
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(left.x,left.y); ctx.lineTo(right.x,right.y); ctx.stroke();
+    }
+
+    // Vigas transversais aparentes sob o tabuleiro.
+    for (const s of [centerS-72,centerS-36,centerS,centerS+36,centerS+72]) {
+      const p = worldToScreen(trackPoint(s),cameraY);
+      ctx.fillStyle = "#344448";
+      ctx.fillRect(p.x-43,p.y-7,86,14);
+      ctx.fillStyle = "#a2a092";
+      ctx.fillRect(p.x-39,p.y-6,78,2);
+      ctx.fillStyle = "rgba(20,29,30,.35)";
+      ctx.fillRect(p.x-43,p.y+5,86,3);
+    }
+
+    // Pilares de sustentação descendo até o leito, fora da faixa dos trilhos.
+    for (const side of [-1,1]) {
+      const p = worldToScreen({x:a.x+a.nx*side*27,y:a.y+a.ny*side*27},cameraY);
+      ctx.fillStyle = "#59615b";
+      ctx.beginPath();
+      ctx.moveTo(p.x-8,p.y-5); ctx.lineTo(p.x+8,p.y-5);
+      ctx.lineTo(p.x+12,p.y+70); ctx.lineTo(p.x-12,p.y+70);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#85877b";
+      ctx.fillRect(p.x-6,p.y+2,4,59);
+      ctx.fillStyle = "#343f40";
+      ctx.fillRect(p.x-15,p.y+66,30,7);
+    }
+
+    // Guarda-corpos metálicos, montantes e refletores de manutenção.
+    for (const side of [-1,1]) {
+      const p1 = worldToScreen({x:a.x+a.nx*side*31,y:a.y+a.ny*side*31},cameraY);
+      const p2 = worldToScreen({x:b.x+b.nx*side*31,y:b.y+b.ny*side*31},cameraY);
+      ctx.strokeStyle = "#c0bca8"; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(p1.x,p1.y-8); ctx.lineTo(p2.x,p2.y-8); ctx.stroke();
+      ctx.strokeStyle = "#424e4d"; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(p1.x,p1.y-15); ctx.lineTo(p2.x,p2.y-15); ctx.stroke();
+      for (let i=0;i<=8;i++) {
+        const t=i/8, x=p1.x+(p2.x-p1.x)*t, y=p1.y+(p2.y-p1.y)*t;
+        ctx.fillStyle="#59635e"; ctx.fillRect(x-1.5,y-15,3,16);
+      }
     }
   }
 
