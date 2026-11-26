@@ -1059,35 +1059,155 @@
     ctx.translate(q.x, q.y);
     ctx.rotate(Math.atan2(p.ty, p.tx) + Math.PI / 2 + (state.direction < 0 ? Math.PI : 0));
 
-    // Carro de passageiros visto de cima, com teto claro e janelas laterais.
-    ctx.fillStyle = "#252c2b";
-    ctx.fillRect(-15, -23, 30, 46);
-    ctx.fillStyle = index % 2 ? "#315d78" : "#376b86";
-    ctx.fillRect(-13, -22, 26, 44);
-    ctx.fillStyle = "#d9d5c5";
-    ctx.fillRect(-10, -19, 20, 38);
-    ctx.fillStyle = "#b84f3e";
-    ctx.fillRect(-13, -22, 26, 3);
-    ctx.fillRect(-13, 19, 26, 3);
+    // Sombra e chassi: mantém a mesma área visual e o mesmo centro do vagão.
+    ctx.fillStyle = "rgba(7, 15, 17, .34)";
+    ctx.beginPath();
+    ctx.roundRect(-16, -22, 33, 47, 4);
+    ctx.fill();
 
-    // Fileiras de janelas ao longo dos dois lados do salão.
-    for (let wy = -14; wy <= 10; wy += 8) {
-      ctx.fillStyle = "#263f4b";
-      ctx.fillRect(-12, wy, 4, 6);
-      ctx.fillRect(8, wy, 4, 6);
-      ctx.fillStyle = "#8fb8c1";
-      ctx.fillRect(-11, wy + 1, 2, 4);
-      ctx.fillRect(9, wy + 1, 2, 4);
+    const chassis = ctx.createLinearGradient(-15, 0, 15, 0);
+    chassis.addColorStop(0, "#172124");
+    chassis.addColorStop(.5, "#46504e");
+    chassis.addColorStop(1, "#182124");
+    ctx.fillStyle = chassis;
+    ctx.beginPath();
+    ctx.roundRect(-15, -23, 30, 46, 3);
+    ctx.fill();
+
+    // Truques, rodas e caixas de rolamento nas duas extremidades.
+    for (const y of [-16, 15]) {
+      ctx.fillStyle = "#11191b";
+      ctx.beginPath();
+      ctx.roundRect(-16, y - 4, 32, 9, 2);
+      ctx.fill();
+      for (const x of [-14, 14]) {
+        ctx.fillStyle = "#090f11";
+        ctx.beginPath();
+        ctx.arc(x, y, 3.1, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#78827d";
+        ctx.beginPath();
+        ctx.arc(x, y, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#c0c4b8";
+        ctx.fillRect(x - .55, y - .55, 1.1, 1.1);
+      }
+      ctx.fillStyle = "#8b9388";
+      ctx.fillRect(-10, y - 1, 20, 2);
     }
 
-    // Corredor central e truques nas extremidades.
-    ctx.fillStyle = "#b5b3a5";
-    ctx.fillRect(-2, -15, 4, 30);
-    ctx.fillStyle = "#343b3a";
-    ctx.fillRect(-16, -17, 4, 9);
-    ctx.fillRect(12, -17, 4, 9);
-    ctx.fillRect(-16, 8, 4, 9);
-    ctx.fillRect(12, 8, 4, 9);
+    // Laterais azuis com facetas de luz e sombra.
+    const side = ctx.createLinearGradient(-14, 0, 14, 0);
+    side.addColorStop(0, "#19394e");
+    side.addColorStop(.16, "#315f7a");
+    side.addColorStop(.52, index % 2 ? "#477d98" : "#3e718d");
+    side.addColorStop(.86, "#2b5871");
+    side.addColorStop(1, "#17364a");
+    ctx.fillStyle = side;
+    ctx.beginPath();
+    ctx.moveTo(-12, -22);
+    ctx.lineTo(12, -22);
+    ctx.lineTo(14, -18);
+    ctx.lineTo(14, 18);
+    ctx.lineTo(11, 22);
+    ctx.lineTo(-11, 22);
+    ctx.lineTo(-14, 18);
+    ctx.lineTo(-14, -18);
+    ctx.closePath();
+    ctx.fill();
+
+    // Filetes de acabamento nas bordas externas.
+    ctx.strokeStyle = "rgba(190, 220, 226, .58)";
+    ctx.lineWidth = .8;
+    ctx.beginPath();
+    ctx.moveTo(-11, -20.5);
+    ctx.lineTo(10, -20.5);
+    ctx.lineTo(12.5, -17);
+    ctx.lineTo(12.5, 17);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(9, 25, 34, .72)";
+    ctx.beginPath();
+    ctx.moveTo(-13, -17);
+    ctx.lineTo(-13, 17);
+    ctx.lineTo(-10, 20);
+    ctx.lineTo(10, 20);
+    ctx.stroke();
+
+    // Teto central em painéis, com relevo discreto e corredor longitudinal.
+    const roof = ctx.createLinearGradient(-10, 0, 10, 0);
+    roof.addColorStop(0, "#8e9b9b");
+    roof.addColorStop(.18, "#d4d4c7");
+    roof.addColorStop(.52, "#eee9d8");
+    roof.addColorStop(.84, "#c4c5b9");
+    roof.addColorStop(1, "#747f80");
+    ctx.fillStyle = roof;
+    ctx.beginPath();
+    ctx.roundRect(-9.5, -18, 19, 36, 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(255,255,245,.72)";
+    ctx.lineWidth = .7;
+    ctx.beginPath();
+    ctx.moveTo(-7, -16);
+    ctx.lineTo(-7, 16);
+    ctx.moveTo(7, -16);
+    ctx.lineTo(7, 16);
+    ctx.stroke();
+
+    // Painéis e grelhas do teto: pequenos detalhes técnicos vistos de cima.
+    for (const y of [-13, -5, 5, 13]) {
+      ctx.fillStyle = "rgba(82, 94, 91, .42)";
+      ctx.fillRect(-5.5, y - 1.4, 11, 2.8);
+      ctx.fillStyle = "rgba(255,255,245,.52)";
+      ctx.fillRect(-4.5, y - 1, 9, .65);
+      ctx.strokeStyle = "rgba(72, 82, 79, .48)";
+      ctx.lineWidth = .55;
+      ctx.beginPath();
+      ctx.moveTo(-3.5, y);
+      ctx.lineTo(3.5, y);
+      ctx.stroke();
+    }
+
+    // Fileiras de janelas laterais com moldura, vidro e reflexo.
+    for (let wy = -14; wy <= 10; wy += 8) {
+      for (const x of [-11.8, 7.8]) {
+        ctx.fillStyle = "#152b36";
+        ctx.beginPath();
+        ctx.roundRect(x - .4, wy - .5, 4.5, 6.5, .8);
+        ctx.fill();
+        const glass = ctx.createLinearGradient(x, wy, x + 3, wy + 6);
+        glass.addColorStop(0, "#d2e7e1");
+        glass.addColorStop(.42, "#80b8c4");
+        glass.addColorStop(1, "#315968");
+        ctx.fillStyle = glass;
+        ctx.beginPath();
+        ctx.roundRect(x, wy, 3.2, 5.2, .5);
+        ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255,.58)";
+        ctx.fillRect(x + .5, wy + .5, .8, 2.4);
+      }
+    }
+
+    // Faixas de identificação nas cabeceiras e detalhes de engate.
+    const trim = ctx.createLinearGradient(-12, 0, 12, 0);
+    trim.addColorStop(0, "#743a32");
+    trim.addColorStop(.5, "#d16a4f");
+    trim.addColorStop(1, "#71372f");
+    ctx.fillStyle = trim;
+    ctx.fillRect(-12, -22, 24, 2.4);
+    ctx.fillRect(-12, 19.6, 24, 2.4);
+    ctx.fillStyle = "#d9c18a";
+    ctx.fillRect(-8, -21, 16, .7);
+    ctx.fillRect(-8, 20.3, 16, .7);
+
+    // Engates compactos, sem alterar o espaçamento entre os veículos.
+    ctx.fillStyle = "#202a2b";
+    ctx.fillRect(-4, -24, 8, 3);
+    ctx.fillRect(-4, 21, 8, 3);
+    ctx.fillStyle = "#a7aaa0";
+    ctx.fillRect(-2, -25, 4, 2);
+    ctx.fillRect(-2, 23, 4, 2);
+
     ctx.restore();
   }
 
