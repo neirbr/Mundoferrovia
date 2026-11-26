@@ -162,53 +162,37 @@
   }
 
   function drawTree(x, y, variant = 0) {
-    // Árvore em pixel art 2.5D: sombra no chão, tronco e copa em camadas.
     const tone = Math.abs(variant) % 3;
-    const deep = ["#244b35", "#285239", "#315b3b"][tone];
-    const mid = ["#376b43", "#3d7547", "#477b48"][tone];
-    const light = ["#568b50", "#609452", "#6b9b59"][tone];
-
-    // Sombra projetada para dar altura à copa.
-    ctx.fillStyle = "rgba(28, 48, 31, 0.30)";
-    ctx.fillRect(x - 18, y + 13, 39, 8);
-    ctx.fillRect(x - 13, y + 19, 27, 4);
-
-    // Tronco visível na base da árvore.
-    ctx.fillStyle = "#594633";
-    ctx.fillRect(x - 4, y + 3, 8, 15);
-    ctx.fillStyle = "#806044";
-    ctx.fillRect(x - 2, y + 5, 3, 10);
-
-    // Copa inferior, mais escura, criando volume.
-    ctx.fillStyle = deep;
-    ctx.fillRect(x - 17, y - 7, 34, 22);
-    ctx.fillRect(x - 12, y - 13, 25, 28);
-    ctx.fillRect(x - 21, y - 2, 8, 13);
-    ctx.fillRect(x + 13, y - 3, 8, 14);
-
-    // Camada central e pequenos recortes de folhagem.
-    ctx.fillStyle = mid;
-    ctx.fillRect(x - 14, y - 13, 28, 23);
-    ctx.fillRect(x - 9, y - 18, 19, 25);
-    ctx.fillRect(x - 18, y - 5, 8, 12);
-    ctx.fillRect(x + 10, y - 7, 8, 13);
-
-    // Partes iluminadas no topo da copa.
-    ctx.fillStyle = light;
-    ctx.fillRect(x - 9, y - 17, 18, 9);
-    ctx.fillRect(x - 5, y - 21, 11, 7);
-    ctx.fillRect(x - 15, y - 9, 7, 7);
-    ctx.fillRect(x + 8, y - 11, 6, 7);
-
-    // Pixels de luz e pequenos detalhes de folhagem.
-    ctx.fillStyle = "#91b968";
-    ctx.fillRect(x - 5, y - 18, 5, 4);
-    ctx.fillRect(x + 5, y - 12, 4, 3);
-    ctx.fillStyle = "#315b3b";
-    ctx.fillRect(x - 12, y + 5, 5, 4);
-    ctx.fillRect(x + 9, y + 2, 5, 4);
+    const dark = ["#173f22", "#1c4825", "#204b28"][tone];
+    const mid = ["#287033", "#327b35", "#3b8238"][tone];
+    const light = ["#65a83d", "#78b744", "#8ac34b"][tone];
+    ctx.save(); ctx.translate(x,y);
+    ctx.fillStyle="rgba(13,34,17,.34)";
+    ctx.beginPath();ctx.ellipse(5,17,29,13,-.12,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#65472d";ctx.beginPath();ctx.ellipse(0,5,6,8,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=dark;
+    for(const b of [[-13,0,20,17],[10,1,21,18],[-3,-10,23,19],[-18,-10,15,15],[17,-11,16,15],[0,9,19,13]]){
+      ctx.beginPath();ctx.ellipse(b[0],b[1],b[2],b[3],0,0,Math.PI*2);ctx.fill();
+    }
+    ctx.fillStyle=mid;
+    for(const b of [[-12,-3,16,13],[8,-4,17,14],[-1,-13,17,13],[-19,-9,10,10],[18,-12,10,10],[1,7,13,9]]){
+      ctx.beginPath();ctx.ellipse(b[0],b[1],b[2],b[3],0,0,Math.PI*2);ctx.fill();
+    }
+    const glow=ctx.createRadialGradient(-9,-14,1,-7,-10,29);
+    glow.addColorStop(0,"rgba(190,224,104,.68)");glow.addColorStop(.48,light);glow.addColorStop(1,"rgba(74,142,48,0)");
+    ctx.fillStyle=glow;ctx.beginPath();ctx.ellipse(-7,-9,23,19,-.25,0,Math.PI*2);ctx.fill();
+    for(let i=0;i<11;i++){
+      const a=i*Math.PI*2/11+tone*.19;
+      ctx.save();ctx.translate(Math.cos(a)*15,Math.sin(a)*12-3);ctx.rotate(a+Math.PI/2);
+      ctx.fillStyle=i%3===0?"#8bc64a":i%3===1?mid:"#4d9639";
+      ctx.beginPath();ctx.ellipse(0,-8,4.2,11,0,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle="rgba(205,231,130,.42)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,1);ctx.lineTo(0,-15);ctx.stroke();
+      ctx.restore();
+    }
+    ctx.fillStyle="rgba(211,235,137,.75)";
+    for(const p of [[-13,-16,2.1],[5,-18,1.6],[15,-6,1.8]]){ctx.beginPath();ctx.arc(p[0],p[1],p[2],0,Math.PI*2);ctx.fill();}
+    ctx.restore();
   }
-
   function drawFarmPlot(x, y, variant) {
     // Talhão visto de cima, com linhas de cultivo e pequenas variações de cor.
     ctx.fillStyle = "#9b8954";
@@ -288,50 +272,40 @@
   }
 
   function drawForestTree(x, y, variant = 0) {
-    // Copa em camadas para dar mais densidade à floresta sem invadir a faixa ferroviária.
-    ctx.fillStyle = "rgba(35, 57, 37, 0.24)";
-    ctx.fillRect(x - 15, y + 13, 34, 8);
-    ctx.fillStyle = "#574936";
-    ctx.fillRect(x - 3, y + 3, 7, 15);
-    ctx.fillStyle = variant % 3 === 0 ? "#244b35" : variant % 3 === 1 ? "#2d5738" : "#315f3b";
-    ctx.fillRect(x - 15, y - 10, 30, 23);
-    ctx.fillStyle = variant % 2 ? "#477b46" : "#3d7042";
-    ctx.fillRect(x - 11, y - 17, 23, 22);
-    ctx.fillStyle = "#679253";
-    ctx.fillRect(x - 6, y - 18, 10, 7);
-    ctx.fillRect(x + 5, y - 7, 5, 6);
+    const tone=Math.abs(variant)%3;
+    ctx.save();ctx.translate(x,y);
+    ctx.fillStyle="rgba(10,30,16,.36)";ctx.beginPath();ctx.ellipse(5,17,27,12,-.1,0,Math.PI*2);ctx.fill();
+    const layers=[
+      [-12,0,18,15,["#153d22","#194426","#204b2a"][tone]],
+      [10,1,19,15,["#1d512b","#245a2d","#285f32"][tone]],
+      [-2,-10,21,17,["#286b32","#317536","#397b39"][tone]],
+      [-17,-9,13,12,"#245d2c"],[17,-10,13,12,"#34763a"]
+    ];
+    for(const l of layers){ctx.fillStyle=l[4];ctx.beginPath();ctx.ellipse(l[0],l[1],l[2],l[3],0,0,Math.PI*2);ctx.fill();}
+    const shine=ctx.createRadialGradient(-9,-14,1,-7,-9,26);
+    shine.addColorStop(0,"rgba(174,220,91,.75)");shine.addColorStop(.5,"rgba(105,170,57,.58)");shine.addColorStop(1,"rgba(52,116,43,0)");
+    ctx.fillStyle=shine;ctx.beginPath();ctx.ellipse(-7,-9,22,18,-.2,0,Math.PI*2);ctx.fill();
+    for(let i=0;i<9;i++){const a=i*Math.PI*2/9+tone*.23;ctx.save();ctx.translate(Math.cos(a)*14,Math.sin(a)*11-4);ctx.rotate(a+Math.PI/2);ctx.fillStyle=i%2?"#6eae42":"#8ac34c";ctx.beginPath();ctx.ellipse(0,-6,3.5,9,0,0,Math.PI*2);ctx.fill();ctx.restore();}
+    ctx.restore();
   }
-
   function drawForestShrub(x, y, variant = 0) {
-    // Arbusto em camadas, com sombra e folhas iluminadas em pixel art 2.5D.
-    const tone = Math.abs(variant) % 3;
-    const dark = ["#285238", "#315b3b", "#294d35"][tone];
-    const mid = ["#477b48", "#52834a", "#3f7444"][tone];
-    const light = ["#80a95b", "#91b466", "#76a458"][tone];
-
-    ctx.fillStyle = "rgba(28, 48, 31, 0.25)";
-    ctx.fillRect(x - 12, y + 5, 26, 5);
-    ctx.fillStyle = dark;
-    ctx.fillRect(x - 11, y - 2, 23, 10);
-    ctx.fillRect(x - 7, y - 7, 16, 13);
-    ctx.fillRect(x - 15, y + 1, 7, 5);
-    ctx.fillRect(x + 8, y, 7, 5);
-    ctx.fillStyle = mid;
-    ctx.fillRect(x - 9, y - 5, 18, 10);
-    ctx.fillRect(x - 5, y - 9, 11, 10);
-    ctx.fillRect(x - 14, y, 7, 4);
-    ctx.fillStyle = light;
-    ctx.fillRect(x - 5, y - 8, 8, 4);
-    ctx.fillRect(x - 10, y - 3, 5, 3);
-    ctx.fillRect(x + 4, y - 4, 4, 3);
-    ctx.fillStyle = "#b4c875";
-    if (tone === 1) ctx.fillRect(x + 1, y - 7, 3, 2);
-    if (variant % 3 === 0) {
-      ctx.fillStyle = "#e2cb7b";
-      ctx.fillRect(x + 8, y - 3, 3, 3);
-    }
+    const tone=Math.abs(variant)%3;
+    const dark=["#24552c","#285d30","#1f4e29"][tone];
+    const mid=["#43833a","#4d8d3e","#397a37"][tone];
+    const light=["#8fbd4b","#a0c957","#7eae43"][tone];
+    ctx.save();ctx.translate(x,y);
+    ctx.fillStyle="rgba(13,35,17,.28)";ctx.beginPath();ctx.ellipse(3,8,21,9,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=dark;
+    for(const b of [[-10,0,12,8],[2,-3,13,10],[12,1,10,7],[-2,5,13,7],[-15,3,7,6]]){ctx.beginPath();ctx.ellipse(b[0],b[1],b[2],b[3],0,0,Math.PI*2);ctx.fill();}
+    ctx.fillStyle=mid;
+    for(const b of [[-9,-3,9,7],[3,-7,10,8],[12,-2,7,6],[-1,2,9,6]]){ctx.beginPath();ctx.ellipse(b[0],b[1],b[2],b[3],-.2,0,Math.PI*2);ctx.fill();}
+    const glint=ctx.createRadialGradient(-5,-8,1,-4,-6,17);
+    glint.addColorStop(0,light);glint.addColorStop(1,"rgba(125,178,64,0)");
+    ctx.fillStyle=glint;ctx.beginPath();ctx.ellipse(-4,-5,15,11,-.25,0,Math.PI*2);ctx.fill();
+    for(let i=0;i<7;i++){const a=i*Math.PI*2/7;ctx.save();ctx.translate(Math.cos(a)*9,Math.sin(a)*5-3);ctx.rotate(a+Math.PI/2);ctx.fillStyle=i%2?"#a6ce5d":"#6da943";ctx.beginPath();ctx.ellipse(0,-4,2.6,6,0,0,Math.PI*2);ctx.fill();ctx.restore();}
+    if(variant%3===0){ctx.fillStyle="#e6d17b";ctx.beginPath();ctx.arc(8,-5,2,0,Math.PI*2);ctx.fill();}
+    ctx.restore();
   }
-
   function drawForestRegion(cameraY) {
     // A mata começa depois dos talhões e se adensa gradualmente ao longo do trecho final.
     const cameraWorld = cameraY - H * .56;
