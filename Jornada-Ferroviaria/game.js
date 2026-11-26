@@ -872,25 +872,56 @@
   }
 
   function drawTownCar(x, y, color = "#547b91") {
-    // Pequeno automóvel visto de cima, estacionado fora da faixa de rolamento.
-    ctx.fillStyle = "rgba(25,30,28,.28)";
-    ctx.fillRect(x - 10, y - 17, 23, 39);
-    ctx.fillStyle = "#303b40";
-    ctx.fillRect(x - 11, y - 18, 23, 38);
+    // Automóvel compacto com carroceria facetada, vidros, rodas e faróis.
+    ctx.fillStyle = "rgba(18,24,23,.3)";
+    ctx.fillRect(x-12,y-17,26,41);
+    // Pneus laterais.
+    ctx.fillStyle = "#252b2d";
+    ctx.fillRect(x-12,y-11,3,9);
+    ctx.fillRect(x+10,y-11,3,9);
+    ctx.fillRect(x-12,y+5,3,9);
+    ctx.fillRect(x+10,y+5,3,9);
+    // Para-choques e carroceria.
+    ctx.fillStyle = "#343c3d";
+    ctx.fillRect(x-11,y-19,23,40);
     ctx.fillStyle = color;
-    ctx.fillRect(x - 9, y - 17, 19, 34);
+    ctx.fillRect(x-9,y-18,19,36);
+    ctx.fillStyle = "rgba(255,255,255,.25)";
+    ctx.fillRect(x-8,y-16,3,28);
+    ctx.fillStyle = "rgba(25,30,31,.2)";
+    ctx.fillRect(x+7,y-15,2,29);
+    // Capô e porta-malas em tons diferentes.
+    ctx.fillStyle = "rgba(255,255,255,.12)";
+    ctx.fillRect(x-7,y-16,14,7);
+    ctx.fillStyle = "rgba(20,27,30,.16)";
+    ctx.fillRect(x-7,y+11,14,5);
+    // Para-brisa e vidro traseiro.
+    ctx.fillStyle = "#344d55";
+    ctx.fillRect(x-8,y-8,17,10);
+    ctx.fillRect(x-8,y+4,17,6);
     ctx.fillStyle = "#a9c9cb";
-    ctx.fillRect(x - 7, y - 10, 15, 10);
+    ctx.fillRect(x-7,y-7,15,8);
     ctx.fillStyle = "#78999e";
-    ctx.fillRect(x - 7, y + 3, 15, 8);
-    ctx.fillStyle = "#e9e0c7";
-    ctx.fillRect(x - 8, y - 16, 4, 2);
-    ctx.fillRect(x + 4, y - 16, 4, 2);
-    ctx.fillStyle = "#d6b46a";
-    ctx.fillRect(x - 8, y + 15, 4, 2);
-    ctx.fillRect(x + 4, y + 15, 4, 2);
+    ctx.fillRect(x-7,y+5,15,4);
+    ctx.fillStyle = "rgba(255,255,255,.5)";
+    ctx.fillRect(x-6,y-6,4,5);
+    ctx.fillRect(x-6,y+5,4,2);
+    // Divisória central, retrovisores e luzes.
+    ctx.fillStyle = "#252f32";
+    ctx.fillRect(x,y-7,1,17);
+    ctx.fillRect(x-12,y-8,3,4);
+    ctx.fillRect(x+10,y-8,3,4);
+    ctx.fillStyle = "#f4e7b9";
+    ctx.fillRect(x-8,y-18,5,2);
+    ctx.fillRect(x+4,y-18,5,2);
+    ctx.fillStyle = "#c65e4c";
+    ctx.fillRect(x-8,y+17,5,2);
+    ctx.fillRect(x+4,y+17,5,2);
+    // Maçanetas.
+    ctx.fillStyle = "rgba(245,235,210,.65)";
+    ctx.fillRect(x+8,y-2,2,3);
+    ctx.fillRect(x+8,y+7,2,3);
   }
-
   function drawTownRoad(cameraY, s, crossing = false) {
     const p = worldToScreen(trackPoint(s), cameraY);
     // Rua transversal; trilhos são desenhados depois e permanecem intactos.
@@ -926,45 +957,69 @@
   }
 
   function drawTownPark(x, y) {
-    // Praça de bairro com caminhos, jardim central, bancos e árvores.
-    ctx.fillStyle = "rgba(24,35,28,.25)";
-    ctx.fillRect(x - 76, y - 72, 154, 150);
-    ctx.fillStyle = "#c9c5ad";
-    ctx.fillRect(x - 80, y - 78, 154, 150);
-    ctx.fillStyle = "#6f9658";
-    ctx.fillRect(x - 73, y - 71, 140, 136);
-    // Caminhos em cruz e canteiro central.
-    ctx.fillStyle = "#d5c8a8";
-    ctx.fillRect(x - 8, y - 67, 17, 127);
-    ctx.fillRect(x - 68, y - 8, 130, 17);
-    ctx.fillStyle = "#e5d9bd";
-    ctx.fillRect(x - 4, y - 65, 3, 123);
-    ctx.fillRect(x - 65, y - 4, 124, 3);
-    // Jardim central com fonte.
-    ctx.fillStyle = "#47794b";
-    ctx.fillRect(x - 28, y - 28, 57, 57);
+    // Praça pública com passeio perimetral, caminhos, canteiros e mobiliário.
+    ctx.fillStyle = "rgba(20,29,24,.3)";
+    ctx.fillRect(x-82,y-79,164,160);
+    ctx.fillStyle = "#bdb9a9";
+    ctx.fillRect(x-84,y-82,164,160);
+    ctx.fillStyle = "#d9d3c2";
+    ctx.fillRect(x-80,y-78,156,152);
+    ctx.fillStyle = "#709456";
+    ctx.fillRect(x-73,y-71,142,138);
+    // Gramado com manchas de textura.
+    ctx.fillStyle = "rgba(180,204,125,.24)";
+    for(let i=0;i<12;i++) ctx.fillRect(x-64+(i%4)*34,y-60+Math.floor(i/4)*39,13,5);
+    // Caminhos em cruz com bordas e paginação.
+    ctx.fillStyle = "#b5aa91";
+    ctx.fillRect(x-11,y-69,23,132);
+    ctx.fillRect(x-69,y-11,133,23);
+    ctx.fillStyle = "#dfd4bb";
+    ctx.fillRect(x-8,y-67,17,128);
+    ctx.fillRect(x-67,y-8,128,17);
+    ctx.fillStyle = "#bdb49e";
+    for(let py=y-60;py<y+56;py+=13) ctx.fillRect(x-7,py,15,1);
+    for(let px=x-60;px<x+56;px+=13) ctx.fillRect(px,y-7,1,15);
+    // Canteiro central e fonte circular.
+    ctx.fillStyle = "#426f46";
+    ctx.fillRect(x-30,y-30,61,61);
     ctx.fillStyle = "#8eb36a";
-    ctx.fillRect(x - 23, y - 23, 47, 47);
+    ctx.fillRect(x-25,y-25,51,51);
+    ctx.fillStyle = "#557f50";
+    ctx.fillRect(x-20,y-20,41,41);
     ctx.fillStyle = "#6b9da0";
-    ctx.fillRect(x - 11, y - 11, 23, 23);
-    ctx.fillStyle = "#b9e0d8";
-    ctx.fillRect(x - 6, y - 6, 12, 12);
-    ctx.fillStyle = "#e6e1c8";
-    ctx.fillRect(x - 2, y - 15, 4, 5);
-    // Bancos e árvores nos quatro cantos.
-    drawParkBench(x - 43, y - 42);
-    drawParkBench(x + 43, y + 43);
-    drawTownTree(x - 48, y + 43, 1);
-    drawTownTree(x + 47, y - 43, 0);
-    // Lixeira e postes da praça.
+    ctx.fillRect(x-12,y-12,25,25);
+    ctx.fillStyle = "#c0e0d8";
+    ctx.fillRect(x-7,y-7,15,15);
+    ctx.fillStyle = "rgba(255,255,255,.45)";
+    ctx.fillRect(x-5,y-6,4,4);
+    // Quatro canteiros floridos nos cantos.
+    for(const [dx,dy] of [[-48,-47],[47,-47],[-48,47],[47,47]]){
+      ctx.fillStyle = "#527d49";
+      ctx.fillRect(x+dx-8,y+dy-7,17,15);
+      ctx.fillStyle = "#e5b5c3";
+      ctx.fillRect(x+dx-4,y+dy-3,3,3);
+      ctx.fillStyle = "#f0d28b";
+      ctx.fillRect(x+dx+2,y+dy+1,3,3);
+    }
+    // Bancos, árvores, lixeiras e postes.
+    drawParkBench(x-43,y-42);
+    drawParkBench(x+43,y+43);
+    drawParkBench(x+43,y-42);
+    drawParkBench(x-43,y+43);
+    drawTownTree(x-54,y+8,1);
+    drawTownTree(x+54,y-8,0);
     ctx.fillStyle = "#4b6660";
-    ctx.fillRect(x + 48, y + 8, 8, 11);
+    ctx.fillRect(x+55,y+19,8,12);
     ctx.fillStyle = "#d7d2bd";
-    ctx.fillRect(x + 47, y + 6, 10, 3);
-    drawTownLamp(x - 51, y - 5);
-    drawTownLamp(x + 51, y - 5);
+    ctx.fillRect(x+54,y+17,10,3);
+    drawTownLamp(x-55,y-10);
+    drawTownLamp(x+55,y+10);
+    // Placa de identificação da praça.
+    ctx.fillStyle = "#51483d";
+    ctx.fillRect(x-8,y+64,17,4);
+    ctx.fillStyle = "#e8dfc8";
+    ctx.fillRect(x-7,y+61,15,3);
   }
-
   function drawTownRegion(cameraY) {
     // Bairro mais povoado: duas fileiras de lotes, comércio, praça e ruas.
     const buildings = [
