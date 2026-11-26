@@ -1106,7 +1106,7 @@
       // Braço: horizontal quando aberto e transversal à rua quando fechado.
       const pivotX = x;
       const openAngle = side < 0 ? Math.PI : 0;
-      const closedAngle = side < 0 ? Math.PI / 2 : -Math.PI / 2;
+      const closedAngle = Math.PI / 2;
       const angle = openAngle + (closedAngle - openAngle) * closed;
       ctx.save();
       ctx.translate(pivotX, p.y - 13);
