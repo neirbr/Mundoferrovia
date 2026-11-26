@@ -1286,9 +1286,7 @@
       drawTownPark(parkX, parkPoint.y);
     }
 
-    // Calçadas longitudinais ligam os trechos de passeio entre as casas e as ruas.
-    drawTownLongSidewalk(cameraY, -1);
-    drawTownLongSidewalk(cameraY, 1);
+    // Calçadas longitudinais removidas conforme solicitado.
 
     for (let i = 0; i < buildings.length; i++) {
       const b = buildings[i];
@@ -1305,21 +1303,7 @@
     drawTownRoad(cameraY, 6300, true);
     drawTownRoad(cameraY, 6680, false);
 
-    // Pequenos trechos de calçada conectam as entradas dos lotes às ruas.
-    const sidewalks = [
-      {s:5800,side:-1,d:110},{s:5900,side:1,d:115},{s:6070,side:-1,d:115},
-      {s:6180,side:1,d:115},{s:6420,side:-1,d:115},{s:6540,side:1,d:115},
-      {s:6760,side:-1,d:115},{s:6880,side:1,d:115},{s:7080,side:-1,d:115}
-    ];
-    for (const item of sidewalks) {
-      const p = worldToScreen(trackPoint(item.s), cameraY);
-      const x = p.x + item.side * item.d;
-      if (p.y < -40 || p.y > H + 40 || x < 10 || x > W - 110) continue;
-      ctx.fillStyle = "#c9c4b3";
-      ctx.fillRect(x - 24, p.y - 5, 48, 10);
-      ctx.fillStyle = "#e3ddcc";
-      ctx.fillRect(x - 24, p.y - 5, 48, 2);
-    }
+    // Calçadas de ligação entre os lotes removidas.
 
     // Árvores, postes e veículos estacionados pelo bairro.
     const props = [
@@ -1475,42 +1459,36 @@
   }
 
   function drawCherryGroveRegion(cameraY) {
-    // Bosque de cerejeiras: fileiras regulares, sem calçadas e com pétalas ao vento.
-    const cameraWorld = cameraY - H * .56;
-    const first = Math.floor((cameraWorld - 180) / 38);
-    const last = Math.ceil((cameraWorld + H + 180) / 38);
-
-    // Mantém a rua de paralelepípedos, sem calçadas no bosque.
+    // Bosque de cerejeiras: árvores posicionadas diretamente pela distância ferroviária.
     drawCherryGroveRoad(cameraY);
 
-    for (let row = first; row <= last; row++) {
-      const yWorld = row * 38 + 19;
-      const s = 690 - yWorld;
-      if (s < 7380 || s > 8170) continue;
-      const p = trackPoint(s);
-      const y = yWorld - cameraWorld;
+    // Percorre o trecho real do bosque; evita conversões de fileira que deslocavam
+    // as árvores para fora da região visível.
+    for (let s = 7380; s <= 8170; s += 34) {
+      const p = worldToScreen(trackPoint(s), cameraY);
+      if (p.y < -100 || p.y > H + 100) continue;
+      const y = p.y;
+      const row = Math.round(s / 34);
       const roadX = p.x - 350;
 
       for (const side of [-1, 1]) {
-        const jitter = seeded(row * 131 + side * 17);
-        // Cinco fileiras escalonadas por lado, com árvores mais próximas e densas.
+        // Cinco fileiras densas por lado, com árvores escalonadas.
         const distances = [165, 210, 255, 300, 345];
+        const probabilities = [.99, .98, .95, .90, .82];
         for (let layer = 0; layer < distances.length; layer++) {
           const variation = (seeded(row * 197 + side * 31 + layer * 53) - .5) * 34;
           const x = p.x + side * (distances[layer] + variation);
-          const probabilities = [.98, .96, .92, .84, .72];
-          const probability = probabilities[layer];
           const allowed = x > 22 && x < W - 22 && Math.abs(x - roadX) > 66;
-          if (allowed && seeded(row * 89 + side * 43 + layer * 17) < probability) {
+          if (allowed && seeded(row * 89 + side * 43 + layer * 17) < probabilities[layer]) {
             const offsetY = (seeded(row * 71 + layer * 29 + side) - .5) * 36;
             drawCherryTree(x, y + offsetY, row + layer + side);
           }
         }
 
-        // Tapetes mais densos de pétalas espalhadas entre as árvores.
+        // Pétalas acumuladas no chão entre as fileiras.
         const petalX = p.x + side * 125;
         if (petalX > 8 && petalX < W - 8) {
-          for (let k = 0; k < 25; k++) {
+          for (let k = 0; k < 30; k++) {
             const px = petalX + (seeded(row * 43 + k * 19 + side) - .5) * 82;
             const py = y + (seeded(row * 61 + k * 23) - .5) * 72;
             ctx.fillStyle = k % 3 === 0 ? "rgba(255,218,232,.92)" : "rgba(232,145,179,.9)";
@@ -1525,7 +1503,6 @@
     }
 
     drawCherryFloatingPetals(cameraY);
-    // Bancos e calçadas removidos; permanecem apenas o bosque, a rua e as pétalas.
   }
 
   function drawFinalStationBuilding(x, y, variant = 0) {
