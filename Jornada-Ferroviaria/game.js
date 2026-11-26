@@ -8,7 +8,6 @@
   const regionName = document.getElementById("regionName");
   const progressFill = document.getElementById("progressFill");
   const progressText = document.getElementById("progressText");
-  const hint = document.getElementById("canvasHint");
   const pauseOverlay = document.getElementById("pauseOverlay");
 
   const W = 800;
