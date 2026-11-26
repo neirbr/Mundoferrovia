@@ -101,27 +101,64 @@
   }
 
   function drawGround(cameraY) {
-    ctx.fillStyle = "#71985b";
+    // Gramado natural em vista superior: textura orgânica, variações de luz e tufos de grama.
+    const base = ctx.createLinearGradient(0, 0, W, H);
+    base.addColorStop(0, "#28552a");
+    base.addColorStop(0.28, "#559332");
+    base.addColorStop(0.58, "#70ad38");
+    base.addColorStop(1, "#3e782c");
+    ctx.fillStyle = base;
     ctx.fillRect(0, 0, W, H);
 
-    // A textura fica presa ao mundo, acompanhando a câmera sem trocar os blocos de lugar.
     const cameraWorld = cameraY - H * .56;
-    const firstRow = Math.floor(cameraWorld / 32);
-    const lastRow = Math.ceil((cameraWorld + H) / 32);
+    const firstRow = Math.floor(cameraWorld / 24);
+    const lastRow = Math.ceil((cameraWorld + H) / 24);
 
     for (let row = firstRow; row <= lastRow; row++) {
-      const screenY = row * 32 - cameraWorld;
-      for (let gx = 0; gx < W; gx += 32) {
-        const r = seeded(Math.floor(gx / 32) * 97 + row);
-        ctx.fillStyle = r > .82 ? "#789e60" : r < .12 ? "#688e53" : "#71985b";
-        ctx.fillRect(gx, screenY, 32, 32);
-        if (r > .91) {
-          ctx.fillStyle = "#9bb66a";
-          ctx.fillRect(gx + 8, screenY + 11, 3, 3);
-          ctx.fillRect(gx + 19, screenY + 22, 3, 3);
+      const worldY = row * 24 + 12;
+      const screenY = worldY - cameraWorld;
+      for (let col = 0; col < 34; col++) {
+        const seed = row * 197 + col * 83;
+        const r = seeded(seed);
+        const x = col * 24 + seeded(seed + 7) * 10 - 5;
+        const y = screenY + seeded(seed + 11) * 12 - 6;
+
+        // Manchas suaves de grama em tons naturais, sem padrão quadriculado.
+        if (r > .30) {
+          const radius = 5 + seeded(seed + 17) * 13;
+          const patch = ctx.createRadialGradient(x, y, 1, x, y, radius);
+          patch.addColorStop(0, r > .72 ? "rgba(145,190,65,.20)" : "rgba(25,75,28,.13)");
+          patch.addColorStop(1, "rgba(40,95,30,0)");
+          ctx.fillStyle = patch;
+          ctx.beginPath();
+          ctx.ellipse(x, y, radius * 1.35, radius * .85, seeded(seed + 23) * Math.PI, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Pequenas lâminas de grama com iluminação lateral.
+        if (r > .48) {
+          const blades = 3 + Math.floor(seeded(seed + 31) * 4);
+          for (let k = 0; k < blades; k++) {
+            const bx = x + (seeded(seed + k * 13) - .5) * 18;
+            const by = y + (seeded(seed + k * 19) - .5) * 15;
+            const h = 2 + seeded(seed + k * 29) * 5;
+            ctx.strokeStyle = k % 2 ? "rgba(177,211,91,.42)" : "rgba(24,72,25,.35)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(bx, by + h);
+            ctx.quadraticCurveTo(bx - 2, by + 1, bx + (seeded(seed + k * 37) - .5) * 5, by - h);
+            ctx.stroke();
+          }
         }
       }
     }
+
+    // Vinheta muito discreta nas bordas, inspirada na iluminação da referência.
+    const shade = ctx.createRadialGradient(W * .5, H * .48, 170, W * .5, H * .48, 590);
+    shade.addColorStop(0, "rgba(190,225,95,0)");
+    shade.addColorStop(1, "rgba(10,38,17,.25)");
+    ctx.fillStyle = shade;
+    ctx.fillRect(0, 0, W, H);
   }
 
   function drawTree(x, y, variant = 0) {
