@@ -993,28 +993,179 @@
     ctx.save();
     ctx.translate(q.x, q.y);
     ctx.rotate(Math.atan2(p.ty, p.tx) + Math.PI / 2 + (state.direction < 0 ? Math.PI : 0));
-    // Truques e chassi
-    ctx.fillStyle = "#202827";
-    ctx.fillRect(-16, -30, 32, 64);
-    // Corpo diesel
-    ctx.fillStyle = "#bd493b";
-    ctx.fillRect(-14, -31, 28, 61);
-    ctx.fillStyle = "#e3b44e";
-    ctx.fillRect(-14, -27, 28, 5);
-    ctx.fillStyle = "#263c37";
-    ctx.fillRect(-10, -18, 20, 22);
-    ctx.fillStyle = "#8eb2ad";
-    ctx.fillRect(-7, -15, 14, 8);
-    ctx.fillStyle = "#d7d1b8";
-    ctx.fillRect(-10, 9, 20, 12);
-    ctx.fillStyle = "#f8e6a4";
-    ctx.fillRect(-10, -34, 6, 4);
-    ctx.fillRect(4, -34, 6, 4);
-    ctx.fillStyle = "#222";
-    ctx.fillRect(-18, -23, 4, 12);
-    ctx.fillRect(14, -23, 4, 12);
-    ctx.fillRect(-18, 12, 4, 12);
-    ctx.fillRect(14, 12, 4, 12);
+
+    // Silhueta e chassi: mesmas dimensões e mesmo ponto de ancoragem do modelo original.
+    ctx.fillStyle = "rgba(8, 17, 15, .38)";
+    ctx.beginPath();
+    ctx.roundRect(-17, -28, 36, 64, 5);
+    ctx.fill();
+
+    // Estrutura inferior e truques, com volumes separados para leitura mecânica.
+    const under = ctx.createLinearGradient(-16, 0, 16, 0);
+    under.addColorStop(0, "#171f20");
+    under.addColorStop(.48, "#46504d");
+    under.addColorStop(1, "#171f20");
+    ctx.fillStyle = under;
+    ctx.beginPath();
+    ctx.roundRect(-16, -30, 32, 64, 4);
+    ctx.fill();
+
+    ctx.fillStyle = "#11191a";
+    ctx.fillRect(-17, -24, 34, 10);
+    ctx.fillRect(-17, 12, 34, 12);
+    ctx.fillStyle = "#59615b";
+    ctx.fillRect(-15, -22, 30, 2);
+    ctx.fillRect(-15, 20, 30, 2);
+
+    // Rodados laterais: rodas, eixos e caixas de rolamento.
+    for (const y of [-19, 17]) {
+      for (const x of [-15, 15]) {
+        ctx.fillStyle = "#101718";
+        ctx.beginPath();
+        ctx.roundRect(x - 2.5, y - 5, 5, 10, 1.5);
+        ctx.fill();
+        ctx.fillStyle = "#737b75";
+        ctx.fillRect(x - 1.5, y - 3, 3, 6);
+        ctx.fillStyle = "#b1b5a9";
+        ctx.fillRect(x - .7, y - 2, 1.4, 4);
+      }
+    }
+    ctx.fillStyle = "#8b9389";
+    ctx.fillRect(-11, -17, 22, 2);
+    ctx.fillRect(-11, 16, 22, 2);
+
+    // Carenagem diesel principal: contorno facetado e sombreado lateral.
+    const shell = ctx.createLinearGradient(-14, 0, 14, 0);
+    shell.addColorStop(0, "#7f302b");
+    shell.addColorStop(.16, "#b94437");
+    shell.addColorStop(.52, "#d45b47");
+    shell.addColorStop(.84, "#b13d33");
+    shell.addColorStop(1, "#702a28");
+    ctx.fillStyle = shell;
+    ctx.beginPath();
+    ctx.moveTo(-11, -31);
+    ctx.lineTo(11, -31);
+    ctx.lineTo(14, -26);
+    ctx.lineTo(14, 25);
+    ctx.lineTo(10, 30);
+    ctx.lineTo(-10, 30);
+    ctx.lineTo(-14, 25);
+    ctx.lineTo(-14, -26);
+    ctx.closePath();
+    ctx.fill();
+
+    // Filetes de contorno e reflexo superior para dar espessura à carenagem.
+    ctx.strokeStyle = "rgba(255, 207, 164, .72)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(-11, -29.5);
+    ctx.lineTo(10, -29.5);
+    ctx.lineTo(12.5, -25);
+    ctx.lineTo(12.5, 23);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(48, 18, 18, .72)";
+    ctx.beginPath();
+    ctx.moveTo(-13, -24);
+    ctx.lineTo(-13, 24);
+    ctx.lineTo(-9, 28);
+    ctx.lineTo(9, 28);
+    ctx.stroke();
+
+    // Faixa de identificação e frisos metálicos.
+    const gold = ctx.createLinearGradient(0, -28, 0, -21);
+    gold.addColorStop(0, "#ffe09a");
+    gold.addColorStop(.45, "#e5b44e");
+    gold.addColorStop(1, "#9c6c2c");
+    ctx.fillStyle = gold;
+    ctx.fillRect(-13, -27, 26, 5);
+    ctx.fillStyle = "rgba(255, 238, 190, .78)";
+    ctx.fillRect(-11, -26, 22, 1);
+    ctx.fillStyle = "#6e4a2b";
+    ctx.fillRect(-13, -22, 26, 1);
+
+    // Cabine e para-brisa dianteiro, preservando a posição da janela original.
+    ctx.fillStyle = "#172a2b";
+    ctx.beginPath();
+    ctx.moveTo(-10, -18);
+    ctx.lineTo(10, -18);
+    ctx.lineTo(9, 4);
+    ctx.lineTo(-9, 4);
+    ctx.closePath();
+    ctx.fill();
+    const glass = ctx.createLinearGradient(-7, -16, 7, -7);
+    glass.addColorStop(0, "#d4e8d8");
+    glass.addColorStop(.42, "#86b6b5");
+    glass.addColorStop(1, "#315d64");
+    ctx.fillStyle = glass;
+    ctx.beginPath();
+    ctx.moveTo(-7, -15);
+    ctx.lineTo(7, -15);
+    ctx.lineTo(6, -7);
+    ctx.lineTo(-6, -7);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "rgba(231, 245, 225, .85)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, -15);
+    ctx.lineTo(0, -7);
+    ctx.stroke();
+    ctx.fillStyle = "rgba(255,255,255,.34)";
+    ctx.fillRect(-6, -14, 2, 5);
+
+    // Tampa do motor e grelhas de ventilação na parte traseira da cabine.
+    ctx.fillStyle = "#762d29";
+    ctx.fillRect(-10, 7, 20, 15);
+    ctx.fillStyle = "#d8d0b8";
+    ctx.fillRect(-10, 8, 20, 12);
+    ctx.fillStyle = "#a6a18e";
+    ctx.fillRect(-9, 9, 18, 1);
+    for (let y = 12; y <= 18; y += 3) {
+      ctx.fillStyle = "#555c56";
+      ctx.fillRect(-7, y, 14, 1);
+      ctx.fillStyle = "rgba(255,255,255,.42)";
+      ctx.fillRect(-7, y, 14, .6);
+    }
+    ctx.fillStyle = "#6f746b";
+    ctx.fillRect(-2, 9, 4, 11);
+
+    // Plataformas laterais, corrimãos e pequenos elementos de manutenção.
+    ctx.fillStyle = "#252e2d";
+    ctx.fillRect(-15, -17, 2, 34);
+    ctx.fillRect(13, -17, 2, 34);
+    ctx.fillStyle = "#d2a34b";
+    ctx.fillRect(-15, -16, 2, 31);
+    ctx.fillRect(13, -16, 2, 31);
+    ctx.fillStyle = "#e8c16c";
+    for (const y of [-12, -4, 4, 12]) {
+      ctx.fillRect(-14, y, 1, 2);
+      ctx.fillRect(13, y, 1, 2);
+    }
+
+    // Faróis dianteiros com aro, lente e halo luminoso discreto.
+    for (const x of [-8, 8]) {
+      ctx.fillStyle = "rgba(255, 224, 142, .20)";
+      ctx.beginPath();
+      ctx.arc(x, -32, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#55432b";
+      ctx.fillRect(x - 2.5, -34, 5, 4);
+      ctx.fillStyle = "#fff0b4";
+      ctx.fillRect(x - 1.7, -33, 3.4, 2);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(x - .7, -33, 1.4, 1);
+    }
+
+    // Engates e para-choques compactos nas extremidades.
+    ctx.fillStyle = "#303a38";
+    ctx.fillRect(-8, 29, 16, 3);
+    ctx.fillRect(-5, -31, 10, 2);
+    ctx.fillStyle = "#9ba096";
+    ctx.fillRect(-3, 31, 6, 2);
+    ctx.fillStyle = "#d0ad63";
+    ctx.fillRect(-12, 26, 3, 2);
+    ctx.fillRect(9, 26, 3, 2);
+
     ctx.restore();
   }
 
