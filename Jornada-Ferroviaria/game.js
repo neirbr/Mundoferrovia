@@ -1506,58 +1506,158 @@
   }
 
   function drawFinalStationBuilding(x, y, variant = 0) {
-    // Prédio amplo da estação, visto de cima, com saguão, cobertura e plataforma de acesso.
-    const wall = variant % 2 ? "#d8d0b9" : "#d7c39c";
-    const roof = variant % 2 ? "#526b73" : "#8c5546";
-    ctx.fillStyle = "rgba(35, 43, 36, .28)";
-    ctx.fillRect(x - 65, y - 78, 132, 158);
-    ctx.fillStyle = "#a99a7b";
-    ctx.fillRect(x - 62, y - 75, 124, 150);
-    ctx.fillStyle = wall;
-    ctx.fillRect(x - 56, y - 69, 112, 138);
-    ctx.fillStyle = roof;
-    ctx.fillRect(x - 67, y - 73, 134, 76);
-    ctx.fillStyle = variant % 2 ? "#d9c69b" : "#b9c2bd";
-    ctx.fillRect(x - 51, y - 63, 102, 8);
-    ctx.fillStyle = "#344b50";
-    ctx.fillRect(x - 10, y + 8, 20, 48);
-    ctx.fillStyle = "#9fc3c7";
-    ctx.fillRect(x - 43, y + 9, 19, 17);
-    ctx.fillRect(x + 24, y + 9, 19, 17);
-    ctx.fillStyle = "#eee4cb";
-    ctx.fillRect(x - 47, y - 43, 94, 5);
-    ctx.fillStyle = "#6f6554";
-    ctx.fillRect(x - 35, y + 60, 70, 8);
-    ctx.fillStyle = "#d7c9a8";
-    ctx.fillRect(x - 31, y + 68, 4, 9);
-    ctx.fillRect(x + 27, y + 68, 4, 9);
+    // Estação de desembarque vista de cima: edifício comprido, cobertura,
+    // saguão central, alas de espera e fachada voltada para as plataformas.
+    const top = y - 275;
+    const bottom = y + 275;
+
+    // Sombra e base estrutural.
+    ctx.fillStyle = "rgba(25, 32, 30, .34)";
+    ctx.fillRect(x - 101, top + 9, 202, 552);
+    ctx.fillStyle = "#8c887b";
+    ctx.fillRect(x - 96, top, 192, 550);
+    ctx.fillStyle = "#d5cbb5";
+    ctx.fillRect(x - 89, top + 7, 178, 536);
+
+    // Fachada e alas laterais do edifício.
+    ctx.fillStyle = "#c9b995";
+    ctx.fillRect(x - 79, top + 18, 158, 514);
+    ctx.fillStyle = "#e0d5bb";
+    ctx.fillRect(x - 73, top + 24, 146, 502);
+
+    // Cobertura principal longa, com beirais e extremidades arquitetônicas.
+    ctx.fillStyle = "#344b55";
+    ctx.fillRect(x - 94, top + 12, 188, 526);
+    ctx.fillStyle = variant % 2 ? "#536f78" : "#765b4c";
+    ctx.fillRect(x - 84, top + 23, 168, 504);
+    ctx.fillStyle = "#b9a47e";
+    ctx.fillRect(x - 78, top + 30, 156, 490);
+
+    // Faixas de telhado e claraboias longitudinais.
+    ctx.fillStyle = "#8b7860";
+    ctx.fillRect(x - 70, top + 40, 140, 484);
+    ctx.fillStyle = "#d5c5a2";
+    ctx.fillRect(x - 62, top + 49, 124, 466);
+    ctx.fillStyle = "#526d76";
+    ctx.fillRect(x - 24, top + 60, 48, 444);
+    ctx.fillStyle = "#9fc0c1";
+    for (let yy = top + 72; yy < bottom - 35; yy += 54) {
+      ctx.fillRect(x - 18, yy, 36, 35);
+      ctx.fillStyle = "rgba(235,248,239,.55)";
+      ctx.fillRect(x - 15, yy + 3, 12, 3);
+      ctx.fillStyle = "#9fc0c1";
+    }
+
+    // Alas de circulação e salas, com módulos repetidos de janelas.
+    for (let yy = top + 62; yy < bottom - 48; yy += 62) {
+      ctx.fillStyle = "#354e55";
+      ctx.fillRect(x - 57, yy, 24, 35);
+      ctx.fillRect(x + 33, yy, 24, 35);
+      ctx.fillStyle = "#9fc4c5";
+      ctx.fillRect(x - 53, yy + 4, 16, 25);
+      ctx.fillRect(x + 37, yy + 4, 16, 25);
+      ctx.fillStyle = "rgba(255,245,220,.6)";
+      ctx.fillRect(x - 52, yy + 5, 5, 3);
+      ctx.fillRect(x + 38, yy + 5, 5, 3);
+    }
+
+    // Saguão principal e hall de desembarque no centro do prédio.
+    ctx.fillStyle = "#d9c9a7";
+    ctx.fillRect(x - 61, y - 72, 122, 144);
+    ctx.fillStyle = "#4b6268";
+    ctx.fillRect(x - 54, y - 63, 108, 126);
+    ctx.fillStyle = "#b7d0ca";
+    ctx.fillRect(x - 46, y - 55, 92, 110);
+    ctx.fillStyle = "#e8dfc9";
+    ctx.fillRect(x - 42, y - 50, 84, 8);
+    ctx.fillStyle = "#6b5947";
+    ctx.fillRect(x - 19, y + 24, 38, 31);
+    ctx.fillStyle = "#c8b58d";
+    ctx.fillRect(x - 15, y + 28, 30, 23);
+
+    // Marquise e entrada principal voltadas para a plataforma ferroviária.
+    ctx.fillStyle = "rgba(35,42,39,.3)";
+    ctx.fillRect(x + 73, y - 42, 30, 84);
+    ctx.fillStyle = "#e6d8b8";
+    ctx.fillRect(x + 66, y - 47, 31, 94);
+    ctx.fillStyle = "#536c72";
+    ctx.fillRect(x + 72, y - 34, 18, 68);
+    ctx.fillStyle = "#b6d0ca";
+    ctx.fillRect(x + 75, y - 27, 12, 54);
+
+    // Letreiro da estação na fachada, com moldura e texto legível.
+    ctx.fillStyle = "#263f49";
+    ctx.fillRect(x - 47, top + 16, 94, 22);
+    ctx.fillStyle = "#ead8ad";
+    ctx.fillRect(x - 43, top + 19, 86, 16);
+    ctx.fillStyle = "#263f49";
+    ctx.font = "bold 10px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("ESTAÇÃO", x, top + 27);
+    ctx.textAlign = "start";
+    ctx.textBaseline = "alphabetic";
+
+    // Entradas secundárias, degraus e iluminação externa.
+    for (const yy of [top + 90, top + 460]) {
+      ctx.fillStyle = "#716b5d";
+      ctx.fillRect(x + 67, yy, 27, 7);
+      ctx.fillStyle = "#eee2c7";
+      ctx.fillRect(x + 67, yy + 8, 27, 3);
+      ctx.fillStyle = "#f3d98a";
+      ctx.fillRect(x + 101, yy + 4, 5, 5);
+    }
   }
 
   function drawFinalStationRegion(cameraY) {
-    // Estação terminal em trecho reto, com dois prédios grandes de cada lado da ferrovia.
+    // Complexo ferroviário de desembarque com plataformas longas e um edifício principal.
     const centerS = 8440;
     const center = worldToScreen(trackPoint(centerS), cameraY);
-    if (center.y > -260 && center.y < H + 260) {
+
+    // Plataformas contínuas e alongadas, sem construções residenciais ao fundo.
+    if (center.y > -430 && center.y < H + 430) {
       for (const side of [-1, 1]) {
-        const platformX = center.x + side * 43;
+        const platformX = center.x + side * 57;
+        const platformY = center.y - 330;
+        ctx.fillStyle = "rgba(34,40,36,.28)";
+        ctx.fillRect(platformX - 27, platformY + 7, 54, 674);
         ctx.fillStyle = "#aaa18b";
-        ctx.fillRect(platformX - 17, center.y - 205, 34, 410);
+        ctx.fillRect(platformX - 27, platformY, 54, 674);
         ctx.fillStyle = "#d9cba9";
-        ctx.fillRect(platformX - 17, center.y - 205, 4, 410);
-        ctx.fillStyle = "#766f60";
-        for (let y = center.y - 185; y < center.y + 190; y += 34) ctx.fillRect(platformX - 10, y, 20, 2);
+        ctx.fillRect(platformX - 27, platformY, 5, 674);
+        ctx.fillStyle = "#e8dfc9";
+        ctx.fillRect(platformX + 21, platformY, 6, 674);
+        ctx.fillStyle = "#777568";
+        for (let yy = platformY + 18; yy < platformY + 660; yy += 34) {
+          ctx.fillRect(platformX - 18, yy, 36, 2);
+        }
+        // Faixa tátil de segurança junto à borda da plataforma.
+        ctx.fillStyle = "#d5b85d";
+        ctx.fillRect(platformX - side * 20 - 2, platformY + 8, 4, 658);
+        ctx.fillStyle = "rgba(70,65,49,.34)";
+        for (let yy = platformY + 14; yy < platformY + 658; yy += 18) {
+          ctx.fillRect(platformX - side * 20 - 1, yy, 2, 5);
+        }
+        // Bancos e postes de iluminação distribuídos pelo comprimento.
+        for (let yy = platformY + 72; yy < platformY + 630; yy += 138) {
+          ctx.fillStyle = "#594b3c";
+          ctx.fillRect(platformX - 12, yy, 24, 5);
+          ctx.fillStyle = "#b6a17b";
+          ctx.fillRect(platformX - 10, yy - 3, 20, 3);
+          ctx.fillStyle = "#45565a";
+          ctx.fillRect(platformX + side * 13 - 3, yy - 12, 6, 6);
+          ctx.fillStyle = "#f1d98c";
+          ctx.fillRect(platformX + side * 13 - 2, yy - 11, 4, 4);
+        }
       }
     }
-    const buildings = [
-      {s: 8360, side: -1, d: 220, v: 0},
-      {s: 8560, side: -1, d: 235, v: 1},
-      {s: 8360, side: 1, d: 220, v: 1},
-      {s: 8560, side: 1, d: 235, v: 0}
-    ];
-    for (const b of buildings) {
-      const p = worldToScreen(trackPoint(b.s), cameraY);
-      const x = p.x + b.side * b.d;
-      if (p.y > -150 && p.y < H + 150 && x > 75 && x < W - 75) drawFinalStationBuilding(x, p.y, b.v);
+
+    // Um único edifício principal de estação; as quatro antigas casas foram retiradas.
+    const buildingPoint = worldToScreen(trackPoint(8440), cameraY);
+    const buildingX = buildingPoint.x - 175;
+    if (buildingPoint.y > -430 && buildingPoint.y < H + 430 &&
+        buildingX > 110 && buildingX < W - 110) {
+      drawFinalStationBuilding(buildingX, buildingPoint.y, 0);
     }
   }
 
