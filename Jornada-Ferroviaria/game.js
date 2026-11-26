@@ -650,6 +650,14 @@
       ctx.fillRect(x+52,y-14,7,3);
     }
 
+    // Volume 2.5D: parede lateral e base projetadas.
+    ctx.fillStyle = "rgba(26,31,27,.34)";
+    ctx.beginPath();ctx.moveTo(x-36,y-27);ctx.lineTo(x+38,y-27);ctx.lineTo(x+47,y-18);ctx.lineTo(x+47,y+39);ctx.lineTo(x-27,y+39);ctx.lineTo(x-36,y+30);ctx.closePath();ctx.fill();
+    ctx.fillStyle = "#716653";
+    ctx.beginPath();ctx.moveTo(x+35,y-27);ctx.lineTo(x+44,y-18);ctx.lineTo(x+44,y+29);ctx.lineTo(x+35,y+22);ctx.closePath();ctx.fill();
+    ctx.fillStyle = "#b5a384";
+    ctx.beginPath();ctx.moveTo(x-36,y+22);ctx.lineTo(x+35,y+22);ctx.lineTo(x+44,y+29);ctx.lineTo(x-27,y+29);ctx.closePath();ctx.fill();
+
     // Fundação e paredes com face iluminada e face em sombra.
     ctx.fillStyle = "#756b5a";
     ctx.fillRect(x-36,y-27,74,57);
@@ -664,6 +672,12 @@
     ctx.fillRect(x-32,y+16,64,5);
     ctx.fillStyle = "rgba(255,255,255,.17)";
     for(let k=0;k<4;k++) ctx.fillRect(x-27+k*16,y+18,8,1);
+
+    // Beiral elevado com face lateral em sombra.
+    ctx.fillStyle = "#463b34";
+    ctx.beginPath();ctx.moveTo(x-40,y-43);ctx.lineTo(x+40,y-43);ctx.lineTo(x+49,y-33);ctx.lineTo(x+49,y+7);ctx.lineTo(x-31,y+7);ctx.lineTo(x-40,y-3);ctx.closePath();ctx.fill();
+    ctx.fillStyle = "#6e5142";
+    ctx.beginPath();ctx.moveTo(x+37,y-42);ctx.lineTo(x+46,y-33);ctx.lineTo(x+46,y+4);ctx.lineTo(x+37,y-3);ctx.closePath();ctx.fill();
 
     // Telhado com duas águas, beirais espessos e textura de telhas.
     ctx.fillStyle = shadow;
@@ -770,6 +784,14 @@
       ctx.fillStyle = "#a5a293";
       ctx.fillRect(x-49+i*14,y+39,1,5);
     }
+    // Volume lateral projetado da loja.
+    ctx.fillStyle = "rgba(24,30,28,.36)";
+    ctx.beginPath();ctx.moveTo(x-43,y-31);ctx.lineTo(x+45,y-31);ctx.lineTo(x+55,y-21);ctx.lineTo(x+55,y+45);ctx.lineTo(x-33,y+45);ctx.lineTo(x-43,y+35);ctx.closePath();ctx.fill();
+    ctx.fillStyle = "#6d6558";
+    ctx.beginPath();ctx.moveTo(x+41,y-35);ctx.lineTo(x+51,y-25);ctx.lineTo(x+51,y+31);ctx.lineTo(x+41,y+25);ctx.closePath();ctx.fill();
+    ctx.fillStyle = "#b7a98c";
+    ctx.beginPath();ctx.moveTo(x-40,y+25);ctx.lineTo(x+41,y+25);ctx.lineTo(x+51,y+35);ctx.lineTo(x-30,y+35);ctx.closePath();ctx.fill();
+
     // Corpo do prédio e paredes laterais com sombra.
     ctx.fillStyle = "#756b5c";
     ctx.fillRect(x-43,y-31,88,67);
@@ -779,6 +801,10 @@
     ctx.fillRect(x-38,y-32,5,56);
     ctx.fillStyle = "rgba(55,47,38,.2)";
     ctx.fillRect(x+36,y-30,5,55);
+    // Platibanda elevada e face externa projetada.
+    ctx.fillStyle = "#343d3b";
+    ctx.beginPath();ctx.moveTo(x-45,y-44);ctx.lineTo(x+46,y-44);ctx.lineTo(x+55,y-35);ctx.lineTo(x+55,y-18);ctx.lineTo(x-36,y-18);ctx.lineTo(x-45,y-27);ctx.closePath();ctx.fill();
+
     // Telhado plano com platibanda e equipamento no topo.
     ctx.fillStyle = "#4d5351";
     ctx.fillRect(x-45,y-44,91,17);
@@ -845,17 +871,17 @@
     ctx.fillRect(x+33,y+18,5,5);
   }
   function drawTownTree(x, y, variant = 0) {
-    // Copa em camadas e sombra deslocada para dar altura ao paisagismo.
-    ctx.fillStyle = "rgba(30,42,29,.25)";
-    ctx.fillRect(x - 17, y + 9, 38, 17);
-    ctx.fillStyle = "#594b39";
-    ctx.fillRect(x - 3, y - 1, 7, 20);
-    ctx.fillStyle = variant % 2 ? "#397447" : "#477f4b";
-    ctx.fillRect(x - 16, y - 16, 33, 31);
-    ctx.fillStyle = variant % 2 ? "#75a85b" : "#83ad62";
-    ctx.fillRect(x - 11, y - 21, 23, 23);
-    ctx.fillStyle = "rgba(220,239,174,.35)";
-    ctx.fillRect(x - 8, y - 17, 8, 6);
+    // Copa facetada em vários níveis, com tronco e sombra de altura.
+    ctx.fillStyle = "rgba(20,31,23,.34)";
+    ctx.beginPath();ctx.ellipse(x+7,y+15,22,11,-.12,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle = "#594b39";ctx.fillRect(x-3,y-1,7,20);
+    ctx.fillStyle = "#294f36";
+    ctx.beginPath();ctx.moveTo(x-17,y-5);ctx.lineTo(x-12,y-20);ctx.lineTo(x+2,y-26);ctx.lineTo(x+17,y-16);ctx.lineTo(x+20,y+1);ctx.lineTo(x+10,y+12);ctx.lineTo(x-9,y+10);ctx.closePath();ctx.fill();
+    ctx.fillStyle = variant%2?"#397447":"#477f4b";
+    ctx.beginPath();ctx.moveTo(x-17,y-9);ctx.lineTo(x-12,y-23);ctx.lineTo(x+1,y-27);ctx.lineTo(x+16,y-18);ctx.lineTo(x+17,y-2);ctx.lineTo(x+7,y+8);ctx.lineTo(x-10,y+7);ctx.closePath();ctx.fill();
+    ctx.fillStyle = variant%2?"#75a85b":"#83ad62";
+    ctx.beginPath();ctx.moveTo(x-10,y-17);ctx.lineTo(x-4,y-25);ctx.lineTo(x+6,y-23);ctx.lineTo(x+12,y-14);ctx.lineTo(x+5,y-5);ctx.lineTo(x-7,y-7);ctx.closePath();ctx.fill();
+    ctx.fillStyle = "rgba(220,239,174,.48)";ctx.fillRect(x-7,y-19,7,5);ctx.fillRect(x+3,y-14,5,4);
   }
 
   function drawTownLamp(x, y) {
@@ -1136,7 +1162,11 @@
   }
 
   function drawTownPark(x, y) {
-    // Praça pública com passeio perimetral, caminhos, canteiros e mobiliário.
+    // Praça com base elevada, borda lateral e sombra projetada.
+    ctx.fillStyle = "rgba(18,27,22,.36)";
+    ctx.beginPath();ctx.moveTo(x-84,y-82);ctx.lineTo(x+80,y-82);ctx.lineTo(x+92,y-69);ctx.lineTo(x+92,y+89);ctx.lineTo(x-72,y+89);ctx.lineTo(x-84,y+77);ctx.closePath();ctx.fill();
+    ctx.fillStyle = "#8c887b";
+    ctx.beginPath();ctx.moveTo(x-84,y+67);ctx.lineTo(x+80,y+67);ctx.lineTo(x+92,y+79);ctx.lineTo(x-72,y+79);ctx.closePath();ctx.fill();
     ctx.fillStyle = "rgba(20,29,24,.3)";
     ctx.fillRect(x-82,y-79,164,160);
     ctx.fillStyle = "#bdb9a9";
