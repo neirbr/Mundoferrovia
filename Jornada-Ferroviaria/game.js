@@ -2708,7 +2708,7 @@
     return trainS >= 8370 && trainS <= 8510 && state.speed < 0.5;
   }
 
-  function drawPerson(x, y, variant = 0, walking = false) {
+  function drawPerson(x, y, variant = 0, walking = false, seated = false) {
     const colors = ["#d6a15a", "#668ba0", "#8b6c9d", "#71916b", "#c16d55", "#d0c7a7"];
     const shirt = colors[Math.abs(variant) % colors.length];
     const bob = walking ? Math.sin((state.lastTime || 0) * .018 + variant) * 1.5 : 0;
@@ -2716,6 +2716,21 @@
     ctx.translate(x, y + bob);
     ctx.fillStyle = "rgba(24,29,25,.28)";
     ctx.beginPath(); ctx.ellipse(2, 7, 6, 3, 0, 0, Math.PI * 2); ctx.fill();
+    if (seated) {
+      ctx.strokeStyle = "#394047"; ctx.lineWidth = 2.3; ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(-2, 2); ctx.lineTo(-5, 5); ctx.lineTo(-1, 6);
+      ctx.moveTo(2, 2); ctx.lineTo(5, 5); ctx.lineTo(2, 6);
+      ctx.stroke();
+      ctx.fillStyle = shirt;
+      ctx.beginPath(); ctx.roundRect(-4.2, -5, 8.4, 9, 2); ctx.fill();
+      ctx.fillStyle = "#c58e6b";
+      ctx.beginPath(); ctx.arc(0, -9, 3.3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = variant % 2 ? "#55483a" : "#343c3c";
+      ctx.beginPath(); ctx.arc(0, -10.2, 3.5, Math.PI, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      return;
+    }
     ctx.strokeStyle = "#394047"; ctx.lineWidth = 2.2; ctx.lineCap = "round";
     const step = walking ? Math.sin((state.lastTime || 0) * .025 + variant) * 2.2 : 0;
     ctx.beginPath();
@@ -2733,30 +2748,28 @@
 
   function drawStationPassengers(cameraY) {
     const centerS = 8440;
-    // Passageiros aguardando nas duas plataformas.
     const waiting = [-245, -185, -125, -55, 55, 125, 185, 245];
     for (const side of [-1, 1]) {
       for (let i = 0; i < waiting.length; i++) {
         const p = worldToScreen(trackPoint(centerS + waiting[i]), cameraY);
-        const x = p.x + side * 57 + side * (i % 2 ? 13 : -11);
-        if (p.y > -30 && p.y < H + 30 && x > 10 && x < W - 10) {
-          drawPerson(x, p.y + (i % 2 ? 9 : -8), i + (side > 0 ? 2 : 0));
-        }
+        const x = p.x + side * (i % 3 === 0 ? 76 : 57);
+        const y = p.y + (i % 2 ? 9 : -8);
+        if (p.y < -30 || p.y > H + 30 || x < 10 || x > W - 10) continue;
+        const seated = i % 3 === 1;
+        const walking = !seated && i % 2 === 0;
+        drawPerson(x, y, i + (side > 0 ? 2 : 0), walking, seated);
       }
     }
 
-    // Passageiros desembarcando: um de cada carro, caminhando para a plataforma.
-    if (state.doorsOpen && state.passengerProgress > 0) {
-      const trainS = stationTrainPosition();
-      for (let i = 1; i <= PASSENGER_WAGON_COUNT; i++) {
-        const wagonS = trackSBehind(trainS, 54 + (i - 1) * TRAIN_SPACING);
-        const side = i % 2 ? -1 : 1;
-        const p = worldToScreen(trackPoint(wagonS), cameraY);
-        const travel = Math.min(1, state.passengerProgress * 1.25);
-        const x = p.x + side * (31 + travel * 48);
-        if (p.y > -25 && p.y < H + 25 && x > 8 && x < W - 8) {
-          drawPerson(x, p.y, i + 3, true);
-        }
+    // O percurso continua mesmo depois que o botão FECHAR PORTAS é acionado.
+    for (const passenger of state.departingPassengers) {
+      if (passenger.entered) continue;
+      const progress = Math.min(1, passenger.progress);
+      const currentS = passenger.startS + (centerS - passenger.startS) * progress;
+      const p = worldToScreen(trackPoint(currentS), cameraY);
+      const x = p.x + passenger.side * (57 + 43 * progress);
+      if (p.y > -25 && p.y < H + 25 && x > 8 && x < W - 8) {
+        drawPerson(x, p.y, passenger.variant, true);
       }
     }
   }
@@ -2782,6 +2795,12 @@
     if(state.distance>TRACK_LENGTH){state.distance=TRACK_LENGTH;state.speed=0;state.throttlePoint=0;}
     if (state.doorsOpen) {
       state.passengerProgress = Math.min(1, state.passengerProgress + dt / 5.5);
+    }
+    for (const passenger of state.departingPassengers) {
+      if (!passenger.entered) {
+        passenger.progress = Math.min(1, passenger.progress + dt / 9);
+        if (passenger.progress >= 1) passenger.entered = true;
+      }
     }
     const stationReady = isTrainStoppedAtStation();
     doorButton.disabled = !stationReady && !state.doorsOpen;
@@ -2824,6 +2843,17 @@
       state.doorsOpen=true;
       state.passengerProgress=0;
       state.throttlePoint=0;
+      const trainS = stationTrainPosition();
+      for (let i = 1; i <= PASSENGER_WAGON_COUNT; i++) {
+        const wagonS = trackSBehind(trainS, 54 + (i - 1) * TRAIN_SPACING);
+        state.departingPassengers.push({
+          startS: wagonS,
+          side: i % 2 ? -1 : 1,
+          variant: i + state.departingPassengers.length + 3,
+          progress: 0,
+          entered: false
+        });
+      }
       refreshControls();
     }
   });
