@@ -15,8 +15,10 @@
   const TRACK_SHIFT_X = 70;
   const TRACK_LENGTH = 10400; // Extensão reservada para a linha e futuras regiões após a estação final.
   const START_S = 520; // Posição inicial original da locomotiva junto à plataforma.
-  const STATION_DETECTION_START = 8390;
-  const STATION_DETECTION_END = 8490;
+  // Zona de parada no fim da plataforma: posição pensada para manter
+  // a locomotiva e os oito vagões dentro da área de embarque.
+  const STATION_DETECTION_START = 8500;
+  const STATION_DETECTION_END = 8580;
   const TRAIN_SPACING = 48;
   const PASSENGER_WAGON_COUNT = 8;
   const MAX_SPEED = 82;
@@ -75,6 +77,14 @@
 
   // Encontra o ponto anterior que mantém o mesmo comprimento de engate nas curvas.
   function trackSBehind(frontS, distance) {
+    // Nas retas, a distância sobre a via é exatamente a diferença de S.
+    // Evita milhares de integrações e cálculos trigonométricos a cada quadro.
+    const straightStart = frontS - distance;
+    const crossesCurve = TRACK_CURVES.some(curve =>
+      curve.start < frontS && curve.end > straightStart
+    );
+    if (!crossesCurve) return straightStart;
+
     let low = frontS - distance * 2;
     let high = frontS;
     for (let i = 0; i < 28; i++) {
@@ -128,8 +138,41 @@
     }
   }
 
+  let grassTexturePattern = null;
+
+  function getGrassTexturePattern() {
+    if (grassTexturePattern) return grassTexturePattern;
+
+    // Textura orgânica é desenhada uma única vez e reutilizada como padrão.
+    // Isso reduz bastante o trabalho gráfico em celulares.
+    const tile = document.createElement("canvas");
+    tile.width = 256;
+    tile.height = 256;
+    const grass = tile.getContext("2d");
+    for (let i = 0; i < 430; i++) {
+      const seed = i * 37 + 11;
+      const x = seeded(seed) * tile.width;
+      const y = seeded(seed + 1) * tile.height;
+      const radius = 3 + seeded(seed + 2) * 8;
+      grass.fillStyle = seeded(seed + 3) > .5
+        ? "rgba(145,190,65,.18)" : "rgba(25,75,28,.13)";
+      grass.beginPath();
+      grass.ellipse(x, y, radius * 1.35, radius * .8, seeded(seed + 4) * Math.PI, 0, Math.PI * 2);
+      grass.fill();
+      if (i % 2 === 0) {
+        grass.strokeStyle = "rgba(177,211,91,.35)";
+        grass.lineWidth = 1;
+        grass.beginPath();
+        grass.moveTo(x, y + 3);
+        grass.lineTo(x - 1.5, y - 4 - seeded(seed + 5) * 3);
+        grass.stroke();
+      }
+    }
+    grassTexturePattern = ctx.createPattern(tile, "repeat");
+    return grassTexturePattern;
+  }
+
   function drawGround(cameraY) {
-    // Gramado natural em vista superior: textura orgânica, variações de luz e tufos de grama.
     const base = ctx.createLinearGradient(0, 0, W, H);
     base.addColorStop(0, "#28552a");
     base.addColorStop(0.28, "#559332");
@@ -138,57 +181,22 @@
     ctx.fillStyle = base;
     ctx.fillRect(0, 0, W, H);
 
+    // A textura acompanha o deslocamento do mundo sem recalcular centenas
+    // de gradientes e milhares de pequenos traços em todos os quadros.
     const cameraWorld = cameraY - H * .56;
-    const firstRow = Math.floor(cameraWorld / 24);
-    const lastRow = Math.ceil((cameraWorld + H) / 24);
+    const tileOffset = ((cameraWorld % 256) + 256) % 256;
+    ctx.save();
+    ctx.translate(0, -tileOffset);
+    ctx.fillStyle = getGrassTexturePattern();
+    ctx.fillRect(0, tileOffset, W, H + 256);
+    ctx.restore();
 
-    for (let row = firstRow; row <= lastRow; row++) {
-      const worldY = row * 24 + 12;
-      const screenY = worldY - cameraWorld;
-      for (let col = 0; col < 34; col++) {
-        const seed = row * 197 + col * 83;
-        const r = seeded(seed);
-        const x = col * 24 + seeded(seed + 7) * 10 - 5;
-        const y = screenY + seeded(seed + 11) * 12 - 6;
-
-        // Manchas suaves de grama em tons naturais, sem padrão quadriculado.
-        if (r > .30) {
-          const radius = 5 + seeded(seed + 17) * 13;
-          const patch = ctx.createRadialGradient(x, y, 1, x, y, radius);
-          patch.addColorStop(0, r > .72 ? "rgba(145,190,65,.20)" : "rgba(25,75,28,.13)");
-          patch.addColorStop(1, "rgba(40,95,30,0)");
-          ctx.fillStyle = patch;
-          ctx.beginPath();
-          ctx.ellipse(x, y, radius * 1.35, radius * .85, seeded(seed + 23) * Math.PI, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        // Pequenas lâminas de grama com iluminação lateral.
-        if (r > .48) {
-          const blades = 3 + Math.floor(seeded(seed + 31) * 4);
-          for (let k = 0; k < blades; k++) {
-            const bx = x + (seeded(seed + k * 13) - .5) * 18;
-            const by = y + (seeded(seed + k * 19) - .5) * 15;
-            const h = 2 + seeded(seed + k * 29) * 5;
-            ctx.strokeStyle = k % 2 ? "rgba(177,211,91,.42)" : "rgba(24,72,25,.35)";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(bx, by + h);
-            ctx.quadraticCurveTo(bx - 2, by + 1, bx + (seeded(seed + k * 37) - .5) * 5, by - h);
-            ctx.stroke();
-          }
-        }
-      }
-    }
-
-    // Vinheta muito discreta nas bordas, inspirada na iluminação da referência.
     const shade = ctx.createRadialGradient(W * .5, H * .48, 170, W * .5, H * .48, 590);
     shade.addColorStop(0, "rgba(190,225,95,0)");
     shade.addColorStop(1, "rgba(10,38,17,.25)");
     ctx.fillStyle = shade;
     ctx.fillRect(0, 0, W, H);
   }
-
   function drawTree(x, y, variant = 0) {
     const tone = Math.abs(variant) % 3;
     const dark = ["#173f22", "#1c4825", "#204b28"][tone];
@@ -1661,6 +1669,36 @@
       }
     }
 
+    // Zona de detecção visual: faixa âmbar atravessando a via e as plataformas.
+    // A locomotiva deve parar com seu centro dentro deste trecho.
+    const zoneStart = trackPoint(STATION_DETECTION_START);
+    const zoneEnd = trackPoint(STATION_DETECTION_END);
+    const zoneCorners = [
+      worldToScreen({x:zoneStart.x-zoneStart.nx*104,y:zoneStart.y-zoneStart.ny*104},cameraY),
+      worldToScreen({x:zoneEnd.x-zoneEnd.nx*104,y:zoneEnd.y-zoneEnd.ny*104},cameraY),
+      worldToScreen({x:zoneEnd.x+zoneEnd.nx*104,y:zoneEnd.y+zoneEnd.ny*104},cameraY),
+      worldToScreen({x:zoneStart.x+zoneStart.nx*104,y:zoneStart.y+zoneStart.ny*104},cameraY)
+    ];
+    ctx.save();
+    ctx.fillStyle = "rgba(245,190,55,.24)";
+    ctx.strokeStyle = "#f4c34f";
+    ctx.lineWidth = 3;
+    ctx.setLineDash([10,6]);
+    ctx.beginPath();
+    ctx.moveTo(zoneCorners[0].x,zoneCorners[0].y);
+    for(let i=1;i<zoneCorners.length;i++) ctx.lineTo(zoneCorners[i].x,zoneCorners[i].y);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.setLineDash([]);
+    const zoneLabel = worldToScreen(trackPoint((STATION_DETECTION_START+STATION_DETECTION_END)/2),cameraY);
+    ctx.font = "bold 13px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(30,35,27,.88)";
+    ctx.fillText("ZONA DE PARADA",zoneLabel.x+145,zoneLabel.y);
+    ctx.restore();
+
     // Duas estações de desembarque, uma em cada lado da ferrovia.
     const buildingPoint = worldToScreen(trackPoint(8440), cameraY);
     const leftBuildingX = buildingPoint.x - 175;
@@ -2652,7 +2690,7 @@
   }
 
   function isTrainStoppedAtStation() {
-    return isTrainInsideStationZone() && state.speed <= 0.05;
+    return isTrainInsideStationZone() && state.speed <= 0.5;
   }
 
   function drawPerson(x, y, variant = 0, walking = false, seated = false) {
@@ -2750,7 +2788,7 @@
       }
     }
     const stationDetected = isTrainInsideStationZone();
-    const stationReady = stationDetected && state.speed <= 0.05;
+    const stationReady = stationDetected && state.speed <= 0.5;
     doorButton.disabled = !stationReady && !state.doorsOpen;
     doorButton.textContent = state.doorsOpen ? "FECHAR PORTAS" : "ABRIR PORTAS";
     doorStatus.textContent = state.doorsOpen
