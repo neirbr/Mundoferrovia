@@ -2925,7 +2925,7 @@
     const traction=state.direction!==0&&state.throttlePoint>0&&!state.emergency&&!state.doorsOpen;
     if(state.emergency){
       state.speed=Math.max(0,state.speed-7.5*dt);
-      if(state.speed<=0.05){state.speed=0;state.emergencyStopped=true;brakeStatus.textContent="Composição parada — alivie o freio";}
+      if(state.speed<=0.05){state.speed=0;state.emergencyStopped=true;if(state.brake===0)beginEmergencyAirRecovery();else brakeStatus.textContent="Composição parada — alivie o freio até 0%";}
     }else if(state.brake>0){
       state.speed=Math.max(0,state.speed-(0.35+state.brake/100*2.7)*dt);
     }else if(traction&&state.speed<limit){
@@ -2995,6 +2995,23 @@
   let emergencyRecoveryTimer=null;
   let emergencyRecoveryPending=false;
   let airSystemReady=false;
+
+  function beginEmergencyAirRecovery(){
+    if(emergencyRecoveryPending||airSystemReady||state.speed>0.05||state.brake!==0)return;
+    state.emergency=false;
+    state.emergencyStopped=true;
+    emergencyRecoveryPending=true;
+    brakeStatus.textContent="Alívio concluído — aguardando 7 segundos...";
+    emergencyRecoveryTimer=setTimeout(()=>{
+      emergencyRecoveryTimer=null;
+      emergencyRecoveryPending=false;
+      state.emergency=false;
+      state.emergencyStopped=false;
+      state.brake=0;
+      airSystemReady=true;
+      refreshControls();
+    },7000);
+  }
   const doorButton=document.getElementById("doorButton");
   const doorStatus=document.getElementById("doorStatus");
   doorButton.addEventListener("click",()=>{
@@ -3054,20 +3071,14 @@
 
       // Se o operador retirar o freio até zero, inicia a recomposição do ar.
       if(value===0){
-        if(!emergencyRecoveryPending){
-          state.emergency=false;
-          state.emergencyStopped=true;
-          emergencyRecoveryPending=true;
-          brakeStatus.textContent="Alívio concluído — aguardando 7 segundos...";
-          emergencyRecoveryTimer=setTimeout(()=>{
-            emergencyRecoveryTimer=null;
-            emergencyRecoveryPending=false;
-            state.emergency=false;
-            state.emergencyStopped=false;
-            state.brake=0;
-            airSystemReady=true;
-            refreshControls();
-          },7000);
+        if(state.speed<=0.05){
+          beginEmergencyAirRecovery();
+        }else{
+          // Mantém a frenagem de emergência até a composição parar.
+          // A contagem dos 7 segundos só começa com o trem imobilizado.
+          state.emergency=true;
+          state.emergencyStopped=false;
+          brakeStatus.textContent="Freio aliviado — aguardando a composição parar";
         }
       }else{
         // Se voltar a aplicar pressão durante a espera, cancela a contagem
