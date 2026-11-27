@@ -104,8 +104,28 @@
     return x - Math.floor(x);
   }
 
+  const lateralFadeCache = new Map();
+
+  function getLateralFade(tint, side) {
+    const key = tint + "|" + side;
+    if (lateralFadeCache.has(key)) return lateralFadeCache.get(key);
+    const gradient = side === "left"
+      ? ctx.createLinearGradient(82, 0, 150, 0)
+      : ctx.createLinearGradient(W - 150, 0, W - 82, 0);
+    if (side === "left") {
+      gradient.addColorStop(0, tint);
+      gradient.addColorStop(1, "rgba(0,0,0,0)");
+    } else {
+      gradient.addColorStop(0, "rgba(0,0,0,0)");
+      gradient.addColorStop(1, tint);
+    }
+    lateralFadeCache.set(key, gradient);
+    return gradient;
+  }
+
   function drawLateralAtmosphere(cameraY) {
     // Faixas translúcidas nas bordas: a tonalidade acompanha a região atravessada.
+    // Gradientes horizontais são reutilizados em vez de recriados em todos os quadros.
     const cameraWorld = cameraY - H * .56;
     const firstRow = Math.floor(cameraWorld / 32);
     const lastRow = Math.ceil((cameraWorld + H) / 32);
@@ -125,15 +145,9 @@
       ctx.fillStyle = tint;
       ctx.fillRect(0, screenY, 112, 33);
       ctx.fillRect(W - 112, screenY, 112, 33);
-      const fadeLeft = ctx.createLinearGradient(82, 0, 150, 0);
-      fadeLeft.addColorStop(0, tint);
-      fadeLeft.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = fadeLeft;
+      ctx.fillStyle = getLateralFade(tint, "left");
       ctx.fillRect(82, screenY, 68, 33);
-      const fadeRight = ctx.createLinearGradient(W - 150, 0, W - 82, 0);
-      fadeRight.addColorStop(0, "rgba(0,0,0,0)");
-      fadeRight.addColorStop(1, tint);
-      ctx.fillStyle = fadeRight;
+      ctx.fillStyle = getLateralFade(tint, "right");
       ctx.fillRect(W - 150, screenY, 68, 33);
     }
   }
@@ -2807,17 +2821,18 @@
   let simulationAccumulator = 0;
 
   function frame(time) {
-    const elapsed = Math.max(0, Math.min(.1, (time - (state.lastTime || time)) / 1000));
+    // Absorve pequenas pausas do navegador sem descartar tempo de simulação.
+    // O limite evita uma recuperação excessiva após alternar de aplicativo.
+    const elapsed = Math.max(0, Math.min(.25, (time - (state.lastTime || time)) / 1000));
     state.lastTime = time;
-    simulationAccumulator += elapsed;
+    simulationAccumulator = Math.min(.25, simulationAccumulator + elapsed);
     let steps = 0;
-    while (simulationAccumulator >= FIXED_STEP && steps < 12) {
+    while (simulationAccumulator >= FIXED_STEP && steps < 24) {
       previousTrackOffset = state.trackOffset;
       update(FIXED_STEP);
       simulationAccumulator -= FIXED_STEP;
       steps++;
     }
-    if (steps >= 12) simulationAccumulator = 0;
     render();
     requestAnimationFrame(frame);
   }
@@ -2874,7 +2889,16 @@
   throttleDown.addEventListener("click",()=>{if(!state.emergency&&!state.emergencyStopped){state.throttlePoint=Math.max(0,state.throttlePoint-1);refreshControls();}});
   brakeSlider.addEventListener("input",()=>{if(!state.emergency&&!state.emergencyStopped){state.brake=Number(brakeSlider.value);refreshControls();}});
   emergencyButton.addEventListener("click",()=>{if(state.emergency||state.emergencyStopped)return;state.emergency=true;state.brake=100;state.throttlePoint=0;refreshControls();});
-  releaseEmergencyButton.addEventListener("click",()=>{if(!state.emergencyStopped||state.speed>0)return;state.emergency=false;state.emergencyStopped=false;state.brake=0;state.direction=0;refreshControls();});
+  releaseEmergencyButton.addEventListener("click",()=>{
+    if(!state.emergencyStopped||state.speed>0)return;
+    // Alivia somente os freios e libera os comandos novamente.
+    // Mantém o sentido selecionado; a tração permanece em zero por segurança.
+    state.emergency=false;
+    state.emergencyStopped=false;
+    state.brake=0;
+    refreshControls();
+    brakeStatus.textContent="Freios aliviados — sistema liberado";
+  });
 
   function setPaused(value) {
     state.paused = value;
