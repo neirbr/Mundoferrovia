@@ -1555,6 +1555,39 @@
     }
   }
 
+  function drawTownHouseFence(x, y, variant = 0) {
+    // Cercas baixas em alguns quintais, com portão de acesso à calçada.
+    const left = x - 73, right = x + 82, top = y - 56, bottom = y + 54;
+    ctx.fillStyle = "rgba(27,32,26,.22)";
+    ctx.fillRect(left + 3, top + 4, right - left, bottom - top);
+    ctx.strokeStyle = variant % 2 ? "#6e583e" : "#806346";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(left, top); ctx.lineTo(right, top);
+    ctx.moveTo(left, top); ctx.lineTo(left, bottom);
+    ctx.moveTo(right, top); ctx.lineTo(right, bottom);
+    ctx.moveTo(left, bottom); ctx.lineTo(x - 13, bottom);
+    ctx.moveTo(x + 13, bottom); ctx.lineTo(right, bottom);
+    ctx.stroke();
+    for (let px = left; px <= right; px += 22) {
+      ctx.fillStyle = "#b99a70";
+      ctx.fillRect(px - 2, top - 3, 4, 8);
+      ctx.fillRect(px - 2, bottom - 3, 4, 8);
+    }
+    for (let py = top + 18; py < bottom - 8; py += 22) {
+      ctx.fillStyle = "#b99a70";
+      ctx.fillRect(left - 2, py - 2, 5, 4);
+      ctx.fillRect(right - 2, py - 2, 5, 4);
+    }
+    // Portão duplo voltado para a calçada.
+    ctx.strokeStyle = "#d0b184";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x - 12, bottom - 1); ctx.lineTo(x - 12, bottom - 10);
+    ctx.moveTo(x + 12, bottom - 1); ctx.lineTo(x + 12, bottom - 10);
+    ctx.stroke();
+  }
+
   function drawTownRegion(cameraY) {
     // Bairro mais povoado: duas fileiras de lotes, comércio, praça e ruas.
     const buildings = [
@@ -1599,6 +1632,7 @@
       if (p.y < -180 || p.y > H + 180) continue;
       const x = p.x + b.side * b.d;
       if (x < 75 || x > W - 75) continue;
+      if (!b.shop && i % 5 === 2) drawTownHouseFence(x, p.y, b.v);
       if (b.shop) drawTownShop(x, p.y, b.v);
       else drawTownHouse(x, p.y, b.v, !!b.garage);
     }
