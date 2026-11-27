@@ -538,21 +538,85 @@
     }
   }
 
-  function drawFlowerField(cameraY){
-    // Campo florido contínuo: intervalo de linhas corrigido para acompanhar o passo de 38 px.
-    const cameraWorld=cameraY-H*.56, firstRow=Math.floor((cameraWorld-130)/38), lastRow=Math.ceil((cameraWorld+H+130)/38);
-    const colors=["#f5df62","#eaa0bd","#f4f0dc","#b9a0df","#e98b55","#f5c5dc","#ffffff"];
-    for(let row=firstRow;row<=lastRow;row++){const yWorld=row*38+19,s=690-yWorld;if(s<3780||s>5650)continue;const p=trackPoint(s),y=yWorld-cameraWorld;
-      for(let col=0;col<25;col++){const seed=row*251+col*83,x=col*34+(seeded(seed)-.5)*18;if(Math.abs(x-p.x)<78||x<3||x>W-3)continue;
-        if(seeded(seed+9)>.12){ctx.fillStyle=seeded(seed+17)>.5?"#789f4e":"#91ad61";ctx.beginPath();ctx.ellipse(x,y,17+seeded(seed+19)*8,7+seeded(seed+21)*5,seeded(seed+23)*.5,0,Math.PI*2);ctx.fill();}
-        const count=7+Math.floor(seeded(seed+27)*5);for(let i=0;i<count;i++){const fx=x+(seeded(seed+30+i*7)-.5)*43,fy=y+(seeded(seed+31+i*11)-.5)*34;if(Math.abs(fx-p.x)<72||fx<3||fx>W-3)continue;
-          const color=colors[Math.floor(seeded(seed+32+i*13)*colors.length)],size=2.2+seeded(seed+35+i*9)*1.8;
-          ctx.strokeStyle="#4f813e";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(fx,fy+5);ctx.lineTo(fx,fy-1);ctx.stroke();
-          ctx.fillStyle="#5f9146";ctx.beginPath();ctx.ellipse(fx-2,fy+2,3,1.4,-.4,0,Math.PI*2);ctx.fill();
-          ctx.fillStyle=color;for(let pet=0;pet<5;pet++){const a=pet*Math.PI*2/5;ctx.beginPath();ctx.arc(fx+Math.cos(a)*size,fy-2+Math.sin(a)*size,size*.72,0,Math.PI*2);ctx.fill();}
-          ctx.fillStyle="#e9c64f";ctx.beginPath();ctx.arc(fx,fy-2,1.6,0,Math.PI*2);ctx.fill();
-        }
+  // Cada faixa de flores é estática no mundo: desenhamos uma vez e reutilizamos
+  // a imagem pronta enquanto a câmera percorre o campo.
+  const flowerRowCache = new Map();
+
+  function createFlowerRow(row, trackX) {
+    const tile = document.createElement("canvas");
+    tile.width = W;
+    tile.height = 38;
+    const flowerCtx = tile.getContext("2d");
+    const y = 19;
+    const colors = ["#f5df62","#eaa0bd","#f4f0dc","#b9a0df","#e98b55","#f5c5dc","#ffffff"];
+
+    for (let col = 0; col < 25; col++) {
+      const seed = row * 251 + col * 83;
+      const x = col * 34 + (seeded(seed) - .5) * 18;
+      if (Math.abs(x - trackX) < 78 || x < 3 || x > W - 3) continue;
+
+      if (seeded(seed + 9) > .12) {
+        flowerCtx.fillStyle = seeded(seed + 17) > .5 ? "#789f4e" : "#91ad61";
+        flowerCtx.beginPath();
+        flowerCtx.ellipse(x, y, 17 + seeded(seed + 19) * 8, 7 + seeded(seed + 21) * 5, seeded(seed + 23) * .5, 0, Math.PI * 2);
+        flowerCtx.fill();
       }
+
+      const count = 7 + Math.floor(seeded(seed + 27) * 5);
+      for (let i = 0; i < count; i++) {
+        const fx = x + (seeded(seed + 30 + i * 7) - .5) * 43;
+        const fy = y + (seeded(seed + 31 + i * 11) - .5) * 34;
+        if (Math.abs(fx - trackX) < 72 || fx < 3 || fx > W - 3) continue;
+
+        const color = colors[Math.floor(seeded(seed + 32 + i * 13) * colors.length)];
+        const size = 2.2 + seeded(seed + 35 + i * 9) * 1.8;
+        flowerCtx.strokeStyle = "#4f813e";
+        flowerCtx.lineWidth = 1;
+        flowerCtx.beginPath();
+        flowerCtx.moveTo(fx, fy + 5);
+        flowerCtx.lineTo(fx, fy - 1);
+        flowerCtx.stroke();
+
+        flowerCtx.fillStyle = "#5f9146";
+        flowerCtx.beginPath();
+        flowerCtx.ellipse(fx - 2, fy + 2, 3, 1.4, -.4, 0, Math.PI * 2);
+        flowerCtx.fill();
+
+        flowerCtx.fillStyle = color;
+        for (let pet = 0; pet < 5; pet++) {
+          const angle = pet * Math.PI * 2 / 5;
+          flowerCtx.beginPath();
+          flowerCtx.arc(fx + Math.cos(angle) * size, fy - 2 + Math.sin(angle) * size, size * .72, 0, Math.PI * 2);
+          flowerCtx.fill();
+        }
+
+        flowerCtx.fillStyle = "#e9c64f";
+        flowerCtx.beginPath();
+        flowerCtx.arc(fx, fy - 2, 1.6, 0, Math.PI * 2);
+        flowerCtx.fill();
+      }
+    }
+    return tile;
+  }
+
+  function drawFlowerField(cameraY) {
+    const cameraWorld = cameraY - H * .56;
+    const firstRow = Math.floor((cameraWorld - 130) / 38);
+    const lastRow = Math.ceil((cameraWorld + H + 130) / 38);
+
+    for (let row = firstRow; row <= lastRow; row++) {
+      const worldY = row * 38 + 19;
+      const s = 690 - worldY;
+      if (s < 3780 || s > 5650) continue;
+
+      let tile = flowerRowCache.get(row);
+      if (!tile) {
+        tile = createFlowerRow(row, trackPoint(s).x);
+        flowerRowCache.set(row, tile);
+      }
+
+      const screenY = worldY - cameraWorld - 19;
+      ctx.drawImage(tile, 0, screenY);
     }
   }
   function drawTownHouse(x, y, variant = 0, garage = false) {
