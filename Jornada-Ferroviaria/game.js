@@ -283,83 +283,44 @@
     ctx.fillStyle="#c5a174";ctx.fillRect(x-11,y+82,22,2);
   }
 
-  function drawFarmBuilding(x, y) {
-    // Casa de fazenda com telhado em duas águas, beiral, varanda e sombra projetada.
-    ctx.fillStyle = "rgba(22, 30, 23, .34)";
-    ctx.beginPath(); ctx.ellipse(x + 5, y + 22, 42, 25, -.08, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#8d795c";
-    ctx.fillRect(x - 34, y - 15, 70, 49);
-    ctx.fillStyle = "#d6c29a";
-    ctx.fillRect(x - 29, y - 20, 60, 48);
-    ctx.fillStyle = "#a34e3b";
-    ctx.beginPath();
-    ctx.moveTo(x - 36, y - 18); ctx.lineTo(x, y - 43); ctx.lineTo(x + 38, y - 18);
-    ctx.lineTo(x + 32, y + 1); ctx.lineTo(x - 31, y + 1); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = "#c87550";
-    ctx.beginPath(); ctx.moveTo(x - 30, y - 19); ctx.lineTo(x, y - 39); ctx.lineTo(x + 31, y - 19); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = "rgba(245, 190, 133, .65)"; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(x, y - 38); ctx.lineTo(x, y - 19); ctx.stroke();
-    ctx.fillStyle = "#72513a"; ctx.fillRect(x - 9, y + 1, 18, 27);
-    ctx.fillStyle = "#a8c4bd"; ctx.fillRect(x - 25, y - 10, 10, 11); ctx.fillRect(x + 15, y - 10, 10, 11);
-    ctx.strokeStyle = "#eee0bf"; ctx.lineWidth = 2;
-    ctx.strokeRect(x - 25, y - 10, 10, 11); ctx.strokeRect(x + 15, y - 10, 10, 11);
-    ctx.fillStyle = "#8a795e"; ctx.fillRect(x - 34, y + 28, 70, 5);
-    ctx.fillStyle = "#d7c39c"; ctx.fillRect(x - 27, y + 33, 55, 4);
-    // Chaminé e pequeno caminho de acesso.
-    ctx.fillStyle = "#6a5140"; ctx.fillRect(x + 18, y - 36, 8, 15);
-    ctx.fillStyle = "#b7a28a"; ctx.fillRect(x + 16, y - 38, 12, 3);
-    ctx.fillStyle = "#b49a70";
-    ctx.beginPath(); ctx.moveTo(x - 5, y + 37); ctx.lineTo(x + 8, y + 37); ctx.lineTo(x + 24, y + 66); ctx.lineTo(x - 22, y + 66); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = "rgba(236, 216, 174, .5)"; ctx.fillRect(x - 13, y + 44, 25, 2);
+  function drawFarmBuilding(x,y){
+    ctx.save();
+    ctx.fillStyle="rgba(24,30,21,.32)";ctx.beginPath();ctx.ellipse(x+5,y+42,68,28,-.06,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#b69a70";ctx.beginPath();ctx.moveTo(x-13,y+38);ctx.lineTo(x+15,y+38);ctx.lineTo(x+45,y+92);ctx.lineTo(x-45,y+92);ctx.closePath();ctx.fill();
+    ctx.fillStyle="#806b50";ctx.fillRect(x-42,y-16,84,55);ctx.fillStyle="#d9c7a2";ctx.fillRect(x-36,y-22,72,56);
+    ctx.fillStyle="#b4a080";ctx.fillRect(x-36,y+25,72,9);
+    for(let i=0;i<8;i++){ctx.fillStyle=i%2?"#95836a":"#c0ad8c";ctx.fillRect(x-34+i*10,y+27+(i%2)*3,8,3);}
+    ctx.fillStyle="#713b2e";ctx.beginPath();ctx.moveTo(x-48,y-19);ctx.lineTo(x,y-53);ctx.lineTo(x+48,y-19);ctx.lineTo(x+42,y-8);ctx.lineTo(x-42,y-8);ctx.closePath();ctx.fill();
+    ctx.fillStyle="#a64e38";ctx.beginPath();ctx.moveTo(x-43,y-21);ctx.lineTo(x,y-49);ctx.lineTo(x+43,y-21);ctx.lineTo(x+37,y-14);ctx.lineTo(x-37,y-14);ctx.closePath();ctx.fill();
+    ctx.strokeStyle="rgba(75,39,31,.55)";ctx.lineWidth=1.2;for(let r=0;r<4;r++){const yy=y-42+r*7;ctx.beginPath();ctx.moveTo(x-31+r*8,yy+10);ctx.lineTo(x+31-r*8,yy+10);ctx.stroke();}
+    ctx.strokeStyle="rgba(239,171,119,.55)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y-49);ctx.lineTo(x,y-15);ctx.stroke();
+    ctx.fillStyle="#684638";ctx.fillRect(x+22,y-48,9,22);ctx.fillStyle="#9d7359";ctx.fillRect(x+20,y-50,13,4);
+    for(const wx of [x-29,x+19]){ctx.fillStyle="#6d4b35";ctx.fillRect(wx-2,y-9,16,17);ctx.fillStyle="#8fc0c0";ctx.fillRect(wx,y-7,12,13);ctx.strokeStyle="#f0e4c8";ctx.lineWidth=2;ctx.strokeRect(wx,y-7,12,13);ctx.beginPath();ctx.moveTo(wx+6,y-7);ctx.lineTo(wx+6,y+6);ctx.moveTo(wx,y-1);ctx.lineTo(wx+12,y-1);ctx.stroke();ctx.fillStyle="#79543a";ctx.fillRect(wx-5,y-9,4,17);ctx.fillRect(wx+14,y-9,4,17);}
+    ctx.fillStyle="#65442e";ctx.fillRect(x-8,y+2,16,32);ctx.fillStyle="#a8794d";ctx.fillRect(x-6,y+4,12,28);ctx.fillStyle="#d6b16e";ctx.beginPath();ctx.arc(x+3,y+18,1.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#8b7659";ctx.fillRect(x-46,y+33,92,5);ctx.fillStyle="#d4c19b";ctx.fillRect(x-43,y+34,86,3);
+    for(const px of [x-39,x+39]){ctx.fillStyle="#eee0bf";ctx.fillRect(px-2,y+4,4,31);ctx.fillStyle="#9a7956";ctx.fillRect(px-4,y+3,8,3);}
+    ctx.fillStyle="#a58a65";ctx.fillRect(x-12,y+35,24,4);ctx.fillRect(x-9,y+39,18,4);
+    for(const side of [-1,1]){const bx=x+side*55;ctx.fillStyle="#a65e43";ctx.fillRect(bx-5,y+27,10,9);ctx.fillStyle="#4f873e";ctx.beginPath();ctx.arc(bx,y+22,8,0,Math.PI*2);ctx.fill();ctx.fillStyle="#d8d77c";ctx.beginPath();ctx.arc(bx-2,y+19,2,0,Math.PI*2);ctx.fill();}
+    ctx.restore();
   }
-
-  function drawFarmAnimals(x, y) {
-    // Curral fechado com porteira, cocho e bebedouro; os animais caminham em pequenos percursos.
-    ctx.fillStyle="rgba(22,30,20,.32)";
-    ctx.beginPath();ctx.ellipse(x+5,y+8,66,48,0,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle="#9a8058";ctx.fillRect(x-61,y-39,122,78);
-    ctx.fillStyle="#b39a6c";ctx.fillRect(x-57,y-35,114,70);
-    ctx.fillStyle="#88704d";
-    for(let i=0;i<7;i++){
-      const gx=x-48+i*16;
-      ctx.fillRect(gx,y-34,3,68);
-      ctx.fillRect(gx,y-33,2,66);
-    }
-    ctx.fillStyle="#5a422d";ctx.fillRect(x-62,y-40,124,5);ctx.fillRect(x-62,y+35,124,5);
-    ctx.fillStyle="#d0ad7c";ctx.fillRect(x-12,y+34,24,6);
-    // Cocho de alimentação e bebedouro metálico.
-    ctx.fillStyle="#63452f";ctx.fillRect(x-47,y-27,33,9);
-    ctx.fillStyle="#c4a16a";ctx.fillRect(x-45,y-26,29,5);
-    ctx.fillStyle="#607f83";ctx.fillRect(x+28,y+17,20,12);
-    ctx.fillStyle="#9bc2bd";ctx.fillRect(x+30,y+19,16,7);
-    ctx.fillStyle="rgba(225,244,225,.7)";ctx.fillRect(x+32,y+20,10,2);
-
-    const t=(state.lastTime||0)*.001;
-    const animals=[
-      {ox:-25,oy:-11,phase:0,tone:0},
-      {ox:15,oy:-10,phase:2.1,tone:1},
-      {ox:-5,oy:17,phase:4.2,tone:0},
-      {ox:34,oy:-3,phase:1.2,tone:1}
-    ];
-    for(const a of animals){
-      const ax=x+a.ox+Math.sin(t*.72+a.phase)*8;
-      const ay=y+a.oy+Math.cos(t*.55+a.phase)*5;
-      ctx.save();ctx.translate(ax,ay);
-      ctx.rotate(Math.sin(t*.65+a.phase)*.12);
-      ctx.fillStyle="rgba(25,30,21,.25)";
-      ctx.beginPath();ctx.ellipse(2,5,10,6,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle=a.tone?"#b6aa8c":"#eee7d2";
-      ctx.beginPath();ctx.ellipse(0,0,9,6,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle=a.tone?"#4e493d":"#6a5544";
-      ctx.beginPath();ctx.ellipse(6,-1,4,3.5,0,0,Math.PI*2);ctx.fill();
-      ctx.fillRect(-5,-4,3,3);ctx.fillRect(1,1,3,2);
-      ctx.strokeStyle="#55483a";ctx.lineWidth=1.5;
-      const step=Math.sin(t*5+a.phase)*1.5;
-      for(const leg of [[-5,3],[4,3]]){ctx.beginPath();ctx.moveTo(leg[0],leg[1]);ctx.lineTo(leg[0]+step,leg[1]+4);ctx.stroke();}
-      ctx.restore();
-    }
+  function drawFarmAnimals(x,y){
+    ctx.save();ctx.fillStyle="rgba(22,30,20,.32)";ctx.beginPath();ctx.ellipse(x+5,y+12,75,53,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#a88b60";ctx.fillRect(x-66,y-42,132,86);ctx.fillStyle="#b9a477";ctx.fillRect(x-61,y-37,122,76);
+    ctx.fillStyle="#9b8057";for(let i=0;i<8;i++)ctx.fillRect(x-58+i*16,y-37,4,75);
+    ctx.fillStyle="#63472e";ctx.fillRect(x-67,y-43,134,6);ctx.fillRect(x-67,y+37,134,6);
+    ctx.fillStyle="#c39b68";ctx.fillRect(x-65,y-20,130,4);ctx.fillRect(x-65,y+13,130,4);
+    ctx.fillStyle="#795536";ctx.fillRect(x-13,y+34,27,8);ctx.strokeStyle="#d0ad7c";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-12,y+35);ctx.lineTo(x+12,y+41);ctx.moveTo(x+12,y+35);ctx.lineTo(x-12,y+41);ctx.stroke();
+    ctx.fillStyle="#60432e";ctx.fillRect(x-51,y-29,35,11);ctx.fillStyle="#c3a16c";ctx.fillRect(x-49,y-28,31,5);ctx.fillStyle="#607f83";ctx.fillRect(x+31,y+17,22,13);ctx.fillStyle="#a9d0c7";ctx.fillRect(x+33,y+19,18,8);
+    const t=(state.lastTime||0)*.001, animals=[{ox:-28,oy:-9,phase:0,tone:0},{ox:13,oy:-12,phase:2.1,tone:1},{ox:-4,oy:17,phase:4.2,tone:0},{ox:37,oy:-2,phase:1.2,tone:1}];
+    for(const a of animals){const ax=x+a.ox+Math.sin(t*.48+a.phase)*6,ay=y+a.oy+Math.cos(t*.4+a.phase)*3;ctx.save();ctx.translate(ax,ay);ctx.rotate(Math.sin(t*.42+a.phase)*.07);
+      ctx.fillStyle="rgba(25,30,21,.25)";ctx.beginPath();ctx.ellipse(2,7,13,6,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=a.tone?"#b7aa8c":"#eee8d8";ctx.beginPath();ctx.ellipse(0,0,11,7,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=a.tone?"#554d40":"#665443";if(a.tone){ctx.beginPath();ctx.ellipse(-3,-2,4,3,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(4,3,3,2,0,0,Math.PI*2);ctx.fill();}else{ctx.beginPath();ctx.ellipse(-4,-1,3,2.5,0,0,Math.PI*2);ctx.fill();}
+      ctx.fillStyle=a.tone?"#b7aa8c":"#eee8d8";ctx.beginPath();ctx.ellipse(9,-2,4.5,4,0,0,Math.PI*2);ctx.fill();ctx.fillStyle="#57483a";ctx.beginPath();ctx.arc(11,-3,1,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle="#584a3b";ctx.lineWidth=1.5;const step=Math.sin(t*3.2+a.phase)*1.2;for(const leg of [[-6,4],[5,4]]){ctx.beginPath();ctx.moveTo(leg[0],leg[1]);ctx.lineTo(leg[0]+step,leg[1]+5);ctx.stroke();}
+      if(!a.tone){ctx.strokeStyle="#e6ddc8";ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(8,-5);ctx.lineTo(10,-9);ctx.moveTo(12,-5);ctx.lineTo(14,-8);ctx.stroke();}ctx.restore();}
+    ctx.restore();
   }
-
   function drawFarmTractor(x,y,phase=0) {
     // Trator agrícola animado, com pneus, cabine envidraçada e arado traseiro.
     const t=(state.lastTime||0)*.001;
@@ -552,44 +513,23 @@
     }
   }
 
-  function drawFlowerField(cameraY) {
-    // Campo aberto e contínuo: somente flores e vegetação baixa, sem árvores.
-    const cameraWorld = cameraY - H * .56;
-    const firstRow = Math.floor((cameraWorld - 120) / 48);
-    const lastRow = Math.ceil((cameraWorld + H + 120) / 48);
-    const colors = ["#e7d45d", "#e9a4bd", "#f1eee0", "#b9a0d8", "#e28b55", "#f2c6df"];
-
-    for (let row = firstRow; row <= lastRow; row++) {
-      const yWorld = row * 38 + 19;
-      const s = 690 - yWorld;
-      if (s < 3780 || s > 5650) continue;
-      const p = trackPoint(s);
-      const y = yWorld - cameraWorld;
-
-      for (let col = 0; col < 20; col++) {
-        const seed = row * 251 + col * 83;
-        const x = col * 42 + (seeded(seed) - .5) * 24;
-        if (Math.abs(x - p.x) < 72 || x < 4 || x > W - 4) continue;
-
-        if (seeded(seed + 9) > .35) {
-          ctx.fillStyle = seeded(seed + 17) > .5 ? "#86a95b" : "#91ad61";
-          ctx.fillRect(x - 13, y - 9, 26, 18);
-        }
-
-        for (let i = 0; i < 5; i++) {
-          const fx = x + (seeded(seed + 30 + i * 7) - .5) * 38;
-          const fy = y + (seeded(seed + 31 + i * 11) - .5) * 32;
-          if (Math.abs(fx - p.x) < 67) continue;
-          ctx.fillStyle = colors[Math.floor(seeded(seed + 32 + i * 13) * colors.length)];
-          ctx.fillRect(fx, fy, 4, 4);
-          ctx.fillStyle = "#f8edb2";
-          ctx.fillRect(fx + 1, fy - 2, 2, 2);
+  function drawFlowerField(cameraY){
+    // Campo florido contínuo: intervalo de linhas corrigido para acompanhar o passo de 38 px.
+    const cameraWorld=cameraY-H*.56, firstRow=Math.floor((cameraWorld-130)/38), lastRow=Math.ceil((cameraWorld+H+130)/38);
+    const colors=["#f5df62","#eaa0bd","#f4f0dc","#b9a0df","#e98b55","#f5c5dc","#ffffff"];
+    for(let row=firstRow;row<=lastRow;row++){const yWorld=row*38+19,s=690-yWorld;if(s<3780||s>5650)continue;const p=trackPoint(s),y=yWorld-cameraWorld;
+      for(let col=0;col<25;col++){const seed=row*251+col*83,x=col*34+(seeded(seed)-.5)*18;if(Math.abs(x-p.x)<78||x<3||x>W-3)continue;
+        if(seeded(seed+9)>.12){ctx.fillStyle=seeded(seed+17)>.5?"#789f4e":"#91ad61";ctx.beginPath();ctx.ellipse(x,y,17+seeded(seed+19)*8,7+seeded(seed+21)*5,seeded(seed+23)*.5,0,Math.PI*2);ctx.fill();}
+        const count=7+Math.floor(seeded(seed+27)*5);for(let i=0;i<count;i++){const fx=x+(seeded(seed+30+i*7)-.5)*43,fy=y+(seeded(seed+31+i*11)-.5)*34;if(Math.abs(fx-p.x)<72||fx<3||fx>W-3)continue;
+          const color=colors[Math.floor(seeded(seed+32+i*13)*colors.length)],size=2.2+seeded(seed+35+i*9)*1.8;
+          ctx.strokeStyle="#4f813e";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(fx,fy+5);ctx.lineTo(fx,fy-1);ctx.stroke();
+          ctx.fillStyle="#5f9146";ctx.beginPath();ctx.ellipse(fx-2,fy+2,3,1.4,-.4,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle=color;for(let pet=0;pet<5;pet++){const a=pet*Math.PI*2/5;ctx.beginPath();ctx.arc(fx+Math.cos(a)*size,fy-2+Math.sin(a)*size,size*.72,0,Math.PI*2);ctx.fill();}
+          ctx.fillStyle="#e9c64f";ctx.beginPath();ctx.arc(fx,fy-2,1.6,0,Math.PI*2);ctx.fill();
         }
       }
     }
   }
-
-
   function drawTownHouse(x, y, variant = 0, garage = false) {
     // Residência vista de cima com telhado de telhas, beirais, varanda e garagem.
     const walls = ["#d9c49e","#c7d0bd","#d8b5a2","#d8d0ad"];
