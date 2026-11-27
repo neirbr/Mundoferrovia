@@ -15,14 +15,11 @@
   const TRACK_SHIFT_X = 70;
   const TRACK_LENGTH = 10400; // Extensão reservada para a linha e futuras regiões após a estação final.
   const START_S = 520; // Posição inicial original da locomotiva junto à plataforma.
-  // MODO TEMPORÁRIO: inicia diretamente na estação final. Desative para voltar ao início normal.
-  const TEST_URBAN_MODE = true;
-  const TEST_URBAN_START = 7920;
   const TRAIN_SPACING = 48;
   const PASSENGER_WAGON_COUNT = 8;
   const MAX_SPEED = 82;
   const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
-  const state = {distance:TEST_URBAN_MODE?TEST_URBAN_START:0,trackOffset:TEST_URBAN_MODE?TEST_URBAN_START:0,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[]};
+  const state = {distance:0,trackOffset:0,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[]};
 
   // Traçado com curvas mais fechadas intercaladas por longas retas.
   // Cada curva usa transição suave para manter a continuidade dos trilhos.
