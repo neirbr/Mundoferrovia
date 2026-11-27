@@ -347,14 +347,21 @@
     ctx.restore();
   }
   function drawFarmTractor(x,y,phase=0) {
-    // Trator agrícola visto de cima, com carroceria, cabine, pneus robustos
-    // e implemento traseiro. O deslocamento é lento para parecer trabalho no campo.
+    // O trator percorre um circuito oval entre duas fileiras:
+    // segue para a frente, faz a curva no fim do talhão e retorna pela fileira ao lado.
     const t=(state.lastTime||0)*.001;
-    const travel=Math.sin(t*.22+phase);
-    const tx=x+travel*13, ty=y+Math.cos(t*.18+phase)*4;
+    const angle=t*.30+phase;
+    const radiusX=23;
+    const radiusY=43;
+    const pathX=-Math.cos(angle)*radiusX;
+    const pathY=Math.sin(angle)*radiusY;
+    const tangentX=Math.sin(angle)*radiusX;
+    const tangentY=Math.cos(angle)*radiusY;
+    const heading=Math.atan2(tangentX,-tangentY);
+
     ctx.save();
-    ctx.translate(tx,ty);
-    ctx.rotate(Math.sin(t*.16+phase)*.018);
+    ctx.translate(x+pathX,y+pathY);
+    ctx.rotate(heading);
 
     // Sombra projetada no terreno.
     ctx.fillStyle="rgba(18,25,17,.34)";
