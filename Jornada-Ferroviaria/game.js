@@ -2991,7 +2991,10 @@
   const brakeStatus=document.getElementById("brakeStatus");
   const forwardButton=document.getElementById("forwardButton"),neutralButton=document.getElementById("neutralButton"),reverseButton=document.getElementById("reverseButton");
   const throttleUp=document.getElementById("throttleUp"),throttleDown=document.getElementById("throttleDown");
-  const emergencyButton=document.getElementById("emergencyButton"),releaseEmergencyButton=document.getElementById("releaseEmergencyButton");
+  const emergencyButton=document.getElementById("emergencyButton");
+  let emergencyRecoveryTimer=null;
+  let emergencyRecoveryPending=false;
+  let airSystemReady=false;
   const doorButton=document.getElementById("doorButton");
   const doorStatus=document.getElementById("doorStatus");
   doorButton.addEventListener("click",()=>{
@@ -3025,33 +3028,77 @@
     brakeValue.textContent=state.brake+"%";
     brakeSlider.value=state.brake;
 
-    // Na emergência, os controles de tração e sentido ficam bloqueados,
-    // mas o comando de alívio permanece sempre disponível.
+    // Durante a emergência, somente o controle deslizante do freio
+    // permanece disponível para iniciar o procedimento de recomposição do ar.
     const emergencyActive=state.emergency||state.emergencyStopped;
     [forwardButton,neutralButton,reverseButton,throttleUp,throttleDown].forEach(b=>b.disabled=emergencyActive||state.doorsOpen);
     brakeSlider.disabled=state.doorsOpen;
     emergencyButton.disabled=emergencyActive||state.doorsOpen;
-    releaseEmergencyButton.disabled=!emergencyActive;
-    if(state.emergency&&!state.emergencyStopped)brakeStatus.textContent="EMERGÊNCIA — frenagem em andamento";
-    else if(state.emergencyStopped)brakeStatus.textContent="Composição parada — freio de emergência aplicado";
+    if(emergencyRecoveryPending) brakeStatus.textContent="Alívio concluído — aguardando 7 segundos...";
+    else if(airSystemReady) brakeStatus.textContent="Sistema de ar completo";
+    else if(state.emergency&&!state.emergencyStopped) brakeStatus.textContent="EMERGÊNCIA — frenagem em andamento";
+    else if(state.emergencyStopped) brakeStatus.textContent="Composição parada — alivie o freio até 0%";
     else brakeStatus.textContent=state.brake?"Freio de serviço aplicado":"Freio aliviado";
   }
   function chooseDirection(d){if(state.emergency||state.emergencyStopped||state.doorsOpen||state.speed>0.1){brakeStatus.textContent=state.speed>0.1?"Pare a composição antes de inverter o sentido":"Comandos bloqueados";return;}state.direction=d;refreshControls();}
   forwardButton.addEventListener("click",()=>chooseDirection(1));neutralButton.addEventListener("click",()=>chooseDirection(0));reverseButton.addEventListener("click",()=>chooseDirection(-1));
   throttleUp.addEventListener("click",()=>{if(!state.emergency&&!state.emergencyStopped){state.throttlePoint=Math.min(8,state.throttlePoint+1);refreshControls();}});
   throttleDown.addEventListener("click",()=>{if(!state.emergency&&!state.emergencyStopped){state.throttlePoint=Math.max(0,state.throttlePoint-1);refreshControls();}});
-  brakeSlider.addEventListener("input",()=>{if(!state.emergency&&!state.emergencyStopped){state.brake=Number(brakeSlider.value);refreshControls();}});
-  emergencyButton.addEventListener("click",()=>{if(state.emergency||state.emergencyStopped)return;state.emergency=true;state.brake=100;state.throttlePoint=0;refreshControls();});
-  releaseEmergencyButton.addEventListener("click",()=>{
-    if(!state.emergency&&!state.emergencyStopped)return;
-    // O botão de alívio atua imediatamente sobre o sistema de freio.
-    // Se o trem ainda estiver em movimento, a velocidade atual é preservada;
-    // nenhuma tração é aplicada automaticamente.
-    state.emergency=false;
-    state.emergencyStopped=false;
-    state.brake=0;
+  brakeSlider.addEventListener("input",()=>{
+    const value=Number(brakeSlider.value);
+    const emergencyActive=state.emergency||state.emergencyStopped;
+
+    if(emergencyActive||emergencyRecoveryPending){
+      state.brake=value;
+      airSystemReady=false;
+
+      // Se o operador retirar o freio até zero, inicia a recomposição do ar.
+      if(value===0){
+        if(!emergencyRecoveryPending){
+          state.emergency=false;
+          state.emergencyStopped=true;
+          emergencyRecoveryPending=true;
+          brakeStatus.textContent="Alívio concluído — aguardando 7 segundos...";
+          emergencyRecoveryTimer=setTimeout(()=>{
+            emergencyRecoveryTimer=null;
+            emergencyRecoveryPending=false;
+            state.emergency=false;
+            state.emergencyStopped=false;
+            state.brake=0;
+            airSystemReady=true;
+            refreshControls();
+          },7000);
+        }
+      }else{
+        // Se voltar a aplicar pressão durante a espera, cancela a contagem
+        // e mantém o trem bloqueado em condição de emergência.
+        if(emergencyRecoveryTimer!==null){
+          clearTimeout(emergencyRecoveryTimer);
+          emergencyRecoveryTimer=null;
+        }
+        emergencyRecoveryPending=false;
+        state.emergency=true;
+        state.emergencyStopped=state.speed<=0.05;
+        brakeStatus.textContent="Emergência mantida — alivie o freio até 0%";
+      }
+      refreshControls();
+      if(emergencyRecoveryPending)brakeStatus.textContent="Alívio concluído — aguardando 7 segundos...";
+      return;
+    }
+
+    state.brake=value;
     refreshControls();
-    brakeStatus.textContent="Freios aliviados — sistema liberado";
+  });
+  emergencyButton.addEventListener("click",()=>{
+    if(state.emergency||state.emergencyStopped||state.doorsOpen)return;
+    if(emergencyRecoveryTimer!==null){clearTimeout(emergencyRecoveryTimer);emergencyRecoveryTimer=null;}
+    emergencyRecoveryPending=false;
+    airSystemReady=false;
+    state.emergency=true;
+    state.emergencyStopped=false;
+    state.brake=100;
+    state.throttlePoint=0;
+    refreshControls();
   });
 
   function setPaused(value) {
