@@ -15,11 +15,14 @@
   const TRACK_SHIFT_X = 70;
   const TRACK_LENGTH = 10400; // Extensão reservada para a linha e futuras regiões após a estação final.
   const START_S = 520; // Posição inicial original da locomotiva junto à plataforma.
+  const STATION_DETECTION_START = 8390;
+  const STATION_DETECTION_END = 8490;
   const TRAIN_SPACING = 48;
   const PASSENGER_WAGON_COUNT = 8;
   const MAX_SPEED = 82;
   const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
   const state = {distance:0,trackOffset:0,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[]};
+  let previousTrackOffset = state.trackOffset;
 
   // Traçado com curvas mais fechadas intercaladas por longas retas.
   // Cada curva usa transição suave para manter a continuidade dos trilhos.
@@ -2607,18 +2610,19 @@
     ctx.fillRect(p.x + 31, p.y - 12, 11, 5);
   }
 
-  function render(dt = 1 / 60) {
-    const targetCameraY = trackPoint(START_S + state.trackOffset).y;
-    // Suavização independente da taxa de quadros: reduz pequenas variações
-    // no deslocamento vertical sem alterar a velocidade real do trem.
-    if (state.cameraY === null) state.cameraY = targetCameraY;
-    const cameraBlend = 1 - Math.exp(-14 * Math.max(0, dt));
-    state.cameraY += (targetCameraY - state.cameraY) * cameraBlend;
-    const cameraY = state.cameraY;
+  function render() {
+    // Interpola entre os dois últimos passos físicos para que o trem e os
+    // trilhos avancem continuamente mesmo em telas com taxa variável.
+    const currentTrackOffset = state.trackOffset;
+    const alpha = Math.min(1, Math.max(0, simulationAccumulator / FIXED_STEP));
+    state.trackOffset = previousTrackOffset + (currentTrackOffset - previousTrackOffset) * alpha;
+
+    // A câmera acompanha a posição interpolada sem atraso acumulado.
+    const cameraY = trackPoint(START_S + state.trackOffset).y;
+    state.cameraY = cameraY;
     drawGround(cameraY);
     drawLateralAtmosphere(cameraY);
     drawGroundDetails(cameraY);
-    // Vegetação inicial restaurada; as demais regiões mantêm seus cenários próprios.
     drawScenery(cameraY);
     drawFarmRegion(cameraY);
     drawForestRegion(cameraY);
@@ -2626,7 +2630,6 @@
     drawTownRegion(cameraY);
     drawCherryGroveRegion(cameraY);
     drawFinalStationRegion(cameraY);
-    // Água é desenhada depois da vegetação para nunca deixar árvores sobre o rio ou o lago.
     drawRiverLakeRegion(cameraY);
     drawBridge(cameraY);
     drawRails(cameraY);
@@ -2634,15 +2637,22 @@
     drawSignal(cameraY);
     drawTrain(cameraY);
     drawStationPassengers(cameraY);
+
+    // A posição física real permanece intacta para o próximo passo da simulação.
+    state.trackOffset = currentTrackOffset;
   }
 
   function stationTrainPosition() {
     return START_S + state.trackOffset;
   }
 
-  function isTrainStoppedAtStation() {
+  function isTrainInsideStationZone() {
     const trainS = stationTrainPosition();
-    return trainS >= 8270 && trainS <= 8600 && state.speed < 1.2;
+    return trainS >= STATION_DETECTION_START && trainS <= STATION_DETECTION_END;
+  }
+
+  function isTrainStoppedAtStation() {
+    return isTrainInsideStationZone() && state.speed <= 0.05;
   }
 
   function drawPerson(x, y, variant = 0, walking = false, seated = false) {
@@ -2739,12 +2749,13 @@
         if (passenger.progress >= 1) passenger.entered = true;
       }
     }
-    const stationReady = isTrainStoppedAtStation();
+    const stationDetected = isTrainInsideStationZone();
+    const stationReady = stationDetected && state.speed <= 0.05;
     doorButton.disabled = !stationReady && !state.doorsOpen;
     doorButton.textContent = state.doorsOpen ? "FECHAR PORTAS" : "ABRIR PORTAS";
     doorStatus.textContent = state.doorsOpen
       ? (state.passengerProgress < 1 ? "Passageiros desembarcando..." : "Desembarque concluído — feche as portas")
-      : (stationReady ? "Composição parada na plataforma" : "Pare a composição na estação para liberar as portas");
+      : (stationReady ? "Zona de detecção ativada — composição parada" : stationDetected ? "Zona de detecção: pare completamente para liberar as portas" : "Aproxime e pare na zona de detecção da estação");
     speedValue.textContent=Math.round(state.speed);
     distanceValue.textContent=(state.distance/1000).toFixed(2).replace(".",",")+" km";
     const pct=Math.min(100,state.distance/TRACK_LENGTH*100);
@@ -2763,12 +2774,13 @@
     simulationAccumulator += elapsed;
     let steps = 0;
     while (simulationAccumulator >= FIXED_STEP && steps < 12) {
+      previousTrackOffset = state.trackOffset;
       update(FIXED_STEP);
       simulationAccumulator -= FIXED_STEP;
       steps++;
     }
     if (steps >= 12) simulationAccumulator = 0;
-    render(elapsed || FIXED_STEP);
+    render();
     requestAnimationFrame(frame);
   }
 
