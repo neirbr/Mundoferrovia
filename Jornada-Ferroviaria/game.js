@@ -1617,8 +1617,9 @@
 
     // A praça ocupa um lote próprio entre as quadras centrais.
     const parkPoint = worldToScreen(trackPoint(6720), cameraY);
-    const parkX = parkPoint.x - 250;
-    if (parkPoint.y > -180 && parkPoint.y < H + 180 && parkX > 90 && parkX < W - 90) {
+    // Mantém a praça dentro da tela também em celulares estreitos.
+    const parkX = Math.max(96, Math.min(W - 96, W * 0.28));
+    if (parkPoint.y > -180 && parkPoint.y < H + 180 && W > 190) {
       drawTownPark(parkX, parkPoint.y);
     }
 
