@@ -347,62 +347,144 @@
     ctx.restore();
   }
   function drawFarmTractor(x,y,phase=0) {
-    // Trator agrícola animado, com pneus, cabine envidraçada e arado traseiro.
+    // Trator agrícola visto de cima, com carroceria, cabine, pneus robustos
+    // e implemento traseiro. O deslocamento é lento para parecer trabalho no campo.
     const t=(state.lastTime||0)*.001;
-    const travel=Math.sin(t*.34+phase);
-    const tx=x+travel*24, ty=y+Math.cos(t*.23+phase)*8;
-    ctx.save();ctx.translate(tx,ty);
-    ctx.rotate(Math.sin(t*.25+phase)*.035);
-    // Sulcos recém-abertos atrás do implemento.
-    ctx.strokeStyle="rgba(54,39,25,.55)";ctx.lineWidth=2;
-    for(let i=-2;i<=2;i++){
-      ctx.beginPath();ctx.moveTo(-35+i*4,16);ctx.lineTo(-35+i*4,45);ctx.stroke();
+    const travel=Math.sin(t*.22+phase);
+    const tx=x+travel*13, ty=y+Math.cos(t*.18+phase)*4;
+    ctx.save();
+    ctx.translate(tx,ty);
+    ctx.rotate(Math.sin(t*.16+phase)*.018);
+
+    // Sombra projetada no terreno.
+    ctx.fillStyle="rgba(18,25,17,.34)";
+    ctx.beginPath();ctx.ellipse(2,5,37,48,-.02,0,Math.PI*2);ctx.fill();
+
+    // Implemento agrícola traseiro e engate.
+    ctx.strokeStyle="#41483e";ctx.lineWidth=4;ctx.lineCap="round";
+    ctx.beginPath();ctx.moveTo(0,25);ctx.lineTo(0,39);ctx.stroke();
+    ctx.fillStyle="#555d52";
+    ctx.beginPath();ctx.roundRect(-27,37,54,10,3);ctx.fill();
+    ctx.fillStyle="#77715b";
+    for(let i=0;i<5;i++){
+      const bx=-23+i*11;
+      ctx.beginPath();ctx.moveTo(bx,45);ctx.lineTo(bx-3,54);ctx.lineTo(bx+4,54);ctx.closePath();ctx.fill();
     }
-    // Arado e braços hidráulicos.
-    ctx.strokeStyle="#4b5149";ctx.lineWidth=3;
-    ctx.beginPath();ctx.moveTo(0,11);ctx.lineTo(-3,25);ctx.lineTo(-30,30);ctx.stroke();
-    ctx.fillStyle="#555d54";ctx.fillRect(-43,27,29,5);
-    for(let i=0;i<4;i++){
-      ctx.fillStyle="#7b6c4d";ctx.beginPath();ctx.moveTo(-42+i*8,32);ctx.lineTo(-38+i*8,42);ctx.lineTo(-35+i*8,32);ctx.closePath();ctx.fill();
-    }
-    // Chassi.
-    ctx.fillStyle="rgba(20,25,18,.35)";ctx.fillRect(-20,-12,43,32);
-    ctx.fillStyle="#b64b2d";ctx.fillRect(-16,-14,34,27);
-    ctx.fillStyle="#e0a04a";ctx.fillRect(-13,-12,28,3);
-    // Rodas grandes e pequenas com sulcos.
+
+    // Eixos e pneus traseiros largos, com garras de borracha.
     for(const side of [-1,1]){
-      ctx.fillStyle="#202522";ctx.beginPath();ctx.ellipse(side*15,8,7,13,0,0,Math.PI*2);ctx.fill();
-      ctx.strokeStyle="#74766a";ctx.lineWidth=1.3;
-      for(let k=-2;k<=2;k++){ctx.beginPath();ctx.moveTo(side*15-5,8+k*4);ctx.lineTo(side*15+5,8+k*4);ctx.stroke();}
-      ctx.fillStyle="#aaa58d";ctx.beginPath();ctx.arc(side*15,8,3.3,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle="#252a25";ctx.beginPath();ctx.ellipse(side*10,-12,4.2,7,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#171d1b";
+      ctx.beginPath();ctx.roundRect(side*19-7,-1,14,35,6);ctx.fill();
+      ctx.strokeStyle="#555d58";ctx.lineWidth=2;
+      for(let k=0;k<5;k++){
+        const yy=3+k*6;
+        ctx.beginPath();ctx.moveTo(side*19-6,yy);ctx.lineTo(side*19+6,yy+2);ctx.stroke();
+      }
+      ctx.fillStyle="#8b9187";
+      ctx.beginPath();ctx.ellipse(side*19,16,4.2,10,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#b6b7a8";
+      ctx.beginPath();ctx.arc(side*19,16,2.2,0,Math.PI*2);ctx.fill();
     }
-    // Capô e cabine.
-    ctx.fillStyle="#d65a32";ctx.fillRect(-7,-19,18,20);
-    ctx.fillStyle="#354d4d";ctx.fillRect(-5,-27,14,12);
-    ctx.fillStyle="#9bc2bd";ctx.fillRect(-3,-25,10,8);
-    ctx.strokeStyle="#d6d0b7";ctx.lineWidth=1.5;ctx.strokeRect(-5,-27,14,12);
-    ctx.fillStyle="#f2d27a";ctx.fillRect(7,-17,3,3);
+
+    // Chassi e capô dianteiro.
+    ctx.fillStyle="#343b34";ctx.beginPath();ctx.roundRect(-15,-37,30,76,5);ctx.fill();
+    ctx.fillStyle="#b94b2e";ctx.beginPath();ctx.roundRect(-13,-36,26,47,5);ctx.fill();
+    ctx.fillStyle="#d66a3c";ctx.beginPath();ctx.roundRect(-11,-34,22,38,4);ctx.fill();
+    ctx.fillStyle="#8f3827";ctx.fillRect(-10,-2,20,5);
+    // Grade frontal, faróis e escapamento.
+    ctx.fillStyle="#343b39";ctx.fillRect(-9,-34,18,7);
+    ctx.strokeStyle="#9da49a";ctx.lineWidth=1;
+    for(let k=-6;k<=6;k+=3){ctx.beginPath();ctx.moveTo(k,-33);ctx.lineTo(k,-28);ctx.stroke();}
+    ctx.fillStyle="#f3d78a";
+    ctx.beginPath();ctx.arc(-9,-30,2.2,0,Math.PI*2);ctx.arc(9,-30,2.2,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#454b45";ctx.fillRect(9,-23,3,13);
+    ctx.fillStyle="#aab0a2";ctx.fillRect(9,-25,3,3);
+
+    // Cabine envidraçada com teto, moldura e reflexos.
+    ctx.fillStyle="#293b3b";ctx.beginPath();ctx.roundRect(-12,5,24,22,4);ctx.fill();
+    ctx.fillStyle="#79a8a7";ctx.beginPath();ctx.roundRect(-9,8,18,15,2);ctx.fill();
+    ctx.fillStyle="rgba(225,246,237,.48)";
+    ctx.beginPath();ctx.moveTo(-7,9);ctx.lineTo(-2,9);ctx.lineTo(-2,21);ctx.lineTo(-7,21);ctx.closePath();ctx.fill();
+    ctx.strokeStyle="#d7d0b8";ctx.lineWidth=1.5;ctx.strokeRect(-12,5,24,22);
+    ctx.fillStyle="#a63e29";ctx.fillRect(-13,25,26,4);
+    // Banco/volante visível através do vidro.
+    ctx.strokeStyle="#39423c";ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.arc(0,15,3,0,Math.PI*2);ctx.stroke();
+
+    // Rodas dianteiras menores.
+    for(const side of [-1,1]){
+      ctx.fillStyle="#1b211f";
+      ctx.beginPath();ctx.roundRect(side*16-5,-31,10,19,4);ctx.fill();
+      ctx.strokeStyle="#68716a";ctx.lineWidth=1.5;
+      for(let k=0;k<3;k++){ctx.beginPath();ctx.moveTo(side*16-4,-29+k*5);ctx.lineTo(side*16+4,-27+k*5);ctx.stroke();}
+      ctx.fillStyle="#969b8e";ctx.beginPath();ctx.arc(side*16,-22,2.2,0,Math.PI*2);ctx.fill();
+    }
     ctx.restore();
   }
-
   function drawFarmShed(x,y,variant=0) {
-    // Galpão/celeiro com telhado metálico, portas largas e área de carga.
-    const roof=variant%2?"#526d70":"#8c5541";
-    ctx.fillStyle="rgba(23,29,21,.32)";ctx.fillRect(x-45,y-36,96,82);
-    ctx.fillStyle="#c6b18b";ctx.fillRect(x-42,y-39,88,76);
-    ctx.fillStyle=variant%2?"#b9b6a2":"#d4c39d";ctx.fillRect(x-37,y-34,78,66);
-    ctx.fillStyle=roof;ctx.beginPath();ctx.moveTo(x-48,y-35);ctx.lineTo(x,y-57);ctx.lineTo(x+51,y-35);ctx.lineTo(x+44,y-22);ctx.lineTo(x-43,y-22);ctx.closePath();ctx.fill();
-    ctx.strokeStyle="rgba(224,210,174,.58)";ctx.lineWidth=2;
-    for(let i=-3;i<=3;i++){ctx.beginPath();ctx.moveTo(x+i*11,y-39-i%2*2);ctx.lineTo(x+i*11,y-24);ctx.stroke();}
-    ctx.fillStyle="#654b35";ctx.fillRect(x-17,y-4,34,36);
-    ctx.fillStyle="#9d8059";ctx.fillRect(x-15,y-2,14,32);ctx.fillRect(x+1,y-2,14,32);
-    ctx.strokeStyle="#d5bd91";ctx.lineWidth=2;ctx.strokeRect(x-15,y-2,14,32);ctx.strokeRect(x+1,y-2,14,32);
-    ctx.fillStyle="#71847c";ctx.fillRect(x-31,y-20,12,11);ctx.fillRect(x+19,y-20,12,11);
-    ctx.fillStyle="#c5a875";ctx.fillRect(x-35,y+37,70,5);
-    ctx.fillStyle="rgba(218,199,157,.48)";ctx.fillRect(x-28,y+43,56,3);
-  }
+    // Armazém rural com estrutura de alvenaria, telhado metálico ondulado,
+    // portões de correr, janelas altas e área de carga.
+    const wall=variant%2?"#b8b8a4":"#d1bd96";
+    const roof=variant%2?"#526d70":"#86513e";
+    ctx.save();
 
+    // Pátio e sombra de contato.
+    ctx.fillStyle="rgba(22,28,20,.34)";
+    ctx.beginPath();ctx.ellipse(x+5,y+39,70,49,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#75634a";ctx.fillRect(x-61,y-39,122,88);
+    ctx.fillStyle="#a99672";ctx.fillRect(x-56,y-35,112,78);
+
+    // Paredes com face lateral em perspectiva.
+    ctx.fillStyle="#776d58";
+    ctx.beginPath();ctx.moveTo(x+42,y-28);ctx.lineTo(x+57,y-19);ctx.lineTo(x+57,y+35);ctx.lineTo(x+42,y+43);ctx.closePath();ctx.fill();
+    ctx.fillStyle=wall;ctx.fillRect(x-48,y-31,91,72);
+    ctx.fillStyle="rgba(255,255,255,.2)";ctx.fillRect(x-45,y-28,5,64);
+    ctx.fillStyle="rgba(48,44,35,.18)";ctx.fillRect(x+36,y-29,5,68);
+
+    // Telhado com beirais, duas águas e nervuras de chapa.
+    ctx.fillStyle="#3f4039";
+    ctx.beginPath();ctx.moveTo(x-61,y-32);ctx.lineTo(x,y-65);ctx.lineTo(x+62,y-32);ctx.lineTo(x+53,y-20);ctx.lineTo(x-53,y-20);ctx.closePath();ctx.fill();
+    ctx.fillStyle=roof;
+    ctx.beginPath();ctx.moveTo(x-57,y-34);ctx.lineTo(x,y-62);ctx.lineTo(x+57,y-34);ctx.lineTo(x+49,y-25);ctx.lineTo(x-49,y-25);ctx.closePath();ctx.fill();
+    ctx.strokeStyle="rgba(226,218,190,.42)";ctx.lineWidth=1.5;
+    for(let i=-5;i<=5;i++){
+      const xx=x+i*9;
+      ctx.beginPath();ctx.moveTo(xx,y-34-Math.max(0,5-Math.abs(i))*2.4);ctx.lineTo(xx,y-26);ctx.stroke();
+    }
+    ctx.strokeStyle="rgba(35,34,30,.32)";ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(x,y-61);ctx.lineTo(x,y-26);ctx.stroke();
+    ctx.fillStyle="#c3b99d";ctx.fillRect(x-55,y-27,110,4);
+
+    // Portão de correr dividido em duas folhas, com trilho e travessas.
+    ctx.fillStyle="#4e493e";ctx.fillRect(x-25,y-5,51,43);
+    ctx.fillStyle=variant%2?"#7b8178":"#8e7557";
+    ctx.fillRect(x-22,y-2,23,37);ctx.fillRect(x+2,y-2,21,37);
+    ctx.strokeStyle="#d0bd94";ctx.lineWidth=1.5;
+    ctx.strokeRect(x-22,y-2,23,37);ctx.strokeRect(x+2,y-2,21,37);
+    ctx.strokeStyle="rgba(48,42,33,.55)";ctx.lineWidth=2;
+    for(let yy=5;yy<33;yy+=7){
+      ctx.beginPath();ctx.moveTo(x-20,y+yy);ctx.lineTo(x-1,y+yy);ctx.moveTo(x+4,y+yy);ctx.lineTo(x+21,y+yy);ctx.stroke();
+    }
+    ctx.fillStyle="#d5c49e";ctx.fillRect(x-2,y+13,3,5);
+
+    // Janelas altas com vidro escurecido e peitoris.
+    for(const wx of [x-41,x+30]){
+      ctx.fillStyle="#665d4c";ctx.fillRect(wx-1,y-17,12,13);
+      ctx.fillStyle="#79a4a0";ctx.fillRect(wx+1,y-15,8,9);
+      ctx.strokeStyle="#e0d5b9";ctx.lineWidth=1;ctx.strokeRect(wx+1,y-15,8,9);
+      ctx.fillStyle="#81765f";ctx.fillRect(wx-3,y-3,16,2);
+    }
+
+    // Fundação, rampa de concreto e detalhes de uso.
+    ctx.fillStyle="#77776b";ctx.fillRect(x-52,y+38,104,5);
+    ctx.fillStyle="#b6b3a2";ctx.fillRect(x-43,y+43,86,9);
+    ctx.fillStyle="rgba(255,255,255,.22)";ctx.fillRect(x-40,y+44,80,2);
+    ctx.fillStyle="#76583c";ctx.fillRect(x-48,y+13,7,20);
+    ctx.fillStyle="#b08d5c";ctx.fillRect(x-47,y+14,5,17);
+    ctx.fillStyle="#5c5546";ctx.fillRect(x+34,y+8,9,25);
+    ctx.fillStyle="#9c8057";ctx.fillRect(x+35,y+9,7,22);
+    ctx.restore();
+  }
   function drawFarmRegion(cameraY) {
     // Propriedade agrícola ampliada: talhões, curral, tratores e galpões distribuídos pelo vale.
     const plots=[
@@ -2986,6 +3068,16 @@
     if(e.key==="ArrowDown"){e.preventDefault();if(!state.emergency&&!state.emergencyStopped)state.throttlePoint=Math.max(0,state.throttlePoint-1);refreshControls();}
   });
   refreshControls();
+
+  // Pré-carrega o campo florido inteiro antes de iniciar a animação.
+  // Assim, nenhuma faixa precisa ser desenhada pela primeira vez durante a condução.
+  for(let row=-140;row<=-75;row++){
+    const worldY=row*38+19;
+    const s=690-worldY;
+    if(s>=3780&&s<=5650&&!flowerRowCache.has(row)){
+      flowerRowCache.set(row,createFlowerRow(row,trackPoint(s).x));
+    }
+  }
 
   render();
   requestAnimationFrame(frame);
