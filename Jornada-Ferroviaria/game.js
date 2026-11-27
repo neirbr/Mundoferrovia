@@ -22,7 +22,7 @@
   const PASSENGER_WAGON_COUNT = 8;
   const MAX_SPEED = 82;
   const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
-  const state = {distance:TEST_URBAN_MODE?TEST_URBAN_START:0,trackOffset:TEST_URBAN_MODE?TEST_URBAN_START:0,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0};
+  const state = {distance:TEST_URBAN_MODE?TEST_URBAN_START:0,trackOffset:TEST_URBAN_MODE?TEST_URBAN_START:0,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[]};
 
   // Traçado com curvas mais fechadas intercaladas por longas retas.
   // Cada curva usa transição suave para manter a continuidade dos trilhos.
@@ -2854,8 +2854,8 @@
           entered: false
         });
       }
-      refreshControls();
     }
+    refreshControls();
   });
   function refreshControls(){
     directionValue.textContent=state.direction>0?"FRENTE":state.direction<0?"RÉ":"NEUTRO";
