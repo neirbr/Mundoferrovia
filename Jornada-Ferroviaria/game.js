@@ -2612,7 +2612,7 @@
     // Suavização independente da taxa de quadros: reduz pequenas variações
     // no deslocamento vertical sem alterar a velocidade real do trem.
     if (state.cameraY === null) state.cameraY = targetCameraY;
-    const cameraBlend = 1 - Math.exp(-28 * Math.max(0, dt));
+    const cameraBlend = 1 - Math.exp(-14 * Math.max(0, dt));
     state.cameraY += (targetCameraY - state.cameraY) * cameraBlend;
     const cameraY = state.cameraY;
     drawGround(cameraY);
@@ -2642,7 +2642,7 @@
 
   function isTrainStoppedAtStation() {
     const trainS = stationTrainPosition();
-    return trainS >= 8370 && trainS <= 8510 && state.speed < 0.5;
+    return trainS >= 8270 && trainS <= 8600 && state.speed < 1.2;
   }
 
   function drawPerson(x, y, variant = 0, walking = false, seated = false) {
@@ -2750,13 +2750,25 @@
     const pct=Math.min(100,state.distance/TRACK_LENGTH*100);
     progressFill.style.width=pct+"%";progressText.textContent=Math.round(pct)+"% do trecho";
     if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else if(state.distance<3260)regionName.textContent="Rios, lagos e pontes";else if(state.distance<5200)regionName.textContent="Campos floridos";else if(state.distance<7380)regionName.textContent="Cidade do interior";else if(state.distance<7800)regionName.textContent="Bosque de cerejeiras";else if(state.distance<8900)regionName.textContent="Estação final";else regionName.textContent="Trecho após a estação";
-    render(dt);
   }
 
+  // Simulação em passos fixos: mantém aceleração, frenagem e deslocamento
+  // consistentes mesmo quando o celular oscila a taxa de quadros.
+  const FIXED_STEP = 1 / 120;
+  let simulationAccumulator = 0;
+
   function frame(time) {
-    const dt = Math.min(.04, (time - (state.lastTime || time)) / 1000);
+    const elapsed = Math.max(0, Math.min(.1, (time - (state.lastTime || time)) / 1000));
     state.lastTime = time;
-    update(dt);
+    simulationAccumulator += elapsed;
+    let steps = 0;
+    while (simulationAccumulator >= FIXED_STEP && steps < 12) {
+      update(FIXED_STEP);
+      simulationAccumulator -= FIXED_STEP;
+      steps++;
+    }
+    if (steps >= 12) simulationAccumulator = 0;
+    render(elapsed || FIXED_STEP);
     requestAnimationFrame(frame);
   }
 
