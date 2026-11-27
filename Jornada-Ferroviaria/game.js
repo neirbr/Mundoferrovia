@@ -2876,12 +2876,19 @@
     [forwardButton,neutralButton,reverseButton].forEach(b=>b.classList.remove("direction-selected","neutral-selected"));
     if(state.direction>0)forwardButton.classList.add("direction-selected");else if(state.direction<0)reverseButton.classList.add("direction-selected");else neutralButton.classList.add("neutral-selected");
     throttleValue.textContent=state.throttlePoint;limitValue.textContent=state.throttlePoint? "LIMITE "+SPEED_LIMITS[state.throttlePoint]+" KM/H":"TRAÇÃO DESLIGADA";
-    brakeValue.textContent=state.brake+"%";brakeSlider.value=state.brake;
-    const locked=state.emergency||state.emergencyStopped||state.doorsOpen;
-    [forwardButton,neutralButton,reverseButton,throttleUp,throttleDown,brakeSlider].forEach(b=>b.disabled=locked);
-    emergencyButton.disabled=locked;releaseEmergencyButton.disabled=!state.emergencyStopped;
+    brakeValue.textContent=state.brake+"%";
+    brakeSlider.value=state.brake;
+
+    // Na emergência, os controles de tração e sentido ficam bloqueados,
+    // mas o comando de alívio permanece sempre disponível.
+    const emergencyActive=state.emergency||state.emergencyStopped;
+    [forwardButton,neutralButton,reverseButton,throttleUp,throttleDown].forEach(b=>b.disabled=emergencyActive||state.doorsOpen);
+    brakeSlider.disabled=state.doorsOpen;
+    emergencyButton.disabled=emergencyActive||state.doorsOpen;
+    releaseEmergencyButton.disabled=!emergencyActive;
     if(state.emergency&&!state.emergencyStopped)brakeStatus.textContent="EMERGÊNCIA — frenagem em andamento";
-    else if(!state.emergency&&!state.emergencyStopped)brakeStatus.textContent=state.brake?"Freio de serviço aplicado":"Freio aliviado";
+    else if(state.emergencyStopped)brakeStatus.textContent="Composição parada — freio de emergência aplicado";
+    else brakeStatus.textContent=state.brake?"Freio de serviço aplicado":"Freio aliviado";
   }
   function chooseDirection(d){if(state.emergency||state.emergencyStopped||state.doorsOpen||state.speed>0.1){brakeStatus.textContent=state.speed>0.1?"Pare a composição antes de inverter o sentido":"Comandos bloqueados";return;}state.direction=d;refreshControls();}
   forwardButton.addEventListener("click",()=>chooseDirection(1));neutralButton.addEventListener("click",()=>chooseDirection(0));reverseButton.addEventListener("click",()=>chooseDirection(-1));
@@ -2890,9 +2897,10 @@
   brakeSlider.addEventListener("input",()=>{if(!state.emergency&&!state.emergencyStopped){state.brake=Number(brakeSlider.value);refreshControls();}});
   emergencyButton.addEventListener("click",()=>{if(state.emergency||state.emergencyStopped)return;state.emergency=true;state.brake=100;state.throttlePoint=0;refreshControls();});
   releaseEmergencyButton.addEventListener("click",()=>{
-    if(!state.emergencyStopped||state.speed>0)return;
-    // Alivia somente os freios e libera os comandos novamente.
-    // Mantém o sentido selecionado; a tração permanece em zero por segurança.
+    if(!state.emergency&&!state.emergencyStopped)return;
+    // O botão de alívio atua imediatamente sobre o sistema de freio.
+    // Se o trem ainda estiver em movimento, a velocidade atual é preservada;
+    // nenhuma tração é aplicada automaticamente.
     state.emergency=false;
     state.emergencyStopped=false;
     state.brake=0;
