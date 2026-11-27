@@ -1512,7 +1512,7 @@
 
     // Ruas do bairro e passagem de nível original.
     drawTownRoad(cameraY, 5920, false);
-    drawTownRoad(cameraY, 6300, true);
+    drawTownRoad(cameraY, 6300, false);
     drawTownRoad(cameraY, 6680, false);
 
     // Calçadas de ligação entre os lotes removidas.
