@@ -1119,6 +1119,73 @@
     }
   }
 
+  function drawTownOverpass(cameraY, s, variant = 0) {
+    // Viaduto rodoviário: a pista passa por cima da ferrovia.
+    // A camada é desenhada depois do trem para criar o efeito de passagem inferior.
+    const p = worldToScreen(trackPoint(s), cameraY);
+    if (p.y < -100 || p.y > H + 100) return;
+
+    const deckHalf = 43;
+    const roadHalf = 29;
+    const concrete = variant % 2 ? "#a5a79f" : "#b5b6ad";
+    const asphalt = variant % 2 ? "#555b59" : "#626662";
+
+    // Sombra projetada da estrutura sobre a ferrovia.
+    ctx.fillStyle = "rgba(12,18,17,.48)";
+    ctx.fillRect(0, p.y - deckHalf + 7, W, deckHalf * 2 + 10);
+
+    // Vigas laterais e laje de concreto.
+    ctx.fillStyle = "#777d78";
+    ctx.fillRect(0, p.y - deckHalf, W, deckHalf * 2);
+    ctx.fillStyle = concrete;
+    ctx.fillRect(0, p.y - deckHalf + 3, W, deckHalf * 2 - 6);
+
+    // Pista rodoviária elevada.
+    ctx.fillStyle = asphalt;
+    ctx.fillRect(0, p.y - roadHalf, W, roadHalf * 2);
+    ctx.fillStyle = "rgba(224,222,207,.30)";
+    ctx.fillRect(0, p.y - roadHalf + 3, W, 2);
+    ctx.fillRect(0, p.y + roadHalf - 5, W, 2);
+
+    // Marcas discretas da pista.
+    ctx.fillStyle = "rgba(238,235,218,.72)";
+    for (let x = 18; x < W; x += 58) {
+      ctx.fillRect(x, p.y - 1, 29, 2);
+    }
+
+    // Guarda-corpos contínuos nas duas bordas do viaduto.
+    ctx.fillStyle = "#d0d0c7";
+    ctx.fillRect(0, p.y - deckHalf + 1, W, 4);
+    ctx.fillRect(0, p.y + deckHalf - 5, W, 4);
+    ctx.fillStyle = "rgba(55,62,59,.7)";
+    for (let x = 0; x < W; x += 18) {
+      ctx.fillRect(x, p.y - deckHalf + 1, 2, 4);
+      ctx.fillRect(x, p.y + deckHalf - 5, 2, 4);
+    }
+
+    // Pilares de sustentação fora do gabarito ferroviário.
+    for (const side of [-1, 1]) {
+      const px = p.x + side * 82;
+      if (px < 12 || px > W - 12) continue;
+      for (const edge of [-1, 1]) {
+        const py = p.y + edge * 34;
+        ctx.fillStyle = "rgba(10,15,14,.32)";
+        ctx.fillRect(px - 13 + 4, py - 9 + 4, 26, 18);
+        ctx.fillStyle = "#777e79";
+        ctx.fillRect(px - 13, py - 9, 26, 18);
+        ctx.fillStyle = "#c4c6bd";
+        ctx.fillRect(px - 10, py - 7, 20, 14);
+        ctx.fillStyle = "rgba(75,82,77,.45)";
+        ctx.fillRect(px - 10, py - 7, 3, 14);
+      }
+    }
+
+    // Juntas de dilatação nas extremidades da laje.
+    ctx.fillStyle = "rgba(48,54,51,.55)";
+    ctx.fillRect(0, p.y - deckHalf + 7, W, 2);
+    ctx.fillRect(0, p.y + deckHalf - 9, W, 2);
+  }
+
   function drawTownCrossingDeck(cameraY, s) {
     // Painéis de concreto/asfalto assentados ao redor dos trilhos na passagem de nível.
     // A placa é desenhada sobre o lastro e os dois trilhos são redesenhados por cima.
@@ -2838,10 +2905,12 @@
     drawRiverLakeRegion(cameraY);
     drawBridge(cameraY);
     drawRails(cameraY);
-    drawTownCrossingDeck(cameraY, 6300);
     drawSignal(cameraY);
     drawTrain(cameraY);
     drawStationPassengers(cameraY);
+    drawTownOverpass(cameraY, 5920, 0);
+    drawTownOverpass(cameraY, 6300, 1);
+    drawTownOverpass(cameraY, 6680, 0);
 
     // A posição física real permanece intacta para o próximo passo da simulação.
     state.trackOffset = currentTrackOffset;
