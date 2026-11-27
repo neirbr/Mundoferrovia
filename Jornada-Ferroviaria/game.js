@@ -347,12 +347,12 @@
     ctx.restore();
   }
   function drawFarmTractor(x,y,phase=0) {
-    // O trator percorre um circuito oval entre duas fileiras:
+    // O trator percorre um trajeto de ida e volta entre duas fileiras, com curvas bem visíveis:
     // segue para a frente, faz a curva no fim do talhão e retorna pela fileira ao lado.
     const t=(state.lastTime||0)*.001;
-    const angle=t*.30+phase;
-    const radiusX=23;
-    const radiusY=43;
+    const angle=t*.72+phase;
+    const radiusX=31;
+    const radiusY=37;
     const pathX=-Math.cos(angle)*radiusX;
     const pathY=Math.sin(angle)*radiusY;
     const tangentX=Math.sin(angle)*radiusX;
