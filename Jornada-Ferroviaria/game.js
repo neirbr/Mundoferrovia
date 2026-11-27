@@ -1153,6 +1153,25 @@
       ctx.fillRect(x, p.y - 1, 29, 2);
     }
 
+    // Tráfego animado atravessa a pista elevada em ambos os sentidos.
+    const trafficTime = (state.lastTime || 0) * 0.001;
+    const trafficColors = ["#d7d7ce", "#bd5947", "#4e7187", "#d1ad55", "#526b54", "#eeeeDF"];
+    for (let lane = 0; lane < 2; lane++) {
+      for (let car = 0; car < 2; car++) {
+        const direction = lane === 0 ? 1 : -1;
+        const spacing = car * 390 + variant * 117;
+        const travel = ((trafficTime * 74 * direction + spacing + 900) % 980 + 980) % 980;
+        const carX = travel - 90;
+        const carY = p.y + (lane === 0 ? -14 : 14);
+        if (carX < -35 || carX > W + 35) continue;
+        ctx.save();
+        ctx.translate(carX, carY);
+        ctx.rotate(Math.PI / 2);
+        drawTownCar(0, 0, trafficColors[(variant * 2 + car + lane) % trafficColors.length]);
+        ctx.restore();
+      }
+    }
+
     // Guarda-corpos contínuos nas duas bordas do viaduto.
     ctx.fillStyle = "#d0d0c7";
     ctx.fillRect(0, p.y - deckHalf + 1, W, 4);
@@ -1405,6 +1424,30 @@
     ctx.fillRect(x+54,y+17,10,3);
     drawTownLamp(x-55,y-10);
     drawTownLamp(x+55,y+10);
+    // Pequeno parquinho com escorregador, balanços e crianças brincando.
+    ctx.fillStyle = "#c65e45";
+    ctx.fillRect(x - 58, y + 18, 24, 5);
+    ctx.fillRect(x - 56, y + 22, 3, 18);
+    ctx.fillRect(x - 39, y + 22, 3, 18);
+    ctx.fillStyle = "#e2b65d";
+    ctx.fillRect(x - 59, y + 15, 26, 4);
+    ctx.fillStyle = "#537b9a";
+    ctx.fillRect(x + 28, y - 58, 4, 30);
+    ctx.fillRect(x + 51, y - 58, 4, 30);
+    ctx.fillStyle = "#b7b9ad";
+    ctx.fillRect(x + 26, y - 60, 31, 3);
+    ctx.strokeStyle = "#d8d0bd";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(x + 31, y - 57); ctx.lineTo(x + 35, y - 39);
+    ctx.moveTo(x + 52, y - 57); ctx.lineTo(x + 48, y - 39);
+    ctx.stroke();
+    ctx.fillStyle = "#a8794d";
+    ctx.fillRect(x + 33, y - 39, 17, 4);
+    drawPerson(x - 28, y - 43, 1, true);
+    drawPerson(x + 7, y + 43, 2, true);
+    drawPerson(x + 39, y + 3, 4, true);
+    drawPerson(x - 48, y + 42, 3, true);
     // Placa de identificação da praça.
     ctx.fillStyle = "#51483d";
     ctx.fillRect(x-8,y+64,17,4);
@@ -1464,6 +1507,54 @@
     ctx.stroke();
   }
 
+  function drawTownRailProtectionWalls(cameraY) {
+    // Muros baixos de proteção, acompanhando a ferrovia sem invadir o gabarito.
+    for (const side of [-1, 1]) {
+      const points = [];
+      for (let s = 5715; s <= 7350; s += 12) {
+        const p = trackPoint(s);
+        const offset = side * 47;
+        points.push({
+          x: p.x + p.nx * offset,
+          y: p.y + p.ny * offset - cameraY + H * .56
+        });
+      }
+      if (points.length < 2) continue;
+      // Sombra e corpo lateral do muro.
+      ctx.beginPath();
+      ctx.moveTo(points[0].x + 3, points[0].y + 8);
+      for (const p of points.slice(1)) ctx.lineTo(p.x + 3, p.y + 8);
+      for (let i = points.length - 1; i >= 0; i--) ctx.lineTo(points[i].x + 3, points[i].y + 2);
+      ctx.closePath();
+      ctx.fillStyle = "rgba(24,29,27,.28)";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y + 5);
+      for (const p of points.slice(1)) ctx.lineTo(p.x, p.y + 5);
+      for (let i = points.length - 1; i >= 0; i--) ctx.lineTo(points[i].x, points[i].y - 3);
+      ctx.closePath();
+      ctx.fillStyle = "#aaa99d";
+      ctx.fill();
+      ctx.strokeStyle = "#d5d2c6";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        if (i === 0) ctx.moveTo(p.x, p.y - 3);
+        else ctx.lineTo(p.x, p.y - 3);
+      }
+      ctx.stroke();
+      // Juntas e pequenos pilares de alvenaria espaçados.
+      for (let i = 0; i < points.length; i += 5) {
+        const p = points[i];
+        ctx.fillStyle = "#85877f";
+        ctx.fillRect(p.x - 2, p.y - 5, 5, 12);
+        ctx.fillStyle = "#d9d6ca";
+        ctx.fillRect(p.x - 2, p.y - 5, 5, 2);
+      }
+    }
+  }
+
   function drawTownRegion(cameraY) {
     // Bairro mais povoado: duas fileiras de lotes, comércio, praça e ruas.
     const buildings = [
@@ -1498,7 +1589,9 @@
       drawTownPark(parkX, parkPoint.y);
     }
 
-    // Calçadas longitudinais removidas conforme solicitado.
+    // Calçadas contínuas conectam as entradas das casas às ruas transversais.
+    drawTownLongSidewalk(cameraY, -1);
+    drawTownLongSidewalk(cameraY, 1);
 
     for (let i = 0; i < buildings.length; i++) {
       const b = buildings[i];
@@ -1515,7 +1608,9 @@
     drawTownRoad(cameraY, 6300, false);
     drawTownRoad(cameraY, 6680, false);
 
-    // Calçadas de ligação entre os lotes removidas.
+    // As três ruas transversais formam ligações entre as quadras; as calçadas
+    // longitudinais completam a circulação de pedestres pelo bairro.
+    drawTownRailProtectionWalls(cameraY);
 
     // Árvores, postes e veículos estacionados pelo bairro.
     const props = [
