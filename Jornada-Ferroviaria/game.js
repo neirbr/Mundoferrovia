@@ -156,11 +156,19 @@
     return (low + high) / 2;
   }
 
-  const YARD_SIDINGS=[{lateral:-150,start:9180},{lateral:-75,start:9320},{lateral:75,start:9180},{lateral:150,start:9320}];
+  // Quatro itinerários do pátio. O mesmo traçado é usado no desenho,
+  // na posição da locomotiva e no posicionamento dos vagões.
+  const YARD_SIDINGS=[
+    {id:"classificacao-externa-esquerda",lateral:-150,start:9180,transition:300},
+    {id:"classificacao-interna-esquerda",lateral:-75,start:9320,transition:300},
+    {id:"linha-interna-direita",lateral:75,start:9180,transition:300},
+    {id:"linha-externa-direita",lateral:150,start:9320,transition:300}
+  ];
   function trainTrackPoint(s){
     const route=state.activeYardRoute;
-    if(route!==null&&YARD_SIDINGS[route]&&s>=YARD_SIDINGS[route].start){
-      const siding=YARD_SIDINGS[route];return yardSidingPoint(s,siding.lateral,siding.start);
+    const siding=route===null?null:YARD_SIDINGS[route];
+    if(siding&&s>=siding.start){
+      return yardSidingPoint(s,siding.lateral,siding.start,siding.transition);
     }
     return trackPoint(s);
   }
@@ -2197,11 +2205,13 @@
     }
   }
 
-  function yardSidingPoint(s, lateral, divergeAt) {
+  function yardSidingPoint(s, lateral, divergeAt, transition=300) {
     const base = (value) => {
       const p = trackPoint(value);
-      const t = Math.max(0, Math.min(1, (value - divergeAt) / 270));
-      const eased = t * t * (3 - 2 * t);
+      const t = Math.max(0, Math.min(1, (value - divergeAt) / transition));
+      // Curva smootherstep: entrada e saída com tangência suave,
+      // evitando mudanças bruscas na direção dos trilhos.
+      const eased = t*t*t*(t*(t*6-15)+10);
       return { x: p.x + p.nx * lateral * eased, y: p.y + p.ny * lateral * eased };
     };
     const point = base(s);
@@ -2228,7 +2238,7 @@
       const path = (railOffset = 0) => {
         ctx.beginPath();
         for (let s = from; s <= to; s += 5) {
-          const p = yardSidingPoint(s, siding.lateral, siding.start);
+          const p = yardSidingPoint(s, siding.lateral, siding.start, siding.transition);
           const q = worldToScreen({ x: p.x + p.nx * railOffset, y: p.y + p.ny * railOffset }, cameraY);
           if (s === from) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
         }
@@ -2249,7 +2259,7 @@
 
       const firstSleeper = Math.ceil(from / 18) * 18;
       for (let s = firstSleeper; s <= to; s += 18) {
-        const p = yardSidingPoint(s, siding.lateral, siding.start);
+        const p = yardSidingPoint(s, siding.lateral, siding.start, siding.transition);
         const q = worldToScreen(p, cameraY);
         ctx.save();
         ctx.translate(q.x, q.y);
@@ -2277,10 +2287,10 @@
       }
 
       // Ponta da agulha e lâmina móvel do AMV.
-      const switchWorld = yardSidingPoint(siding.start + 82, siding.lateral, siding.start);
+      const switchWorld = yardSidingPoint(siding.start + 82, siding.lateral, siding.start, siding.transition);
       const switchPoint = worldToScreen(switchWorld, cameraY);
       const mainRail = trackPoint(siding.start + 82);
-      const branchRail = yardSidingPoint(siding.start + 112, siding.lateral, siding.start);
+      const branchRail = yardSidingPoint(siding.start + 112, siding.lateral, siding.start, siding.transition);
       const bladeStart = worldToScreen({x:mainRail.x + mainRail.nx * Math.sign(siding.lateral) * 7,y:mainRail.y + mainRail.ny * Math.sign(siding.lateral) * 7},cameraY);
       const straightRail = trackPoint(siding.start + 112);
       const straightEnd = worldToScreen({x:straightRail.x + straightRail.nx * Math.sign(siding.lateral) * 7,y:straightRail.y + straightRail.ny * Math.sign(siding.lateral) * 7},cameraY);
@@ -2313,7 +2323,7 @@
     }
     for (let i = 0; i < parked.length; i++) {
       const wagon = parked[i];
-      const p = yardSidingPoint(wagon.s, wagon.lateral, wagon.start);
+      const p = yardSidingPoint(wagon.s, wagon.lateral, wagon.start, YARD_SIDINGS.find(v=>v.lateral===wagon.lateral&&v.start===wagon.start)?.transition||300);
       const q = worldToScreen(p, cameraY);
       if (q.y < -45 || q.y > H + 45) continue;
       ctx.save();
