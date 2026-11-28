@@ -3,7 +3,7 @@
  * Estratégia: pré-cache dos arquivos essenciais + rede primeiro
  * para navegações e cache como alternativa quando estiver sem conexão.
  */
-const CACHE_NAME = "mundo-ferroviario-v10";
+const CACHE_NAME = "mundo-ferroviario-v11";
 
 const APP_SHELL = [
   "./",
@@ -25,6 +25,7 @@ const APP_SHELL = [
 
   // Simuladores independentes
   "./simulador-2d.html",
+  "./patio-manobras.html",
   "./simulador-topdown.html"
 ];
 
