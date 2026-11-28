@@ -27,7 +27,7 @@
   const PASSENGER_WAGON_COUNT = 8;
   const MAX_SPEED = 82;
   const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
-  const state = {distance:INITIAL_PROGRESS,trackOffset:INITIAL_PROGRESS,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false,false],activeYardRoute:null,attachedWagons:Array.from({length:PASSENGER_WAGON_COUNT},(_,i)=>i+1),detachedWagons:[],nextCutId:1};
+  const state = {distance:INITIAL_PROGRESS,trackOffset:INITIAL_PROGRESS,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false,false,false],activeYardRoute:null,attachedWagons:Array.from({length:PASSENGER_WAGON_COUNT},(_,i)=>i+1),detachedWagons:[],nextCutId:1};
   const yardSwitchHitAreas = [];
   const wagonHitAreas = [];
   let previousTrackOffset = state.trackOffset;
@@ -82,7 +82,7 @@
       const alreadySelected=state.activeYardRoute===hit.index;
       state.yardSwitches=state.yardSwitches.map((_,n)=>!alreadySelected&&n===hit.index);
       state.activeYardRoute=alreadySelected?null:hit.index;
-      brakeStatus.textContent=alreadySelected?"Itinerário cancelado — L1 (linha principal)":"Itinerário selecionado: "+(hit.index===0?"L3 (linha esquerda)":"L2 (linha direita)");
+      brakeStatus.textContent=alreadySelected?"Itinerário cancelado — L1 (linha principal)":"Itinerário selecionado: "+(hit.index===0?"L3 (linha esquerda)":hit.index===1?"L2 (linha direita)":"L4 (linha externa)");
       event.preventDefault();return;
     }
   }, {passive:false});
@@ -160,13 +160,15 @@
   const YARD_SIDINGS=[
     {id:"L3-classificacao-esquerda",lateral:-150,start:9580,transition:360},
     // L2 segue pelo lado direito da L1, com o alinhamento visual 3 px acima.
-    {id:"L2-classificacao-direita",lateral:45,verticalOffset:-3,start:9580,transition:360}
+    {id:"L2-classificacao-direita",lateral:45,verticalOffset:-3,start:9580,transition:360},
+    // L4 sai da L2 antes do primeiro poste do pátio, localizado em S=10320.
+    {id:"L4-classificacao-direita-externa",lateral:55,start:10200,transition:300,parent:"L2-classificacao-direita"}
   ];
   function trainTrackPoint(s){
     const route=state.activeYardRoute;
     const siding=route===null?null:YARD_SIDINGS[route];
     if(siding&&s>=siding.start){
-      return yardSidingPoint(s,siding.lateral,siding.start,siding.transition);
+      return yardSidingPoint(s,siding.lateral,siding.start,siding.transition,siding.verticalOffset||0,siding.parent?YARD_SIDINGS.find(v=>v.id===siding.parent):null);
     }
     return trackPoint(s);
   }
@@ -2203,9 +2205,9 @@
     }
   }
 
-  function yardSidingPoint(s, lateral, divergeAt, transition=300, verticalOffset=0) {
+  function yardSidingPoint(s, lateral, divergeAt, transition=300, verticalOffset=0, parent=null) {
     const base = (value) => {
-      const p = trackPoint(value);
+      const p = parent ? yardSidingPoint(value,parent.lateral,parent.start,parent.transition,parent.verticalOffset||0) : trackPoint(value);
       const t = Math.max(0, Math.min(1, (value - divergeAt) / transition));
       // Curva smootherstep: entrada e saída com tangência suave,
       // evitando mudanças bruscas na direção dos trilhos.
@@ -2236,7 +2238,7 @@
       const path = (railOffset = 0) => {
         ctx.beginPath();
         for (let s = from; s <= to; s += 5) {
-          const p = yardSidingPoint(s, siding.lateral, siding.start, siding.transition, siding.verticalOffset||0);
+          const p = yardSidingPoint(s, siding.lateral, siding.start, siding.transition, siding.verticalOffset||0, siding.parent?sidings.find(v=>v.id===siding.parent):null);
           const q = worldToScreen({ x: p.x + p.nx * railOffset, y: p.y + p.ny * railOffset }, cameraY);
           if (s === from) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
         }
@@ -2287,10 +2289,11 @@
       // Ponta da agulha e lâmina móvel do AMV.
       const switchWorld = yardSidingPoint(siding.start + 82, siding.lateral, siding.start, siding.transition);
       const switchPoint = worldToScreen(switchWorld, cameraY);
-      const mainRail = trackPoint(siding.start + 82);
-      const branchRail = yardSidingPoint(siding.start + 112, siding.lateral, siding.start, siding.transition);
+      const parentSiding=siding.parent?sidings.find(v=>v.id===siding.parent):null;
+      const mainRail = parentSiding?yardSidingPoint(siding.start+82,parentSiding.lateral,parentSiding.start,parentSiding.transition,parentSiding.verticalOffset||0):trackPoint(siding.start + 82);
+      const branchRail = yardSidingPoint(siding.start + 112, siding.lateral, siding.start, siding.transition, siding.verticalOffset||0,parentSiding);
       const bladeStart = worldToScreen({x:mainRail.x + mainRail.nx * Math.sign(siding.lateral) * 7,y:mainRail.y + mainRail.ny * Math.sign(siding.lateral) * 7},cameraY);
-      const straightRail = trackPoint(siding.start + 112);
+      const straightRail = parentSiding?yardSidingPoint(siding.start+112,parentSiding.lateral,parentSiding.start,parentSiding.transition,parentSiding.verticalOffset||0):trackPoint(siding.start + 112);
       const straightEnd = worldToScreen({x:straightRail.x + straightRail.nx * Math.sign(siding.lateral) * 7,y:straightRail.y + straightRail.ny * Math.sign(siding.lateral) * 7},cameraY);
       const branchEnd = worldToScreen({x:branchRail.x - branchRail.nx * Math.sign(siding.lateral) * 7,y:branchRail.y - branchRail.ny * Math.sign(siding.lateral) * 7},cameraY);
       const switchIndex = sidings.indexOf(siding);
