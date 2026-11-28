@@ -27,7 +27,7 @@
   const PASSENGER_WAGON_COUNT = 8;
   const MAX_SPEED = 82;
   const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
-  const state = {distance:INITIAL_PROGRESS,trackOffset:INITIAL_PROGRESS,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false,false,false,false],activeYardRoute:null,attachedWagons:Array.from({length:PASSENGER_WAGON_COUNT},(_,i)=>i+1),detachedWagons:[],nextCutId:1};
+  const state = {distance:INITIAL_PROGRESS,trackOffset:INITIAL_PROGRESS,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false,false,false],activeYardRoute:null,attachedWagons:Array.from({length:PASSENGER_WAGON_COUNT},(_,i)=>i+1),detachedWagons:[],nextCutId:1};
   const yardSwitchHitAreas = [];
   const wagonHitAreas = [];
   let previousTrackOffset = state.trackOffset;
@@ -159,13 +159,11 @@
   // Quatro itinerários do pátio. O mesmo traçado é usado no desenho,
   // na posição da locomotiva e no posicionamento dos vagões.
   const YARD_SIDINGS=[
-    // Entradas escalonadas: primeiro o ramal esquerdo, depois os dois
-    // ramais da direita e, por último, a linha externa direita.
-    // A ordem acompanha a aproximação vista no desenho de referência.
+    // Três AMVs escalonados: o primeiro abre para a esquerda;
+    // os dois seguintes abrem para as linhas da direita.
     {id:"classificacao-esquerda",lateral:-150,start:8660,transition:360},
     {id:"linha-interna-direita",lateral:65,start:8790,transition:340},
-    {id:"linha-externa-direita",lateral:150,start:8910,transition:360},
-    {id:"classificacao-interna-esquerda",lateral:-65,start:8980,transition:340}
+    {id:"linha-externa-direita",lateral:150,start:8910,transition:360}
   ];
   function trainTrackPoint(s){
     const route=state.activeYardRoute;
