@@ -159,10 +159,13 @@
   // Quatro itinerários do pátio. O mesmo traçado é usado no desenho,
   // na posição da locomotiva e no posicionamento dos vagões.
   const YARD_SIDINGS=[
-    {id:"classificacao-externa-esquerda",lateral:-150,start:9180,transition:300},
-    {id:"classificacao-interna-esquerda",lateral:-75,start:9320,transition:300},
-    {id:"linha-interna-direita",lateral:75,start:9180,transition:300},
-    {id:"linha-externa-direita",lateral:150,start:9320,transition:300}
+    // Entradas escalonadas: primeiro o ramal esquerdo, depois os dois
+    // ramais da direita e, por último, a linha externa direita.
+    // A ordem acompanha a aproximação vista no desenho de referência.
+    {id:"classificacao-esquerda",lateral:-150,start:8660,transition:360},
+    {id:"linha-interna-direita",lateral:65,start:8790,transition:340},
+    {id:"linha-externa-direita",lateral:150,start:8910,transition:360},
+    {id:"classificacao-interna-esquerda",lateral:-65,start:8980,transition:340}
   ];
   function trainTrackPoint(s){
     const route=state.activeYardRoute;
@@ -2083,7 +2086,7 @@
   // O pátio usa o mesmo sistema de coordenadas, câmera, composição e física do percurso.
   function drawShuntingYardRegion(cameraY) {
     const near = worldToScreen(trackPoint(11050), cameraY).y;
-    const far = worldToScreen(trackPoint(9100), cameraY).y;
+    const far = worldToScreen(trackPoint(8580), cameraY).y;
     const top = Math.min(near, far);
     const height = Math.abs(far - near);
 
@@ -2093,7 +2096,7 @@
     ctx.fillRect(38, top, 724, height);
 
     // Pátio em brita compactada, com manchas e pequenas pedras.
-    for (let s = 9160; s <= 10980; s += 58) {
+    for (let s = 8620; s <= 10980; s += 58) {
       const y = worldToScreen(trackPoint(s), cameraY).y;
       if (y < -20 || y > H + 20) continue;
       for (let x = 52; x < 750; x += 47) {
@@ -2111,7 +2114,7 @@
     ctx.fillStyle = "rgba(220,211,185,.22)";
     ctx.fillRect(53, top, 3, height);
     ctx.fillRect(106, top, 3, height);
-    for (let s = 9200; s < 10950; s += 90) {
+    for (let s = 8660; s < 10950; s += 90) {
       const y = worldToScreen(trackPoint(s), cameraY).y;
       ctx.fillStyle = "rgba(235,224,190,.18)";
       ctx.fillRect(76, y, 12, 2);
@@ -2227,7 +2230,7 @@
   function drawShuntingYardTracks(cameraY) {
     yardSwitchHitAreas.length = 0;
     const sidings = YARD_SIDINGS;
-    const visibleStart = Math.max(9100, START_S + state.trackOffset - 650);
+    const visibleStart = Math.max(8580, START_S + state.trackOffset - 650);
     const visibleEnd = Math.min(11100, START_S + state.trackOffset + 700);
 
     for (const siding of sidings) {
@@ -2315,11 +2318,10 @@
     // Vagões estacionados nas linhas de classificação, desenhados no mesmo estilo do trem.
     const wagonColors = ["#172f52","#e5b72f","#b83c35","#858b8d","#b83c35","#172f52","#858b8d","#e5b72f","#e5b72f","#858b8d","#172f52","#b83c35"];
     const parked = [];
-    // Composições agrupadas somente nas vias extremas: esquerda (classificação)
-    // e direita (linha de saída), com cores alternadas e sem vagões dispersos.
+    // Vagões estacionados nas duas linhas externas do pátio.
     for(let i=0;i<8;i++){
-      parked.push({s:9910+i*58,lateral:-150,start:9180,color:wagonColors[i]});
-      parked.push({s:9910+i*58,lateral:150,start:9320,color:wagonColors[(i+5)%wagonColors.length]});
+      parked.push({s:9550+i*58,lateral:-150,start:8660,color:wagonColors[i]});
+      parked.push({s:9550+i*58,lateral:150,start:8910,color:wagonColors[(i+5)%wagonColors.length]});
     }
     for (let i = 0; i < parked.length; i++) {
       const wagon = parked[i];
@@ -3353,7 +3355,8 @@
       drawWagon(wagonS,state.attachedWagons[i],cameraY,null,{kind:"attached",number:state.attachedWagons[i]});
     }
     for(const wagon of state.detachedWagons){
-      const p=wagon.route===null?trackPoint(wagon.s):yardSidingPoint(wagon.s,YARD_SIDINGS[wagon.route].lateral,YARD_SIDINGS[wagon.route].start);
+      const detachedRoute=wagon.route===null?null:YARD_SIDINGS[wagon.route];
+      const p=!detachedRoute?trackPoint(wagon.s):yardSidingPoint(wagon.s,detachedRoute.lateral,detachedRoute.start,detachedRoute.transition);
       drawWagon(wagon.s,wagon.number,cameraY,p,{kind:"detached",number:wagon.number,cutId:wagon.cutId});
     }
     drawLocomotive(trainS,cameraY);
