@@ -159,7 +159,8 @@
   // Três linhas do pátio: L1 é a principal; L2 fica à direita; L3 à esquerda.
   const YARD_SIDINGS=[
     {id:"L3-classificacao-esquerda",lateral:-150,start:9580,transition:360},
-    {id:"L2-classificacao-direita",lateral:150,start:9580,transition:360}
+    // L2 segue pelo lado direito da L1, com o alinhamento visual 3 px acima.
+    {id:"L2-classificacao-direita",lateral:45,verticalOffset:-3,start:9580,transition:360}
   ];
   function trainTrackPoint(s){
     const route=state.activeYardRoute;
@@ -2202,14 +2203,14 @@
     }
   }
 
-  function yardSidingPoint(s, lateral, divergeAt, transition=300) {
+  function yardSidingPoint(s, lateral, divergeAt, transition=300, verticalOffset=0) {
     const base = (value) => {
       const p = trackPoint(value);
       const t = Math.max(0, Math.min(1, (value - divergeAt) / transition));
       // Curva smootherstep: entrada e saída com tangência suave,
       // evitando mudanças bruscas na direção dos trilhos.
       const eased = t*t*t*(t*(t*6-15)+10);
-      return { x: p.x + p.nx * lateral * eased, y: p.y + p.ny * lateral * eased };
+      return { x: p.x + p.nx * lateral * eased, y: p.y + p.ny * lateral * eased + verticalOffset * eased };
     };
     const point = base(s);
     const before = base(s - 2);
@@ -2235,7 +2236,7 @@
       const path = (railOffset = 0) => {
         ctx.beginPath();
         for (let s = from; s <= to; s += 5) {
-          const p = yardSidingPoint(s, siding.lateral, siding.start, siding.transition);
+          const p = yardSidingPoint(s, siding.lateral, siding.start, siding.transition, siding.verticalOffset||0);
           const q = worldToScreen({ x: p.x + p.nx * railOffset, y: p.y + p.ny * railOffset }, cameraY);
           if (s === from) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
         }
@@ -2256,7 +2257,7 @@
 
       const firstSleeper = Math.ceil(from / 18) * 18;
       for (let s = firstSleeper; s <= to; s += 18) {
-        const p = yardSidingPoint(s, siding.lateral, siding.start, siding.transition);
+        const p = yardSidingPoint(s, siding.lateral, siding.start, siding.transition, siding.verticalOffset||0);
         const q = worldToScreen(p, cameraY);
         ctx.save();
         ctx.translate(q.x, q.y);
