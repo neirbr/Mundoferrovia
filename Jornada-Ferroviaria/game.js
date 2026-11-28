@@ -27,22 +27,62 @@
   const PASSENGER_WAGON_COUNT = 8;
   const MAX_SPEED = 82;
   const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
-  const state = {distance:INITIAL_PROGRESS,trackOffset:INITIAL_PROGRESS,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false,false,false,false]};
+  const state = {distance:INITIAL_PROGRESS,trackOffset:INITIAL_PROGRESS,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false,false,false,false],activeYardRoute:null,attachedWagons:Array.from({length:PASSENGER_WAGON_COUNT},(_,i)=>i+1),detachedWagons:[],nextCutId:1};
   const yardSwitchHitAreas = [];
+  const wagonHitAreas = [];
   let previousTrackOffset = state.trackOffset;
 
   canvas.addEventListener("pointerdown", event => {
     const rect = canvas.getBoundingClientRect();
     const x = (event.clientX - rect.left) * W / rect.width;
     const y = (event.clientY - rect.top) * H / rect.height;
-    for (let i = yardSwitchHitAreas.length - 1; i >= 0; i--) {
-      const hit = yardSwitchHitAreas[i];
-      if (!hit) continue;
-      if (Math.hypot(x - hit.x, y - hit.y) <= hit.radius) {
-        state.yardSwitches[hit.index] = !state.yardSwitches[hit.index];
-        event.preventDefault();
+    for (let i = wagonHitAreas.length - 1; i >= 0; i--) {
+      const hit = wagonHitAreas[i];
+      if (!hit || Math.hypot(x-hit.x,y-hit.y)>hit.radius) continue;
+      event.preventDefault();
+      if (state.speed > 0.05) { brakeStatus.textContent="Pare completamente a composição para manobrar os vagões"; return; }
+      if (hit.kind === "attached") {
+        const cutAt=state.attachedWagons.indexOf(hit.number);
+        if(cutAt<0)return;
+        const trainS=START_S+state.trackOffset, cutId=state.nextCutId++;
+        const cut=state.attachedWagons.slice(cutAt);
+        cut.forEach((number,offset)=>{
+          const wagonS=trackSBehind(trainS,54+(cutAt+offset)*TRAIN_SPACING);
+          state.detachedWagons.push({number,s:wagonS,cutId,route:state.activeYardRoute});
+        });
+        state.attachedWagons=state.attachedWagons.slice(0,cutAt);
+        state.throttlePoint=0;
+        brakeStatus.textContent=cut.length+" vagão(ões) desengatado(s) e deixado(s) na via";
+        refreshControls(); return;
+      }
+      const wagon=state.detachedWagons.find(w=>w.number===hit.number&&w.cutId===hit.cutId);
+      if(!wagon)return;
+      const trainS=START_S+state.trackOffset;
+      const closeEnough=Math.abs(trainS-wagon.s)<=95;
+      const correctlyApproached=state.direction===0||(state.direction>0&&trainS>wagon.s)||(state.direction<0&&trainS<wagon.s);
+      const nextNumber=state.attachedWagons.length?state.attachedWagons[state.attachedWagons.length-1]+1:1;
+      if(!closeEnough||!correctlyApproached||wagon.number!==nextNumber){
+        brakeStatus.textContent=!closeEnough?"Aproxime a locomotiva do vagão para realizar o engate":!correctlyApproached?"Posicione a locomotiva no lado correto do vagão":"Recolha primeiro o vagão "+nextNumber;
         return;
       }
+      const cut=state.detachedWagons.filter(w=>w.cutId===wagon.cutId&&w.number>=wagon.number).sort((a,b)=>a.number-b.number);
+      const expected=Array.from({length:cut.length},(_,i)=>wagon.number+i);
+      if(!cut.length||cut.some((w,i)=>w.number!==expected[i])){brakeStatus.textContent="Aproxime os vagões na ordem da composição";return;}
+      state.attachedWagons.push(...cut.map(w=>w.number));
+      state.detachedWagons=state.detachedWagons.filter(w=>!cut.includes(w));
+      brakeStatus.textContent=cut.length+" vagão(ões) engatado(s) automaticamente";
+      refreshControls(); return;
+    }
+    for(let i=yardSwitchHitAreas.length-1;i>=0;i--){
+      const hit=yardSwitchHitAreas[i];
+      if(!hit||Math.hypot(x-hit.x,y-hit.y)>hit.radius)continue;
+      const trainS=START_S+state.trackOffset;
+      if(trainS>=hit.start+82){brakeStatus.textContent="O AMV já foi ultrapassado — selecione outro itinerário";event.preventDefault();return;}
+      const alreadySelected=state.activeYardRoute===hit.index;
+      state.yardSwitches=state.yardSwitches.map((_,n)=>!alreadySelected&&n===hit.index);
+      state.activeYardRoute=alreadySelected?null:hit.index;
+      brakeStatus.textContent=alreadySelected?"Itinerário cancelado — via principal":"Itinerário selecionado: ramal "+(hit.index+1);
+      event.preventDefault();return;
     }
   }, {passive:false});
 
@@ -113,6 +153,15 @@
       else high = mid;
     }
     return (low + high) / 2;
+  }
+
+  const YARD_SIDINGS=[{lateral:-150,start:9180},{lateral:-75,start:9320},{lateral:75,start:9180},{lateral:150,start:9320}];
+  function trainTrackPoint(s){
+    const route=state.activeYardRoute;
+    if(route!==null&&YARD_SIDINGS[route]&&s>=YARD_SIDINGS[route].start){
+      const siding=YARD_SIDINGS[route];return yardSidingPoint(s,siding.lateral,siding.start);
+    }
+    return trackPoint(s);
   }
 
   function worldToScreen(p, cameraY) {
@@ -2156,12 +2205,7 @@
 
   function drawShuntingYardTracks(cameraY) {
     yardSwitchHitAreas.length = 0;
-    const sidings = [
-      { lateral: -150, start: 9180 },
-      { lateral: -75, start: 9320 },
-      { lateral: 75, start: 9180 },
-      { lateral: 150, start: 9320 }
-    ];
+    const sidings = YARD_SIDINGS;
     const visibleStart = Math.max(9100, START_S + state.trackOffset - 650);
     const visibleEnd = Math.min(11100, START_S + state.trackOffset + 700);
 
@@ -2243,7 +2287,7 @@
         ctx.fillStyle = selected ? "#f2cf6b" : "#d7b65e";
         ctx.beginPath(); ctx.arc(switchPoint.x, switchPoint.y, 4, 0, Math.PI * 2); ctx.fill();
         // Área de toque invisível: ampliada para facilitar a operação no celular.
-        yardSwitchHitAreas[switchIndex] = {x:switchPoint.x,y:switchPoint.y,radius:31,index:switchIndex};
+        yardSwitchHitAreas[switchIndex] = {x:switchPoint.x,y:switchPoint.y,radius:42,index:switchIndex,start:siding.start};
       }
     }
 
@@ -2896,8 +2940,8 @@
     }
   }
 
-  function drawWagon(s, index, cameraY) {
-    const p = trackPoint(s);
+  function drawWagon(s,index,cameraY,pointOverride=null,hitMeta=null){
+    const p=pointOverride||trainTrackPoint(s);
     const q = worldToScreen(p, cameraY);
     ctx.save();
     ctx.translate(q.x, q.y);
@@ -3070,10 +3114,11 @@
     }
 
     ctx.restore();
+    if(hitMeta)wagonHitAreas.push({x:q.x,y:q.y,radius:25,...hitMeta});
   }
 
-  function drawLocomotive(s, cameraY) {
-    const p = trackPoint(s);
+  function drawLocomotive(s,cameraY){
+    const p=trainTrackPoint(s);
     const q = worldToScreen(p, cameraY);
     ctx.save();
     ctx.translate(q.x, q.y);
@@ -3278,16 +3323,18 @@
     ctx.restore();
   }
 
-  function drawTrain(cameraY) {
-    // O primeiro vagão respeita o comprimento maior da locomotiva; os demais
-    // mantêm 48 unidades de distância real ao longo do trilho, inclusive nas curvas.
-    const trainS = START_S + state.trackOffset;
-    for (let i = PASSENGER_WAGON_COUNT; i >= 1; i--) {
-      const distanceBehind = 54 + (i - 1) * TRAIN_SPACING;
-      const wagonS = trackSBehind(trainS, distanceBehind);
-      drawWagon(wagonS, i, cameraY);
+  function drawTrain(cameraY){
+    const trainS=START_S+state.trackOffset;
+    wagonHitAreas.length=0;
+    for(let i=state.attachedWagons.length-1;i>=0;i--){
+      const wagonS=trackSBehind(trainS,54+i*TRAIN_SPACING);
+      drawWagon(wagonS,state.attachedWagons[i],cameraY,null,{kind:"attached",number:state.attachedWagons[i]});
     }
-    drawLocomotive(trainS, cameraY);
+    for(const wagon of state.detachedWagons){
+      const p=wagon.route===null?trackPoint(wagon.s):yardSidingPoint(wagon.s,YARD_SIDINGS[wagon.route].lateral,YARD_SIDINGS[wagon.route].start);
+      drawWagon(wagon.s,wagon.number,cameraY,p,{kind:"detached",number:wagon.number,cutId:wagon.cutId});
+    }
+    drawLocomotive(trainS,cameraY);
   }
 
   function drawSignal(cameraY) {
@@ -3312,7 +3359,7 @@
     state.trackOffset = previousTrackOffset + (currentTrackOffset - previousTrackOffset) * alpha;
 
     // A câmera acompanha a posição interpolada sem atraso acumulado.
-    const cameraY = trackPoint(START_S + state.trackOffset).y;
+    const cameraY = trainTrackPoint(START_S + state.trackOffset).y;
     state.cameraY = cameraY;
     drawGround(cameraY);
     drawLateralAtmosphere(cameraY);
