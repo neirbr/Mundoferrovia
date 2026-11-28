@@ -20,13 +20,13 @@ Depois da publicação pelo GitHub Pages:
 `https://neirbr.github.io/Mundoferrovia/Jornada-Ferroviaria/`
 
 ## Estado atual
-Protótipo técnico inicial: estação de partida, primeiro trecho, trilhos curvos provisórios, locomotiva, oito vagões, câmera acompanhando a composição e controles básicos.
+Protótipo em expansão: estação de partida, regiões ambientais, estação final e pátio de manobras integrado ao mesmo percurso, com locomotiva, oito vagões, câmera e controles de condução.
 
 ## Próximas etapas
 1. Validar o protótipo em celular.
 2. Refinar geometria e escala dos trilhos e veículos.
 3. Construir o sistema definitivo de percurso e acoplamento.
 4. Criar as regiões e suas transições.
-5. Adicionar arte pixel art própria, animações, sinalização e áudio.
+5. Adicionar arte pixel art própria, animações, sinalização e áudio.\n6. Evoluir as operações do pátio, incluindo seleção de AMVs e formação de composições.
 
 O jogo não deve alterar nem importar dependências dos simuladores já existentes no repositório.
