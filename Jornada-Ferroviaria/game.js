@@ -161,9 +161,9 @@
   const YARD_SIDINGS=[
     // Três AMVs escalonados: o primeiro abre para a esquerda;
     // os dois seguintes abrem para as linhas da direita.
-    {id:"classificacao-esquerda",lateral:-150,start:8660,transition:360},
-    {id:"linha-interna-direita",lateral:65,start:8790,transition:340},
-    {id:"linha-externa-direita",lateral:150,start:8910,transition:360}
+    {id:"classificacao-esquerda",lateral:-150,start:8980,transition:360},
+    {id:"linha-interna-direita",lateral:65,start:9110,transition:340},
+    {id:"linha-externa-direita",lateral:150,start:9230,transition:360}
   ];
   function trainTrackPoint(s){
     const route=state.activeYardRoute;
@@ -2083,8 +2083,8 @@
   // Novo trecho integrado à Jornada Ferroviária: pátio de manobras.
   // O pátio usa o mesmo sistema de coordenadas, câmera, composição e física do percurso.
   function drawShuntingYardRegion(cameraY) {
-    const near = worldToScreen(trackPoint(11050), cameraY).y;
-    const far = worldToScreen(trackPoint(8580), cameraY).y;
+    const near = worldToScreen(trackPoint(11370), cameraY).y;
+    const far = worldToScreen(trackPoint(8900), cameraY).y;
     const top = Math.min(near, far);
     const height = Math.abs(far - near);
 
@@ -2094,7 +2094,7 @@
     ctx.fillRect(38, top, 724, height);
 
     // Pátio em brita compactada, com manchas e pequenas pedras.
-    for (let s = 8620; s <= 10980; s += 58) {
+    for (let s = 8940; s <= 11300; s += 58) {
       const y = worldToScreen(trackPoint(s), cameraY).y;
       if (y < -20 || y > H + 20) continue;
       for (let x = 52; x < 750; x += 47) {
@@ -2118,7 +2118,7 @@
       ctx.fillRect(76, y, 12, 2);
     }
 
-    const shedS = 10020;
+    const shedS = 10340;
     const shedY = worldToScreen(trackPoint(shedS), cameraY).y;
     if (shedY > -180 && shedY < H + 180) {
       // Galpão ferroviário de manutenção: estrutura metálica, telhado segmentado,
@@ -2161,7 +2161,7 @@
 
     // Pilhas de dormentes, materiais e contêineres de apoio.
     for (let i = 0; i < 3; i++) {
-      const y = worldToScreen(trackPoint(9650 + i * 230), cameraY).y;
+      const y = worldToScreen(trackPoint(9970 + i * 230), cameraY).y;
       if (y < -45 || y > H + 45) continue;
       const x = 135 + (i % 2) * 35;
       ctx.fillStyle = "rgba(25,30,25,.25)";
@@ -2176,7 +2176,7 @@
     }
 
     // Placa de identificação do novo trecho.
-    const sign = worldToScreen(trackPoint(9820), cameraY);
+    const sign = worldToScreen(trackPoint(10140), cameraY);
     if (sign.y > -40 && sign.y < H + 40) {
       ctx.fillStyle = "rgba(32,43,37,.88)";
       ctx.fillRect(258, sign.y - 70, 196, 27);
@@ -2190,7 +2190,7 @@
     }
 
     // Postes de iluminação do pátio.
-    for (const s of [9400, 9850, 10300, 10750]) {
+    for (const s of [9720, 10170, 10620, 11070]) {
       const p = worldToScreen(trackPoint(s), cameraY);
       if (p.y < -35 || p.y > H + 35) continue;
       for (const x of [165, 570]) {
@@ -2228,8 +2228,8 @@
   function drawShuntingYardTracks(cameraY) {
     yardSwitchHitAreas.length = 0;
     const sidings = YARD_SIDINGS;
-    const visibleStart = Math.max(8580, START_S + state.trackOffset - 650);
-    const visibleEnd = Math.min(11100, START_S + state.trackOffset + 700);
+    const visibleStart = Math.max(8900, START_S + state.trackOffset - 650);
+    const visibleEnd = Math.min(11420, START_S + state.trackOffset + 700);
 
     for (const siding of sidings) {
       const from = Math.max(siding.start, visibleStart);
@@ -2318,8 +2318,8 @@
     const parked = [];
     // Vagões estacionados nas duas linhas externas do pátio.
     for(let i=0;i<8;i++){
-      parked.push({s:9550+i*58,lateral:-150,start:8660,color:wagonColors[i]});
-      parked.push({s:9550+i*58,lateral:150,start:8910,color:wagonColors[(i+5)%wagonColors.length]});
+      parked.push({s:9870+i*58,lateral:-150,start:8980,color:wagonColors[i]});
+      parked.push({s:9870+i*58,lateral:150,start:9230,color:wagonColors[(i+5)%wagonColors.length]});
     }
     for (let i = 0; i < parked.length; i++) {
       const wagon = parked[i];
