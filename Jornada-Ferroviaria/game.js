@@ -2223,7 +2223,9 @@
       const mainRail = trackPoint(siding.start + 82);
       const branchRail = yardSidingPoint(siding.start + 112, siding.lateral, siding.start);
       const bladeStart = worldToScreen({x:mainRail.x + mainRail.nx * Math.sign(siding.lateral) * 7,y:mainRail.y + mainRail.ny * Math.sign(siding.lateral) * 7},cameraY);
-      const bladeEnd = worldToScreen({x:branchRail.x - branchRail.nx * Math.sign(siding.lateral) * 7,y:branchRail.y - branchRail.ny * Math.sign(siding.lateral) * 7},cameraY);
+      const straightRail = trackPoint(siding.start + 112);
+      const straightEnd = worldToScreen({x:straightRail.x + straightRail.nx * Math.sign(siding.lateral) * 7,y:straightRail.y + straightRail.ny * Math.sign(siding.lateral) * 7},cameraY);
+      const branchEnd = worldToScreen({x:branchRail.x - branchRail.nx * Math.sign(siding.lateral) * 7,y:branchRail.y - branchRail.ny * Math.sign(siding.lateral) * 7},cameraY);
       const switchIndex = sidings.indexOf(siding);
       const selected = !!state.yardSwitches[switchIndex];
       if (switchPoint.y > -45 && switchPoint.y < H + 45) {
@@ -2232,7 +2234,7 @@
         ctx.lineCap = "round";
         ctx.beginPath();
         ctx.moveTo(bladeStart.x, bladeStart.y);
-        ctx.lineTo(selected ? bladeEnd.x : switchPoint.x, selected ? bladeEnd.y : switchPoint.y);
+        ctx.lineTo(selected ? branchEnd.x : straightEnd.x, selected ? branchEnd.y : straightEnd.y);
         ctx.stroke();
         ctx.fillStyle = selected ? "#f2cf6b" : "#d7b65e";
         ctx.beginPath(); ctx.arc(switchPoint.x, switchPoint.y, 4, 0, Math.PI * 2); ctx.fill();
