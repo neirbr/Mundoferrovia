@@ -79,10 +79,20 @@
       if(!hit||Math.hypot(x-hit.x,y-hit.y)>hit.radius)continue;
       const trainS=START_S+state.trackOffset;
       if(trainS>=hit.start){brakeStatus.textContent="O AMV já foi ultrapassado — selecione outro itinerário";event.preventDefault();return;}
-      const alreadySelected=state.activeYardRoute===hit.index;
-      state.yardSwitches=state.yardSwitches.map((_,n)=>!alreadySelected&&n===hit.index);
-      state.activeYardRoute=alreadySelected?null:hit.index;
-      brakeStatus.textContent=alreadySelected?"Itinerário cancelado — L1 (linha principal)":"Itinerário selecionado: "+(hit.index===0?"L3 (linha esquerda)":hit.index===1?"L2 (linha direita)":"L4 (linha externa)");
+      // O primeiro comando percorre L1 -> L3 -> L2 -> L1.
+      // Os outros dois comandos selecionam o ramal do respectivo AMV.
+      if(hit.index===0){
+        const cycle=[null,0,1];
+        const current=cycle.indexOf(state.activeYardRoute);
+        state.activeYardRoute=cycle[(current+1)%cycle.length];
+      }else if(hit.index===1){
+        state.activeYardRoute=state.activeYardRoute===1?null:1;
+      }else{
+        state.activeYardRoute=state.activeYardRoute===2?1:2;
+      }
+      state.yardSwitches=state.yardSwitches.map((_,n)=>state.activeYardRoute===n);
+      const destination=state.activeYardRoute===null?"L1":state.activeYardRoute===0?"L3":state.activeYardRoute===1?"L2":"L4";
+      brakeStatus.textContent="Itinerário alinhado para "+destination;
       event.preventDefault();return;
     }
   }, {passive:false});
@@ -2272,35 +2282,43 @@
         ctx.fillStyle = selected ? "#f2cf6b" : "#d7b65e";
         ctx.beginPath(); ctx.arc(switchPoint.x, switchPoint.y, 4, 0, Math.PI * 2); ctx.fill();
 
-        // Guarda a posição do botão; ele será desenhado por último, acima de todos os elementos.
-        const buttonX = switchPoint.x + 34;
-        const buttonY = switchPoint.y - 25;
-        yardSwitchHitAreas[switchIndex] = {x:buttonX,y:buttonY,radius:34,index:switchIndex,start:siding.start};
+        // Posiciona o comando circular para fora do trilho, no lado do desvio.
+        const outward = Math.sign(siding.lateral || 1);
+        const buttonX = switchPoint.x + switchWorld.nx * outward * 62;
+        const buttonY = switchPoint.y + switchWorld.ny * outward * 62;
+        yardSwitchHitAreas[switchIndex] = {x:buttonX,y:buttonY,radius:27,index:switchIndex,start:siding.start};
       }
     }
 
-    function drawYardSwitchButtons() {
-    const labels = ["L1/L3","L1/L2","L2/L4"];
+  function drawYardSwitchButtons() {
     for (const hit of yardSwitchHitAreas) {
       if (!hit) continue;
-      const selected = !!state.yardSwitches[hit.index];
-      const label = selected ? labels[hit.index] : (hit.index===2 ? "L2/L2" : "L1/L1");
+      let label;
+      if(hit.index===0){
+        label=state.activeYardRoute===0?"L3":state.activeYardRoute===1?"L2":"L1";
+      }else if(hit.index===1){
+        label=state.activeYardRoute===1?"L2":"L1";
+      }else{
+        label=state.activeYardRoute===2?"L4":"L2";
+      }
+      const selected = (hit.index===0 && state.activeYardRoute!==null) ||
+        (hit.index===1 && state.activeYardRoute===1) ||
+        (hit.index===2 && state.activeYardRoute===2);
       ctx.save();
-      ctx.font = "bold 13px Arial, sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      const w = 62, h = 29;
-      ctx.shadowColor = "rgba(0,0,0,.7)";
-      ctx.shadowBlur = 7;
+      ctx.shadowColor = "rgba(0,0,0,.75)";
+      ctx.shadowBlur = 8;
       ctx.fillStyle = selected ? "#f2cf6b" : "#172626";
       ctx.strokeStyle = selected ? "#fff0b0" : "#f0cf75";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.2;
       ctx.beginPath();
-      ctx.roundRect(hit.x-w/2,hit.y-h/2,w,h,7);
+      ctx.arc(hit.x,hit.y,21,0,Math.PI*2);
       ctx.fill();
       ctx.stroke();
       ctx.shadowBlur = 0;
       ctx.fillStyle = selected ? "#202b28" : "#fff4d5";
+      ctx.font = "bold 12px Arial, sans-serif";
       ctx.fillText(label,hit.x,hit.y);
       ctx.restore();
     }
