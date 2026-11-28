@@ -156,14 +156,10 @@
     return (low + high) / 2;
   }
 
-  // Quatro itinerários do pátio. O mesmo traçado é usado no desenho,
-  // na posição da locomotiva e no posicionamento dos vagões.
+  // Etapa atual do pátio: manter somente a linha principal central
+  // e um único ramal à esquerda, conforme solicitado.
   const YARD_SIDINGS=[
-    // Três AMVs escalonados: o primeiro abre para a esquerda;
-    // os dois seguintes abrem para as linhas da direita.
-    {id:"classificacao-esquerda",lateral:-150,start:9580,transition:360},
-    {id:"linha-interna-direita",lateral:65,start:9710,transition:340},
-    {id:"linha-externa-direita",lateral:150,start:9830,transition:360}
+    {id:"classificacao-esquerda",lateral:-150,start:9580,transition:360}
   ];
   function trainTrackPoint(s){
     const route=state.activeYardRoute;
@@ -2316,10 +2312,9 @@
     // Vagões estacionados nas linhas de classificação, desenhados no mesmo estilo do trem.
     const wagonColors = ["#172f52","#e5b72f","#b83c35","#858b8d","#b83c35","#172f52","#858b8d","#e5b72f","#e5b72f","#858b8d","#172f52","#b83c35"];
     const parked = [];
-    // Vagões estacionados nas duas linhas externas do pátio.
+    // Vagões estacionados somente no ramal esquerdo nesta etapa.
     for(let i=0;i<8;i++){
       parked.push({s:10470+i*58,lateral:-150,start:9580,color:wagonColors[i]});
-      parked.push({s:10470+i*58,lateral:150,start:9830,color:wagonColors[(i+5)%wagonColors.length]});
     }
     for (let i = 0; i < parked.length; i++) {
       const wagon = parked[i];
