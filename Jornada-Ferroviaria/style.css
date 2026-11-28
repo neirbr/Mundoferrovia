@@ -145,3 +145,6 @@ h1 strong { color: var(--gold); }
 .door-button{width:100%;min-height:42px;border:1px solid #9b8148;border-radius:9px;background:linear-gradient(180deg,#e8c66e,#c99c43);color:#241d10;font-size:12px;font-weight:950;letter-spacing:.8px}
 .door-button:disabled{opacity:.42;filter:saturate(.45)}
 .door-status{min-height:12px;margin:0;color:var(--muted);font-size:9px;text-align:center}
+
+/* Destaque temporário para operações de engate e desengate. */
+.brake-status.is-notice{color:#f2cf6b;font-size:11px;font-weight:900;letter-spacing:.5px;text-shadow:0 0 8px rgba(242,207,107,.35);}
