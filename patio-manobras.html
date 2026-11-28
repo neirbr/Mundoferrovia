@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#102b3f">
+<title>Pátio de Manobras | Mundo Ferroviário</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#102b3f;color:#fff;overflow:hidden}
+button,input{font:inherit}
+.screen{width:100%;height:100dvh;display:flex;flex-direction:column}
+#intro{overflow:auto;align-items:center;justify-content:flex-start;padding:18px;background:linear-gradient(145deg,#102b3f,#174a67)}
+.panel{width:100%;max-width:760px;padding:22px;background:#142f43;border:2px solid #dcae3c;border-radius:16px;text-align:center}
+h1{font-size:clamp(23px,5vw,34px);color:#f0b323;margin-bottom:8px}
+h2{font-size:19px;margin:8px 0 14px}
+p{line-height:1.5;color:#dce7ed}
+.info{background:#203e52;border-radius:10px;padding:15px;margin:14px 0;text-align:left;line-height:1.6}
+.info h3{color:#f0b323;margin-bottom:8px}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.primary,.secondary{border:0;border-radius:10px;padding:14px 18px;font-weight:bold;cursor:pointer}
+.primary{background:#e3ae35;color:#142b3d}.secondary{background:#31566d;color:#fff}
+#game{display:none}
+header{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;background:#102b3f}
+.brand{font-weight:900;color:#f0b323;font-size:14px}.brand small{display:block;color:#fff;font-size:10px;margin-top:3px}
+.readouts{display:flex;gap:12px;align-items:center;font-weight:bold;font-size:12px}
+.readouts strong{color:#f0b323;font-size:19px}
+#yard{position:relative;flex:1;min-height:0;background:#74786f;overflow:hidden}
+canvas{width:100%;height:100%;display:block;touch-action:manipulation}
+#toolbar{background:#102b3f;padding:9px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+.control{border:2px solid #fff;border-radius:10px;padding:11px 15px;color:#fff;font-weight:bold;background:#2679a8}
+#brakeBox{background:#71352f;border:1px solid #fff;border-radius:10px;padding:7px 10px;min-width:130px}
+#brakeBox label{font-size:10px;font-weight:bold;display:flex;justify-content:space-between}
+#brake{width:100%;accent-color:#f0b323}
+#routeButtons{display:flex;gap:5px;flex-wrap:wrap;justify-content:center}
+.route{background:#31566d;color:white;border:1px solid #9aabb5;border-radius:8px;padding:9px 11px;font-size:12px;font-weight:bold}
+.route.active{background:#27884c;border-color:#b9f0c9}
+#message{font-size:12px;text-align:center;background:#203e52;padding:8px;color:#fff;min-height:32px}
+#back{background:#203e52;color:#fff;border:1px solid #dcae3c;border-radius:8px;padding:8px 10px;font-size:11px}
+@media(orientation:portrait){header{min-height:58px}.readouts{gap:7px;font-size:10px}.readouts strong{font-size:16px}#toolbar{gap:5px;padding:6px}.control{padding:10px 12px;font-size:12px}.route{padding:8px 9px}}
+</style>
+</head>
+<body>
+<section id="intro" class="screen">
+ <div class="panel">
+  <h1>🚂 PÁTIO DE MANOBRAS</h1>
+  <h2>Formação e estacionamento de composições</h2>
+  <p>Assuma o comando da locomotiva e conduza a composição até uma das linhas de estacionamento do pátio. Selecione a rota antes de iniciar, controle a velocidade e pare dentro da área indicada.</p>
+  <div class="info"><h3>OBJETIVO DA OPERAÇÃO</h3>
+   <ol style="padding-left:22px">
+    <li>Escolha uma das cinco linhas de destino.</li>
+    <li>Acione o acelerador para movimentar a composição.</li>
+    <li>Use o freio deslizante para controlar a velocidade.</li>
+    <li>Pare dentro da área de estacionamento, antes do limite final.</li>
+   </ol>
+   <p style="margin-top:10px"><b>Atenção:</b> a rota só pode ser alterada com o trem parado na posição inicial. Ultrapassar o limite da linha provoca falha operacional.</p>
+  </div>
+  <div class="info"><h3>CONTROLES</h3>Ac: acelerar/parar aceleração · Freio: ajuste gradual de 0% a 100% · Linhas L1–L5: selecionar o AMV de destino · Reiniciar: recomeçar a manobra.</div>
+  <div class="actions"><button class="primary" id="start">INICIAR MANOBRA</button><button class="secondary" onclick="location.href='simulador-2d.html'">VOLTAR AO SIMULADOR</button></div>
+ </div>
+</section>
+<section id="game" class="screen">
+ <header>
+  <div class="brand">MUNDO FERROVIÁRIO<small>PÁTIO DE MANOBRAS 2D</small></div>
+  <div class="readouts"><span id="status">AGUARDANDO</span><span><strong id="speed">0</strong> km/h</span></div>
+  <button id="reset" class="control" style="background:#596b78;padding:8px 10px">↻ Reiniciar</button>
+ </header>
+ <div id="yard"><canvas id="cv" width="1000" height="500"></canvas></div>
+ <div id="routeButtons">
+  <button class="route active" data-line="0">L1 · CARGA</button>
+  <button class="route" data-line="1">L2 · TRIAGEM</button>
+  <button class="route" data-line="2">L3 · APOIO</button>
+  <button class="route" data-line="3">L4 · RESERVA</button>
+  <button class="route" data-line="4">L5 · SAÍDA</button>
+ </div>
+ <div id="toolbar">
+  <button id="acc" class="control">Ac · ACELERAR</button>
+  <div id="brakeBox"><label><span>FREIO</span><span id="brakeValue">0%</span></label><input id="brake" type="range" min="0" max="100" value="0"></div>
+ </div>
+ <div id="message">Escolha uma linha e inicie a manobra.</div>
+</section>
+<script>
+"use strict";
+const $=id=>document.getElementById(id), cv=$("cv"),ctx=cv.getContext("2d");
+const W=1000,H=500, ys=[120,185,250,315,380], startX=75, mergeX=280, endX=930;
+let selected=0, trainD=0, speed=0, accelerating=false, brake=0, started=false, done=false, last=0, raf=0;
+const maxSpeed=30, accel=2.25, brakeForce=4.5, resistance=.12;
+function routePoints(line){
+ const y=ys[line];
+ return [{x:startX,y:250},{x:mergeX-55,y:250},{x:mergeX,y:250},{x:mergeX+45,y:y+(250-y)*.48},{x:mergeX+90,y},{x:endX,y}];
+}
+function prep(points){let d=0;return points.map((p,i)=>{if(i)d+=Math.hypot(p.x-points[i-1].x,p.y-points[i-1].y);return {...p,d}})}
+function at(points,d){
+ if(d<=0){let a=points[0],b=points[1],l=Math.hypot(b.x-a.x,b.y-a.y);return{x:a.x+(b.x-a.x)*d/l,y:a.y+(b.y-a.y)*d/l,angle:Math.atan2(b.y-a.y,b.x-a.x)}}
+ for(let i=1;i<points.length;i++){let a=points[i-1],b=points[i];if(d<=b.d){let f=(d-a.d)/(b.d-a.d);return{x:a.x+(b.x-a.x)*f,y:a.y+(b.y-a.y)*f,angle:Math.atan2(b.y-a.y,b.x-a.x)}}}
+ let p=points.at(-1);return{x:p.x,y:p.y,angle:0}
+}
+function line(points,color="#c6cbc8",width=5){ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap="round";ctx.lineJoin="round";ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke()}
+function track(points){ctx.save();ctx.strokeStyle="#514b40";ctx.lineWidth=18;ctx.setLineDash([3,13]);line(points,"#514b40",18);ctx.setLineDash([]);line(points,"#bfc4c2",5);let offset=0;for(let i=1;i<points.length;i++){let a=points[i-1],b=points[i],len=Math.hypot(b.x-a.x,b.y-a.y),n=Math.ceil(len/18);for(let j=0;j<n;j++){let f=j/n,x=a.x+(b.x-a.x)*f,y=a.y+(b.y-a.y)*f,ang=Math.atan2(b.y-a.y,b.x-a.x);ctx.save();ctx.translate(x,y);ctx.rotate(ang);ctx.fillStyle="#51483c";ctx.fillRect(-3,-13,7,26);ctx.restore()}}ctx.restore()}
+function vehicle(x,y,a,type,color){
+ ctx.save();ctx.translate(x,y);ctx.rotate(a);
+ ctx.fillStyle="#0005";ctx.fillRect(-19,-8,42,20);
+ ctx.fillStyle=color;ctx.fillRect(-20,-9,40,18);
+ ctx.fillStyle="#202a30";ctx.fillRect(-16,-12,32,3);ctx.fillRect(-16,9,32,3);
+ if(type==="loco"){ctx.fillStyle="#e0b74d";ctx.fillRect(-5,-7,13,14);ctx.fillStyle="#e9eee9";ctx.fillRect(12,-6,7,12);ctx.fillStyle="#20394b";ctx.fillRect(-17,-6,10,12)}
+ else{ctx.fillStyle="#69747a";ctx.fillRect(-12,-6,24,12);ctx.strokeStyle="#d0d3d0";ctx.strokeRect(-12,-6,24,12)}
+ ctx.fillStyle="#171c20";ctx.fillRect(-23,-2,5,4);ctx.fillRect(19,-2,5,4);ctx.restore()
+}
+function scenery(){
+ ctx.fillStyle="#85877d";ctx.fillRect(0,0,W,H);
+ ctx.fillStyle="#77796e";ctx.fillRect(0,0,W,65);ctx.fillRect(0,435,W,65);
+ // paved service roads and gravel shoulders
+ ctx.fillStyle="#9a9787";ctx.fillRect(20,70,960,30);ctx.fillRect(20,410,960,24);
+ ctx.fillStyle="#6b756b";for(let x=20;x<980;x+=42){ctx.fillRect(x,22,20,12);ctx.fillRect(x,462,18,10)}
+ ctx.fillStyle="#e8e4d5";ctx.font="bold 13px Arial";ctx.fillText("ENTRADA DO PÁTIO",35,88);
+ ctx.fillText("LINHAS DE CLASSIFICAÇÃO E ESTACIONAMENTO",450,45);
+ // small control hut
+ ctx.fillStyle="#b9ad8c";ctx.fillRect(55,20,55,32);ctx.fillStyle="#425866";ctx.fillRect(62,26,16,12);ctx.fillRect(84,26,18,12);ctx.fillStyle="#7b4437";ctx.fillRect(51,16,63,7);
+}
+function draw(){
+ scenery();
+ // five parallel sidings, each connected to the arrival ladder
+ for(let i=0;i<5;i++){
+  let p=prep(routePoints(i));track(p);
+  ctx.fillStyle="#fff";ctx.font="bold 15px Arial";ctx.fillText("L"+(i+1),25,ys[i]-17);
+  ctx.fillStyle=i===selected?"#39d66c":"#e6d8a4";ctx.fillRect(870,ys[i]-22,58,44);
+  ctx.fillStyle="#243744";ctx.font="bold 10px Arial";ctx.fillText(i===0?"CARGA":i===1?"TRIAGEM":i===2?"APOIO":i===3?"RESERVA":"SAÍDA",875,ys[i]+4);
+  if(i!==selected){for(let j=0;j<3;j++)vehicle(590+j*58,ys[i],0,"wagon",["#8b3731","#65747d","#8b3731"][j])}
+ }
+ // entry lead and AMV ladder highlight
+ ctx.fillStyle="#f1cf55";ctx.font="bold 12px Arial";ctx.fillText("AMV PRINCIPAL",mergeX-38,290);
+ const chosen=prep(routePoints(selected));
+ line(chosen.slice(1,5),"#e2b43b",2);
+ // signal before ladder
+ ctx.fillStyle="#20282c";ctx.fillRect(48,205,9,34);ctx.fillStyle="#171d21";ctx.fillRect(41,198,23,27);ctx.fillStyle=started?"#37df70":"#f13d36";ctx.beginPath();ctx.arc(52,207,5,0,Math.PI*2);ctx.fill();
+ // destination stop zone
+ ctx.fillStyle="#31b96722";ctx.fillRect(800,ys[selected]-25,95,50);ctx.strokeStyle="#36c76b";ctx.lineWidth=2;ctx.strokeRect(800,ys[selected]-25,95,50);
+ // player's train on selected route
+ const r=prep(routePoints(selected));
+ for(let i=3;i>=0;i--){let p=at(r,trainD-i*42);vehicle(p.x,p.y,p.angle,i===0?"loco":"wagon",i===0?"#174866":"#9b3933")}
+ // labels and scale
+ ctx.fillStyle="#fff";ctx.font="11px Arial";ctx.fillText("ÁREA DE PARADA",800,ys[selected]-34);
+}
+function say(t){$("message").textContent=t}
+function updateDisplay(){
+ $("speed").textContent=Math.round(speed);
+ $("status").textContent=done?"CONCLUÍDO":accelerating?"ACELERANDO":brake?"FREANDO":speed>0?"EM MOVIMENTO": "AGUARDANDO";
+}
+function chooseLine(n){
+ if(!started||done)return;
+ if(trainD>0||speed>0){say("O AMV só pode ser alterado com a composição parada na posição inicial.");return}
+ selected=n;document.querySelectorAll(".route").forEach(b=>b.classList.toggle("active",Number(b.dataset.line)===n));
+ say("Rota L"+(n+1)+" selecionada. Inicie a manobra quando estiver pronto.");draw()
+}
+function stop(){speed=0;accelerating=false;done=true;$("acc").textContent="Ac · ACELERAR";say("Manobra concluída! Composição estacionada corretamente na linha L"+(selected+1)+".");updateDisplay();draw()}
+function fail(){speed=0;accelerating=false;done=true;$("acc").textContent="Ac · ACELERAR";say("Limite ultrapassado. Reinicie a operação e controle melhor a frenagem.");updateDisplay()}
+function update(dt){
+ if(!started||done)return;
+ if(accelerating&&brake===0)speed=Math.min(maxSpeed,speed+accel*dt);
+ if(brake>0)speed=Math.max(0,speed-brakeForce*(brake/100)*dt);
+ else if(!accelerating)speed=Math.max(0,speed-resistance*dt);
+ if(speed===0&&trainD>0&&!accelerating){/* trem imobilizado, pode retomar */}
+ trainD+=speed*dt*5;
+ const r=prep(routePoints(selected)),p=at(r,trainD);
+ if(p.x>900){fail();return}
+ if(p.x>=800&&p.x<=890&&speed<1.2&&trainD>0){stop();return}
+}
+function loop(t){if(!started)return;let dt=last?(t-last)/1000:0;last=t;dt=Math.min(dt,.05);update(dt);draw();updateDisplay();raf=requestAnimationFrame(loop)}
+function reset(){
+ cancelAnimationFrame(raf);trainD=0;speed=0;accelerating=false;brake=0;done=false;last=0;selected=0;
+ $("brake").value=0;$("brakeValue").textContent="0%";$("acc").textContent="Ac · ACELERAR";
+ document.querySelectorAll(".route").forEach((b,i)=>b.classList.toggle("active",i===0));
+ say("Escolha uma linha e inicie a manobra.");draw();updateDisplay()
+}
+$("start").addEventListener("click",()=>{$("intro").style.display="none";$("game").style.display="flex";started=true;reset();raf=requestAnimationFrame(loop)});
+$("acc").addEventListener("click",()=>{if(!started||done)return;if(brake>0){say("Coloque o freio em alívio antes de acelerar.");return}accelerating=!accelerating;$("acc").textContent=accelerating?"Ac · ACELERANDO":"Ac · RETOMAR";say(accelerating?"Aceleração aplicada.":"Acelerador desligado; composição em regime de inércia.");updateDisplay()});
+$("brake").addEventListener("input",e=>{brake=Number(e.target.value);$("brakeValue").textContent=brake+"%";if(brake>0)accelerating=false;say(brake?"Frenagem aplicada: "+brake+"%.":"Freios em alívio.");updateDisplay()});
+document.querySelectorAll(".route").forEach(b=>b.addEventListener("click",()=>chooseLine(Number(b.dataset.line))));
+$("reset").addEventListener("click",reset);
+window.addEventListener("blur",()=>{accelerating=false;updateDisplay()});
+draw();
+</script>
+</body>
+</html>
