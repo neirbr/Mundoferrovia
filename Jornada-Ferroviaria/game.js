@@ -47,7 +47,8 @@
         const trainS=START_S+state.trackOffset, cutId=state.nextCutId++;
         const cut=state.attachedWagons.slice(cutAt);
         cut.forEach((number,offset)=>{
-          const wagonS=trackSBehind(trainS,54+(cutAt+offset)*TRAIN_SPACING);
+          const gap=54+(cutAt+offset)*TRAIN_SPACING;
+          const wagonS=state.direction<0?trackSAhead(trainS,gap):trackSBehind(trainS,gap);
           state.detachedWagons.push({number,s:wagonS,cutId,route:state.activeYardRoute});
         });
         state.attachedWagons=state.attachedWagons.slice(0,cutAt);
@@ -162,6 +163,16 @@
       const siding=YARD_SIDINGS[route];return yardSidingPoint(s,siding.lateral,siding.start);
     }
     return trackPoint(s);
+  }
+
+  // Distância à frente da locomotiva, necessária para composições em marcha a ré.
+  function trackSAhead(frontS,distance){
+    let low=frontS,high=frontS+distance*2+10;
+    for(let i=0;i<28;i++){
+      const mid=(low+high)/2;
+      if(trackArcLength(frontS,mid)<distance)low=mid;else high=mid;
+    }
+    return (low+high)/2;
   }
 
   function worldToScreen(p, cameraY) {
@@ -3327,7 +3338,8 @@
     const trainS=START_S+state.trackOffset;
     wagonHitAreas.length=0;
     for(let i=state.attachedWagons.length-1;i>=0;i--){
-      const wagonS=trackSBehind(trainS,54+i*TRAIN_SPACING);
+      const gap=54+i*TRAIN_SPACING;
+      const wagonS=state.direction<0?trackSAhead(trainS,gap):trackSBehind(trainS,gap);
       drawWagon(wagonS,state.attachedWagons[i],cameraY,null,{kind:"attached",number:state.attachedWagons[i]});
     }
     for(const wagon of state.detachedWagons){
