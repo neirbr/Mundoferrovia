@@ -161,8 +161,8 @@
     {id:"L3-classificacao-esquerda",lateral:-150,start:9580,transition:360},
     // L2 segue pelo lado direito da L1, com o alinhamento visual 3 px acima.
     {id:"L2-classificacao-direita",lateral:45,verticalOffset:-3,start:9580,transition:360},
-    // L4 sai da L2 antes do primeiro poste do pátio, localizado em S=10320.
-    {id:"L4-classificacao-direita-externa",lateral:55,start:10200,transition:300,parent:"L2-classificacao-direita"}
+    // L4 sai da L2 pelo lado direito, antes do poste direito em S=10320.
+    {id:"L4-classificacao-direita-externa",lateral:110,start:10180,transition:300,parent:"L2-classificacao-direita"}
   ];
   function trainTrackPoint(s){
     const route=state.activeYardRoute;
@@ -2218,7 +2218,8 @@
 
       const firstSleeper = Math.ceil(from / 18) * 18;
       for (let s = firstSleeper; s <= to; s += 18) {
-        const p = yardSidingPoint(s, siding.lateral, siding.start, siding.transition, siding.verticalOffset||0);
+        const parentSiding = siding.parent ? sidings.find(v=>v.id===siding.parent) : null;
+        const p = yardSidingPoint(s, siding.lateral, siding.start, siding.transition, siding.verticalOffset||0, parentSiding);
         const q = worldToScreen(p, cameraY);
         ctx.save();
         ctx.translate(q.x, q.y);
@@ -2246,9 +2247,9 @@
       }
 
       // Ponta da agulha e lâmina móvel do AMV.
-      const switchWorld = yardSidingPoint(siding.start + 82, siding.lateral, siding.start, siding.transition);
-      const switchPoint = worldToScreen(switchWorld, cameraY);
       const parentSiding=siding.parent?sidings.find(v=>v.id===siding.parent):null;
+      const switchWorld = yardSidingPoint(siding.start + 82, siding.lateral, siding.start, siding.transition, siding.verticalOffset||0, parentSiding);
+      const switchPoint = worldToScreen(switchWorld, cameraY);
       const mainRail = parentSiding?yardSidingPoint(siding.start+82,parentSiding.lateral,parentSiding.start,parentSiding.transition,parentSiding.verticalOffset||0):trackPoint(siding.start + 82);
       const branchRail = yardSidingPoint(siding.start + 112, siding.lateral, siding.start, siding.transition, siding.verticalOffset||0,parentSiding);
       const bladeStart = worldToScreen({x:mainRail.x + mainRail.nx * Math.sign(siding.lateral) * 7,y:mainRail.y + mainRail.ny * Math.sign(siding.lateral) * 7},cameraY);
@@ -3312,7 +3313,8 @@
     }
     for(const wagon of state.detachedWagons){
       const detachedRoute=wagon.route===null?null:YARD_SIDINGS[wagon.route];
-      const p=!detachedRoute?trackPoint(wagon.s):yardSidingPoint(wagon.s,detachedRoute.lateral,detachedRoute.start,detachedRoute.transition);
+      const detachedParent=detachedRoute?.parent?YARD_SIDINGS.find(v=>v.id===detachedRoute.parent):null;
+      const p=!detachedRoute?trackPoint(wagon.s):yardSidingPoint(wagon.s,detachedRoute.lateral,detachedRoute.start,detachedRoute.transition,detachedRoute.verticalOffset||0,detachedParent);
       drawWagon(wagon.s,wagon.number,cameraY,p,{kind:"detached",number:wagon.number,cutId:wagon.cutId});
     }
     drawLocomotive(trainS,cameraY);
