@@ -23,8 +23,24 @@
   const PASSENGER_WAGON_COUNT = 8;
   const MAX_SPEED = 82;
   const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
-  const state = {distance:0,trackOffset:0,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[]};
+  const state = {distance:0,trackOffset:0,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false,false,false,false]};
+  const yardSwitchHitAreas = [];
   let previousTrackOffset = state.trackOffset;
+
+  canvas.addEventListener("pointerdown", event => {
+    const rect = canvas.getBoundingClientRect();
+    const x = (event.clientX - rect.left) * W / rect.width;
+    const y = (event.clientY - rect.top) * H / rect.height;
+    for (let i = yardSwitchHitAreas.length - 1; i >= 0; i--) {
+      const hit = yardSwitchHitAreas[i];
+      if (!hit) continue;
+      if (Math.hypot(x - hit.x, y - hit.y) <= hit.radius) {
+        state.yardSwitches[hit.index] = !state.yardSwitches[hit.index];
+        event.preventDefault();
+        return;
+      }
+    }
+  }, {passive:false});
 
   // Traçado com curvas mais fechadas intercaladas por longas retas.
   // Cada curva usa transição suave para manter a continuidade dos trilhos.
@@ -2032,34 +2048,42 @@
     const shedS = 10020;
     const shedY = worldToScreen(trackPoint(shedS), cameraY).y;
     if (shedY > -180 && shedY < H + 180) {
-      // Galpão de manutenção e inspeção.
-      ctx.fillStyle = "rgba(24,29,25,.3)";
-      ctx.fillRect(610, shedY - 92, 126, 190);
-      ctx.fillStyle = "#59615d";
-      ctx.fillRect(602, shedY - 101, 126, 190);
-      ctx.fillStyle = "#7d8982";
-      ctx.fillRect(610, shedY - 94, 110, 176);
-      ctx.fillStyle = "#394744";
-      ctx.beginPath();
-      ctx.moveTo(596, shedY - 101);
-      ctx.lineTo(665, shedY - 137);
-      ctx.lineTo(735, shedY - 101);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = "#a9aaa0";
-      ctx.fillRect(619, shedY - 83, 92, 7);
-      ctx.fillStyle = "#263633";
-      ctx.fillRect(635, shedY - 42, 61, 128);
-      ctx.fillStyle = "#a9b2a9";
-      ctx.fillRect(641, shedY - 36, 49, 122);
-      ctx.fillStyle = "#354541";
-      ctx.fillRect(646, shedY - 31, 39, 117);
-      ctx.fillStyle = "#d0b36c";
-      ctx.fillRect(650, shedY - 26, 31, 5);
-      ctx.fillStyle = "#e5d7ad";
-      ctx.font = "bold 10px Arial";
-      ctx.textAlign = "center";
-      ctx.fillText("OFICINA", 665, shedY - 112);
+      // Galpão ferroviário de manutenção: estrutura metálica, telhado segmentado,
+      // portão de acesso, janelas industriais, iluminação e detalhes de uso.
+      ctx.save();
+      ctx.fillStyle = "rgba(16,22,20,.34)";
+      ctx.beginPath(); ctx.moveTo(596,shedY-83); ctx.lineTo(742,shedY-83); ctx.lineTo(750,shedY+105); ctx.lineTo(588,shedY+105); ctx.closePath(); ctx.fill();
+      // Fundação e paredes laterais.
+      ctx.fillStyle = "#46514e"; ctx.fillRect(598,shedY-91,138,190);
+      ctx.fillStyle = "#87918b"; ctx.fillRect(606,shedY-84,122,176);
+      ctx.fillStyle = "#697671"; ctx.fillRect(606,shedY-84,10,176);
+      ctx.fillStyle = "#a6ada4"; ctx.fillRect(718,shedY-84,10,176);
+      // Telhado metálico em duas águas e cumeeira.
+      ctx.fillStyle = "#293b3b"; ctx.beginPath(); ctx.moveTo(590,shedY-91); ctx.lineTo(665,shedY-139); ctx.lineTo(744,shedY-91); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#526461"; ctx.beginPath(); ctx.moveTo(597,shedY-94); ctx.lineTo(665,shedY-134); ctx.lineTo(665,shedY-91); ctx.lineTo(604,shedY-57); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#3c504e"; ctx.beginPath(); ctx.moveTo(665,shedY-134); ctx.lineTo(737,shedY-94); ctx.lineTo(728,shedY-57); ctx.lineTo(665,shedY-91); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = "rgba(195,207,195,.35)"; ctx.lineWidth = 1;
+      for(let k=0;k<6;k++){const xx=608+k*10;ctx.beginPath();ctx.moveTo(xx,shedY-91+(xx-608)*-.58);ctx.lineTo(xx+4,shedY-61+(xx-608)*-.58);ctx.stroke();}
+      ctx.fillStyle="#aeb7aa";ctx.fillRect(659,shedY-136,12,5);
+      // Vigas, montantes e portão industrial largo.
+      ctx.fillStyle="#344643";ctx.fillRect(624,shedY-45,83,132);
+      ctx.fillStyle="#aab3a9";ctx.fillRect(630,shedY-40,71,126);
+      ctx.fillStyle="#263b3b";ctx.fillRect(635,shedY-35,61,121);
+      ctx.fillStyle="#64736d";ctx.fillRect(639,shedY-31,53,113);
+      ctx.fillStyle="#303f3d";ctx.fillRect(641,shedY-29,49,109);
+      for(let k=0;k<9;k++){ctx.fillStyle=k%2?"#71817a":"#87938a";ctx.fillRect(643,shedY-26+k*12,45,8);ctx.fillStyle="rgba(26,39,37,.55)";ctx.fillRect(643,shedY-18+k*12,45,2);}
+      ctx.strokeStyle="#c1c8b9";ctx.lineWidth=2;ctx.strokeRect(638,shedY-34,55,117);
+      ctx.fillStyle="#d4b96e";ctx.fillRect(687,shedY+22,3,5);
+      // Janelas altas de inspeção e luminárias externas.
+      for(const wx of [613,706]){ctx.fillStyle="#314543";ctx.fillRect(wx,shedY-48,13,28);ctx.fillStyle="#8fb4b2";ctx.fillRect(wx+2,shedY-46,9,24);ctx.strokeStyle="#d0d5c7";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(wx+6.5,shedY-46);ctx.lineTo(wx+6.5,shedY-22);ctx.moveTo(wx+2,shedY-34);ctx.lineTo(wx+11,shedY-34);ctx.stroke();}
+      ctx.fillStyle="#f1d78d";ctx.beginPath();ctx.arc(665,shedY-51,5,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="rgba(244,213,133,.18)";ctx.beginPath();ctx.arc(665,shedY-51,14,0,Math.PI*2);ctx.fill();
+      // Placa de identificação e faixa de segurança.
+      ctx.fillStyle="#263b37";ctx.fillRect(620,shedY-108,90,17);
+      ctx.strokeStyle="#d6b65f";ctx.lineWidth=1;ctx.strokeRect(620,shedY-108,90,17);
+      ctx.fillStyle="#f1d58a";ctx.font="bold 9px Arial";ctx.textAlign="center";ctx.fillText("MANUTENÇÃO",665,shedY-96);
+      ctx.fillStyle="#d7b65e";ctx.fillRect(625,shedY+91,84,4);
+      ctx.restore();
     }
 
     // Pilhas de dormentes, materiais e contêineres de apoio.
@@ -2127,6 +2151,7 @@
   }
 
   function drawShuntingYardTracks(cameraY) {
+    yardSwitchHitAreas.length = 0;
     const sidings = [
       { lateral: -150, start: 9180 },
       { lateral: -75, start: 9320 },
@@ -2192,25 +2217,39 @@
         ctx.stroke();
       }
 
-      // Agulhas e contratrilhos no ponto de derivação do AMV.
-      const switchPoint = worldToScreen(yardSidingPoint(siding.start + 85, siding.lateral, siding.start), cameraY);
-      if (switchPoint.y > -25 && switchPoint.y < H + 25) {
-        ctx.fillStyle = "#d7b65e";
+      // Ponta da agulha e lâmina móvel do AMV.
+      const switchWorld = yardSidingPoint(siding.start + 82, siding.lateral, siding.start);
+      const switchPoint = worldToScreen(switchWorld, cameraY);
+      const mainRail = trackPoint(siding.start + 82);
+      const branchRail = yardSidingPoint(siding.start + 112, siding.lateral, siding.start);
+      const bladeStart = worldToScreen({x:mainRail.x + mainRail.nx * Math.sign(siding.lateral) * 7,y:mainRail.y + mainRail.ny * Math.sign(siding.lateral) * 7},cameraY);
+      const bladeEnd = worldToScreen({x:branchRail.x - branchRail.nx * Math.sign(siding.lateral) * 7,y:branchRail.y - branchRail.ny * Math.sign(siding.lateral) * 7},cameraY);
+      const switchIndex = sidings.indexOf(siding);
+      const selected = !!state.yardSwitches[switchIndex];
+      if (switchPoint.y > -45 && switchPoint.y < H + 45) {
+        ctx.strokeStyle = selected ? "#e8c45e" : "#c4cbc2";
+        ctx.lineWidth = 3.2;
+        ctx.lineCap = "round";
         ctx.beginPath();
-        ctx.arc(switchPoint.x, switchPoint.y, 3, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(bladeStart.x, bladeStart.y);
+        ctx.lineTo(selected ? bladeEnd.x : switchPoint.x, selected ? bladeEnd.y : switchPoint.y);
+        ctx.stroke();
+        ctx.fillStyle = selected ? "#f2cf6b" : "#d7b65e";
+        ctx.beginPath(); ctx.arc(switchPoint.x, switchPoint.y, 4, 0, Math.PI * 2); ctx.fill();
+        // Área de toque invisível: ampliada para facilitar a operação no celular.
+        yardSwitchHitAreas[switchIndex] = {x:switchPoint.x,y:switchPoint.y,radius:31,index:switchIndex};
       }
     }
 
     // Vagões estacionados nas linhas de classificação, desenhados no mesmo estilo do trem.
-    const parked = [
-      { s: 10020, lateral: -150, start: 9180, color: "#8c4037" },
-      { s: 10100, lateral: -150, start: 9180, color: "#536d7a" },
-      { s: 10040, lateral: -75, start: 9320, color: "#6e7775" },
-      { s: 10210, lateral: 75, start: 9180, color: "#8c4037" },
-      { s: 10300, lateral: 150, start: 9320, color: "#536d7a" },
-      { s: 10380, lateral: 150, start: 9320, color: "#6e7775" }
-    ];
+    const wagonColors = ["#172f52","#e5b72f","#b83c35","#858b8d","#b83c35","#172f52","#858b8d","#e5b72f","#e5b72f","#858b8d","#172f52","#b83c35"];
+    const parked = [];
+    // Composições agrupadas somente nas vias extremas: esquerda (classificação)
+    // e direita (linha de saída), com cores alternadas e sem vagões dispersos.
+    for(let i=0;i<8;i++){
+      parked.push({s:9910+i*58,lateral:-150,start:9180,color:wagonColors[i]});
+      parked.push({s:9910+i*58,lateral:150,start:9320,color:wagonColors[(i+5)%wagonColors.length]});
+    }
     for (let i = 0; i < parked.length; i++) {
       const wagon = parked[i];
       const p = yardSidingPoint(wagon.s, wagon.lateral, wagon.start);
