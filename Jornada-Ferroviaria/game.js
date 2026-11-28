@@ -2271,8 +2271,35 @@
         ctx.stroke();
         ctx.fillStyle = selected ? "#f2cf6b" : "#d7b65e";
         ctx.beginPath(); ctx.arc(switchPoint.x, switchPoint.y, 4, 0, Math.PI * 2); ctx.fill();
-        // Área de toque invisível: ampliada para facilitar a operação no celular.
-        yardSwitchHitAreas[switchIndex] = {x:switchPoint.x,y:switchPoint.y,radius:42,index:switchIndex,start:siding.start};
+
+        // Pequeno comando visual do AMV: mostra o itinerário atualmente alinhado.
+        const switchLabels = [
+          selected ? "L1/L3" : "L1/L1",
+          selected ? "L1/L2" : "L1/L1",
+          selected ? "L2/L4" : "L2/L2"
+        ];
+        const label = switchLabels[switchIndex];
+        const buttonX = switchPoint.x + 27;
+        const buttonY = switchPoint.y - 22;
+        ctx.save();
+        ctx.font = "bold 10px Arial, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        const buttonWidth = 48;
+        const buttonHeight = 21;
+        ctx.fillStyle = selected ? "#f2cf6b" : "rgba(28,39,39,.94)";
+        ctx.strokeStyle = selected ? "#fff0b0" : "#d7b65e";
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.roundRect(buttonX-buttonWidth/2,buttonY-buttonHeight/2,buttonWidth,buttonHeight,6);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = selected ? "#26302c" : "#fff4d5";
+        ctx.fillText(label,buttonX,buttonY);
+        ctx.restore();
+
+        // Área de toque ampliada para o botão, facilitando a operação no celular.
+        yardSwitchHitAreas[switchIndex] = {x:buttonX,y:buttonY,radius:30,index:switchIndex,start:siding.start};
       }
     }
 
