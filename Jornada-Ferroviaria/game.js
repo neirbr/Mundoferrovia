@@ -1990,6 +1990,253 @@
     }
   }
 
+
+  // Novo trecho integrado à Jornada Ferroviária: pátio de manobras.
+  // O pátio usa o mesmo sistema de coordenadas, câmera, composição e física do percurso.
+  function drawShuntingYardRegion(cameraY) {
+    const near = worldToScreen(trackPoint(11050), cameraY).y;
+    const far = worldToScreen(trackPoint(9100), cameraY).y;
+    const top = Math.min(near, far);
+    const height = Math.abs(far - near);
+
+    ctx.fillStyle = "#898574";
+    ctx.fillRect(38, top, 724, height);
+    ctx.fillStyle = "rgba(48,48,39,.13)";
+    ctx.fillRect(38, top, 724, height);
+
+    // Pátio em brita compactada, com manchas e pequenas pedras.
+    for (let s = 9160; s <= 10980; s += 58) {
+      const y = worldToScreen(trackPoint(s), cameraY).y;
+      if (y < -20 || y > H + 20) continue;
+      for (let x = 52; x < 750; x += 47) {
+        const seed = Math.floor(s * 3 + x * 7);
+        ctx.fillStyle = seeded(seed) > .5 ? "rgba(225,216,190,.24)" : "rgba(48,48,40,.13)";
+        ctx.beginPath();
+        ctx.ellipse(x + seeded(seed + 1) * 13, y + seeded(seed + 2) * 15, 1.5 + seeded(seed + 3) * 2, 1, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Via de serviço pavimentada na lateral do pátio.
+    ctx.fillStyle = "#68695f";
+    ctx.fillRect(48, top, 66, height);
+    ctx.fillStyle = "rgba(220,211,185,.22)";
+    ctx.fillRect(53, top, 3, height);
+    ctx.fillRect(106, top, 3, height);
+    for (let s = 9200; s < 10950; s += 90) {
+      const y = worldToScreen(trackPoint(s), cameraY).y;
+      ctx.fillStyle = "rgba(235,224,190,.18)";
+      ctx.fillRect(76, y, 12, 2);
+    }
+
+    const shedS = 10020;
+    const shedY = worldToScreen(trackPoint(shedS), cameraY).y;
+    if (shedY > -180 && shedY < H + 180) {
+      // Galpão de manutenção e inspeção.
+      ctx.fillStyle = "rgba(24,29,25,.3)";
+      ctx.fillRect(610, shedY - 92, 126, 190);
+      ctx.fillStyle = "#59615d";
+      ctx.fillRect(602, shedY - 101, 126, 190);
+      ctx.fillStyle = "#7d8982";
+      ctx.fillRect(610, shedY - 94, 110, 176);
+      ctx.fillStyle = "#394744";
+      ctx.beginPath();
+      ctx.moveTo(596, shedY - 101);
+      ctx.lineTo(665, shedY - 137);
+      ctx.lineTo(735, shedY - 101);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = "#a9aaa0";
+      ctx.fillRect(619, shedY - 83, 92, 7);
+      ctx.fillStyle = "#263633";
+      ctx.fillRect(635, shedY - 42, 61, 128);
+      ctx.fillStyle = "#a9b2a9";
+      ctx.fillRect(641, shedY - 36, 49, 122);
+      ctx.fillStyle = "#354541";
+      ctx.fillRect(646, shedY - 31, 39, 117);
+      ctx.fillStyle = "#d0b36c";
+      ctx.fillRect(650, shedY - 26, 31, 5);
+      ctx.fillStyle = "#e5d7ad";
+      ctx.font = "bold 10px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("OFICINA", 665, shedY - 112);
+    }
+
+    // Pilhas de dormentes, materiais e contêineres de apoio.
+    for (let i = 0; i < 3; i++) {
+      const y = worldToScreen(trackPoint(9650 + i * 230), cameraY).y;
+      if (y < -45 || y > H + 45) continue;
+      const x = 135 + (i % 2) * 35;
+      ctx.fillStyle = "rgba(25,30,25,.25)";
+      ctx.fillRect(x + 4, y + 6, 76, 34);
+      ctx.fillStyle = i % 2 ? "#526c70" : "#8b5944";
+      ctx.fillRect(x, y - 24, 76, 29);
+      ctx.fillStyle = "rgba(230,230,210,.28)";
+      for (let k = 1; k < 6; k++) ctx.fillRect(x + k * 12, y - 22, 2, 25);
+      ctx.fillStyle = "#27383a";
+      ctx.fillRect(x + 7, y - 19, 4, 4);
+      ctx.fillRect(x + 64, y - 19, 4, 4);
+    }
+
+    // Placa de identificação do novo trecho.
+    const sign = worldToScreen(trackPoint(9820), cameraY);
+    if (sign.y > -40 && sign.y < H + 40) {
+      ctx.fillStyle = "rgba(32,43,37,.88)";
+      ctx.fillRect(258, sign.y - 70, 196, 27);
+      ctx.strokeStyle = "#d6b65f";
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(258, sign.y - 70, 196, 27);
+      ctx.fillStyle = "#f1d58a";
+      ctx.font = "bold 13px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("PÁTIO DE MANOBRAS", 356, sign.y - 52);
+    }
+
+    // Postes de iluminação do pátio.
+    for (const s of [9400, 9850, 10300, 10750]) {
+      const p = worldToScreen(trackPoint(s), cameraY);
+      if (p.y < -35 || p.y > H + 35) continue;
+      for (const x of [165, 570]) {
+        ctx.fillStyle = "#3c4540";
+        ctx.fillRect(x - 2, p.y - 23, 4, 25);
+        ctx.fillStyle = "#e8d99b";
+        ctx.fillRect(x - 7, p.y - 27, 14, 5);
+        ctx.fillStyle = "rgba(244,221,142,.13)";
+        ctx.beginPath();
+        ctx.arc(x, p.y - 24, 19, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+
+  function yardSidingPoint(s, lateral, divergeAt) {
+    const base = (value) => {
+      const p = trackPoint(value);
+      const t = Math.max(0, Math.min(1, (value - divergeAt) / 270));
+      const eased = t * t * (3 - 2 * t);
+      return { x: p.x + p.nx * lateral * eased, y: p.y + p.ny * lateral * eased };
+    };
+    const point = base(s);
+    const before = base(s - 2);
+    const after = base(s + 2);
+    const dx = after.x - before.x;
+    const dy = after.y - before.y;
+    const length = Math.hypot(dx, dy) || 1;
+    const tx = dx / length, ty = dy / length;
+    return { ...point, tx, ty, nx: -ty, ny: tx };
+  }
+
+  function drawShuntingYardTracks(cameraY) {
+    const sidings = [
+      { lateral: -150, start: 9180 },
+      { lateral: -75, start: 9320 },
+      { lateral: 75, start: 9180 },
+      { lateral: 150, start: 9320 }
+    ];
+    const visibleStart = Math.max(9100, START_S + state.trackOffset - 650);
+    const visibleEnd = Math.min(11100, START_S + state.trackOffset + 700);
+
+    for (const siding of sidings) {
+      const from = Math.max(siding.start, visibleStart);
+      const to = visibleEnd;
+      if (to <= from) continue;
+
+      const path = (railOffset = 0) => {
+        ctx.beginPath();
+        for (let s = from; s <= to; s += 5) {
+          const p = yardSidingPoint(s, siding.lateral, siding.start);
+          const q = worldToScreen({ x: p.x + p.nx * railOffset, y: p.y + p.ny * railOffset }, cameraY);
+          if (s === from) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
+        }
+      };
+
+      path();
+      ctx.strokeStyle = "rgba(25,29,25,.25)";
+      ctx.lineWidth = 39;
+      ctx.stroke();
+      path();
+      ctx.strokeStyle = "#766b58";
+      ctx.lineWidth = 35;
+      ctx.stroke();
+      path();
+      ctx.strokeStyle = "#a09378";
+      ctx.lineWidth = 29;
+      ctx.stroke();
+
+      const firstSleeper = Math.ceil(from / 18) * 18;
+      for (let s = firstSleeper; s <= to; s += 18) {
+        const p = yardSidingPoint(s, siding.lateral, siding.start);
+        const q = worldToScreen(p, cameraY);
+        ctx.save();
+        ctx.translate(q.x, q.y);
+        ctx.rotate(Math.atan2(p.ty, p.tx) + Math.PI / 2);
+        ctx.fillStyle = "#594431";
+        ctx.fillRect(-22, -4, 44, 8);
+        ctx.fillStyle = "rgba(205,165,111,.42)";
+        ctx.fillRect(-18, -2, 36, 1);
+        ctx.restore();
+      }
+
+      for (const side of [-1, 1]) {
+        path(side * 11);
+        ctx.strokeStyle = "#303b3d";
+        ctx.lineWidth = 6;
+        ctx.stroke();
+        path(side * 11);
+        ctx.strokeStyle = "#b8c0bb";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        path(side * 11);
+        ctx.strokeStyle = "rgba(255,255,245,.65)";
+        ctx.lineWidth = .8;
+        ctx.stroke();
+      }
+
+      // Agulhas e contratrilhos no ponto de derivação do AMV.
+      const switchPoint = worldToScreen(yardSidingPoint(siding.start + 85, siding.lateral, siding.start), cameraY);
+      if (switchPoint.y > -25 && switchPoint.y < H + 25) {
+        ctx.fillStyle = "#d7b65e";
+        ctx.beginPath();
+        ctx.arc(switchPoint.x, switchPoint.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Vagões estacionados nas linhas de classificação, desenhados no mesmo estilo do trem.
+    const parked = [
+      { s: 10020, lateral: -150, start: 9180, color: "#8c4037" },
+      { s: 10100, lateral: -150, start: 9180, color: "#536d7a" },
+      { s: 10040, lateral: -75, start: 9320, color: "#6e7775" },
+      { s: 10210, lateral: 75, start: 9180, color: "#8c4037" },
+      { s: 10300, lateral: 150, start: 9320, color: "#536d7a" },
+      { s: 10380, lateral: 150, start: 9320, color: "#6e7775" }
+    ];
+    for (let i = 0; i < parked.length; i++) {
+      const wagon = parked[i];
+      const p = yardSidingPoint(wagon.s, wagon.lateral, wagon.start);
+      const q = worldToScreen(p, cameraY);
+      if (q.y < -45 || q.y > H + 45) continue;
+      ctx.save();
+      ctx.translate(q.x, q.y);
+      ctx.rotate(Math.atan2(p.ty, p.tx) + Math.PI / 2);
+      ctx.fillStyle = "rgba(7,15,17,.35)";
+      ctx.fillRect(-17, -25, 34, 52);
+      ctx.fillStyle = "#202b2e";
+      ctx.fillRect(-16, -24, 32, 48);
+      ctx.fillStyle = wagon.color;
+      ctx.fillRect(-13, -21, 26, 42);
+      ctx.fillStyle = "rgba(230,225,205,.25)";
+      ctx.fillRect(-10, -18, 20, 3);
+      ctx.fillRect(-10, 15, 20, 2);
+      ctx.fillStyle = "#303a3c";
+      ctx.fillRect(-17, -18, 4, 10);
+      ctx.fillRect(13, -18, 4, 10);
+      ctx.fillRect(-17, 8, 4, 10);
+      ctx.fillRect(13, 8, 4, 10);
+      ctx.restore();
+    }
+  }
+
   function drawFinalStationRegion(cameraY) {
     // Complexo ferroviário de desembarque com plataformas longas e um edifício principal.
     const centerS = 8440;
@@ -3032,9 +3279,11 @@
     drawTownRegion(cameraY);
     drawCherryGroveRegion(cameraY);
     drawFinalStationRegion(cameraY);
+    drawShuntingYardRegion(cameraY);
     drawRiverLakeRegion(cameraY);
     drawBridge(cameraY);
     drawRails(cameraY);
+    drawShuntingYardTracks(cameraY);
     drawSignal(cameraY);
     drawTrain(cameraY);
     drawStationPassengers(cameraY);
@@ -3164,7 +3413,7 @@
     distanceValue.textContent=(state.distance/1000).toFixed(2).replace(".",",")+" km";
     const pct=Math.min(100,state.distance/TRACK_LENGTH*100);
     progressFill.style.width=pct+"%";progressText.textContent=Math.round(pct)+"% do trecho";
-    if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else if(state.distance<3260)regionName.textContent="Rios, lagos e pontes";else if(state.distance<5200)regionName.textContent="Campos floridos";else if(state.distance<7380)regionName.textContent="Cidade do interior";else if(state.distance<7800)regionName.textContent="Bosque de cerejeiras";else if(state.distance<8900)regionName.textContent="Estação final";else regionName.textContent="Trecho após a estação";
+    if(state.distance<845)regionName.textContent="Estação de partida";else if(state.distance<1820)regionName.textContent="Campo verde";else if(state.distance<2665)regionName.textContent="Fazendas e plantações";else if(state.distance<2948)regionName.textContent="Floresta";else if(state.distance<3260)regionName.textContent="Rios, lagos e pontes";else if(state.distance<5200)regionName.textContent="Campos floridos";else if(state.distance<7380)regionName.textContent="Cidade do interior";else if(state.distance<7800)regionName.textContent="Bosque de cerejeiras";else if(state.distance<8900)regionName.textContent="Estação final";else regionName.textContent="Pátio de manobras";
   }
 
   // Simulação em passos fixos: mantém aceleração, frenagem e deslocamento
