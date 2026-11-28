@@ -14,7 +14,11 @@
   const H = 800;
   const TRACK_SHIFT_X = 70;
   const TRACK_LENGTH = 10400; // Extensão reservada para a linha e futuras regiões após a estação final.
-  const START_S = 520; // Posição inicial original da locomotiva junto à plataforma.
+  const START_S = 520; // Referência original do percurso e cálculo das distâncias.
+  // MODO TEMPORÁRIO DE TESTE DO PÁTIO: altere para false para voltar à estação inicial.
+  const TEMP_START_AT_YARD = true;
+  const INITIAL_TRACK_S = TEMP_START_AT_YARD ? 9600 : START_S;
+  const INITIAL_PROGRESS = INITIAL_TRACK_S - START_S;
   // Zona de parada no fim da plataforma: posição pensada para manter
   // a locomotiva e os oito vagões dentro da área de embarque.
   const STATION_DETECTION_START = 8500;
@@ -23,7 +27,7 @@
   const PASSENGER_WAGON_COUNT = 8;
   const MAX_SPEED = 82;
   const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
-  const state = {distance:0,trackOffset:0,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false,false,false,false]};
+  const state = {distance:INITIAL_PROGRESS,trackOffset:INITIAL_PROGRESS,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false,false,false,false]};
   const yardSwitchHitAreas = [];
   let previousTrackOffset = state.trackOffset;
 
