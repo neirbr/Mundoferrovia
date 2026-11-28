@@ -17,7 +17,7 @@
   const START_S = 520; // Referência original do percurso e cálculo das distâncias.
   // MODO TEMPORÁRIO DE TESTE DO PÁTIO: altere para false para voltar à estação inicial.
   const TEMP_START_AT_YARD = true;
-  const INITIAL_TRACK_S = TEMP_START_AT_YARD ? 9600 : START_S;
+  const INITIAL_TRACK_S = TEMP_START_AT_YARD ? 8540 : START_S;
   const INITIAL_PROGRESS = INITIAL_TRACK_S - START_S;
   // Zona de parada no fim da plataforma: posição pensada para manter
   // a locomotiva e os oito vagões dentro da área de embarque.
