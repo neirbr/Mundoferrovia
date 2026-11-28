@@ -78,7 +78,7 @@
       const hit=yardSwitchHitAreas[i];
       if(!hit||Math.hypot(x-hit.x,y-hit.y)>hit.radius)continue;
       const trainS=START_S+state.trackOffset;
-      if(trainS>=hit.start+82){brakeStatus.textContent="O AMV já foi ultrapassado — selecione outro itinerário";event.preventDefault();return;}
+      if(trainS>=hit.start){brakeStatus.textContent="O AMV já foi ultrapassado — selecione outro itinerário";event.preventDefault();return;}
       const alreadySelected=state.activeYardRoute===hit.index;
       state.yardSwitches=state.yardSwitches.map((_,n)=>!alreadySelected&&n===hit.index);
       state.activeYardRoute=alreadySelected?null:hit.index;
