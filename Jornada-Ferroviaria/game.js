@@ -33,6 +33,17 @@
   const state = {distance:INITIAL_PROGRESS,trackOffset:INITIAL_PROGRESS,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false,false,false],activeYardRoute:null,attachedWagons:Array.from({length:PASSENGER_WAGON_COUNT},(_,i)=>i+1),detachedWagons:[],nextCutId:1};
   const yardSwitchHitAreas = [];
   const wagonHitAreas = [];
+  let brakeNoticeTimer = null;
+  function showBrakeNotice(message) {
+    brakeStatus.textContent = message;
+    brakeStatus.classList.add("is-notice");
+    if (brakeNoticeTimer) clearTimeout(brakeNoticeTimer);
+    brakeNoticeTimer = setTimeout(() => {
+      brakeStatus.classList.remove("is-notice");
+      refreshControls();
+      brakeNoticeTimer = null;
+    }, 3500);
+  }
   let previousTrackOffset = state.trackOffset;
 
   canvas.addEventListener("pointerdown", event => {
@@ -56,8 +67,9 @@
         });
         state.attachedWagons=state.attachedWagons.slice(0,cutAt);
         state.throttlePoint=0;
-        brakeStatus.textContent=cut.length+" vagão(ões) desengatado(s) e deixado(s) na via";
-        refreshControls(); return;
+        refreshControls();
+        showBrakeNotice(cut.length===1 ? "VAGÃO DESENGATADO" : cut.length+" VAGÕES DESENGATADOS");
+        return;
       }
       const wagon=state.detachedWagons.find(w=>w.number===hit.number&&w.cutId===hit.cutId);
       if(!wagon)return;
@@ -74,8 +86,9 @@
       if(!cut.length||cut.some((w,i)=>w.number!==expected[i])){brakeStatus.textContent="Aproxime os vagões na ordem da composição";return;}
       state.attachedWagons.push(...cut.map(w=>w.number));
       state.detachedWagons=state.detachedWagons.filter(w=>!cut.includes(w));
-      brakeStatus.textContent=cut.length+" vagão(ões) engatado(s) automaticamente";
-      refreshControls(); return;
+      refreshControls();
+      showBrakeNotice(cut.length===1 ? "VAGÃO ENGATADO" : cut.length+" VAGÕES ENGATADOS");
+      return;
     }
     for(let i=yardSwitchHitAreas.length-1;i>=0;i--){
       const hit=yardSwitchHitAreas[i];
@@ -3148,7 +3161,7 @@
     }
 
     ctx.restore();
-    if(hitMeta)wagonHitAreas.push({x:q.x,y:q.y,radius:25,...hitMeta});
+    if(hitMeta)wagonHitAreas.push({x:q.x,y:q.y,radius:34,...hitMeta});
   }
 
   function drawLocomotive(s,cameraY){
@@ -3640,6 +3653,7 @@
     [forwardButton,neutralButton,reverseButton,throttleUp,throttleDown].forEach(b=>b.disabled=emergencyActive||state.doorsOpen);
     brakeSlider.disabled=state.doorsOpen;
     emergencyButton.disabled=emergencyActive||state.doorsOpen;
+    if(brakeStatus.classList.contains("is-notice")) return;
     if(emergencyRecoveryPending) brakeStatus.textContent="Alívio concluído — aguardando 7 segundos...";
     else if(airSystemReady) brakeStatus.textContent="Sistema de ar completo";
     else if(state.emergency&&!state.emergencyStopped) brakeStatus.textContent="EMERGÊNCIA — frenagem em andamento";
