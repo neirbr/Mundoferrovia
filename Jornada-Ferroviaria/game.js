@@ -2272,38 +2272,41 @@
         ctx.fillStyle = selected ? "#f2cf6b" : "#d7b65e";
         ctx.beginPath(); ctx.arc(switchPoint.x, switchPoint.y, 4, 0, Math.PI * 2); ctx.fill();
 
-        // Pequeno comando visual do AMV: mostra o itinerário atualmente alinhado.
-        const switchLabels = [
-          selected ? "L1/L3" : "L1/L1",
-          selected ? "L1/L2" : "L1/L1",
-          selected ? "L2/L4" : "L2/L2"
-        ];
-        const label = switchLabels[switchIndex];
-        const buttonX = switchPoint.x + 27;
-        const buttonY = switchPoint.y - 22;
-        ctx.save();
-        ctx.font = "bold 10px Arial, sans-serif";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        const buttonWidth = 48;
-        const buttonHeight = 21;
-        ctx.fillStyle = selected ? "#f2cf6b" : "rgba(28,39,39,.94)";
-        ctx.strokeStyle = selected ? "#fff0b0" : "#d7b65e";
-        ctx.lineWidth = 1.4;
-        ctx.beginPath();
-        ctx.roundRect(buttonX-buttonWidth/2,buttonY-buttonHeight/2,buttonWidth,buttonHeight,6);
-        ctx.fill();
-        ctx.stroke();
-        ctx.fillStyle = selected ? "#26302c" : "#fff4d5";
-        ctx.fillText(label,buttonX,buttonY);
-        ctx.restore();
-
-        // Área de toque ampliada para o botão, facilitando a operação no celular.
-        yardSwitchHitAreas[switchIndex] = {x:buttonX,y:buttonY,radius:30,index:switchIndex,start:siding.start};
+        // Guarda a posição do botão; ele será desenhado por último, acima de todos os elementos.
+        const buttonX = switchPoint.x + 34;
+        const buttonY = switchPoint.y - 25;
+        yardSwitchHitAreas[switchIndex] = {x:buttonX,y:buttonY,radius:34,index:switchIndex,start:siding.start};
       }
     }
 
-    // Vagões estacionados nas linhas de classificação, desenhados no mesmo estilo do trem.
+    function drawYardSwitchButtons() {
+    const labels = ["L1/L3","L1/L2","L2/L4"];
+    for (const hit of yardSwitchHitAreas) {
+      if (!hit) continue;
+      const selected = !!state.yardSwitches[hit.index];
+      const label = selected ? labels[hit.index] : (hit.index===2 ? "L2/L2" : "L1/L1");
+      ctx.save();
+      ctx.font = "bold 13px Arial, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      const w = 62, h = 29;
+      ctx.shadowColor = "rgba(0,0,0,.7)";
+      ctx.shadowBlur = 7;
+      ctx.fillStyle = selected ? "#f2cf6b" : "#172626";
+      ctx.strokeStyle = selected ? "#fff0b0" : "#f0cf75";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(hit.x-w/2,hit.y-h/2,w,h,7);
+      ctx.fill();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = selected ? "#202b28" : "#fff4d5";
+      ctx.fillText(label,hit.x,hit.y);
+      ctx.restore();
+    }
+  }
+
+  // Vagões estacionados nas linhas de classificação, desenhados no mesmo estilo do trem.
     const wagonColors = ["#172f52","#e5b72f","#b83c35","#858b8d","#b83c35","#172f52","#858b8d","#e5b72f","#e5b72f","#858b8d","#172f52","#b83c35"];
     const parked = [];
     // Vagões estacionados somente no ramal esquerdo nesta etapa.
@@ -3392,6 +3395,7 @@
     drawSignal(cameraY);
     drawTrain(cameraY);
     drawStationPassengers(cameraY);
+    drawYardSwitchButtons();
     drawTownOverpass(cameraY, 5920, 0);
     drawTownOverpass(cameraY, 6300, 1);
     drawTownOverpass(cameraY, 6680, 0);
