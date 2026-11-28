@@ -27,7 +27,7 @@
   const PASSENGER_WAGON_COUNT = 8;
   const MAX_SPEED = 82;
   const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
-  const state = {distance:INITIAL_PROGRESS,trackOffset:INITIAL_PROGRESS,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false],activeYardRoute:null,attachedWagons:Array.from({length:PASSENGER_WAGON_COUNT},(_,i)=>i+1),detachedWagons:[],nextCutId:1};
+  const state = {distance:INITIAL_PROGRESS,trackOffset:INITIAL_PROGRESS,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false,false],activeYardRoute:null,attachedWagons:Array.from({length:PASSENGER_WAGON_COUNT},(_,i)=>i+1),detachedWagons:[],nextCutId:1};
   const yardSwitchHitAreas = [];
   const wagonHitAreas = [];
   let previousTrackOffset = state.trackOffset;
@@ -82,7 +82,7 @@
       const alreadySelected=state.activeYardRoute===hit.index;
       state.yardSwitches=state.yardSwitches.map((_,n)=>!alreadySelected&&n===hit.index);
       state.activeYardRoute=alreadySelected?null:hit.index;
-      brakeStatus.textContent=alreadySelected?"Itinerário cancelado — via principal":"Itinerário selecionado: ramal "+(hit.index+1);
+      brakeStatus.textContent=alreadySelected?"Itinerário cancelado — L1 (linha principal)":"Itinerário selecionado: "+(hit.index===0?"L3 (linha esquerda)":"L2 (linha direita)");
       event.preventDefault();return;
     }
   }, {passive:false});
@@ -156,10 +156,10 @@
     return (low + high) / 2;
   }
 
-  // Etapa atual do pátio: manter somente a linha principal central
-  // e um único ramal à esquerda, conforme solicitado.
+  // Três linhas do pátio: L1 é a principal; L2 fica à direita; L3 à esquerda.
   const YARD_SIDINGS=[
-    {id:"classificacao-esquerda",lateral:-150,start:9580,transition:360}
+    {id:"L3-classificacao-esquerda",lateral:-150,start:9580,transition:360},
+    {id:"L2-classificacao-direita",lateral:150,start:9580,transition:360}
   ];
   function trainTrackPoint(s){
     const route=state.activeYardRoute;
