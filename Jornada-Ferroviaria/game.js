@@ -50,11 +50,22 @@
     const rect = canvas.getBoundingClientRect();
     const x = (event.clientX - rect.left) * W / rect.width;
     const y = (event.clientY - rect.top) * H / rect.height;
-    for (let i = wagonHitAreas.length - 1; i >= 0; i--) {
-      const hit = wagonHitAreas[i];
-      if (!hit || Math.hypot(x-hit.x,y-hit.y)>hit.radius) continue;
+    // Escolhe o vagão efetivamente mais próximo do toque, evitando
+    // que áreas de toque sobrepostas selecionem outro carro da composição.
+    let selectedWagonHit = null;
+    let selectedWagonDistance = Infinity;
+    for (const hit of wagonHitAreas) {
+      if (!hit) continue;
+      const distance = Math.hypot(x-hit.x,y-hit.y);
+      if (distance <= hit.radius && distance < selectedWagonDistance) {
+        selectedWagonHit = hit;
+        selectedWagonDistance = distance;
+      }
+    }
+    if (selectedWagonHit) {
+      const hit = selectedWagonHit;
       event.preventDefault();
-      if (state.speed > 0.05) { brakeStatus.textContent="Pare completamente a composição para manobrar os vagões"; return; }
+      if (state.speed > 0.05) { showBrakeNotice("PARE A COMPOSIÇÃO PARA DESENGATAR"); return; }
       if (hit.kind === "attached") {
         const cutAt=state.attachedWagons.indexOf(hit.number);
         if(cutAt<0)return;
@@ -3161,7 +3172,7 @@
     }
 
     ctx.restore();
-    if(hitMeta)wagonHitAreas.push({x:q.x,y:q.y,radius:34,...hitMeta});
+    if(hitMeta)wagonHitAreas.push({x:q.x,y:q.y,radius:52,...hitMeta});
   }
 
   function drawLocomotive(s,cameraY){
