@@ -25,6 +25,9 @@
   const STATION_DETECTION_END = 8580;
   const TRAIN_SPACING = 48;
   const PASSENGER_WAGON_COUNT = 8;
+  // Massas equivalentes para o cálculo simplificado de esforço de tração.
+  const LOCOMOTIVE_MASS = 180;
+  const WAGON_MASS = 25;
   const MAX_SPEED = 82;
   const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
   const state = {distance:INITIAL_PROGRESS,trackOffset:INITIAL_PROGRESS,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false,false,false],activeYardRoute:null,attachedWagons:Array.from({length:PASSENGER_WAGON_COUNT},(_,i)=>i+1),detachedWagons:[],nextCutId:1};
@@ -3511,7 +3514,11 @@
     }else if(state.brake>0){
       state.speed=Math.max(0,state.speed-(0.35+state.brake/100*2.7)*dt);
     }else if(traction&&state.speed<limit){
-      state.speed=Math.min(limit,state.speed+(0.40+state.throttlePoint*0.125)*dt);
+      const baseAcceleration=0.40+state.throttlePoint*0.125;
+      const currentMass=LOCOMOTIVE_MASS+state.attachedWagons.length*WAGON_MASS;
+      const referenceMass=LOCOMOTIVE_MASS+PASSENGER_WAGON_COUNT*WAGON_MASS;
+      const loadFactor=Math.min(2.1,referenceMass/currentMass);
+      state.speed=Math.min(limit,state.speed+baseAcceleration*loadFactor*dt);
     }else{
       state.speed=Math.max(0,state.speed-0.12*dt);
     }
