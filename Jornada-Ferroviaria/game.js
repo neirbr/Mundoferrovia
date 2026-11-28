@@ -27,7 +27,7 @@
   const PASSENGER_WAGON_COUNT = 8;
   const MAX_SPEED = 82;
   const SPEED_LIMITS = [0,15,25,35,45,55,65,75,100];
-  const state = {distance:INITIAL_PROGRESS,trackOffset:INITIAL_PROGRESS,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false,false,false],activeYardRoute:null,attachedWagons:Array.from({length:PASSENGER_WAGON_COUNT},(_,i)=>i+1),detachedWagons:[],nextCutId:1};
+  const state = {distance:INITIAL_PROGRESS,trackOffset:INITIAL_PROGRESS,speed:0,direction:0,throttlePoint:0,brake:0,emergency:false,emergencyStopped:false,paused:false,lastTime:0,cameraY:null,doorsOpen:false,passengerProgress:0,departingPassengers:[],yardSwitches:[false],activeYardRoute:null,attachedWagons:Array.from({length:PASSENGER_WAGON_COUNT},(_,i)=>i+1),detachedWagons:[],nextCutId:1};
   const yardSwitchHitAreas = [];
   const wagonHitAreas = [];
   let previousTrackOffset = state.trackOffset;
