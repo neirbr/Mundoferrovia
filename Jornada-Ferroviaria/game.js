@@ -2117,47 +2117,6 @@
       ctx.fillRect(76, y, 12, 2);
     }
 
-    const shedS = 10940;
-    const shedY = worldToScreen(trackPoint(shedS), cameraY).y;
-    if (shedY > -180 && shedY < H + 180) {
-      // Galpão ferroviário de manutenção: estrutura metálica, telhado segmentado,
-      // portão de acesso, janelas industriais, iluminação e detalhes de uso.
-      ctx.save();
-      ctx.fillStyle = "rgba(16,22,20,.34)";
-      ctx.beginPath(); ctx.moveTo(596,shedY-83); ctx.lineTo(742,shedY-83); ctx.lineTo(750,shedY+105); ctx.lineTo(588,shedY+105); ctx.closePath(); ctx.fill();
-      // Fundação e paredes laterais.
-      ctx.fillStyle = "#46514e"; ctx.fillRect(598,shedY-91,138,190);
-      ctx.fillStyle = "#87918b"; ctx.fillRect(606,shedY-84,122,176);
-      ctx.fillStyle = "#697671"; ctx.fillRect(606,shedY-84,10,176);
-      ctx.fillStyle = "#a6ada4"; ctx.fillRect(718,shedY-84,10,176);
-      // Telhado metálico em duas águas e cumeeira.
-      ctx.fillStyle = "#293b3b"; ctx.beginPath(); ctx.moveTo(590,shedY-91); ctx.lineTo(665,shedY-139); ctx.lineTo(744,shedY-91); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = "#526461"; ctx.beginPath(); ctx.moveTo(597,shedY-94); ctx.lineTo(665,shedY-134); ctx.lineTo(665,shedY-91); ctx.lineTo(604,shedY-57); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = "#3c504e"; ctx.beginPath(); ctx.moveTo(665,shedY-134); ctx.lineTo(737,shedY-94); ctx.lineTo(728,shedY-57); ctx.lineTo(665,shedY-91); ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = "rgba(195,207,195,.35)"; ctx.lineWidth = 1;
-      for(let k=0;k<6;k++){const xx=608+k*10;ctx.beginPath();ctx.moveTo(xx,shedY-91+(xx-608)*-.58);ctx.lineTo(xx+4,shedY-61+(xx-608)*-.58);ctx.stroke();}
-      ctx.fillStyle="#aeb7aa";ctx.fillRect(659,shedY-136,12,5);
-      // Vigas, montantes e portão industrial largo.
-      ctx.fillStyle="#344643";ctx.fillRect(624,shedY-45,83,132);
-      ctx.fillStyle="#aab3a9";ctx.fillRect(630,shedY-40,71,126);
-      ctx.fillStyle="#263b3b";ctx.fillRect(635,shedY-35,61,121);
-      ctx.fillStyle="#64736d";ctx.fillRect(639,shedY-31,53,113);
-      ctx.fillStyle="#303f3d";ctx.fillRect(641,shedY-29,49,109);
-      for(let k=0;k<9;k++){ctx.fillStyle=k%2?"#71817a":"#87938a";ctx.fillRect(643,shedY-26+k*12,45,8);ctx.fillStyle="rgba(26,39,37,.55)";ctx.fillRect(643,shedY-18+k*12,45,2);}
-      ctx.strokeStyle="#c1c8b9";ctx.lineWidth=2;ctx.strokeRect(638,shedY-34,55,117);
-      ctx.fillStyle="#d4b96e";ctx.fillRect(687,shedY+22,3,5);
-      // Janelas altas de inspeção e luminárias externas.
-      for(const wx of [613,706]){ctx.fillStyle="#314543";ctx.fillRect(wx,shedY-48,13,28);ctx.fillStyle="#8fb4b2";ctx.fillRect(wx+2,shedY-46,9,24);ctx.strokeStyle="#d0d5c7";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(wx+6.5,shedY-46);ctx.lineTo(wx+6.5,shedY-22);ctx.moveTo(wx+2,shedY-34);ctx.lineTo(wx+11,shedY-34);ctx.stroke();}
-      ctx.fillStyle="#f1d78d";ctx.beginPath();ctx.arc(665,shedY-51,5,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle="rgba(244,213,133,.18)";ctx.beginPath();ctx.arc(665,shedY-51,14,0,Math.PI*2);ctx.fill();
-      // Placa de identificação e faixa de segurança.
-      ctx.fillStyle="#263b37";ctx.fillRect(620,shedY-108,90,17);
-      ctx.strokeStyle="#d6b65f";ctx.lineWidth=1;ctx.strokeRect(620,shedY-108,90,17);
-      ctx.fillStyle="#f1d58a";ctx.font="bold 9px Arial";ctx.textAlign="center";ctx.fillText("MANUTENÇÃO",665,shedY-96);
-      ctx.fillStyle="#d7b65e";ctx.fillRect(625,shedY+91,84,4);
-      ctx.restore();
-    }
-
     // Pilhas de dormentes, materiais e contêineres de apoio.
     for (let i = 0; i < 3; i++) {
       const y = worldToScreen(trackPoint(10570 + i * 230), cameraY).y;
