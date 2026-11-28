@@ -156,13 +156,14 @@
     return (low + high) / 2;
   }
 
-  // Três linhas do pátio: L1 é a principal; L2 fica à direita; L3 à esquerda.
+  // Linhas do pátio com transições longas para formar desvios suaves,
+  // sem cotovelos ou mudanças bruscas de direção.
   const YARD_SIDINGS=[
-    {id:"L3-classificacao-esquerda",lateral:-150,start:9580,transition:360},
-    // L2 segue pelo lado direito da L1, com o alinhamento visual 3 px acima.
-    {id:"L2-classificacao-direita",lateral:45,verticalOffset:-3,start:9580,transition:360},
-    // L4 sai da L2 pelo lado direito, antes do poste direito em S=10320.
-    {id:"L4-classificacao-direita-externa",lateral:110,start:10180,transition:300,parent:"L2-classificacao-direita"}
+    {id:"L3-classificacao-esquerda",lateral:-150,start:9580,transition:720},
+    // L2 acompanha a L1 pelo lado direito, mantendo o alinhamento 3 px acima.
+    {id:"L2-classificacao-direita",lateral:45,verticalOffset:-3,start:9580,transition:680},
+    // L4 deriva da L2 à direita, antes do poste em S=10320.
+    {id:"L4-classificacao-direita-externa",lateral:110,start:10180,transition:720,parent:"L2-classificacao-direita"}
   ];
   function trainTrackPoint(s){
     const route=state.activeYardRoute;
@@ -2196,7 +2197,9 @@
 
       const path = (railOffset = 0) => {
         ctx.beginPath();
-        for (let s = from; s <= to; s += 5) {
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        for (let s = from; s <= to; s += 3) {
           const p = yardSidingPoint(s, siding.lateral, siding.start, siding.transition, siding.verticalOffset||0, siding.parent?sidings.find(v=>v.id===siding.parent):null);
           const q = worldToScreen({ x: p.x + p.nx * railOffset, y: p.y + p.ny * railOffset }, cameraY);
           if (s === from) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
